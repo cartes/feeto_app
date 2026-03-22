@@ -8,63 +8,43 @@ use Illuminate\Support\Facades\Log;
 
 class BoostrService
 {
-    protected ?string $apiKey = null;
-    protected ?string $baseUrl = null;
-
-    public function __construct()
-    {
-        $this->apiKey = config('services.boostr.key');
-        $this->baseUrl = config('services.boostr.base_url') ?? 'https://api.boostr.cl';
-    }
-
     /**
-     * Fetch vehicle information by license plate.
+     * Obtiene los datos de la patente desde la API de Boostr.
      *
-     * @param string $plate Cleaned license plate (PPU).
-     * @return array{name: string|null, rut: string|null, brand: string|null, model: string|null, vin: string|null}
+     * @param string $patente La patente a consultar
+     * @return array<string, mixed>|null Objeto con los datos o null en caso de error
      */
-    public function getVehicleData(string $plate): array
+    public function getVehicleData(string $patente): ?array
     {
-        if (empty($this->apiKey)) {
-            Log::warning('Boostr API Key is not set.');
-        }
-
         try {
-            $response = Http::withHeaders([
-                'X-API-Key' => $this->apiKey,
-            ])->get("{$this->baseUrl}/v1/vehiculos/{$plate}");
+            // Se asume que la URL base o endpoint y API Key están en config/services.php
+            $apiUrl = config('services.boostr.url', 'https://api.boostr.cl/vehiculo/' . $patente);
+            $apiKey = config('services.boostr.key');
 
-            if ($response->failed()) {
-                Log::error("Boostr API error for plate {$plate}: " . $response->body());
-                return $this->emptyResponse();
+            $response = Http::withToken($apiKey ?? '')
+                ->timeout(10)
+                ->get($apiUrl);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                // Extrayendo la información premium del vehículo
+                return [
+                    'marca'        => $data['marca'] ?? 'Desconocida',
+                    'modelo'       => $data['modelo'] ?? 'Desconocido',
+                    'anio'         => $data['anio'] ?? 'Desconocido',
+                    'vin'          => $data['vin'] ?? 'No disponible',
+                    'nombre_dueno' => $data['propietario']['nombre'] ?? 'Sin asignar',
+                    'rut_dueno'    => $data['propietario']['rut'] ?? 'No disponible',
+                ];
             }
 
-            $data = $response->json();
+            Log::warning("Boostr API returned status: " . $response->status() . " for patente: {$patente}");
+            return null;
 
-            return [
-                'name' => $data['propietario']['nombre'] ?? $data['nombre'] ?? null,
-                'rut' => $data['propietario']['rut'] ?? $data['rut'] ?? null,
-                'brand' => $data['marca'] ?? null,
-                'model' => $data['modelo'] ?? null,
-                'vin' => $data['vin'] ?? null,
-            ];
-        } catch (\Exception $e) {
-            Log::error("Exception calling Boostr API for plate {$plate}: " . $e->getMessage());
-            return $this->emptyResponse();
+        } catch (\Throwable $e) {
+            Log::error("Error communicating with Boostr API: " . $e->getMessage());
+            return null;
         }
-    }
-
-    /**
-     * Standardized empty response.
-     */
-    protected function emptyResponse(): array
-    {
-        return [
-            'name' => null,
-            'rut' => null,
-            'brand' => null,
-            'model' => null,
-            'vin' => null,
-        ];
     }
 }

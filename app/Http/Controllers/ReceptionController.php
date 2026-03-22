@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Ai\Agents\PatentReaderAgent;
-use App\Events\PatentRecognized;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Spatie\Multitenancy\Models\Tenant;
-use Inertia\Inertia;
 use Laravel\Ai\Files\Image;
+use App\Ai\Agents\PatentReaderAgent;
+use App\Services\BoostrService;
+use App\Models\Client;
+use App\Models\Vehicle;
+use App\Models\WorkOrder;
+use App\Events\WorkOrderDraftCreated;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ReceptionController extends Controller
 {
@@ -18,53 +20,73 @@ class ReceptionController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Reception/Create', [
-            'tenantId' => Tenant::current() ? Tenant::current()->id : 0,
-        ]);
+        return inertia('Reception/Create'); // Usa el alias Helper de Inertia
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Procesamiento asíncrono de OCR y obtención de datos automáticos.
      */
-    public function store(Request $request)
+    public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr)
     {
         $request->validate([
             'image' => 'required|image|max:10240', // Max 10MB
         ]);
 
-        $path = $request->file('image')->store('reception/temp', 'public');
-        $fullUrl = Storage::disk('public')->url($path);
-        
-        // Asignamos la ruta absoluta real del disco para el agente
-        $absolutePath = Storage::disk('public')->path($path);
+        // 1. Recibir imagen nativa de la cámara
+        $imagePath = $request->file('image')->store('reception/temp', 'public');
+        $image = Image::fromPath(storage_path('app/public/' . $imagePath));
 
-        $agent = new PatentReaderAgent();
-        $agent->with(Image::fromPath($absolutePath));
+        // 2. Procesamiento Asíncrono con el AI SDK
+        $agent->queue('Extrae la patente chilena', attachments: [$image])
+            ->then(function ($response) use ($boostr) {
+                
+                // A. Limpiar y Validar la Patente (Regex Chile)
+                $patenteSucia = $response['patente'] ?? '';
+                $patenteLimpia = strtoupper(str_replace(['O', 'I', '-'], ['0', '1', ''], $patenteSucia));
+                
+                if (!preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
+                    // Si es inválida, evitamos la creación en DB (opcional disparar evento de falla al frontend)
+                    return;
+                }
 
-        // Background processing queue
-        $agent->queue()->then(function (array $result) use ($fullUrl) {
-            $rawPatente = $result['patente'] ?? '';
+                // B. Consumir API de Boostr para auto-completar datos
+                $vehicleData = $boostr->getVehicleData($patenteLimpia); // Trae marca, modelo, RUT, nombre
 
-            // Limpieza estricta: Solo mayúsculas, O->0, I->1
-            $cleanPatente = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rawPatente));
-            $cleanPatente = str_replace(['O', 'I'], ['0', '1'], $cleanPatente);
+                if (!$vehicleData) {
+                    return; // Aborta si falla API (en entorno dev, podríamos enmascarar)
+                }
 
-            // Validación (Nuevo o Antiguo formato)
-            $isValid = preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$/', $cleanPatente) ||
-                       preg_match('/^[A-Z]{2}\d{4}$/', $cleanPatente);
+                // C. Persistencia Multi-Tenant (El Trait TenantAware hace el filtro y asignación por debajo)
+                $client = Client::firstOrCreate(
+                    ['rut' => $vehicleData['rut_dueno']],
+                    ['name' => $vehicleData['nombre_dueno']]
+                );
 
-            if ($isValid) {
-                // Emitir evento por WebSockets
-                broadcast(new PatentRecognized($cleanPatente, $fullUrl));
-            } else {
-                // Emitir error (opcional para el front, enviamos ERROR para la demo)
-                broadcast(new PatentRecognized("ERROR_FORMATO", $fullUrl));
-            }
-        });
+                $vehicle = Vehicle::firstOrCreate(
+                    ['plate' => $patenteLimpia],
+                    [
+                        'client_id' => $client->id,
+                        'brand' => $vehicleData['marca'],
+                        'model' => $vehicleData['modelo'],
+                        'vin' => $vehicleData['vin'] ?? null
+                    ]
+                );
 
-        return response()->json([
-            'message' => 'Image received and queued for analysis.',
-            'queue' => true,
-        ]);
+                // D. Creación de la OT en estado Recepción (Kanban Index)
+                $workOrder = WorkOrder::create([
+                    'vehicle_id' => $vehicle->id,
+                    'status' => 'recepcion', 
+                    'observations' => 'Creada automáticamente vía ALPR'
+                ]);
+
+                // E. Emitir evento Websocket para actualizar el Kanban en Vue
+                broadcast(new WorkOrderDraftCreated($workOrder->load('vehicle.client')));
+            })
+            ->catch(function (\Throwable $e) {
+                Log::error('Fallo en OCR: ' . $e->getMessage());
+            });
+
+        // 3. Respuesta inmediata al Frontend (No bloquea la pantalla)
+        return response()->json(['message' => 'Analizando patente...', 'queue' => true]);
     }
 }

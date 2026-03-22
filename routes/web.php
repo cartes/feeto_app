@@ -36,6 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
     Route::post('/ocr/process', [OcrController::class, 'process'])->name('ocr.process');
 
+    // Work Orders / Kanban
+    Route::get('/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::put('/work-orders/{workOrder}/status', [\App\Http\Controllers\WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
+
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

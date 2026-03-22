@@ -6,20 +6,21 @@ namespace App\Models;
 use App\Traits\TenantAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class WorkOrder extends Model
+class Client extends Model
 {
     use HasFactory, TenantAware;
 
     protected $fillable = [
-        'vehicle_id',
-        'status',
-        'observations',
+        'rut',
+        'name',
+        'phone',
+        'email',
     ];
 
-    public function vehicle(): BelongsTo
+    public function vehicles(): HasMany
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->hasMany(Vehicle::class);
     }
 }
