@@ -38,7 +38,7 @@ const navItems = [
                     :key="index"
                     :href="route(item.route)"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="index === 0 ? 'bg-[#1C1C1E] text-white shadow-xl' : 'text-slate-500 hover:bg-white hover:shadow-sm hover:text-slate-800'"
+                    :class="index === 0 ? 'bg-[#F9A826] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
@@ -75,28 +75,28 @@ const navItems = [
                         class="w-11 h-11 rounded-full border-2 border-white shadow-sm lg:hidden"
                     />
                     <div class="lg:hidden">
-                        <h2 class="text-[15px] font-bold text-slate-800 leading-tight">{{ user?.name || 'Bienvenido' }}</h2>
-                        <p class="text-[12px] font-medium text-slate-500">Santiago, Chile</p>
+                        <h2 class="text-[15px] font-bold text-gray-900 leading-tight">{{ user?.name || 'Bienvenido' }}</h2>
+                        <p class="text-[12px] font-medium text-gray-500">Santiago, Chile</p>
                     </div>
 
                     <!-- Buscador global en desktop -->
                     <div class="hidden lg:flex relative w-96">
                         <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <input 
                             type="text" 
                             placeholder="Buscar patentes, órdenes, reportes..." 
-                            class="w-full bg-white/70 backdrop-blur-md text-slate-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_8px_20px_rgba(0,0,0,0.03)] border-white focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-slate-400 transition-all"
+                            class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-gray-200 focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-gray-400 transition-all"
                         />
                     </div>
                 </div>
 
                 <!-- Botón Derecha -->
                 <button class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                 </button>
@@ -107,14 +107,14 @@ const navItems = [
                 <!-- Search Bar (Mobile only) -->
                 <div class="relative lg:hidden">
                     <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input 
                         type="text" 
                         placeholder="Buscar patentes, órdenes..." 
-                        class="w-full bg-white/80 backdrop-blur-md text-slate-700 rounded-full py-3.5 pl-14 pr-5 shadow-sm border border-white focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-slate-400"
+                        class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-sm border border-gray-100 focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-gray-400"
                     />
                 </div>
 
@@ -122,13 +122,13 @@ const navItems = [
             </main>
 
             <!-- ======== BOTTOM FLOATING NAV (SOLO MOBILE) ======== -->
-            <nav class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] h-16 bg-[#1C1C1E] rounded-full shadow-2xl flex items-center justify-around px-2 z-50">
+            <nav class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] h-16 bg-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-around px-2 z-50 border border-gray-100">
                 <Link
                     v-for="(item, index) in navItems"
                     :key="index"
                     :href="route(item.route)"
                     class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="index === 0 ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,0.3)] text-black' : 'text-gray-400 hover:text-white'"
+                    :class="index === 0 ? 'bg-[#F9A826] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />

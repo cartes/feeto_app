@@ -152,18 +152,18 @@ onUnmounted(() => {
         <PpuScanner :recognized-ppu="formattedPlate || '---'" :is-processing="isUploading || isAnalyzing"
             :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso" @retry="triggerCamera" />
 
-        <!-- MODAL DE VISTA PREVIA EDITABLE (Estilo Premium Glassmorphic Light) -->
+        <!-- MODAL DE VISTA PREVIA EDITABLE (Estilo Taller-Friendly & Light Theme) -->
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
                 @click="showModal = false"></div>
 
             <div
-                class="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white/95 backdrop-blur-2xl border border-white rounded-[2.5rem] shadow-[0_32px_64px_rgba(0,0,0,0.1)] overflow-x-hidden animate-in zoom-in duration-300">
+                class="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_32px_64px_rgba(0,0,0,0.1)] overflow-x-hidden animate-in zoom-in duration-300">
 
                 <!-- Encabezado -->
-                <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
+                <div class="p-6 lg:p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                     <div class="flex flex-col gap-1">
-                        <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Orden de Trabajo</h2>
+                        <h2 class="text-2xl font-black text-gray-900 tracking-tight uppercase">Orden de Trabajo</h2>
                         <span v-if="isNewClient"
                             class="w-fit bg-[#F9A826]/10 text-[#F9A826] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#F9A826]/20">
                             Cliente Nuevo
@@ -174,7 +174,7 @@ onUnmounted(() => {
                         </span>
                     </div>
                     <button @click="showModal = false"
-                        class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all border border-slate-100">
+                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all border border-gray-200 shadow-sm">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -183,40 +183,40 @@ onUnmounted(() => {
                 </div>
 
                 <!-- Formulario Editable -->
-                <form @submit.prevent="handleCreateOrder" class="p-8 space-y-8">
+                <form @submit.prevent="handleCreateOrder" class="p-6 lg:p-8 space-y-8">
 
                     <!-- Patente (Display estilo placa real) -->
                     <div
-                        class="flex flex-col items-center py-6 bg-slate-50/80 rounded-3xl border border-slate-100 shadow-inner">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2">Placa de
+                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner">
+                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Placa de
                             Identificación</p>
-                        <p class="text-5xl font-mono font-black text-slate-800 tracking-widest plate-font">
+                        <p class="text-5xl font-mono font-black text-gray-900 tracking-widest plate-font">
                             {{ form.plate }}
                         </p>
                     </div>
 
                     <!-- Datos del Vehículo -->
                     <div class="space-y-4">
-                        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Información
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Información
                                 Técnica</p>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label
-                                    class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Marca</label>
+                                    class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Marca</label>
                                 <input v-model="form.brand" type="text"
-                                    class="w-full bg-white border border-slate-200 text-slate-800 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-[#F9A826]/30 focus:border-[#F9A826] uppercase transition-all shadow-sm"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
                                     placeholder="Ej: TOYOTA" />
                                 <p v-if="form.errors.brand" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.brand }}</p>
                             </div>
                             <div class="space-y-1.5">
                                 <label
-                                    class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Modelo</label>
+                                    class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Modelo</label>
                                 <input v-model="form.model" type="text"
-                                    class="w-full bg-white border border-slate-200 text-slate-800 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-[#F9A826]/30 focus:border-[#F9A826] uppercase transition-all shadow-sm"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
                                     placeholder="Ej: HILUX" />
                                 <p v-if="form.errors.model" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.model }}</p>
@@ -226,28 +226,28 @@ onUnmounted(() => {
 
                     <!-- Datos del Cliente -->
                     <div class="space-y-4">
-                        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Datos del
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Datos del
                                 Propietario</p>
                         </div>
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
                                     <label
-                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">RUT</label>
+                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">RUT</label>
                                     <input v-model="form.client_rut" type="text"
-                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
                                         placeholder="12.345.678-9" />
                                     <p v-if="form.errors.client_rut" class="text-red-500 text-[10px] font-medium ml-1">
                                         {{ form.errors.client_rut }}</p>
                                 </div>
                                 <div class="space-y-1.5">
                                     <label
-                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre
+                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre
                                         Completo</label>
                                     <input v-model="form.client_name" type="text"
-                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 uppercase transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
                                         placeholder="JUAN PÉREZ" />
                                     <p v-if="form.errors.client_name" class="text-red-500 text-[10px] font-medium ml-1">
                                         {{ form.errors.client_name }}</p>
@@ -256,16 +256,16 @@ onUnmounted(() => {
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
                                     <label
-                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
                                     <input v-model="form.client_email" type="email"
-                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
                                         placeholder="correo@ejemplo.cl" />
                                 </div>
                                 <div class="space-y-1.5">
                                     <label
-                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Celular</label>
+                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Celular</label>
                                     <input v-model="form.client_phone" type="tel"
-                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
                                         placeholder="+56 9 1234 5678" />
                                 </div>
                             </div>
@@ -273,16 +273,16 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Acciones -->
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-50">
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
                         <button type="button" @click="showModal = false"
-                            class="order-2 sm:order-1 flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full font-bold transition-all active:scale-95 text-sm">
+                            class="order-2 sm:order-1 flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full font-bold transition-all active:scale-95 text-sm uppercase">
                             CANCELAR
                         </button>
                         <button type="submit" :disabled="form.processing"
-                            class="order-1 sm:order-2 flex-[2] py-4 bg-slate-800 hover:bg-black text-white rounded-full font-black uppercase shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-sm">
+                            class="order-1 sm:order-2 flex-[2] py-4 bg-[#F9A826] hover:bg-[#E59A22] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-lg">
                             <div v-if="form.processing"
                                 class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            {{ form.processing ? 'Procesando...' : 'Generar Orden Final' }}
+                            {{ form.processing ? 'Procesando...' : 'GENERAR ORDEN' }}
                         </button>
                     </div>
                 </form>
