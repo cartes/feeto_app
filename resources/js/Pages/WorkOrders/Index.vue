@@ -54,100 +54,124 @@ const onDrop = (columnId) => {
 // Implementación WebSockets Reverb (Actualización en tiempo real)
 onMounted(() => {
     if (window.Echo) {
-        window.Echo.channel(`tenant.${props.tenantId}.work-orders`)
+        window.Echo.private(`tenant.${props.tenantId}.work-orders`)
             .listen('WorkOrderDraftCreated', (e) => {
                 const newOrder = e.workOrder;
-                if (!props.kanban[newOrder.status]) {
-                    props.kanban[newOrder.status] = [];
+                // Agregamos una propiedad temporal para la animación visual
+                newOrder.isNew = true;
+                
+                const status = newOrder.status || 'recepcion';
+                if (!props.kanban[status]) {
+                    props.kanban[status] = [];
                 }
-                props.kanban[newOrder.status].unshift(newOrder);
+                
+                // Agregar dinámicamente haciendo push
+                props.kanban[status].push(newOrder);
+
+                // Quitar la animación después de 5 segundos
+                setTimeout(() => {
+                    newOrder.isNew = false;
+                }, 5000);
             });
     }
 });
 
 onUnmounted(() => {
     if (window.Echo) {
-        window.Echo.leaveChannel(`tenant.${props.tenantId}.work-orders`);
+        window.Echo.leave(`private-tenant.${props.tenantId}.work-orders`);
     }
 });
 </script>
 
 <template>
     <TallerLayout>
-        <template #header>
-            <h2 class="text-2xl font-bold leading-tight text-gray-900">
+        
+        <div class="mb-4">
+            <h2 class="text-3xl font-bold leading-tight text-slate-800 tracking-tight">
                 Tablero de Órdenes
             </h2>
-        </template>
+            <p class="text-sm text-slate-500 font-medium">Gestión del flujo de trabajo</p>
+        </div>
 
-        <div class="h-[calc(100vh-200px)] lg:h-[calc(100vh-120px)] overflow-x-auto custom-scrollbar">
+        <div class="h-[calc(100vh-220px)] lg:h-[calc(100vh-140px)] overflow-x-auto no-scrollbar pb-10">
             <!-- Kanban Board -->
-            <div class="flex gap-4 min-w-max h-full items-start px-2 py-2">
+            <div class="flex gap-6 min-w-max h-full items-start">
                 
                 <!-- Column -->
                 <div 
                     v-for="col in columns" 
                     :key="col.id"
-                    class="w-[320px] md:w-[350px] shrink-0 h-full flex flex-col rounded-2xl border-2 transition-colors duration-200"
+                    class="w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
                     :class="[
-                        col.color,
-                        currentHoverColumn === col.id ? 'border-orange-400 border-dashed shadow-inner' : 'border-transparent'
+                        currentHoverColumn === col.id ? 'border-[#F9A826] bg-[#F9A826]/5' : ''
                     ]"
                     @dragover="(e) => onDragOver(e, col.id)"
                     @drop="() => onDrop(col.id)"
                 >
                     <!-- Header -->
-                    <div class="px-5 py-4 border-b border-gray-200/50 bg-white/40 rounded-t-2xl">
-                        <h3 class="font-bold text-gray-800 text-lg uppercase tracking-wide">
+                    <div class="px-5 py-4 mb-2 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-700 text-lg tracking-tight">
                             {{ col.title }}
-                            <span class="ml-2 text-sm text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200 shadow-sm">
-                                {{ kanban[col.id]?.length || 0 }}
-                            </span>
                         </h3>
+                        <span class="text-[10px] font-bold text-white bg-slate-800 px-3 py-1 rounded-full shadow-sm">
+                            {{ kanban[col.id]?.length || 0 }}
+                        </span>
                     </div>
 
                     <!-- Cards Container -->
-                    <div class="flex-1 p-3 overflow-y-auto space-y-4">
+                    <div class="flex-1 overflow-y-auto space-y-5 no-scrollbar px-1">
                         <div 
                             v-for="order in kanban[col.id]" 
                             :key="order.id"
                             draggable="true"
                             @dragstart="onDragStart(order, col.id)"
-                            class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow touch-none select-none relative"
-                            :class="{ 'opacity-50 scale-95': draggedItem?.id === order.id }"
+                            class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-300 touch-none select-none relative"
+                            :class="{ 
+                                'opacity-50 scale-95': draggedItem?.id === order.id,
+                                'ring-2 ring-[#F9A826] bg-orange-50/50': order.isNew 
+                            }"
                         >
-                            <!-- Visual Drag Handle -->
-                            <div class="absolute top-4 right-4 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <!-- Etiqueta Flotante Estado / OT -->
+                            <div class="absolute top-4 left-4 bg-[#E2EAF4] text-slate-600 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
+                                #OT-{{ order.id }}
+                            </div>
+
+                            <!-- Drag Handle Sutil -->
+                            <div class="absolute top-4 right-4 text-slate-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
                                 </svg>
                             </div>
 
-                            <p class="text-3xl font-bold font-mono text-gray-900 tracking-wider mb-2">
-                                {{ order.vehicle?.plate || 'S/P' }}
-                            </p>
+                            <div class="mt-8 mb-4">
+                                <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
+                                    {{ order.vehicle?.plate || 'S/P' }}
+                                </p>
+                            </div>
 
-                            <div class="space-y-1 mb-4">
-                                <p class="text-base font-semibold text-gray-800">
+                            <div class="space-y-1 mb-2">
+                                <p class="text-sm font-semibold text-slate-700">
                                     {{ order.vehicle?.brand || 'Marca' }} {{ order.vehicle?.model || 'Modelo' }}
                                 </p>
-                                <p class="text-sm font-medium text-gray-500 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <p class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#F9A826]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                       <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                     {{ order.vehicle?.client?.name || 'Cliente' }}
                                 </p>
                             </div>
 
-                            <!-- O.T. Number and Date -->
-                            <div class="flex items-center justify-between text-xs text-gray-400 font-semibold uppercase tracking-wider border-t border-gray-100 pt-3">
-                                <span>#OT-{{ order.id }}</span>
-                                <span>{{ new Date(order.created_at).toLocaleDateString() }}</span>
+                            <!-- O.T. Number and Date Base (estilo botón pequeño a la vista adjunta) -->
+                            <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-400">
+                                <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">{{ new Date(order.created_at).toLocaleDateString() }}</span>
+                                <button class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                </button>
                             </div>
                         </div>
 
                         <!-- Empty Placeholder for easy dropping -->
-                        <div v-if="!kanban[col.id]?.length" class="h-full min-h-[150px] w-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center text-gray-400">
+                        <div v-if="!kanban[col.id]?.length" class="h-full min-h-[150px] w-full border-2 border-dashed border-slate-300 rounded-[2rem] flex items-center justify-center text-slate-400">
                             Arrastra aquí
                         </div>
                     </div>

@@ -19,14 +19,19 @@ class PatentRecognized implements ShouldBroadcastNow
     public string $imageUrl;
     public int $tenantId;
 
+    /** @var array<string, mixed> */
+    public array $vehicleData;
+
     /**
      * Create a new event instance.
+     *
+     * @param array<string, mixed> $vehicleData
      */
-    public function __construct(string $patente, string $imageUrl)
+    public function __construct(string $patente, string $imageUrl, array $vehicleData = [])
     {
         $this->patente = $patente;
         $this->imageUrl = $imageUrl;
-        // Capturamos el tenant actual para enviarlo solo a ese canal
+        $this->vehicleData = $vehicleData;
         $this->tenantId = Tenant::current() ? (int) Tenant::current()->id : 0;
     }
 
@@ -55,6 +60,7 @@ class PatentRecognized implements ShouldBroadcastNow
         return [
             'patente' => $this->patente,
             'image_url' => $this->imageUrl,
+            'vehicle' => $this->vehicleData,
         ];
     }
 }

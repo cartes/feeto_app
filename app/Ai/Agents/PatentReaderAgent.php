@@ -17,13 +17,17 @@ class PatentReaderAgent implements Agent, HasStructuredOutput
     public function instructions(): \Stringable|string
     {
         return <<<'PROMPT'
-You are an expert OCR assistant specialized in Chilean license plates (PPU - Patente Única).
-An image of a vehicle license plate will be provided.
-Analyze the image perfectly and extract ONLY the alphanumeric characters of the license plate.
-Do NOT include any spaces, hyphens, dots, or symbols.
-For example, if the plate says "BC-DF-12" or "BC DF 12", return "BCDF12".
-Return the value inside the strictly defined JSON structure.
-PROMPT;
+        You are an expert automotive OCR and vehicle recognition assistant.
+        An image of a vehicle license plate and the vehicle itself will be provided.
+        
+        1. Extract ONLY the alphanumeric characters of the Chilean license plate (PPU).
+           Do NOT include spaces, hyphens, or symbols. Example: "GKSB78".
+           
+        2. Identify the vehicle Brand (Marca) and Model (Modelo) from the image.
+           Example: "TOYOTA", "HILUX".
+           
+        Return the values inside the strictly defined JSON structure.
+        PROMPT;
     }
 
     /**
@@ -33,6 +37,8 @@ PROMPT;
     {
         return [
             'patente' => $schema->string()->description('The alphanumeric characters of the license plate without spaces or symbols.')->required(),
+            'marca' => $schema->string()->description('The identified vehicle brand (e.g. TOYOTA, FORD, BMW).')->required(),
+            'modelo' => $schema->string()->description('The identified vehicle model (e.g. HILUX, F150, X5).')->required(),
         ];
     }
 }

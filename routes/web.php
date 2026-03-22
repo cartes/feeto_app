@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Nueva Recepción
     Route::get('/receptions/create', [\App\Http\Controllers\ReceptionController::class, 'create'])->name('receptions.create');
     Route::post('/receptions', [\App\Http\Controllers\ReceptionController::class, 'store'])->name('receptions.store');
+    Route::post('/receptions/preview', [\App\Http\Controllers\ReceptionController::class, 'preview'])->name('receptions.preview');
+    Route::post('/receptions/store-order', [\App\Http\Controllers\ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
 
     // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
     Route::post('/ocr/process', [OcrController::class, 'process'])->name('ocr.process');
