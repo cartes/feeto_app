@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +16,9 @@ class PatentRecognized implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $patente;
+
     public string $imageUrl;
+
     public int $tenantId;
 
     /** @var array<string, mixed> */
@@ -25,7 +27,7 @@ class PatentRecognized implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @param array<string, mixed> $vehicleData
+     * @param  array<string, mixed>  $vehicleData
      */
     public function __construct(string $patente, string $imageUrl, array $vehicleData = [])
     {
@@ -38,7 +40,7 @@ class PatentRecognized implements ShouldBroadcastNow
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -46,7 +48,7 @@ class PatentRecognized implements ShouldBroadcastNow
         // Para simplificar la prueba inicial sin Auth de canales complejo,
         // Usaremos un canal público con el ID del tenant.
         return [
-            new Channel('tenant.' . $this->tenantId . '.reception'),
+            new Channel('tenant.'.$this->tenantId.'.reception'),
         ];
     }
 

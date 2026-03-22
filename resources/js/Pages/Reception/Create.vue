@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { usePage, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
@@ -10,16 +10,25 @@ const tenantId = page.props.tenantId;
 
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
-const isSearching = ref(false); // Buscando en la BD local o Boostr
+const isSearching = ref(false);
 const showModal = ref(false);
-const previewData = ref(null);
+const isNewClient = ref(true);
 
 const recognizedPlate = ref(null);
-const vehicleInfo = ref(null); 
+const vehicleInfo = ref(null);
 const fileInput = ref(null);
 const errorMsg = ref(null);
 
-// Formateo de patente chilena: GK·SB·78
+const form = useForm({
+    plate: '',
+    brand: '',
+    model: '',
+    client_name: '',
+    client_rut: '',
+    client_email: '',
+    client_phone: '',
+});
+
 const formattedPlate = computed(() => {
     if (!recognizedPlate.value) return '';
     const clean = recognizedPlate.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
@@ -45,12 +54,22 @@ const handleConfirmIngreso = async (ppu) => {
 
     isSearching.value = true;
     errorMsg.value = null;
-    
+
     try {
         const response = await axios.post(route('receptions.preview'), {
             patente: finalPpu
         });
-        previewData.value = response.data;
+        const data = response.data;
+        isNewClient.value = data.is_new;
+
+        form.plate = data.vehicle?.plate || finalPpu;
+        form.brand = data.vehicle?.brand || '';
+        form.model = data.vehicle?.model || '';
+        form.client_name = data.client?.name || '';
+        form.client_rut = data.client?.rut || '';
+        form.client_email = data.client?.email || '';
+        form.client_phone = data.client?.phone || '';
+
         showModal.value = true;
     } catch (error) {
         errorMsg.value = "ERROR AL CONSULTAR DATOS.";
@@ -60,14 +79,10 @@ const handleConfirmIngreso = async (ppu) => {
 };
 
 const handleCreateOrder = () => {
-    if (!previewData.value) return;
-
-    router.post(route('receptions.store_order'), {
-        plate: previewData.value.vehicle.plate,
-        brand: previewData.value.vehicle.brand,
-        model: previewData.value.vehicle.model,
-        client_name: previewData.value.client.name,
-        client_rut: previewData.value.client.rut,
+    form.post(route('receptions.store_order'), {
+        onSuccess: () => {
+            showModal.value = false;
+        },
     });
 };
 
@@ -126,122 +141,172 @@ onUnmounted(() => {
 <template>
     <TallerLayout>
         <!-- Overlay de carga durante búsqueda en BD/API -->
-        <div v-if="isSearching" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div v-if="isSearching"
+            class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-4 bg-white p-8 rounded-3xl shadow-2xl">
                 <div class="w-12 h-12 border-4 border-[#F9A826]/20 border-t-[#F9A826] rounded-full animate-spin"></div>
                 <p class="text-slate-800 font-bold uppercase tracking-widest text-sm">Buscando en base de datos...</p>
             </div>
         </div>
 
-        <PpuScanner 
-            :recognized-ppu="formattedPlate || '---'"
-            :is-processing="isUploading || isAnalyzing"
-            :vehicle-info="vehicleInfo"
-            @confirm="handleConfirmIngreso"
-            @retry="triggerCamera"
-        />
+        <PpuScanner :recognized-ppu="formattedPlate || '---'" :is-processing="isUploading || isAnalyzing"
+            :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso" @retry="triggerCamera" />
 
-        <!-- MODAL DE VISTA PREVIA (Estilo Dark Taller) -->
+        <!-- MODAL DE VISTA PREVIA EDITABLE (Estilo Premium Glassmorphic Light) -->
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <!-- Background opacity -->
-            <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="showModal = false"></div>
-            
-            <!-- Contenedor del Modal -->
-            <div class="relative w-full max-w-lg bg-panel-bg border border-white/10 rounded-[2.5rem] shadow-[0_32px_64px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in duration-300">
-                
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                @click="showModal = false"></div>
+
+            <div
+                class="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white/95 backdrop-blur-2xl border border-white rounded-[2.5rem] shadow-[0_32px_64px_rgba(0,0,0,0.1)] overflow-x-hidden animate-in zoom-in duration-300">
+
                 <!-- Encabezado -->
-                <div class="p-8 border-b border-white/5">
-                    <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-2xl font-black text-text-main tracking-tight uppercase">Vista Previa de Orden</h2>
-                        <button @click="showModal = false" class="text-white/40 hover:text-white">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+                <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
+                    <div class="flex flex-col gap-1">
+                        <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Orden de Trabajo</h2>
+                        <span v-if="isNewClient"
+                            class="w-fit bg-[#F9A826]/10 text-[#F9A826] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#F9A826]/20">
+                            Cliente Nuevo
+                        </span>
+                        <span v-else
+                            class="w-fit bg-emerald-100 text-emerald-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-emerald-200">
+                            Cliente Existente
+                        </span>
                     </div>
-                    
-                    <!-- Badge Dinámico -->
-                    <span 
-                        v-if="previewData?.is_new" 
-                        class="bg-tech-orange text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest"
-                    >
-                        Cliente Nuevo
-                    </span>
-                    <span 
-                        v-else 
-                        class="bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest"
-                    >
-                        Cliente Existente
-                    </span>
+                    <button @click="showModal = false"
+                        class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all border border-slate-100">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Detalle -->
-                <div class="p-8 space-y-8">
-                    <!-- Patente -->
-                    <div class="flex flex-col items-center py-4 bg-white/5 rounded-3xl border border-white/5">
-                        <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-2">Placa Única</p>
-                        <p class="text-5xl font-mono font-black text-tech-orange tracking-widest plate-font">
-                            {{ previewData?.vehicle.plate }}
+                <!-- Formulario Editable -->
+                <form @submit.prevent="handleCreateOrder" class="p-8 space-y-8">
+
+                    <!-- Patente (Display estilo placa real) -->
+                    <div
+                        class="flex flex-col items-center py-6 bg-slate-50/80 rounded-3xl border border-slate-100 shadow-inner">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2">Placa de
+                            Identificación</p>
+                        <p class="text-5xl font-mono font-black text-slate-800 tracking-widest plate-font">
+                            {{ form.plate }}
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Marca</p>
-                            <p class="text-xl font-bold text-text-main uppercase">{{ previewData?.vehicle.brand }}</p>
+                    <!-- Datos del Vehículo -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Información
+                                Técnica</p>
                         </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Modelo</p>
-                            <p class="text-xl font-bold text-text-main uppercase">{{ previewData?.vehicle.model }}</p>
-                        </div>
-                        <div class="col-span-2">
-                             <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Dueño / Cliente</p>
-                             <p class="text-xl font-bold text-text-main uppercase">{{ previewData?.client.name }}</p>
-                             <p class="text-sm font-medium text-text-muted mt-1">RUT: {{ previewData?.client.rut || 'N/A' }}</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label
+                                    class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Marca</label>
+                                <input v-model="form.brand" type="text"
+                                    class="w-full bg-white border border-slate-200 text-slate-800 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-[#F9A826]/30 focus:border-[#F9A826] uppercase transition-all shadow-sm"
+                                    placeholder="Ej: TOYOTA" />
+                                <p v-if="form.errors.brand" class="text-red-500 text-[10px] font-medium ml-1">{{
+                                    form.errors.brand }}</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label
+                                    class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Modelo</label>
+                                <input v-model="form.model" type="text"
+                                    class="w-full bg-white border border-slate-200 text-slate-800 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-[#F9A826]/30 focus:border-[#F9A826] uppercase transition-all shadow-sm"
+                                    placeholder="Ej: HILUX" />
+                                <p v-if="form.errors.model" class="text-red-500 text-[10px] font-medium ml-1">{{
+                                    form.errors.model }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Footer Acciones -->
-                <div class="p-6 bg-white/5 flex gap-4">
-                    <button 
-                        @click="showModal = false"
-                        class="flex-1 py-4 bg-gray-600 hover:bg-gray-700 text-white rounded-full font-bold transition-all active:scale-95"
-                    >
-                        CANCELAR
-                    </button>
-                    <button 
-                        @click="handleCreateOrder"
-                        class="flex-1 py-4 bg-tech-red hover:bg-red-700 text-white rounded-full font-black uppercase shadow-lg shadow-red-900/20 transition-all active:scale-95"
-                    >
-                        GENERAR ORDEN
-                    </button>
-                </div>
+                    <!-- Datos del Cliente -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Datos del
+                                Propietario</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">RUT</label>
+                                    <input v-model="form.client_rut" type="text"
+                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        placeholder="12.345.678-9" />
+                                    <p v-if="form.errors.client_rut" class="text-red-500 text-[10px] font-medium ml-1">
+                                        {{ form.errors.client_rut }}</p>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre
+                                        Completo</label>
+                                    <input v-model="form.client_name" type="text"
+                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 uppercase transition-all shadow-sm"
+                                        placeholder="JUAN PÉREZ" />
+                                    <p v-if="form.errors.client_name" class="text-red-500 text-[10px] font-medium ml-1">
+                                        {{ form.errors.client_name }}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                                    <input v-model="form.client_email" type="email"
+                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        placeholder="correo@ejemplo.cl" />
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Celular</label>
+                                    <input v-model="form.client_phone" type="tel"
+                                        class="w-full bg-white border border-slate-200 text-slate-700 text-base font-bold rounded-2xl px-5 py-4 placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+                                        placeholder="+56 9 1234 5678" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-50">
+                        <button type="button" @click="showModal = false"
+                            class="order-2 sm:order-1 flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full font-bold transition-all active:scale-95 text-sm">
+                            CANCELAR
+                        </button>
+                        <button type="submit" :disabled="form.processing"
+                            class="order-1 sm:order-2 flex-[2] py-4 bg-slate-800 hover:bg-black text-white rounded-full font-black uppercase shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-sm">
+                            <div v-if="form.processing"
+                                class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            {{ form.processing ? 'Procesando...' : 'Generar Orden Final' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- Input oculto para captura de cámara nativa del dispositivo -->
-        <input 
-            type="file" 
-            accept="image/*" 
-            capture="environment" 
-            ref="fileInput" 
-            class="hidden" 
-            @change="handleImageUpload" 
-        />
-        
+        <input type="file" accept="image/*" capture="environment" ref="fileInput" class="hidden"
+            @change="handleImageUpload" />
+
         <!-- Toast para Error de Lectura -->
-        <div v-if="errorMsg" class="fixed top-24 left-1/2 -translate-x-1/2 bg-tech-red/90 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold shadow-2xl z-50 animate-in fade-in slide-in-from-top-10">
+        <div v-if="errorMsg"
+            class="fixed top-24 left-1/2 -translate-x-1/2 bg-[#E61919] text-white px-8 py-4 rounded-full font-bold shadow-2xl z-50">
             {{ errorMsg }}
         </div>
     </TallerLayout>
 </template>
 
 <style scoped>
-/* Tipografía FE-Schrift (Similar a Patentes Chilenas) */
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&display=swap');
 
 .plate-font {
-    font-family: 'Archivo Narrow', sans-serif; /* Usamos Archivo Narrow como fallback similar */
+    font-family: 'Archivo Narrow', sans-serif;
     letter-spacing: -0.05em;
-    transform: scaleX(0.9); /* Condensamos ligeramente para igualar el estilo chileno */
+    transform: scaleX(0.9);
 }
 </style>

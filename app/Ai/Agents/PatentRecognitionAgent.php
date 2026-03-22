@@ -14,7 +14,7 @@ class PatentRecognitionAgent implements Agent, HasStructuredOutput
 
     public function instructions(): Stringable|string
     {
-        return <<<INST
+        return <<<'INST'
             Eres un experto en OCR y vehículos chilenos.
             
             TAREAS:

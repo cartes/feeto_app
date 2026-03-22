@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -6,7 +7,6 @@ namespace App\Events;
 use App\Models\WorkOrder;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -17,6 +17,7 @@ class WorkOrderDraftCreated implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public WorkOrder $workOrder;
+
     public int $tenantId;
 
     /**
@@ -32,13 +33,13 @@ class WorkOrderDraftCreated implements ShouldBroadcastNow
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
         // Emitir a los trabajadores del taller (Usamos tenant para aislar evento)
         return [
-            new Channel('tenant.' . $this->tenantId . '.work-orders'),
+            new Channel('tenant.'.$this->tenantId.'.work-orders'),
         ];
     }
 }

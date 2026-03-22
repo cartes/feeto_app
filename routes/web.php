@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -30,17 +32,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Nueva Recepción
-    Route::get('/receptions/create', [\App\Http\Controllers\ReceptionController::class, 'create'])->name('receptions.create');
-    Route::post('/receptions', [\App\Http\Controllers\ReceptionController::class, 'store'])->name('receptions.store');
-    Route::post('/receptions/preview', [\App\Http\Controllers\ReceptionController::class, 'preview'])->name('receptions.preview');
-    Route::post('/receptions/store-order', [\App\Http\Controllers\ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
+    Route::get('/receptions/create', [ReceptionController::class, 'create'])->name('receptions.create');
+    Route::post('/receptions', [ReceptionController::class, 'store'])->name('receptions.store');
+    Route::post('/receptions/preview', [ReceptionController::class, 'preview'])->name('receptions.preview');
+    Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
 
     // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
     Route::post('/ocr/process', [OcrController::class, 'process'])->name('ocr.process');
 
     // Work Orders / Kanban
-    Route::get('/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'index'])->name('work-orders.index');
-    Route::put('/work-orders/{workOrder}/status', [\App\Http\Controllers\WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
 
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

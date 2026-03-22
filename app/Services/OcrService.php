@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -12,8 +13,7 @@ class OcrService
 {
     public function __construct(
         protected PatentRecognitionAgent $agent
-    ) {
-    }
+    ) {}
 
     public function processImage(string $imagePath): array
     {
@@ -26,8 +26,8 @@ class OcrService
             );
 
             $rawPlate = $response['plate'] ?? null;
-            
-            if (!$rawPlate) {
+
+            if (! $rawPlate) {
                 return $this->failureResponse($imagePath);
             }
 
@@ -46,11 +46,12 @@ class OcrService
                 'confidence' => (float) ($response['confidence'] ?? 0),
             ];
         } catch (\Throwable $e) {
-            Log::error("OCR error: " . $e->getMessage());
+            Log::error('OCR error: '.$e->getMessage());
             $this->cleanup($imagePath);
+
             return [
-                'error' => 'Error: ' . $e->getMessage(),
-                'valid' => false
+                'error' => 'Error: '.$e->getMessage(),
+                'valid' => false,
             ];
         }
     }
@@ -65,15 +66,17 @@ class OcrService
     private function failureResponse(string $path): array
     {
         $this->cleanup($path);
+
         return [
             'error' => 'No se detectó el vehículo.',
-            'valid' => false
+            'valid' => false,
         ];
     }
 
     public function cleanPlate(string $plate): string
     {
         $clean = preg_replace('/[^A-Z0-9]/i', '', strtoupper($plate));
+
         return str_replace(['O', 'I'], ['0', '1'], $clean);
     }
 
@@ -85,6 +88,7 @@ class OcrService
         if (preg_match('/^[A-Z]{2}\d{4}$/', $ppu)) {
             return ['valid' => true, 'type' => 'antigua', 'plate' => $ppu];
         }
+
         return ['valid' => false, 'type' => null, 'plate' => $ppu];
     }
 }

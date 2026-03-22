@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Traits;
@@ -12,7 +13,8 @@ trait TenantAware
 {
     protected static function bootTenantAware(): void
     {
-        static::addGlobalScope('tenant', new class implements Scope {
+        static::addGlobalScope('tenant', new class implements Scope
+        {
             public function apply(Builder $builder, Model $model): void
             {
                 if (Tenant::checkCurrent()) {
@@ -22,7 +24,7 @@ trait TenantAware
         });
 
         static::creating(function (Model $model): void {
-            if (Tenant::checkCurrent() && !isset($model->tenant_id)) {
+            if (Tenant::checkCurrent() && ! isset($model->tenant_id)) {
                 $model->tenant_id = Tenant::current()->id;
             }
         });

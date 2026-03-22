@@ -1,18 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Laravel\Ai\Files\Image;
 use App\Ai\Agents\PatentReaderAgent;
-use App\Services\BoostrService;
+use App\Events\PatentRecognized;
 use App\Models\Client;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
-use App\Events\WorkOrderDraftCreated;
-use App\Events\PatentRecognized;
+use App\Services\BoostrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Ai\Files\Image;
+use Spatie\Multitenancy\Models\Tenant;
 
 class ReceptionController extends Controller
 {
@@ -22,7 +23,7 @@ class ReceptionController extends Controller
     public function create()
     {
         return inertia('Reception/Create', [
-            'tenantId' => app(\Spatie\Multitenancy\Models\Tenant::class)->current() ? app(\Spatie\Multitenancy\Models\Tenant::class)->current()->id : null
+            'tenantId' => app(Tenant::class)->current() ? app(Tenant::class)->current()->id : null,
         ]);
     }
 
@@ -37,7 +38,7 @@ class ReceptionController extends Controller
 
         // 1. Recibir imagen nativa de la cámara
         $imagePath = $request->file('image')->store('reception/temp', 'public');
-        $image = Image::fromPath(storage_path('app/public/' . $imagePath));
+        $image = Image::fromPath(storage_path('app/public/'.$imagePath));
 
         // 2. Procesamiento Asíncrono con el AI SDK
         $agent->queue('Extrae la patente chilena', attachments: [$image])
@@ -50,22 +51,23 @@ class ReceptionController extends Controller
                 // Heurística para errores comunes de OCR en Chile
                 $patenteLimpia = str_replace(['O', 'I'], ['0', '1'], $patenteLimpia);
 
-                if (!preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
+                if (! preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
                     broadcast(new PatentRecognized('ERROR_FORMATO', ''));
+
                     return;
                 }
 
                 // B. Obtención de datos del vehículo (Priorizamos la IA sobre el mockup si falla Boostr)
                 $vehicleData = $boostr->getVehicleData($patenteLimpia);
-    
-                if (!$vehicleData) {
+
+                if (! $vehicleData) {
                     // Si Boostr falla o no hay API key, usamos lo que detectó la IA el paso anterior
                     $vehicleData = [
                         'rut_dueno' => 'PROVISORIO',
                         'nombre_dueno' => 'CLIENTE NUEVO (SIN API)',
                         'marca' => $response['marca'] ?? 'GENÉRICO',
                         'modelo' => $response['modelo'] ?? 'GENÉRICO',
-                        'vin' => null
+                        'vin' => null,
                     ];
                 }
 
@@ -81,10 +83,10 @@ class ReceptionController extends Controller
                         'client_id' => $client->id,
                         'brand' => $vehicleData['marca'],
                         'model' => $vehicleData['modelo'],
-                        'vin' => $vehicleData['vin'] ?? null
+                        'vin' => $vehicleData['vin'] ?? null,
                     ]
                 );
-                
+
                 // D. Emitir el evento para que el frontend del que escanea no se quede pensando
                 broadcast(new PatentRecognized($patenteLimpia, '', [
                     'brand' => $vehicleData['marca'] ?? 'N/A',
@@ -95,7 +97,7 @@ class ReceptionController extends Controller
                 ]));
             })
             ->catch(function (\Throwable $e) {
-                Log::error('Fallo en OCR: ' . $e->getMessage());
+                Log::error('Fallo en OCR: '.$e->getMessage());
                 broadcast(new PatentRecognized('ERROR_FORMATO', ''));
             });
 
@@ -114,12 +116,18 @@ class ReceptionController extends Controller
             'model' => 'required|string',
             'client_name' => 'required|string',
             'client_rut' => 'required|string',
+            'client_email' => 'nullable|email',
+            'client_phone' => 'nullable|string',
         ]);
 
         // Aseguramos que el cliente exista/se actualice
         $client = Client::updateOrCreate(
             ['rut' => $request->client_rut],
-            ['name' => $request->client_name]
+            array_filter([
+                'name' => $request->client_name,
+                'email' => $request->client_email,
+                'phone' => $request->client_phone,
+            ])
         );
 
         // Aseguramos que el vehículo exista/se actualice
@@ -136,18 +144,19 @@ class ReceptionController extends Controller
         $workOrder = WorkOrder::create([
             'vehicle_id' => $vehicle->id,
             'status' => 'recepcion',
-            'observations' => 'Creada vía Modal de Recepción Digital'
+            'observations' => 'Creada vía Modal de Recepción Digital',
         ]);
 
         return redirect()->route('work-orders.index')->with('success', 'Orden creada exitosamente');
     }
+
     /**
      * Vista previa de la orden antes de guardar.
      */
     public function preview(Request $request, BoostrService $boostr)
     {
         $request->validate(['patente' => 'required|string']);
-        
+
         // Limpiamos la patente por si acaso
         $patenteRaw = $request->patente;
         $patente = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $patenteRaw));
@@ -167,28 +176,28 @@ class ReceptionController extends Controller
                 'client' => [
                     'name' => $vehicle->client->name,
                     'rut' => $vehicle->client->rut,
-                ]
+                ],
             ]);
         }
 
         // 2. Si es nuevo, consultamos a Boostr (API externa)
         $vehicleData = $boostr->getVehicleData($patente);
 
-        if (!$vehicleData) {
+        if (! $vehicleData) {
             // Si Boostr también falla, devolvemos un objeto vacío para que el frontend pida llenado manual
             return response()->json([
                 'is_new' => true,
                 'not_found' => true,
                 'vehicle' => [
-                    'plate' => $patente, 
-                    'brand' => 'NO IDENTIFICADO', 
+                    'plate' => $patente,
+                    'brand' => 'NO IDENTIFICADO',
                     'model' => 'NO IDENTIFICADO',
-                    'vin' => 'N/A'
+                    'vin' => 'N/A',
                 ],
                 'client' => [
-                    'name' => 'CLIENTE NUEVO', 
-                    'rut' => ''
-                ]
+                    'name' => 'CLIENTE NUEVO',
+                    'rut' => '',
+                ],
             ]);
         }
 
@@ -203,7 +212,7 @@ class ReceptionController extends Controller
             'client' => [
                 'name' => $vehicleData['nombre_dueno'] ?? 'SIN DATO',
                 'rut' => $vehicleData['rut_dueno'] ?? 'SIN DATO',
-            ]
+            ],
         ]);
     }
 }

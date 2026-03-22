@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Ai\Agents;
@@ -11,6 +12,7 @@ use Laravel\Ai\Promptable;
 class PatentReaderAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
+
     /**
      * Define the instructions for the agent.
      */

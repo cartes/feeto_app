@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tenant;
 use App\Models\User;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Crear un Tenant para localhost
-        \App\Models\Tenant::create([
+        Tenant::create([
             'name' => 'Taller Local',
             'domain' => 'localhost',
             'rut_taller' => '11.111.111-1',
@@ -24,7 +25,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Crear un Tenant de prueba (necesario para el multi-tenancy)
-        \App\Models\Tenant::create([
+        Tenant::create([
             'name' => 'Taller de Prueba',
             'domain' => 'prueba.feeto.test',
             'rut_taller' => '12.345.678-9',

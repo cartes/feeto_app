@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
@@ -6,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Models\WorkOrder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 use Spatie\Multitenancy\Models\Tenant;
 
 class WorkOrderController extends Controller

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -29,8 +30,8 @@ class Tenant extends SpatieTenant
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active'          => 'boolean',
-        'billing_api_key'    => 'encrypted',
+        'is_active' => 'boolean',
+        'billing_api_key' => 'encrypted',
         'whatsapp_api_token' => 'encrypted',
     ];
 }

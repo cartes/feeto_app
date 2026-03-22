@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit;
@@ -14,7 +15,7 @@ class OcrServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Mock the Agent since we only want to test the cleaning/validation logic here
         $agent = $this->createMock(PatentRecognitionAgent::class);
         $this->service = new OcrService($agent);

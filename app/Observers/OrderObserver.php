@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Observers;
@@ -16,7 +17,7 @@ class OrderObserver
         if ($order->isDirty('status') && $order->status === 'invoiced') {
             foreach ($order->items as $item) {
                 $product = $item->product;
-                
+
                 // Only decrement if it was pending (already reserved)
                 if ($order->getOriginal('status') === 'pending') {
                     $product->decrement('physical_stock', $item->quantity);
