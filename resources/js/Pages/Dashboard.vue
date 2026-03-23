@@ -1,8 +1,53 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
-</script>
+import { ref, onMounted, onUnmounted } from 'vue';
 
+const { props } = usePage();
+const recentActivities = ref([]);
+
+const getStatusLabel = (status) => {
+    const labels = {
+        'recepcion': 'Recepción',
+        'diagnostico': 'En Diagnóstico',
+        'esperando_repuestos': 'Faltan Repuestos',
+        'listo': 'Listo'
+    };
+    return labels[status] || status;
+};
+
+onMounted(() => {
+    if (props.auth.user && props.auth.user.tenant_id) {
+        window.Echo.private(`taller.${props.auth.user.tenant_id}`)
+            .listen('WorkOrderStatusUpdated', (e) => {
+                recentActivities.value.unshift({
+                    id: Date.now(),
+                    message: `El vehículo patente ${e.plate} pasó de '${getStatusLabel(e.old_status)}' a '${getStatusLabel(e.new_status)}'`,
+                    vehicle: e.vehicle,
+                    timestamp: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }),
+                    isNew: true
+                });
+
+                // Limitar a los últimos 5
+                if (recentActivities.value.length > 5) {
+                    recentActivities.value.pop();
+                }
+
+                // Quitar el estado "nuevo" después de unos segundos para la animación
+                setTimeout(() => {
+                    const activity = recentActivities.value.find(a => a.id === Date.now());
+                    if (activity) activity.isNew = false;
+                }, 5000);
+            });
+    }
+});
+
+onUnmounted(() => {
+    if (props.auth.user && props.auth.user.tenant_id) {
+        window.Echo.leave(`taller.${props.auth.user.tenant_id}`);
+    }
+});
+</script>
 <template>
 
     <Head title="Centro de Comando" />
@@ -111,13 +156,39 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-white/40 backdrop-blur-sm border border-gray-100 rounded-[2rem] p-8 shadow-sm">
                     <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Actividad</h3>
-                        <span
-                            class="text-[10px] font-bold text-tech-orange bg-tech-orange/10 px-2 py-0.5 rounded-full">Hoy</span>
+                        <div class="flex items-center gap-3">
+                            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Actividad en Tiempo Real</h3>
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tech-orange opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-tech-orange"></span>
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-bold text-tech-orange bg-tech-orange/10 px-2 py-0.5 rounded-full">En Vivo</span>
                     </div>
-                    <div class="flex flex-col items-center justify-center py-12 text-center">
-                        <p class="text-gray-400 font-semibold text-xs uppercase tracking-tight">Monitoreando tráfico en
-                            tiempo real</p>
+
+                    <div v-if="recentActivities.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
+                        <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-400 font-semibold text-xs uppercase tracking-tight">Esperando actualizaciones del tablero...</p>
+                    </div>
+
+                    <div v-else class="space-y-4">
+                        <div v-for="activity in recentActivities" :key="activity.id" 
+                            class="p-4 rounded-2xl border transition-all duration-500"
+                            :class="[
+                                activity.isNew ? 'bg-[#F9A826]/10 border-[#F9A826]/20 scale-[1.02] shadow-sm' : 'bg-white border-gray-50'
+                            ]">
+                            <div class="flex justify-between items-start gap-4">
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-gray-900 leading-snug">{{ activity.message }}</p>
+                                    <p class="text-[10px] font-medium text-gray-400 mt-1 uppercase">{{ activity.vehicle }}</p>
+                                </div>
+                                <span class="text-[10px] font-mono font-bold text-gray-400 tabular-nums">{{ activity.timestamp }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

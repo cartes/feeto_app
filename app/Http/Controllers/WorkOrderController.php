@@ -42,7 +42,15 @@ class WorkOrderController extends Controller
             'status' => 'required|in:recepcion,diagnostico,esperando_repuestos,listo',
         ]);
 
+        $oldStatus = $workOrder->status;
         $workOrder->update(['status' => $validated['status']]);
+
+        // Disparamos el evento para tiempo real
+        broadcast(new \App\Events\WorkOrderStatusUpdated(
+            $workOrder->load('vehicle'),
+            $oldStatus,
+            $validated['status']
+        ))->toOthers();
 
         // Retornamos hacia atrás (Inertia re-renderizará la vista sin recargar)
         return back();

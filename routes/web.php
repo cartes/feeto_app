@@ -16,6 +16,9 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+// Tracking de Orden de Trabajo (Público)
+Route::get('/ot/{uuid}', [\App\Http\Controllers\TrackingController::class, 'show'])->name('tracking.show');
+
 // Landing page pública del taller (para agendamiento de citas)
 Route::get('/taller/{domain}', function (string $domain) {
     return Inertia::render('Public/TallerLanding', ['domain' => $domain]);
@@ -45,15 +48,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
 
     // Inventory
-    Route::inertia('/inventory', 'Inventory/Index')->name('inventory.index');
+    Route::resource('inventory', \App\Http\Controllers\InventoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['inventory' => 'product']);
 
     // Clients
-    Route::inertia('/clients', 'Clients/Index')->name('clients.index');
-
+    Route::resource('clients', \App\Http\Controllers\ClientController::class)->only(['index', 'show']);
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
