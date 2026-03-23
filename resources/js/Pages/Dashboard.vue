@@ -3,8 +3,23 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const { props } = usePage();
-const recentActivities = ref([]);
+const props = defineProps({
+    initialActivities: {
+        type: Array,
+        default: () => []
+    }
+});
+
+const DISMISSED_KEY = 'dismissed_activities';
+
+const getDismissed = () => JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
+
+const recentActivities = ref(
+    props.initialActivities.filter(a => {
+        const uniqueId = `${a.work_order_id}-${a.new_status}`;
+        return !getDismissed().includes(uniqueId);
+    })
+);
 
 const getStatusLabel = (status) => {
     const labels = {
@@ -16,45 +31,41 @@ const getStatusLabel = (status) => {
     return labels[status] || status;
 };
 
-onMounted(() => {
-    if (props.auth.user && props.auth.user.tenant_id) {
-        const tenantChannel = `taller.${props.auth.user.tenant_id}`;
-        console.log('[Echo] Suscribiendo Dashboard a:', tenantChannel);
-        
-        window.Echo.private(tenantChannel)
-            .listen('.WorkOrderStatusUpdated', (e) => {
-                console.log('[Echo] Dashboard recibió evento:', e);
-                
-                const newActivity = {
-                    id: Date.now() + Math.random(),
-                    message: `El vehículo patente ${e.plate} pasó de '${getStatusLabel(e.old_status)}' a '${getStatusLabel(e.new_status)}'`,
-                    vehicle: e.vehicle,
-                    timestamp: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }),
-                    isNew: true
-                };
+const dismissActivity = (activity) => {
+    const uniqueId = `${activity.work_order_id}-${activity.new_status || activity.status}`;
 
-                recentActivities.value.unshift(newActivity);
-                console.log('[Echo] Actividades actualizadas:', recentActivities.value.length);
+    // 1. Filtrar de la vista actual
+    recentActivities.value = recentActivities.value.filter(
+        a => `${a.work_order_id}-${a.new_status || a.status}` !== uniqueId
+    );
 
-                // Limitar a los últimos 5
-                if (recentActivities.value.length > 5) {
-                    recentActivities.value.pop();
-                }
-
-                // Quitar el estado "nuevo" después de unos segundos
-                setTimeout(() => {
-                    newActivity.isNew = false;
-                }, 5000);
-            });
+    // 2. Guardar en memoria del navegador
+    const dismissed = getDismissed();
+    if (!dismissed.includes(uniqueId)) {
+        dismissed.push(uniqueId);
+        localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
     }
+};
+
+onMounted(() => {
+    const tenantId = usePage().props.auth.user.tenant_id;
+
+    console.log(`[Echo] Suscribiendo Dashboard a: taller.${tenantId}`);
+
+    window.Echo.private(`taller.${tenantId}`)
+        .listen('.kanban.updated', (e) => {
+            console.log('Insertando actividad en la pantalla:', e);
+            // IMPORTANTE: Solo agregamos el evento al array, NO recargamos la página
+            recentActivities.value.unshift(e);
+        });
 });
 
 onUnmounted(() => {
-    if (props.auth.user && props.auth.user.tenant_id) {
-        window.Echo.leave(`taller.${props.auth.user.tenant_id}`);
-    }
+    const tenantId = usePage().props.auth.user.tenant_id;
+    window.Echo.leave(`taller.${tenantId}`);
 });
 </script>
+
 <template>
 
     <Head title="Centro de Comando" />
@@ -80,17 +91,17 @@ onUnmounted(() => {
                 </div>
                 <div class="hidden md:block text-right">
                     <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[0.2em] mb-1">Cronología</p>
-                    <p class="text-sm font-semibold text-gray-600 tabular-nums">{{ new
-                        Date().toLocaleDateString('es-CL', {
-                            weekday: 'long', day: 'numeric', month: 'long', year:
-                                'numeric'
-                        }) }}</p>
+                    <p class="text-sm font-semibold text-gray-600 tabular-nums">
+                        {{ new Date().toLocaleDateString('es-CL', {
+                            weekday: 'long', day: 'numeric', month: 'long',
+                            year: 'numeric'
+                        }) }}
+                    </p>
                 </div>
             </div>
 
             <!-- Grid de Accesos (Estilo Técnico High-End) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
                 <!-- 1. NUEVA RECEPCIÓN -->
                 <Link :href="route('receptions.create')"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
@@ -128,7 +139,7 @@ onUnmounted(() => {
                 </Link>
 
                 <!-- 3. INVENTARIO -->
-                <Link href="#"
+                <Link :href="route('inventory.index')"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"
@@ -143,7 +154,7 @@ onUnmounted(() => {
                 </Link>
 
                 <!-- 4. CLIENTES -->
-                <Link href="#"
+                <Link :href="route('clients.index')"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"
@@ -156,68 +167,76 @@ onUnmounted(() => {
                     <span class="text-xl font-black text-gray-900 tracking-tight uppercase leading-tight">Gestión
                         de<br />Clientes</span>
                 </Link>
-
             </div>
 
-            <!-- Sección Inferior: Reportes y Alertas Rápidas -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white/40 backdrop-blur-sm border border-gray-100 rounded-[2rem] p-8 shadow-sm">
-                    <div class="flex items-center justify-between mb-8">
-                        <div class="flex items-center gap-3">
-                            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Actividad en Tiempo Real</h3>
-                            <span class="flex h-2 w-2 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tech-orange opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-tech-orange"></span>
-                            </span>
-                        </div>
-                        <span class="text-[10px] font-bold text-tech-orange bg-tech-orange/10 px-2 py-0.5 rounded-full">En Vivo</span>
+            <!-- Sección Inferior: Reportes y Actividad en Tiempo Real -->
+            <div class="bg-white/40 backdrop-blur-sm border border-gray-100 rounded-[2rem] p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Actividad en Tiempo
+                            Real</h3>
+                        <span class="flex h-2 w-2 relative">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                        </span>
                     </div>
+                    <span class="text-[10px] font-bold text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">En
+                        Vivo</span>
+                </div>
 
-                    <div v-if="recentActivities.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
-                        <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <p class="text-gray-400 font-semibold text-xs uppercase tracking-tight">Esperando actualizaciones del tablero...</p>
+                <!-- ESTADO VACÍO: Solo se muestra si el array está en cero -->
+                <div v-if="recentActivities.length === 0"
+                    class="flex flex-col items-center justify-center py-12 text-center">
+                    <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
+                    <p class="text-gray-400 font-semibold text-xs uppercase tracking-tight">Esperando actualizaciones
+                        del tablero...</p>
+                </div>
 
-                    <div v-else class="space-y-4">
-                        <div v-for="activity in recentActivities" :key="activity.id" 
-                            class="p-4 rounded-2xl border transition-all duration-500"
-                            :class="[
-                                activity.isNew ? 'bg-[#F9A826]/10 border-[#F9A826]/20 scale-[1.02] shadow-sm' : 'bg-white border-gray-50'
-                            ]">
-                            <div class="flex justify-between items-start gap-4">
-                                <div class="flex-1">
-                                    <p class="text-xs font-bold text-gray-900 leading-snug">{{ activity.message }}</p>
-                                    <p class="text-[10px] font-medium text-gray-400 mt-1 uppercase">{{ activity.vehicle }}</p>
-                                </div>
-                                <span class="text-[10px] font-mono font-bold text-gray-400 tabular-nums">{{ activity.timestamp }}</span>
+                <!-- LISTA DE ACTIVIDADES: Se dibuja sola cuando llega el WebSocket -->
+                <TransitionGroup tag="ul" enter-active-class="transition-all duration-300 ease-out"
+                    enter-from-class="opacity-0 -translate-x-4"
+                    leave-active-class="transition-all duration-300 ease-in absolute w-full"
+                    leave-to-class="opacity-0 scale-95" class="flex flex-col gap-3 relative">
+                    <li v-for="activity in recentActivities" :key="activity.work_order_id || activity.id"
+                        class="p-4 bg-white border border-gray-100 rounded-xl shadow-sm flex items-center justify-between transition-all duration-500">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-800">{{ activity.vehicle }} <span
+                                        class="text-gray-400 font-normal">({{ activity.plate }})</span></p>
+                                <p class="text-xs text-gray-500 mt-0.5">Estado actualizado a: <span
+                                        class="font-bold text-gray-800 uppercase">{{ getStatusLabel(activity.new_status
+                                        || activity.status) }}</span></p>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div
-                    class="bg-slate-900 rounded-[2rem] p-10 text-white relative overflow-hidden flex flex-col justify-end min-h-[240px] shadow-lg">
-                    <div class="absolute top-10 left-10">
-                        <div
-                            class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/10">
-                            <svg class="w-5 h-5 text-tech-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">AHORA</span>
+                            <button @click="dismissActivity(activity)"
+                                class="text-gray-300 hover:text-orange-500 transition-colors duration-200"
+                                title="Descartar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-bold leading-tight mb-1">Status: Premium</h4>
-                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Nodos operativos al 100%
-                        </p>
-                    </div>
-                    <!-- Decoración sutil -->
-                    <div class="absolute -right-16 -bottom-16 w-64 h-64 border border-white/5 rounded-full"></div>
-                </div>
+                    </li>
+                </TransitionGroup>
             </div>
         </div>
     </TallerLayout>

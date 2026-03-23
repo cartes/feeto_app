@@ -4,6 +4,7 @@ use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\WorkOrderController;
+use App\Models\WorkOrder;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,7 +32,22 @@ Route::get('/taller/{domain}', function (string $domain) {
 */
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        $initialActivities = WorkOrder::query()
+            ->with('vehicle')
+            ->latest('updated_at')
+            ->limit(5)
+            ->get()
+            ->map(fn($order) => [
+                'work_order_id' => $order->id,
+                'plate' => $order->vehicle->plate ?? 'N/A',
+                'vehicle' => ($order->vehicle->brand ?? '') . ' ' . ($order->vehicle->model ?? ''),
+                'new_status' => $order->status,
+                'timestamp' => $order->updated_at->toISOString(),
+            ]);
+
+        return Inertia::render('Dashboard', [
+            'initialActivities' => $initialActivities
+        ]);
     })->name('dashboard');
 
     // Nueva Recepción

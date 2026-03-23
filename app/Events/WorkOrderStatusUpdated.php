@@ -35,7 +35,7 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        Log::info('Broadcasting WorkOrderStatusUpdated on channel: taller.' . $this->workOrder->tenant_id);
+        Log::info('Broadcasting WorkOrderStatusUpdated on channel: taller.' . $this->workOrder->tenant_id . ' as kanban.updated');
         return [
             new PrivateChannel('taller.' . $this->workOrder->tenant_id),
         ];
@@ -46,7 +46,7 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
      */
     public function broadcastAs(): string
     {
-        return 'WorkOrderStatusUpdated';
+        return 'kanban.updated';
     }
 
     /**

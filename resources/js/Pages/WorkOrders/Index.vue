@@ -79,8 +79,8 @@ onMounted(() => {
 
         // También escuchamos cambios de estado para que el Kanban se actualice entre usuarios
         window.Echo.private(`taller.${props.tenantId}`)
-            .listen('.WorkOrderStatusUpdated', (e) => {
-                console.log('[Echo] Cambio de estado recibido:', e);
+            .listen('.kanban.updated', (e) => {
+                console.log('[Echo] Cambio de estado recibido (kanban.updated):', e);
                 // Aquí podrías implementar la lógica para mover el card en el Kanban si es necesario
                 // Por ahora solo logueamos para confirmar conexión
             });
