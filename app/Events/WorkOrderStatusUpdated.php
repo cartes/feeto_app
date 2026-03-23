@@ -12,6 +12,8 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+use Illuminate\Support\Facades\Log;
+
 class WorkOrderStatusUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -33,9 +35,18 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
+        Log::info('Broadcasting WorkOrderStatusUpdated on channel: taller.' . $this->workOrder->tenant_id);
         return [
             new PrivateChannel('taller.' . $this->workOrder->tenant_id),
         ];
+    }
+
+    /**
+     * The event's broadcast name.
+     */
+    public function broadcastAs(): string
+    {
+        return 'WorkOrderStatusUpdated';
     }
 
     /**

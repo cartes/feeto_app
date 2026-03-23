@@ -8,5 +8,16 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('taller.{tenantId}', function ($user, $tenantId) {
     // Verificamos que el usuario pertenezca al taller (tenant) solicitado
-    return (int) $user->tenant_id === (int) $tenantId;
+    if (app()->bound('currentTenant')) {
+        return (string) app('currentTenant')->id === (string) $tenantId;
+    }
+    return false;
+});
+
+Broadcast::channel('tenant.{tenantId}.work-orders', function ($user, $tenantId) {
+    // Verificamos que el usuario pertenezca al taller (tenant) solicitado (usado en Kanban)
+    if (app()->bound('currentTenant')) {
+        return (string) app('currentTenant')->id === (string) $tenantId;
+    }
+    return false;
 });

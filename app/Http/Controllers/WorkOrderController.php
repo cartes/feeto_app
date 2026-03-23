@@ -8,6 +8,7 @@ use App\Models\WorkOrder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Multitenancy\Models\Tenant;
+use Illuminate\Support\Facades\Log;
 
 class WorkOrderController extends Controller
 {
@@ -46,11 +47,17 @@ class WorkOrderController extends Controller
         $workOrder->update(['status' => $validated['status']]);
 
         // Disparamos el evento para tiempo real
+        Log::info('Dispatching WorkOrderStatusUpdated', [
+            'work_order_id' => $workOrder->id,
+            'tenant_id' => $workOrder->tenant_id,
+            'new_status' => $validated['status']
+        ]);
+
         broadcast(new \App\Events\WorkOrderStatusUpdated(
             $workOrder->load('vehicle'),
             $oldStatus,
             $validated['status']
-        ))->toOthers();
+        ));
 
         // Retornamos hacia atrás (Inertia re-renderizará la vista sin recargar)
         return back();

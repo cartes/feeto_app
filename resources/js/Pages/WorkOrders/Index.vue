@@ -54,8 +54,11 @@ const onDrop = (columnId) => {
 // Implementación WebSockets Reverb (Actualización en tiempo real)
 onMounted(() => {
     if (window.Echo) {
+        console.log('[Echo] Suscribiendo Kanban a:', `tenant.${props.tenantId}.work-orders`);
+        
         window.Echo.private(`tenant.${props.tenantId}.work-orders`)
             .listen('WorkOrderDraftCreated', (e) => {
+                console.log('[Echo] Nueva OT recibida:', e);
                 const newOrder = e.workOrder;
                 // Agregamos una propiedad temporal para la animación visual
                 newOrder.isNew = true;
@@ -73,12 +76,21 @@ onMounted(() => {
                     newOrder.isNew = false;
                 }, 5000);
             });
+
+        // También escuchamos cambios de estado para que el Kanban se actualice entre usuarios
+        window.Echo.private(`taller.${props.tenantId}`)
+            .listen('.WorkOrderStatusUpdated', (e) => {
+                console.log('[Echo] Cambio de estado recibido:', e);
+                // Aquí podrías implementar la lógica para mover el card en el Kanban si es necesario
+                // Por ahora solo logueamos para confirmar conexión
+            });
     }
 });
 
 onUnmounted(() => {
     if (window.Echo) {
-        window.Echo.leave(`private-tenant.${props.tenantId}.work-orders`);
+        window.Echo.leave(`tenant.${props.tenantId}.work-orders`);
+        window.Echo.leave(`taller.${props.tenantId}`);
     }
 });
 </script>

@@ -18,25 +18,32 @@ const getStatusLabel = (status) => {
 
 onMounted(() => {
     if (props.auth.user && props.auth.user.tenant_id) {
-        window.Echo.private(`taller.${props.auth.user.tenant_id}`)
-            .listen('WorkOrderStatusUpdated', (e) => {
-                recentActivities.value.unshift({
-                    id: Date.now(),
+        const tenantChannel = `taller.${props.auth.user.tenant_id}`;
+        console.log('[Echo] Suscribiendo Dashboard a:', tenantChannel);
+        
+        window.Echo.private(tenantChannel)
+            .listen('.WorkOrderStatusUpdated', (e) => {
+                console.log('[Echo] Dashboard recibió evento:', e);
+                
+                const newActivity = {
+                    id: Date.now() + Math.random(),
                     message: `El vehículo patente ${e.plate} pasó de '${getStatusLabel(e.old_status)}' a '${getStatusLabel(e.new_status)}'`,
                     vehicle: e.vehicle,
                     timestamp: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }),
                     isNew: true
-                });
+                };
+
+                recentActivities.value.unshift(newActivity);
+                console.log('[Echo] Actividades actualizadas:', recentActivities.value.length);
 
                 // Limitar a los últimos 5
                 if (recentActivities.value.length > 5) {
                     recentActivities.value.pop();
                 }
 
-                // Quitar el estado "nuevo" después de unos segundos para la animación
+                // Quitar el estado "nuevo" después de unos segundos
                 setTimeout(() => {
-                    const activity = recentActivities.value.find(a => a.id === Date.now());
-                    if (activity) activity.isNew = false;
+                    newActivity.isNew = false;
                 }, 5000);
             });
     }
