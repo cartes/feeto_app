@@ -16,7 +16,7 @@ class TrackingController extends Controller
     public function show(string $uuid): Response
     {
         $workOrder = WorkOrder::withoutGlobalScope('tenant')
-            ->with(['vehicle', 'vehicle.client'])
+            ->with(['vehicle', 'vehicle.client', 'items'])
             ->where('uuid', $uuid)
             ->firstOrFail();
 

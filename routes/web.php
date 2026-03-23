@@ -4,6 +4,7 @@ use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\Api\WorkOrderModalController;
 use App\Models\WorkOrder;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -61,7 +62,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Work Orders / Kanban
     Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('/work-orders/{workOrder}', [WorkOrderController::class, 'show'])->name('work-orders.show');
     Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
+    Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])->name('work-orders.items.store');
+    Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])->name('work-orders.items.destroy');
+
+    // API Modals
+    Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
+    Route::post('/api/work-orders/{id}/images', [WorkOrderModalController::class, 'uploadImage'])->name('api.work-orders.images.upload');
+    Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
 
     // Inventory
     Route::resource('inventory', \App\Http\Controllers\InventoryController::class)
@@ -70,10 +79,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Clients
     Route::resource('clients', \App\Http\Controllers\ClientController::class)->only(['index', 'show']);
-    // Perfil
+    // Link de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Proxy para servir archivos de storage (bypass symlink & auth con aislamiento de tenant)
+Route::get('/media/{path}', function ($path) {
+    if (!\Spatie\Multitenancy\Models\Tenant::current()) {
+        abort(403, 'Tenant no identificado.');
+    }
+
+    $tenantId = \Spatie\Multitenancy\Models\Tenant::current()->id;
+    $tenantPrefix = "tenants/{$tenantId}/";
+
+    // Seguridad: Bloqueamos el acceso si el path solicitado no pertenece al tenant actual
+    if (!str_starts_with($path, $tenantPrefix)) {
+        abort(403, 'Acceso denegado a archivos de otros talleres.');
+    }
+
+    $fullPath = storage_path('app/public/' . $path);
+
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+
+    return response()->file($fullPath);
+})->where('path', '.*')->name('storage.serve');
 
 require __DIR__ . '/auth.php';
