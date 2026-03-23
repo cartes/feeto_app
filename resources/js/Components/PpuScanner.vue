@@ -16,7 +16,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['confirm', 'retry']);
+const emit = defineEmits(['confirm', 'retry', 'manual']);
 
 const handleConfirm = () => {
     emit('confirm', props.recognizedPpu);
@@ -129,6 +129,12 @@ const hasValidPlate = computed(() => {
                         Reintentar foto
                     </button>
                 </template>
+
+                <!-- Opción de ingreso manual (Siempre visible como secundario) -->
+                <button @click="$emit('manual')" :disabled="isProcessing"
+                    class="w-full mt-2 py-2 text-slate-400 hover:text-[#F9A826] text-[11px] font-bold uppercase transition-colors tracking-widest border-t border-slate-50 pt-4">
+                    ¿No puedes escanear? Ingresar manualmente
+                </button>
             </div>
 
         </div>

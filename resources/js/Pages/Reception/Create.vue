@@ -7,6 +7,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
 const tenantId = page.props.tenantId;
+const planType = page.props.planType;
 
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
@@ -45,24 +46,24 @@ const triggerCamera = () => {
     fileInput.value.click();
 };
 
-const handleConfirmIngreso = async (ppu) => {
-    const finalPpu = ppu || recognizedPlate.value;
-    if (!finalPpu || finalPpu === '---') {
-        errorMsg.value = "CAPTURE UNA PATENTE PRIMERO";
-        return;
-    }
+const handleManualEntry = () => {
+    form.reset();
+    form.plate = '';
+    showModal.value = true;
+};
 
+const fetchVehicleData = async (ppu) => {
     isSearching.value = true;
     errorMsg.value = null;
 
     try {
         const response = await axios.post(route('receptions.preview'), {
-            patente: finalPpu
+            patente: ppu
         });
         const data = response.data;
         isNewClient.value = data.is_new;
 
-        form.plate = data.vehicle?.plate || finalPpu;
+        form.plate = data.vehicle?.plate || ppu;
         form.brand = data.vehicle?.brand || '';
         form.model = data.vehicle?.model || '';
         form.client_name = data.client?.name || '';
@@ -70,13 +71,31 @@ const handleConfirmIngreso = async (ppu) => {
         form.client_email = data.client?.email || '';
         form.client_phone = data.client?.phone || '';
 
-        showModal.value = true;
+        return true;
     } catch (error) {
         errorMsg.value = "ERROR AL CONSULTAR DATOS.";
+        return false;
     } finally {
         isSearching.value = false;
     }
 };
+
+const handleConfirmIngreso = async (ppu) => {
+    const finalPpu = ppu || recognizedPlate.value;
+    if (!finalPpu || finalPpu === '---') {
+        errorMsg.value = "CAPTURE O INGRESE UNA PATENTE";
+        return;
+    }
+    const success = await fetchVehicleData(finalPpu);
+    if (success) showModal.value = true;
+};
+
+// Autosearch when 6 characters reached in manual input
+watch(() => form.plate, (newVal) => {
+    if (showModal.value && newVal && newVal.length === 6 && !isSearching.value) {
+        fetchVehicleData(newVal);
+    }
+});
 
 const handleCreateOrder = () => {
     form.post(route('receptions.store_order'), {
@@ -149,8 +168,46 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <PpuScanner :recognized-ppu="formattedPlate || '---'" :is-processing="isUploading || isAnalyzing"
-            :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso" @retry="triggerCamera" />
+        <!-- CASO PRO: Escáner de Patente IA -->
+        <PpuScanner v-if="planType !== 'freemium'" :recognized-ppu="formattedPlate || '---'"
+            :is-processing="isUploading || isAnalyzing" :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso"
+            @retry="triggerCamera" @manual="handleManualEntry" />
+
+        <!-- CASO FREEMIUM: Ingreso Manual Directo -->
+        <div v-else class="w-full flex flex-col items-center py-6 px-4">
+            <div
+                class="w-full max-w-lg bg-white/80 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-[#F9A826]/10 rounded-3xl flex items-center justify-center mb-8 rotate-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#F9A826]" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+
+                <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight uppercase">
+                    Recepción <br> <span class="text-slate-400">Manual</span>
+                </h1>
+                <p class="text-slate-500 font-medium text-sm mb-10 leading-relaxed max-w-xs">
+                    Inicia un nuevo registro de ingreso ingresando la patente del vehículo.
+                </p>
+
+                <button @click="handleManualEntry"
+                    class="group w-full py-6 bg-[#F9A826] text-white rounded-3xl text-lg font-black uppercase shadow-[0_15px_30px_rgba(249,168,38,0.3)] hover:bg-[#E59A22] transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <span>Nueva Recepción</span>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </button>
+
+                <div class="mt-8 pt-6 border-t border-slate-50 w-full flex items-center justify-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Plan Freemium</p>
+                </div>
+            </div>
+        </div>
 
         <!-- MODAL DE VISTA PREVIA EDITABLE (Estilo Taller-Friendly & Light Theme) -->
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -185,14 +242,14 @@ onUnmounted(() => {
                 <!-- Formulario Editable -->
                 <form @submit.prevent="handleCreateOrder" class="p-6 lg:p-8 space-y-8">
 
-                    <!-- Patente (Display estilo placa real) -->
+                    <!-- Patente (Editable) -->
                     <div
-                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner">
+                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner group transition-all focus-within:ring-2 focus-within:ring-[#F9A826]/20">
                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Placa de
                             Identificación</p>
-                        <p class="text-5xl font-mono font-black text-gray-900 tracking-widest plate-font">
-                            {{ form.plate }}
-                        </p>
+                        <input v-model="form.plate" type="text"
+                            class="w-full text-center bg-transparent border-none focus:ring-0 text-5xl font-mono font-black text-gray-900 tracking-widest plate-font uppercase placeholder-gray-200"
+                            placeholder="AAAA11" maxlength="6" />
                     </div>
 
                     <!-- Datos del Vehículo -->

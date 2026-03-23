@@ -20,10 +20,11 @@ class ReceptionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Inertia\Response
     {
         return inertia('Reception/Create', [
             'tenantId' => app(Tenant::class)->current() ? app(Tenant::class)->current()->id : null,
+            'planType' => app(Tenant::class)->current() ? app(Tenant::class)->current()->plan_type : 'freemium',
         ]);
     }
 

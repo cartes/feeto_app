@@ -44,6 +44,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
     Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
 
+    // Inventory
+    Route::inertia('/inventory', 'Inventory/Index')->name('inventory.index');
+
+    // Clients
+    Route::inertia('/clients', 'Clients/Index')->name('clients.index');
+
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
