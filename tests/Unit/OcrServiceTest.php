@@ -47,7 +47,7 @@ class OcrServiceTest extends TestCase
         // Valid modern
         $result = $method->invoke($this->service, 'BCDF12');
         $this->assertTrue($result['valid']);
-        $this->assertEquals('modern', $result['type']);
+        $this->assertEquals('moderna', $result['type']);
 
         // Invalid modern (contains vowel) - The user regex [BCDFGHJKLPRSTVWXYZ] correctly excludes vowels
         $result = $method->invoke($this->service, 'AEIO12');
@@ -66,7 +66,7 @@ class OcrServiceTest extends TestCase
         // Valid old
         $result = $method->invoke($this->service, 'AB1234');
         $this->assertTrue($result['valid']);
-        $this->assertEquals('old', $result['type']);
+        $this->assertEquals('antigua', $result['type']);
 
         // Invalid old (wrong format)
         $result = $method->invoke($this->service, 'ABC123');

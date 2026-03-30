@@ -37,8 +37,13 @@ class WorkOrderModalController extends Controller
         $workOrder = WorkOrder::findOrFail($id);
 
         if ($request->hasFile('image')) {
-            $tenantId = \Spatie\Multitenancy\Models\Tenant::current()->id;
-            $path = $request->file('image')->store("tenants/{$tenantId}/work_orders/imagenes", 'public');
+            $tenant = \Spatie\Multitenancy\Models\Tenant::current();
+
+            if (!$tenant) {
+                return response()->json(['message' => 'Tenant no identificado.'], 403);
+            }
+
+            $path = $request->file('image')->store("tenants/{$tenant->id}/work_orders/imagenes", 'public');
 
             $image = $workOrder->images()->create([
                 'image_path' => $path,

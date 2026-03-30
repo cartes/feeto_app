@@ -5,10 +5,17 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Traits\CreatesTenant;
 
 class ProfileTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTenant;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpTenant();
+    }
 
     public function test_profile_page_is_displayed(): void
     {

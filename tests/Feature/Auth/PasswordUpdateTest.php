@@ -6,10 +6,17 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use Tests\Traits\CreatesTenant;
 
 class PasswordUpdateTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesTenant;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpTenant();
+    }
 
     public function test_password_can_be_updated(): void
     {

@@ -99,6 +99,11 @@ Route::get('/media/{path}', function ($path) {
         abort(403, 'Acceso denegado a archivos de otros talleres.');
     }
 
+    // Prevención de Directory Traversal
+    if (str_contains($path, '..')) {
+        abort(400, 'Ruta inválida.');
+    }
+
     $fullPath = storage_path('app/public/' . $path);
 
     if (!file_exists($fullPath)) {
