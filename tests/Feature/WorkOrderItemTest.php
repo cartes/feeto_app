@@ -18,11 +18,13 @@ class WorkOrderItemTest extends TestCase
 
     private function createPrerequisites(): array
     {
-        $tenant = Tenant::create([
-            'name'       => 'Taller Test',
-            'domain'     => 'test.feeto.test',
-            'rut_taller' => '12345678-9',
-        ]);
+        $tenant = Tenant::firstOrCreate(
+            ['rut_taller' => '12345678-9'],
+            [
+                'name'       => 'Taller Test',
+                'domain'     => 'test.feeto.test',
+            ]
+        );
 
         $tenant->makeCurrent();
 
