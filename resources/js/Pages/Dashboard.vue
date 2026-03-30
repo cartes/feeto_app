@@ -50,11 +50,8 @@ const dismissActivity = (activity) => {
 onMounted(() => {
     const tenantId = usePage().props.auth.user.tenant_id;
 
-    console.log(`[Echo] Suscribiendo Dashboard a: taller.${tenantId}`);
-
     window.Echo.private(`taller.${tenantId}`)
         .listen('.kanban.updated', (e) => {
-            console.log('Insertando actividad en la pantalla:', e);
             // IMPORTANTE: Solo agregamos el evento al array, NO recargamos la página
             recentActivities.value.unshift(e);
         });
