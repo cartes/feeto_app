@@ -71,6 +71,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
     Route::post('/api/work-orders/{id}/images', [WorkOrderModalController::class, 'uploadImage'])->name('api.work-orders.images.upload');
     Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
+    
+    Route::post('/api/work-orders/{workOrder}/items', [\App\Http\Controllers\Api\WorkOrderItemController::class, 'store'])->name('api.work-orders.items.store');
+    Route::delete('/api/work-orders/{workOrder}/items/{item}', [\App\Http\Controllers\Api\WorkOrderItemController::class, 'destroy'])->name('api.work-orders.items.destroy');
+    
+    Route::get('/api/products', [\App\Http\Controllers\Api\ProductController::class, 'index'])->name('api.products.index');
 
     // Inventory
     Route::resource('inventory', \App\Http\Controllers\InventoryController::class)

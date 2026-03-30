@@ -18,10 +18,29 @@ const activeTab = ref('budget'); // 'budget' or 'evidence'
 
 // Form for adding items
 const itemForm = ref({
-    description: '',
-    quantity: 1,
-    unit_price: 0
+    product_id: '',
+    quantity: 1
 });
+
+const availableProducts = ref([]);
+const isSearching = ref(false);
+
+const searchProducts = async (query) => {
+    if (query.length < 2) {
+        availableProducts.value = [];
+        return;
+    }
+    
+    isSearching.value = true;
+    try {
+        const response = await axios.get(route('api.products.index'), { params: { q: query } });
+        availableProducts.value = response.data;
+    } catch (error) {
+        console.error('Error searching products:', error);
+    } finally {
+        isSearching.value = false;
+    }
+};
 
 const openModal = async (orderId) => {
     isModalOpen.value = true;
@@ -43,17 +62,37 @@ const closeModal = () => {
     selectedWorkOrder.value = null;
 };
 
-const addItem = () => {
-    if (!selectedWorkOrder.value) return;
+const addItem = async () => {
+    if (!selectedWorkOrder.value || !itemForm.value.product_id) return;
 
-    router.post(route('work-orders.items.store', selectedWorkOrder.value.id), itemForm.value, {
-        preserveScroll: true,
-        onSuccess: () => {
-            // Refresh modal data
-            openModal(selectedWorkOrder.value.id);
-            itemForm.value = { description: '', quantity: 1, unit_price: 0 };
+    try {
+        await axios.post(route('api.work-orders.items.store', selectedWorkOrder.value.id), itemForm.value);
+        // Refresh modal data
+        openModal(selectedWorkOrder.value.id);
+        itemForm.value = { product_id: '', quantity: 1 };
+        availableProducts.value = [];
+    } catch (error) {
+        if (error.response?.status === 422) {
+            alert(error.response.data.message || 'Error de validación');
+        } else {
+            console.error('Error adding item:', error);
         }
-    });
+    }
+};
+
+const removeItem = async (itemId) => {
+    if (!confirm('¿Estás seguro de quitar este ítem? se devolverá el stock al inventario.')) return;
+
+    try {
+        await axios.delete(route('api.work-orders.items.destroy', { 
+            workOrder: selectedWorkOrder.value.id, 
+            item: itemId 
+        }));
+        // Refresh modal data
+        openModal(selectedWorkOrder.value.id);
+    } catch (error) {
+        console.error('Error removing item:', error);
+    }
 };
 
 const uploadPhoto = async (event) => {
@@ -347,12 +386,19 @@ onUnmounted(() => {
                                                             <td class="py-4 font-semibold text-slate-700">{{ item.description }}</td>
                                                             <td class="py-4 text-center text-slate-500 font-mono">{{ item.quantity }}</td>
                                                             <td class="py-4 text-right text-slate-500 font-mono">{{ formatCurrency(item.unit_price) }}</td>
-                                                            <td class="py-4 text-right font-bold text-slate-800 font-mono">{{ formatCurrency(item.total_price) }}</td>
+                                                            <td class="py-4 text-right font-bold text-slate-800 font-mono">
+                                                                <div class="flex items-center justify-end gap-3">
+                                                                    {{ formatCurrency(item.total_price) }}
+                                                                    <button @click="removeItem(item.id)" class="p-1.5 text-red-400 hover:text-red-600 transition-colors">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     </tbody>
                                                     <tfoot>
                                                         <tr class="border-t-2 border-slate-200">
-                                                            <td colspan="3" class="pt-4 text-right text-xs font-black uppercase text-slate-400">Total</td>
+                                                            <td colspan="3" class="pt-4 text-right text-xs font-black uppercase text-slate-400">Total OT</td>
                                                             <td class="pt-4 text-right text-xl font-black text-slate-900 font-mono">{{ formatCurrency(selectedWorkOrder.total_amount) }}</td>
                                                         </tr>
                                                     </tfoot>
@@ -361,21 +407,29 @@ onUnmounted(() => {
 
                                             <!-- Add Item Form -->
                                             <div class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-6">
-                                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Añadir Ítem</h4>
-                                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                                    <div class="md:col-span-2">
-                                                        <input v-model="itemForm.description" type="text" placeholder="Descripción" class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#F9A826]" />
+                                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">Asignar Repuestos (Stock Activo)</h4>
+                                                <div class="flex flex-col md:flex-row gap-4 items-end">
+                                                    <div class="flex-1 w-full relative">
+                                                        <p class="text-[8px] font-bold text-slate-400 uppercase mb-1 ml-2">Buscar Producto</p>
+                                                        <select v-model="itemForm.product_id" class="w-full bg-slate-50 border-none rounded-xl text-xs font-bold py-3.5 focus:ring-2 focus:ring-[#F9A826] appearance-none cursor-pointer">
+                                                            <option value="" disabled>Seleccionar repuesto...</option>
+                                                            <option v-for="product in availableProducts" :key="product.id" :value="product.id">
+                                                                {{ product.name }} (Stock: {{ product.physical_stock }}) — {{ formatCurrency(product.selling_price) }}
+                                                            </option>
+                                                        </select>
+                                                        <!-- Botón de carga simple si no hay productos cargados -->
+                                                        <button v-if="availableProducts.length === 0" @click="searchProducts('')" class="absolute right-3 top-[26px] text-orange-500 text-[10px] font-black uppercase hover:underline">
+                                                            Cargar Todos
+                                                        </button>
                                                     </div>
-                                                    <div>
-                                                        <input v-model.number="itemForm.quantity" type="number" placeholder="Cant" class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#F9A826]" />
+                                                    <div class="w-full md:w-32">
+                                                        <p class="text-[8px] font-bold text-slate-400 uppercase mb-1 ml-2">Cant.</p>
+                                                        <input v-model.number="itemForm.quantity" type="number" min="1" class="w-full bg-slate-50 border-none rounded-xl text-xs font-mono font-bold py-3.5 focus:ring-2 focus:ring-[#F9A826]" />
                                                     </div>
-                                                    <div>
-                                                        <input v-model.number="itemForm.unit_price" type="number" placeholder="Precio" class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#F9A826]" />
-                                                    </div>
+                                                    <button @click="addItem" class="w-full md:w-auto bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-8 py-4 rounded-xl hover:bg-[#F9A826] transition-all shadow-lg active:scale-95 whitespace-nowrap">
+                                                        Agregar Item
+                                                    </button>
                                                 </div>
-                                                <button @click="addItem" class="mt-4 w-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] py-4 rounded-xl hover:bg-[#F9A826] transition-colors shadow-lg shadow-slate-200">
-                                                    Añadir al Presupuesto
-                                                </button>
                                             </div>
                                         </div>
 
