@@ -22,6 +22,9 @@ class Tenant extends SpatieTenant
         'max_users',
         'billing_api_key',
         'whatsapp_api_token',
+        'plan',
+        'status',
+        'subscription_ends_at',
     ];
 
     /**
@@ -33,5 +36,11 @@ class Tenant extends SpatieTenant
         'is_active' => 'boolean',
         'billing_api_key' => 'encrypted',
         'whatsapp_api_token' => 'encrypted',
+        'subscription_ends_at' => 'datetime',
     ];
+
+    public function users(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 }

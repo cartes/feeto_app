@@ -48,17 +48,29 @@ const navItems = [
                 </Link>
             </nav>
 
-            <div class="p-6">
-                 <div class="bg-white/80 p-4 rounded-[1.5rem] flex items-center gap-3 shadow-sm border border-white">
+            <div class="p-6 flex flex-col gap-3">
+                 <div class="bg-white/80 p-3 rounded-[1.5rem] flex items-center gap-3 shadow-sm border border-white">
                     <img 
                         :src="`https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=F9A826&color=fff`" 
                         class="w-10 h-10 rounded-full"
                     />
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-slate-800 truncate">{{ user?.name || 'Usuario' }}</p>
-                        <p class="text-xs text-slate-400 truncate">{{ user?.email }}</p>
+                        <p class="text-[10px] text-slate-400 truncate">{{ user?.email }}</p>
                     </div>
                  </div>
+                 
+                 <Link 
+                     :href="route('logout')" 
+                     method="post" 
+                     as="button" 
+                     class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-[1.25rem] transition-colors w-full text-center border border-transparent hover:border-red-100"
+                 >
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                     </svg>
+                     Cerrar Sesión
+                 </Link>
             </div>
         </aside>
 
@@ -95,12 +107,20 @@ const navItems = [
                     </div>
                 </div>
 
-                <!-- Botón Derecha -->
-                <button class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                </button>
+                <!-- Botones Derecha -->
+                <div class="flex items-center gap-2">
+                    <button class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </button>
+                    <!-- Logout Solo Mobile -->
+                    <Link :href="route('logout')" method="post" as="button" class="lg:hidden w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-shadow text-rose-500 hover:text-rose-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </Link>
+                </div>
             </header>
 
             <!-- MAIN CONTENT AREA -->

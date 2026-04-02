@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\Api\WorkOrderModalController;
+use App\Http\Controllers\Admin\TenantController;
+use App\Http\Controllers\Admin\UserController;
 use App\Models\WorkOrder;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -84,11 +86,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Clients
     Route::resource('clients', \App\Http\Controllers\ClientController::class)->only(['index', 'show']);
+
+    // Appointments & Smart Reception
+    Route::get('/appointments', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('/api/appointments/scan-plate', [\App\Http\Controllers\Api\SmartReceptionController::class, 'scanPlate'])->name('api.appointments.scan-plate');
     // Link de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Admin Route Group without NeedsTenant middleware
+Route::middleware(['auth', 'verified', \App\Http\Middleware\IsSuperAdmin::class])
+    ->withoutMiddleware([\Spatie\Multitenancy\Http\Middleware\NeedsTenant::class])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('Admin/Dashboard', [
+                'totalTenants' => App\Models\Tenant::count(),
+                'activeUsers' => App\Models\User::count(),
+                'expiredSubscriptions' => App\Models\Tenant::where('subscription_ends_at', '<', now())->count(),
+            ]);
+        })->name('dashboard');
+
+        Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
+        Route::put('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
+        
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    });
 
 // Proxy para servir archivos de storage (bypass symlink & auth con aislamiento de tenant)
 Route::get('/media/{path}', function ($path) {
