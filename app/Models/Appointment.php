@@ -18,9 +18,12 @@ class Appointment extends Model
         'client_id',
         'vehicle_id',
         'plate',
+        'customer_name',
+        'phone',
         'appointment_date',
         'status',
         'notes',
+        'pre_check_notes',
     ];
 
     /** @var array<string, string> */

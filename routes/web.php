@@ -23,10 +23,9 @@ Route::get('/', function () {
 // Tracking de Orden de Trabajo (Público)
 Route::get('/ot/{uuid}', [\App\Http\Controllers\TrackingController::class, 'show'])->name('tracking.show');
 
-// Landing page pública del taller (para agendamiento de citas)
-Route::get('/taller/{domain}', function (string $domain) {
-    return Inertia::render('Public/TallerLanding', ['domain' => $domain]);
-})->name('taller.landing');
+// Landing page pública del taller — embudo de conversión con Pre-Check ALPR
+Route::get('/taller/{tenant}', [\App\Http\Controllers\PublicBookingController::class, 'show'])->name('taller.landing');
+Route::post('/taller/{tenant}/booking', [\App\Http\Controllers\PublicBookingController::class, 'store'])->name('taller.booking.store');
 
 /*
 |--------------------------------------------------------------------------
