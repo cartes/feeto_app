@@ -111,6 +111,9 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\IsSuperAdmin::class]
         })->name('dashboard');
 
         Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
+        Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit');
+        Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
+        Route::put('/tenants/{tenant}/admin', [TenantController::class, 'updateAdmin'])->name('tenants.update_admin');
         Route::put('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
         
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

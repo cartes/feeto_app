@@ -81,7 +81,7 @@ const toggleStatus = (tenant) => {
                                         <button @click="toggleStatus(tenant)" :class="[tenant.status === 'active' ? 'text-amber-600 hover:text-amber-900' : 'text-emerald-600 hover:text-emerald-900', 'mr-4 font-semibold']">
                                             {{ tenant.status === 'active' ? 'Suspender' : 'Activar' }}
                                         </button>
-                                        <a href="#" class="text-slate-600 hover:text-slate-900 font-semibold">Editar</a>
+                                        <Link :href="route('admin.tenants.edit', tenant.id)" class="text-slate-600 hover:text-slate-900 font-semibold">Editar</Link>
                                     </td>
                                 </tr>
                                 <tr v-if="tenants.length === 0">
