@@ -14,8 +14,9 @@ trait CreatesTenant
         $tenant = Tenant::firstOrCreate(
             ['rut_taller' => '12345678-9'],
             [
-                'name'       => 'Taller Test',
-                'domain'     => 'test.feeto.test',
+                'name' => 'Taller Test',
+                'slug' => 'taller-test',
+                'domain' => 'test.feeto.test',
             ]
         );
 

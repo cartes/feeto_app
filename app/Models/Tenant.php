@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 
 class Tenant extends SpatieTenant
@@ -15,6 +17,7 @@ class Tenant extends SpatieTenant
      */
     protected $fillable = [
         'name',
+        'slug',
         'domain',
         'rut_taller',
         'is_active',
@@ -39,7 +42,35 @@ class Tenant extends SpatieTenant
         'subscription_ends_at' => 'datetime',
     ];
 
-    public function users(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** Genera slug automáticamente al crear si no se provee. */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $tenant) {
+            if (empty($tenant->slug)) {
+                $tenant->slug = static::generateUniqueSlug($tenant->name);
+            }
+        });
+    }
+
+    /**
+     * Genera un slug único basado en el nombre del taller.
+     */
+    public static function generateUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $slug = $base;
+        $counter = 2;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$counter++;
+        }
+
+        return $slug;
+    }
+
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }

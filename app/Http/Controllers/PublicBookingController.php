@@ -13,20 +13,21 @@ use Inertia\Response;
 
 class PublicBookingController extends Controller
 {
-    public function show(Tenant $tenant): Response
+    public function show(Tenant $tenantBySlug): Response
     {
         return Inertia::render('Public/TenantLanding', [
             'tenant' => [
-                'id' => $tenant->id,
-                'name' => $tenant->name,
-                'domain' => $tenant->domain,
-                'rut_taller' => $tenant->rut_taller,
-                'plan' => $tenant->plan,
+                'id' => $tenantBySlug->id,
+                'name' => $tenantBySlug->name,
+                'slug' => $tenantBySlug->slug,
+                'domain' => $tenantBySlug->domain,
+                'rut_taller' => $tenantBySlug->rut_taller,
+                'plan' => $tenantBySlug->plan,
             ],
         ]);
     }
 
-    public function store(Request $request, Tenant $tenant): RedirectResponse
+    public function store(Request $request, Tenant $tenantBySlug): RedirectResponse
     {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
@@ -37,7 +38,7 @@ class PublicBookingController extends Controller
         ]);
 
         Appointment::create([
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $tenantBySlug->id,
             'plate' => strtoupper($validated['plate']),
             'customer_name' => $validated['customer_name'],
             'phone' => $validated['phone'],

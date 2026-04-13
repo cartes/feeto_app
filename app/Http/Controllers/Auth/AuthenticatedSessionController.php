@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,24 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        /** @var User $user */
+        $user = Auth::user();
+
+        // Superadmin → panel de administración
+        if ($user->is_super_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Usuario de taller → dashboard de su taller por slug
+        if ($user->tenant_id) {
+            $user->load('tenant');
+
+            if ($user->tenant && $user->tenant->slug) {
+                return redirect()->route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]);
+            }
+        }
+
+        // Fallback genérico
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
