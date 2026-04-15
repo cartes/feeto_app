@@ -3,6 +3,7 @@
 namespace Tests\Traits;
 
 use App\Models\Tenant;
+use Illuminate\Support\Facades\URL;
 
 trait CreatesTenant
 {
@@ -21,6 +22,7 @@ trait CreatesTenant
         );
 
         $tenant->makeCurrent();
+        URL::defaults(['tenantBySlug' => $tenant->slug]);
 
         return $tenant;
     }

@@ -10,6 +10,7 @@ const steps = [
     { id: 'recepcion', title: 'Recepción', description: 'Vehículo ingresado y registrado en el taller.' },
     { id: 'diagnostico', title: 'En Diagnóstico', description: 'Estamos evaluando el estado de tu vehículo.' },
     { id: 'esperando_repuestos', title: 'Esperando Repuestos', description: 'Buscando y esperando las piezas necesarias.' },
+    { id: 'control_calidad', title: 'Control de Calidad', description: 'Estamos revisando el trabajo terminado antes de la entrega.' },
     { id: 'listo', title: 'Listo para Entrega', description: 'Tu vehículo está listo para ser retirado.' }
 ];
 

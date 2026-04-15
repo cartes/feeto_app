@@ -23,9 +23,11 @@ use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
+use App\Http\Middleware\SetTenantRouteDefaults;
 use App\Models\Tenant;
-use App\Models\WorkOrder;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
@@ -58,77 +60,101 @@ Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, '
 | Rutas Privadas — Administración del taller (requieren autenticación)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', NeedsTenant::class])->group(function () {
-    Route::get('/dashboard', function () {
-        $initialActivities = WorkOrder::query()
-            ->with('vehicle')
-            ->latest('updated_at')
-            ->limit(5)
-            ->get()
-            ->map(fn ($order) => [
-                'work_order_id' => $order->id,
-                'plate' => $order->vehicle->plate ?? 'N/A',
-                'vehicle' => ($order->vehicle->brand ?? '').' '.($order->vehicle->model ?? ''),
-                'new_status' => $order->status,
-                'timestamp' => $order->updated_at->toISOString(),
-            ]);
+Route::get('/dashboard', function (Request $request): RedirectResponse {
+    $user = $request->user();
 
-        return Inertia::render('Dashboard', [
-            'initialActivities' => $initialActivities,
-        ]);
-    })->name('dashboard');
+    if ($user->is_super_admin) {
+        return redirect()->route('admin.dashboard');
+    }
 
-    // Nueva Recepción
-    Route::get('/receptions/create', [ReceptionController::class, 'create'])->name('receptions.create');
-    Route::post('/receptions', [ReceptionController::class, 'store'])
-        ->middleware('throttle:20,1')
-        ->name('receptions.store');
-    Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
-        ->middleware('throttle:30,1')
-        ->name('receptions.preview');
-    Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
+    if ($user->tenant) {
+        return redirect()->route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]);
+    }
 
-    // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
-    Route::post('/ocr/process', [OcrController::class, 'process'])
-        ->middleware('throttle:20,1')
-        ->name('ocr.process');
+    abort(403, 'Este usuario no tiene un taller asignado.');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-    // Work Orders / Kanban
-    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
-    Route::get('/work-orders/{workOrder}', [WorkOrderController::class, 'show'])->name('work-orders.show');
-    Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
-    Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])->name('work-orders.items.store');
-    Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])->name('work-orders.items.destroy');
+Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefaults::class])
+    ->prefix('/taller/{tenantBySlug}')
+    ->group(function () {
+        Route::get('/dashboard', TallerDashboardController::class)->name('taller.dashboard');
 
-    // API Modals
-    Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
-    Route::post('/api/work-orders/{id}/images', [WorkOrderModalController::class, 'uploadImage'])->name('api.work-orders.images.upload');
-    Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
+        // Nueva Recepción
+        Route::get('/receptions/create', [ReceptionController::class, 'create'])->name('receptions.create');
+        Route::post('/receptions', [ReceptionController::class, 'store'])
+            ->middleware('throttle:20,1')
+            ->name('receptions.store');
+        Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
+            ->middleware('throttle:30,1')
+            ->name('receptions.preview');
+        Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
 
-    Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])->name('api.work-orders.items.store');
-    Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])->name('api.work-orders.items.destroy');
+        // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
+        Route::post('/ocr/process', [OcrController::class, 'process'])
+            ->middleware('throttle:20,1')
+            ->name('ocr.process');
 
-    Route::get('/api/products', [ProductController::class, 'index'])->name('api.products.index');
+        // Work Orders / Kanban
+        Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
+        Route::get('/work-orders/{workOrder}', [WorkOrderController::class, 'show'])->name('work-orders.show');
+        Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
+        Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])->name('work-orders.items.store');
+        Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])->name('work-orders.items.destroy');
 
-    // Inventory
-    Route::resource('inventory', InventoryController::class)
-        ->only(['index', 'store', 'update', 'destroy'])
-        ->parameters(['inventory' => 'product']);
+        // API Modals
+        Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
+        Route::post('/api/work-orders/{id}/images', [WorkOrderModalController::class, 'uploadImage'])->name('api.work-orders.images.upload');
+        Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
 
-    // Clients
-    Route::resource('clients', ClientController::class)->only(['index', 'show']);
+        Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])->name('api.work-orders.items.store');
+        Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])->name('api.work-orders.items.destroy');
 
-    // Appointments & Smart Reception
-    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])->name('api.appointments.scan-plate');
-    // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::get('/api/products', [ProductController::class, 'index'])->name('api.products.index');
 
-    // Dashboard del taller accesible por slug (ruta principal post-login para usuarios de taller)
-    Route::get('/taller/{tenantBySlug}/dashboard', TallerDashboardController::class)->name('taller.dashboard');
-});
+        // Inventory
+        Route::resource('inventory', InventoryController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['inventory' => 'product']);
+
+        // Clients
+        Route::resource('clients', ClientController::class)->only(['index', 'show']);
+
+        // Appointments & Smart Reception
+        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])->name('api.appointments.scan-plate');
+
+        // Perfil
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        Route::get('/media/{path}', function (string $path) {
+            $user = auth()->user();
+            $tenant = Tenant::current();
+
+            if (! $tenant || $user->tenant_id !== $tenant->id) {
+                abort(403, 'No tienes acceso a estos archivos.');
+            }
+
+            $tenantPrefix = "tenants/{$tenant->id}/";
+
+            if (! str_starts_with($path, $tenantPrefix)) {
+                abort(403, 'Acceso denegado a archivos de otros talleres.');
+            }
+
+            if (str_contains($path, '..')) {
+                abort(400, 'Ruta inválida.');
+            }
+
+            $fullPath = storage_path('app/public/'.$path);
+
+            if (! file_exists($fullPath)) {
+                abort(404);
+            }
+
+            return response()->file($fullPath);
+        })->where('path', '.*')->name('storage.serve');
+    });
 
 // Admin Route Group without NeedsTenant middleware
 Route::middleware(['auth', 'verified', IsSuperAdmin::class])
@@ -172,39 +198,5 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
 Route::post('/webhooks/mercadopago', MercadoPagoWebhookController::class)
     ->name('admin.payments.webhook')
     ->withoutMiddleware([PreventRequestForgery::class]);
-
-// Proxy para servir archivos de storage (bypass symlink & auth con aislamiento de tenant)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/media/{path}', function ($path) {
-        $user = auth()->user();
-        $tenant = Spatie\Multitenancy\Models\Tenant::current();
-
-        // Verificar que el usuario pertenezca al tenant actual
-        if (! $tenant || $user->tenant_id !== $tenant->id) {
-            abort(403, 'No tienes acceso a estos archivos.');
-        }
-
-        $tenantId = $tenant->id;
-        $tenantPrefix = "tenants/{$tenantId}/";
-
-        // Seguridad: Bloqueamos el acceso si el path solicitado no pertenece al tenant actual
-        if (! str_starts_with($path, $tenantPrefix)) {
-            abort(403, 'Acceso denegado a archivos de otros talleres.');
-        }
-
-        // Prevención de Directory Traversal
-        if (str_contains($path, '..')) {
-            abort(400, 'Ruta inválida.');
-        }
-
-        $fullPath = storage_path('app/public/'.$path);
-
-        if (! file_exists($fullPath)) {
-            abort(404);
-        }
-
-        return response()->file($fullPath);
-    })->where('path', '.*')->name('storage.serve');
-});
 
 require __DIR__.'/auth.php';

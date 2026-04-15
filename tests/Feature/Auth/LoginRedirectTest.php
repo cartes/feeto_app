@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Http\Middleware\SetTenantRouteDefaults;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;
 
@@ -69,6 +72,32 @@ class LoginRedirectTest extends TestCase
         ]);
 
         $response->assertRedirect(route('dashboard'));
+    }
+
+    public function test_dashboard_shortcut_redirects_tenant_user_to_tenant_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => false,
+            'tenant_id' => $this->tenant->id,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('taller.dashboard', ['tenantBySlug' => $this->tenant->slug]));
+    }
+
+    public function test_tenant_route_defaults_include_current_tenant_slug(): void
+    {
+        $this->tenant->makeCurrent();
+
+        app(SetTenantRouteDefaults::class)->handle(Request::create('/'), function (): Response {
+            $this->assertSame(
+                "/taller/{$this->tenant->slug}/work-orders",
+                route('work-orders.index', absolute: false)
+            );
+
+            return response()->noContent();
+        });
     }
 
     public function test_login_with_invalid_credentials_fails(): void

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -29,13 +30,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $tenant = Tenant::current();
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user() ? array_merge($request->user()->toArray(), [
-                    'tenant_id' => app()->bound('currentTenant') ? app('currentTenant')->id : null,
+                    'tenant_id' => $tenant?->id,
                 ]) : null,
             ],
+            'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,
         ];
     }
 }

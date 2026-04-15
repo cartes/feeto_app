@@ -11,10 +11,13 @@ class ProfileTest extends TestCase
 {
     use CreatesTenant, RefreshDatabase;
 
+    private string $profileUrl;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpTenant();
+        $this->profileUrl = route('profile.edit', absolute: false);
     }
 
     public function test_profile_page_is_displayed(): void
@@ -23,7 +26,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get($this->profileUrl);
 
         $response->assertOk();
     }
@@ -34,14 +37,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch($this->profileUrl, [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->profileUrl);
 
         $user->refresh();
 
@@ -56,14 +59,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch($this->profileUrl, [
                 'name' => 'Test User',
                 'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->profileUrl);
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -74,7 +77,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete('/profile', [
+            ->delete($this->profileUrl, [
                 'password' => 'password',
             ]);
 
@@ -92,14 +95,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
+            ->from($this->profileUrl)
+            ->delete($this->profileUrl, [
                 'password' => 'wrong-password',
             ]);
 
         $response
             ->assertSessionHasErrors('password')
-            ->assertRedirect('/profile');
+            ->assertRedirect($this->profileUrl);
 
         $this->assertNotNull($user->fresh());
     }

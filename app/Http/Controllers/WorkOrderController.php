@@ -12,6 +12,7 @@ use App\Models\WorkOrderItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Multitenancy\Models\Tenant;
@@ -25,12 +26,9 @@ class WorkOrderController extends Controller
     {
         $orders = WorkOrder::with('vehicle.client')->get()->groupBy('status');
 
-        $kanban = [
-            'recepcion' => $orders->get('recepcion', []),
-            'diagnostico' => $orders->get('diagnostico', []),
-            'esperando_repuestos' => $orders->get('esperando_repuestos', []),
-            'listo' => $orders->get('listo', []),
-        ];
+        $kanban = collect(WorkOrder::statuses())
+            ->mapWithKeys(fn (string $status): array => [$status => $orders->get($status, [])])
+            ->all();
 
         return Inertia::render('WorkOrders/Index', [
             'kanban' => $kanban,
@@ -118,7 +116,7 @@ class WorkOrderController extends Controller
         $this->authorizeWorkOrderAccess($workOrder);
 
         $validated = $request->validate([
-            'status' => 'required|in:recepcion,diagnostico,esperando_repuestos,listo',
+            'status' => ['required', Rule::in(WorkOrder::statuses())],
         ]);
 
         $oldStatus = $workOrder->status;

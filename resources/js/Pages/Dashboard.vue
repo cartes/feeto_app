@@ -26,6 +26,7 @@ const getStatusLabel = (status) => {
         'recepcion': 'Recepción',
         'diagnostico': 'En Diagnóstico',
         'esperando_repuestos': 'Faltan Repuestos',
+        'control_calidad': 'Control de Calidad',
         'listo': 'Listo'
     };
     return labels[status] || status;

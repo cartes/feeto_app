@@ -13,6 +13,7 @@ const statusConfig = {
     recepcion:            { label: 'Recepción',        classes: 'bg-blue-50 text-blue-600 border-blue-100' },
     diagnostico:          { label: 'En Diagnóstico',   classes: 'bg-yellow-50 text-yellow-600 border-yellow-100' },
     esperando_repuestos:  { label: 'Faltan Repuestos', classes: 'bg-red-50 text-red-500 border-red-100' },
+    control_calidad:      { label: 'Control de Calidad', classes: 'bg-cyan-50 text-cyan-600 border-cyan-100' },
     listo:                { label: 'Listo',            classes: 'bg-green-50 text-green-600 border-green-100' },
 };
 

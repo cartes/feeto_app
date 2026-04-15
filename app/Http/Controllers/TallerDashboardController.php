@@ -12,22 +12,20 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    /**
-     * Muestra el dashboard del taller resolviendo el tenant por slug.
-     * Requiere que el usuario autenticado pertenezca al tenant solicitado.
-     */
-    public function __invoke(Request $request, Tenant $tenantBySlug): InertiaResponse|Response
+    public function __invoke(Request $request): InertiaResponse|Response
     {
+        $tenant = Tenant::current();
+
+        if (! $tenant) {
+            abort(404);
+        }
+
         /** @var User $user */
         $user = $request->user();
 
-        // Solo el superadmin o usuarios del mismo tenant pueden acceder
-        if (! $user->is_super_admin && $user->tenant_id !== $tenantBySlug->id) {
+        if (! $user->is_super_admin && $user->tenant_id !== $tenant->id) {
             abort(403, 'No tienes acceso a este taller.');
         }
-
-        // Establecer el tenant en contexto para que Spatie Multitenancy filtre correctamente
-        $tenantBySlug->makeCurrent();
 
         $initialActivities = WorkOrder::query()
             ->with('vehicle')
@@ -44,7 +42,7 @@ class TallerDashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'initialActivities' => $initialActivities,
-            'tenant' => $tenantBySlug->only('id', 'name', 'slug'),
+            'tenant' => $tenant->only('id', 'name', 'slug'),
         ]);
     }
 }

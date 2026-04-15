@@ -139,6 +139,7 @@ const columns = [
     { id: 'recepcion', title: 'Recepción', color: 'bg-orange-100/50' },
     { id: 'diagnostico', title: 'En Diagnóstico', color: 'bg-blue-100/50' },
     { id: 'esperando_repuestos', title: 'Esp. Repuestos', color: 'bg-yellow-100/50' },
+    { id: 'control_calidad', title: 'Control de Calidad', color: 'bg-cyan-100/50' },
     { id: 'listo', title: 'Listo para Entrega', color: 'bg-green-100/50' },
 ];
 

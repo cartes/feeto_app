@@ -15,6 +15,16 @@ class WorkOrder extends Model
 {
     use HasFactory, TenantAware;
 
+    public const STATUS_RECEPCION = 'recepcion';
+
+    public const STATUS_DIAGNOSTICO = 'diagnostico';
+
+    public const STATUS_ESPERANDO_REPUESTOS = 'esperando_repuestos';
+
+    public const STATUS_CONTROL_CALIDAD = 'control_calidad';
+
+    public const STATUS_LISTO = 'listo';
+
     protected $fillable = [
         'vehicle_id',
         'status',
@@ -52,5 +62,19 @@ class WorkOrder extends Model
     public function images(): HasMany
     {
         return $this->hasMany(WorkOrderImage::class);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_RECEPCION,
+            self::STATUS_DIAGNOSTICO,
+            self::STATUS_ESPERANDO_REPUESTOS,
+            self::STATUS_CONTROL_CALIDAD,
+            self::STATUS_LISTO,
+        ];
     }
 }

@@ -10,6 +10,7 @@ use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class WorkOrderItemTest extends TestCase
@@ -28,6 +29,7 @@ class WorkOrderItemTest extends TestCase
         );
 
         $tenant->makeCurrent();
+        URL::defaults(['tenantBySlug' => $tenant->slug]);
 
         $user = User::factory()->create(['tenant_id' => $tenant->id]);
 
@@ -66,7 +68,7 @@ class WorkOrderItemTest extends TestCase
     {
         ['user' => $user, 'workOrder' => $workOrder] = $this->createPrerequisites();
 
-        $response = $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
+        $response = $this->actingAs($user)->post(route('work-orders.items.store', ['workOrder' => $workOrder->id]), [
             'product_id' => null,
             'description' => 'Mano de obra diagnóstico',
             'quantity' => 1,
@@ -87,7 +89,7 @@ class WorkOrderItemTest extends TestCase
     {
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
-        $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
+        $this->actingAs($user)->post(route('work-orders.items.store', ['workOrder' => $workOrder->id]), [
             'product_id' => $product->id,
             'description' => $product->name,
             'quantity' => 3,
@@ -102,7 +104,7 @@ class WorkOrderItemTest extends TestCase
     {
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
-        $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
+        $this->actingAs($user)->post(route('work-orders.items.store', ['workOrder' => $workOrder->id]), [
             'product_id' => $product->id,
             'description' => $product->name,
             'quantity' => 3,
@@ -111,7 +113,10 @@ class WorkOrderItemTest extends TestCase
 
         $item = WorkOrderItem::first();
 
-        $this->actingAs($user)->delete(route('work-orders.items.destroy', [$workOrder->id, $item->id]));
+        $this->actingAs($user)->delete(route('work-orders.items.destroy', [
+            'workOrder' => $workOrder->id,
+            'item' => $item->id,
+        ]));
 
         $product->refresh();
         $this->assertEquals(10, $product->physical_stock); // Stock restored
