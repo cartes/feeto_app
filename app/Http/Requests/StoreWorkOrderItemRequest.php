@@ -19,10 +19,10 @@ class StoreWorkOrderItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id'  => ['nullable', 'integer', 'exists:products,id'],
+            'product_id' => ['nullable', 'integer', 'exists:products,id'],
             'description' => ['required', 'string', 'max:255'],
-            'quantity'    => ['required', 'integer', 'min:1'],
-            'unit_price'  => ['required', 'numeric', 'min:0'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'unit_price' => ['required', 'numeric', 'min:0'],
         ];
     }
 }

@@ -21,8 +21,8 @@ class WorkOrderItemTest extends TestCase
         $tenant = Tenant::firstOrCreate(
             ['rut_taller' => '12345678-9'],
             [
-                'name'       => 'Taller Test',
-                'domain'     => 'test.feeto.test',
+                'name' => 'Taller Test',
+                'domain' => 'test.feeto.test',
             ]
         );
 
@@ -31,31 +31,31 @@ class WorkOrderItemTest extends TestCase
         $user = User::factory()->create();
 
         $client = Client::create([
-            'name'      => 'Cliente Test',
-            'rut'       => '11111111-1',
-            'phone'     => '+56911111111',
-            'email'     => 'test@example.com',
+            'name' => 'Cliente Test',
+            'rut' => '11111111-1',
+            'phone' => '+56911111111',
+            'email' => 'test@example.com',
         ]);
 
         $vehicle = Vehicle::create([
             'client_id' => $client->id,
-            'plate'     => 'TEST01',
-            'brand'     => 'Toyota',
-            'model'     => 'Corolla',
+            'plate' => 'TEST01',
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
         ]);
 
         $workOrder = WorkOrder::create([
             'vehicle_id' => $vehicle->id,
-            'status'     => 'recepcion',
+            'status' => 'recepcion',
         ]);
 
         $product = Product::create([
-            'name'           => 'Filtro de aceite',
-            'sku'            => 'FILT-001',
-            'cost_price'     => 5000,
-            'selling_price'  => 12000,
+            'name' => 'Filtro de aceite',
+            'sku' => 'FILT-001',
+            'cost_price' => 5000,
+            'selling_price' => 12000,
             'physical_stock' => 10,
-            'min_stock'      => 2,
+            'min_stock' => 2,
         ]);
 
         return compact('tenant', 'user', 'vehicle', 'workOrder', 'product');
@@ -66,18 +66,18 @@ class WorkOrderItemTest extends TestCase
         ['user' => $user, 'workOrder' => $workOrder] = $this->createPrerequisites();
 
         $response = $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
-            'product_id'  => null,
+            'product_id' => null,
             'description' => 'Mano de obra diagnóstico',
-            'quantity'    => 1,
-            'unit_price'  => 35000,
+            'quantity' => 1,
+            'unit_price' => 35000,
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('work_order_items', [
             'work_order_id' => $workOrder->id,
-            'description'   => 'Mano de obra diagnóstico',
+            'description' => 'Mano de obra diagnóstico',
         ]);
-        
+
         $workOrder->refresh();
         $this->assertEquals(35000, $workOrder->total_amount);
     }
@@ -87,10 +87,10 @@ class WorkOrderItemTest extends TestCase
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
         $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
-            'product_id'  => $product->id,
+            'product_id' => $product->id,
             'description' => $product->name,
-            'quantity'    => 3,
-            'unit_price'  => $product->selling_price,
+            'quantity' => 3,
+            'unit_price' => $product->selling_price,
         ]);
 
         $product->refresh();
@@ -102,10 +102,10 @@ class WorkOrderItemTest extends TestCase
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
         $this->actingAs($user)->post(route('work-orders.items.store', $workOrder->id), [
-            'product_id'  => $product->id,
+            'product_id' => $product->id,
             'description' => $product->name,
-            'quantity'    => 3,
-            'unit_price'  => $product->selling_price,
+            'quantity' => 3,
+            'unit_price' => $product->selling_price,
         ]);
 
         $item = WorkOrderItem::first();
@@ -114,9 +114,9 @@ class WorkOrderItemTest extends TestCase
 
         $product->refresh();
         $this->assertEquals(10, $product->physical_stock); // Stock restored
-        
+
         $this->assertDatabaseMissing('work_order_items', ['id' => $item->id]);
-        
+
         $workOrder->refresh();
         $this->assertEquals(0, $workOrder->total_amount);
     }

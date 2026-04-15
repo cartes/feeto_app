@@ -10,7 +10,7 @@ use Tests\Traits\CreatesTenant;
 
 class PasswordUpdateTest extends TestCase
 {
-    use RefreshDatabase, CreatesTenant;
+    use CreatesTenant, RefreshDatabase;
 
     protected function setUp(): void
     {

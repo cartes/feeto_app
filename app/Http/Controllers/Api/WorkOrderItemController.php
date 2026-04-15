@@ -22,7 +22,7 @@ class WorkOrderItemController extends Controller
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
         ]);
 
         return DB::transaction(function () use ($validated, $workOrder) {
@@ -31,7 +31,7 @@ class WorkOrderItemController extends Controller
             // Verificar stock físico
             if ($product->physical_stock < $validated['quantity']) {
                 throw ValidationException::withMessages([
-                    'quantity' => ['Stock insuficiente. Disponible: ' . $product->physical_stock],
+                    'quantity' => ['Stock insuficiente. Disponible: '.$product->physical_stock],
                 ]);
             }
 

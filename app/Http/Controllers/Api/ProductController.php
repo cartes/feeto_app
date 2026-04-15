@@ -17,11 +17,11 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $search = $request->get('q');
-        
+
         $products = Product::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('sku', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%");
             })
             ->where('physical_stock', '>', 0)
             ->limit(10)

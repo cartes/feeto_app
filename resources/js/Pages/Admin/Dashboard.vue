@@ -1,43 +1,79 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { defineComponent, h } from 'vue';
-
-const BuildingOfficeIcon = defineComponent({
-  render() {
-    return h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', strokeWidth: '1.5', stroke: 'currentColor' }, [
-      h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', d: 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21' })
-    ]);
-  }
-});
-
-const UsersIcon = defineComponent({
-  render() {
-    return h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', strokeWidth: '1.5', stroke: 'currentColor' }, [
-      h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', d: 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-2.533-4.656 6.953 6.953 0 0 1-5.137 0m1.522-1.74a6.7 6.7 0 0 0-5.78 0 4.125 4.125 0 0 0-2.533 4.656 9.337 9.337 0 0 0 4.121.952 9.38 9.38 0 0 0 2.625-.372 9.236 9.236 0 0 0 4.203-1.488A4.125 4.125 0 0 0 14.829 9.828a6.726 6.726 0 0 0-3.326-2.573ZM9 15c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4Z' })
-    ]);
-  }
-});
-
-const ExclamationTriangleIcon = defineComponent({
-  render() {
-    return h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', strokeWidth: '1.5', stroke: 'currentColor' }, [
-      h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', d: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z' })
-    ]);
-  }
-});
 
 const props = defineProps({
-    totalTenants: Number,
-    activeUsers: Number,
-    expiredSubscriptions: Number,
+    stats: Object,
+    work_orders_by_tenant: Array,
+    ocr_usage: Array,
+    visits_by_day: Array,
+    expiring_tenants: Array,
 });
 
-const stats = [
-  { name: 'Total Talleres', stat: props.totalTenants, icon: BuildingOfficeIcon, color: 'text-blue-500', bg: 'bg-blue-50' },
-  { name: 'Usuarios Globales', stat: props.activeUsers, icon: UsersIcon, color: 'text-amber-500', bg: 'bg-amber-50' },
-  { name: 'Suscripciones Vencidas', stat: props.expiredSubscriptions, icon: ExclamationTriangleIcon, color: 'text-rose-500', bg: 'bg-rose-50' },
-];
+const formatCLP = (value) => {
+    if (!value && value !== 0) return '$0';
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        minimumFractionDigits: 0,
+    }).format(value);
+};
+
+const retentionColor = computed(() => {
+    const pct = props.stats?.retention_percent ?? 0;
+    if (pct > 70) return 'text-emerald-600';
+    if (pct >= 40) return 'text-yellow-500';
+    return 'text-rose-600';
+});
+
+const maxWorkOrders = computed(() => {
+    if (!props.work_orders_by_tenant?.length) return 1;
+    return Math.max(...props.work_orders_by_tenant.map((i) => i.total), 1);
+});
+
+const maxOcrUsage = computed(() => {
+    if (!props.ocr_usage?.length) return 1;
+    return Math.max(...props.ocr_usage.map((i) => i.total), 1);
+});
+
+const visitsLinePoints = computed(() => {
+    const data = props.visits_by_day;
+    if (!data || data.length < 2) return '';
+    const maxV = Math.max(...data.map((d) => d.visits));
+    const minV = Math.min(...data.map((d) => d.visits));
+    const range = maxV - minV || 1;
+    const W = 580;
+    const H = 130;
+    const PAD = 10;
+    return data
+        .map((d, i) => {
+            const x = PAD + (i / (data.length - 1)) * (W - 2 * PAD);
+            const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
+            return `${x.toFixed(1)},${y.toFixed(1)}`;
+        })
+        .join(' ');
+});
+
+const visitsAreaPoints = computed(() => {
+    const data = props.visits_by_day;
+    if (!data || data.length < 2) return '';
+    const maxV = Math.max(...data.map((d) => d.visits));
+    const minV = Math.min(...data.map((d) => d.visits));
+    const range = maxV - minV || 1;
+    const W = 580;
+    const H = 130;
+    const PAD = 10;
+    const pts = data.map((d, i) => {
+        const x = PAD + (i / (data.length - 1)) * (W - 2 * PAD);
+        const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const firstX = PAD;
+    const lastX = (PAD + (580 - 2 * PAD)).toFixed(1);
+    const bottom = H;
+    return `${firstX},${bottom} ${pts.join(' ')} ${lastX},${bottom}`;
+});
 </script>
 
 <template>
@@ -49,20 +85,132 @@ const stats = [
             <p class="mt-1 text-sm text-slate-500">Métricas principales de toda la plataforma SaaS.</p>
         </div>
 
-        <div>
-            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                <div v-for="item in stats" :key="item.name" class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-slate-900/5 sm:px-6 sm:pt-6">
-                    <dt>
-                        <div :class="[item.bg, 'absolute rounded-md p-3']">
-                            <component :is="item.icon" :class="[item.color, 'h-6 w-6']" aria-hidden="true" />
+        <!-- Row 1: Stat cards -->
+        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+                <dt class="truncate text-sm font-medium text-slate-500">Total Talleres</dt>
+                <dd class="mt-1 flex items-baseline gap-2">
+                    <span class="text-3xl font-semibold tracking-tight text-slate-900">{{ stats?.total_tenants ?? 0 }}</span>
+                    <span class="text-sm text-slate-400">registrados</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+                <dt class="truncate text-sm font-medium text-slate-500">% Retención</dt>
+                <dd class="mt-1 flex items-baseline gap-2">
+                    <span :class="['text-3xl font-semibold tracking-tight', retentionColor]">
+                        {{ stats?.retention_percent ?? 0 }}%
+                    </span>
+                    <span class="text-sm text-slate-400">activos/total</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+                <dt class="truncate text-sm font-medium text-slate-500">Suscripciones Vencidas</dt>
+                <dd class="mt-1 flex items-baseline gap-2">
+                    <span class="text-3xl font-semibold tracking-tight text-rose-600">{{ stats?.expired_subscriptions ?? 0 }}</span>
+                    <span class="text-sm text-slate-400">
+                        <span v-if="stats?.expiring_soon" class="text-yellow-600">+{{ stats.expiring_soon }} próx.</span>
+                    </span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-slate-900/5 sm:p-6">
+                <dt class="truncate text-sm font-medium text-slate-500">Ingresos Últ. 30d</dt>
+                <dd class="mt-1">
+                    <span class="text-3xl font-semibold tracking-tight text-emerald-600">{{ formatCLP(stats?.approved_revenue_30d) }}</span>
+                </dd>
+            </div>
+        </dl>
+
+        <!-- Row 2: Work Orders + OCR Usage -->
+        <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <!-- Work Orders -->
+            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+                <h2 class="text-sm font-semibold text-slate-900 mb-4">Work Orders por Taller</h2>
+                <div v-if="work_orders_by_tenant && work_orders_by_tenant.length" class="space-y-3">
+                    <div v-for="item in work_orders_by_tenant" :key="item.tenant" class="flex items-center gap-3">
+                        <div class="w-36 text-xs text-slate-600 truncate shrink-0">{{ item.tenant }}</div>
+                        <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div
+                                :style="{ width: `${(item.total / maxWorkOrders) * 100}%` }"
+                                class="bg-amber-500 h-2 rounded-full transition-all"
+                            ></div>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-slate-500">{{ item.name }}</p>
-                    </dt>
-                    <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-                        <p class="text-2xl font-semibold text-slate-900">{{ item.stat }}</p>
-                    </dd>
+                        <div class="w-8 text-xs text-slate-900 text-right font-semibold shrink-0">{{ item.total }}</div>
+                    </div>
                 </div>
-            </dl>
+                <p v-else class="text-sm text-slate-400 text-center py-6">Sin datos disponibles</p>
+            </div>
+
+            <!-- OCR Usage -->
+            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+                <h2 class="text-sm font-semibold text-slate-900 mb-4">Uso OCR por Taller</h2>
+                <div v-if="ocr_usage && ocr_usage.length" class="space-y-3">
+                    <div v-for="item in ocr_usage" :key="item.tenant" class="flex items-center gap-3">
+                        <div class="w-36 text-xs text-slate-600 truncate shrink-0">{{ item.tenant }}</div>
+                        <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div
+                                :style="{ width: `${(item.total / maxOcrUsage) * 100}%` }"
+                                class="bg-blue-500 h-2 rounded-full transition-all"
+                            ></div>
+                        </div>
+                        <div class="w-8 text-xs text-slate-900 text-right font-semibold shrink-0">{{ item.total }}</div>
+                    </div>
+                </div>
+                <p v-else class="text-sm text-slate-400 text-center py-6">Sin datos disponibles</p>
+            </div>
+        </div>
+
+        <!-- Row 3: Visits daily chart -->
+        <div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+            <h2 class="text-sm font-semibold text-slate-900 mb-4">Visitas Diarias</h2>
+            <div v-if="visits_by_day && visits_by_day.length >= 2">
+                <svg viewBox="0 0 600 150" class="w-full" preserveAspectRatio="none" style="height: 160px;">
+                    <polygon :points="visitsAreaPoints" fill="#f59e0b" fill-opacity="0.12" />
+                    <polyline :points="visitsLinePoints" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round" />
+                </svg>
+                <div class="mt-2 flex justify-between text-xs text-slate-400">
+                    <span>{{ visits_by_day[0]?.date }}</span>
+                    <span>{{ visits_by_day[Math.floor(visits_by_day.length / 2)]?.date }}</span>
+                    <span>{{ visits_by_day[visits_by_day.length - 1]?.date }}</span>
+                </div>
+            </div>
+            <div v-else-if="visits_by_day && visits_by_day.length === 1" class="py-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-500">{{ visits_by_day[0].date }}</span>
+                    <span class="text-lg font-semibold text-slate-900">{{ visits_by_day[0].visits }} visitas</span>
+                </div>
+            </div>
+            <p v-else class="text-sm text-slate-400 text-center py-6">Sin datos de visitas disponibles</p>
+        </div>
+
+        <!-- Row 4: Expiring tenants -->
+        <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h2 class="text-sm font-semibold text-slate-900">Próximas a Vencer</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Suscripciones con vencimiento próximo</p>
+            </div>
+            <div v-if="expiring_tenants && expiring_tenants.length">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="py-3 pl-6 pr-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Taller</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Vence</th>
+                            <th class="py-3 pl-3 pr-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        <tr v-for="tenant in expiring_tenants" :key="tenant.id">
+                            <td class="whitespace-nowrap py-3 pl-6 pr-3 text-sm font-medium text-slate-900">{{ tenant.name }}</td>
+                            <td class="whitespace-nowrap px-3 py-3 text-sm text-rose-600 font-medium">
+                                {{ new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') }}
+                            </td>
+                            <td class="whitespace-nowrap py-3 pl-3 pr-6 text-right text-sm">
+                                <Link :href="route('admin.tenants.edit', tenant.id)" class="text-amber-600 hover:text-amber-900 font-semibold">Gestionar</Link>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else class="px-6 py-8 text-sm text-slate-400 text-center">No hay talleres próximos a vencer.</p>
         </div>
     </AdminLayout>
 </template>

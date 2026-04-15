@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MercadoPagoWebhookController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\TenantController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\ProductController;
@@ -18,8 +24,8 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
 use App\Models\Tenant;
-use App\Models\User;
 use App\Models\WorkOrder;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
@@ -36,19 +42,23 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// Tracking de Orden de Trabajo (Público)
-Route::get('/ot/{uuid}', [TrackingController::class, 'show'])->name('tracking.show');
+// Tracking de Orden de Trabajo (Público con rate limit)
+Route::get('/ot/{uuid}', [TrackingController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('tracking.show');
 
 // Landing page pública del taller — embudo de conversión con Pre-Check ALPR
 Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->name('taller.landing');
-Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, 'store'])->name('taller.booking.store');
+Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('taller.booking.store');
 
 /*
 |--------------------------------------------------------------------------
 | Rutas Privadas — Administración del taller (requieren autenticación)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', NeedsTenant::class])->group(function () {
     Route::get('/dashboard', function () {
         $initialActivities = WorkOrder::query()
             ->with('vehicle')
@@ -70,12 +80,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Nueva Recepción
     Route::get('/receptions/create', [ReceptionController::class, 'create'])->name('receptions.create');
-    Route::post('/receptions', [ReceptionController::class, 'store'])->name('receptions.store');
-    Route::post('/receptions/preview', [ReceptionController::class, 'preview'])->name('receptions.preview');
+    Route::post('/receptions', [ReceptionController::class, 'store'])
+        ->middleware('throttle:20,1')
+        ->name('receptions.store');
+    Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
+        ->middleware('throttle:30,1')
+        ->name('receptions.preview');
     Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
 
     // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
-    Route::post('/ocr/process', [OcrController::class, 'process'])->name('ocr.process');
+    Route::post('/ocr/process', [OcrController::class, 'process'])
+        ->middleware('throttle:20,1')
+        ->name('ocr.process');
 
     // Work Orders / Kanban
     Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
@@ -120,49 +136,75 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Admin/Dashboard', [
-                'totalTenants' => Tenant::count(),
-                'activeUsers' => User::count(),
-                'expiredSubscriptions' => Tenant::where('subscription_ends_at', '<', now())->count(),
-            ]);
-        })->name('dashboard');
+        Route::get('/', DashboardController::class)->name('dashboard');
 
+        // Perfil & API Keys
+        Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
+        Route::put('/profile', [AdminProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::put('/profile/api-keys', [AdminProfileController::class, 'updateApiKeys'])->name('profile.api-keys');
+
+        // Planes
+        Route::resource('/plans', PlanController::class)->except(['show']);
+
+        // Tenants
         Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
         Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit');
         Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
         Route::put('/tenants/{tenant}/admin', [TenantController::class, 'updateAdmin'])->name('tenants.update_admin');
         Route::put('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
 
+        // Usuarios
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+        // Audit Log
+        Route::get('/audit', [AuditLogController::class, 'index'])->name('audit.index');
+
+        // Pagos
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::post('/payments/preference', [PaymentController::class, 'createPreference'])->name('payments.preference');
+        Route::get('/payments/success', [PaymentController::class, 'success'])->name('payments.success');
+        Route::get('/payments/failure', [PaymentController::class, 'failure'])->name('payments.failure');
+        Route::get('/payments/pending', [PaymentController::class, 'pending'])->name('payments.pending');
     });
 
+// Mercado Pago webhook (sin CSRF, sin auth — validado por firma HMAC)
+Route::post('/webhooks/mercadopago', MercadoPagoWebhookController::class)
+    ->name('admin.payments.webhook')
+    ->withoutMiddleware([PreventRequestForgery::class]);
+
 // Proxy para servir archivos de storage (bypass symlink & auth con aislamiento de tenant)
-Route::get('/media/{path}', function ($path) {
-    if (! Spatie\Multitenancy\Models\Tenant::current()) {
-        abort(403, 'Tenant no identificado.');
-    }
+Route::middleware(['auth'])->group(function () {
+    Route::get('/media/{path}', function ($path) {
+        $user = auth()->user();
+        $tenant = Spatie\Multitenancy\Models\Tenant::current();
 
-    $tenantId = Spatie\Multitenancy\Models\Tenant::current()->id;
-    $tenantPrefix = "tenants/{$tenantId}/";
+        // Verificar que el usuario pertenezca al tenant actual
+        if (! $tenant || $user->tenant_id !== $tenant->id) {
+            abort(403, 'No tienes acceso a estos archivos.');
+        }
 
-    // Seguridad: Bloqueamos el acceso si el path solicitado no pertenece al tenant actual
-    if (! str_starts_with($path, $tenantPrefix)) {
-        abort(403, 'Acceso denegado a archivos de otros talleres.');
-    }
+        $tenantId = $tenant->id;
+        $tenantPrefix = "tenants/{$tenantId}/";
 
-    // Prevención de Directory Traversal
-    if (str_contains($path, '..')) {
-        abort(400, 'Ruta inválida.');
-    }
+        // Seguridad: Bloqueamos el acceso si el path solicitado no pertenece al tenant actual
+        if (! str_starts_with($path, $tenantPrefix)) {
+            abort(403, 'Acceso denegado a archivos de otros talleres.');
+        }
 
-    $fullPath = storage_path('app/public/'.$path);
+        // Prevención de Directory Traversal
+        if (str_contains($path, '..')) {
+            abort(400, 'Ruta inválida.');
+        }
 
-    if (! file_exists($fullPath)) {
-        abort(404);
-    }
+        $fullPath = storage_path('app/public/'.$path);
 
-    return response()->file($fullPath);
-})->where('path', '.*')->name('storage.serve');
+        if (! file_exists($fullPath)) {
+            abort(404);
+        }
+
+        return response()->file($fullPath);
+    })->where('path', '.*')->name('storage.serve');
+});
 
 require __DIR__.'/auth.php';

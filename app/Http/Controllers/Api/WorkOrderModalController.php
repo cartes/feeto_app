@@ -10,6 +10,7 @@ use App\Models\WorkOrderImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Multitenancy\Models\Tenant;
 
 class WorkOrderModalController extends Controller
 {
@@ -36,24 +37,31 @@ class WorkOrderModalController extends Controller
 
         $workOrder = WorkOrder::findOrFail($id);
 
-        if ($request->hasFile('image')) {
-            $tenant = \Spatie\Multitenancy\Models\Tenant::current();
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $user = $request->user();
+        if ($user->tenant_id !== $workOrder->tenant_id) {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
 
-            if (!$tenant) {
+        if ($request->hasFile('image')) {
+            $tenant = Tenant::current();
+
+            if (! $tenant) {
                 return response()->json(['message' => 'Tenant no identificado.'], 403);
             }
 
-            $path = $request->file('image')->store("tenants/{$tenant->id}/work_orders/imagenes", 'public');
+            // Almacenar en disco local (privado) en lugar de público
+            $path = $request->file('image')->store("tenants/{$tenant->id}/work_orders/imagenes", 'local');
 
             $image = $workOrder->images()->create([
                 'image_path' => $path,
-                'notes'      => $request->input('notes'),
+                'notes' => $request->input('notes'),
             ]);
 
             return response()->json([
                 'message' => 'Imagen subida con éxito',
-                'image'   => $image,
-                'url'     => Storage::url($path),
+                'image' => $image,
+                'url' => route('storage.serve', ['path' => $path]),
             ]);
         }
 
@@ -63,13 +71,19 @@ class WorkOrderModalController extends Controller
     /**
      * Elimina una imagen de evidencia.
      */
-    public function destroyImage(int $imageId): JsonResponse
+    public function destroyImage(int $imageId, Request $request): JsonResponse
     {
-        $image = WorkOrderImage::findOrFail($imageId);
+        $image = WorkOrderImage::with('workOrder')->findOrFail($imageId);
 
-        // Eliminar archivo físico
-        if (Storage::disk('public')->exists($image->image_path)) {
-            Storage::disk('public')->delete($image->image_path);
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $user = $request->user();
+        if ($user->tenant_id !== $image->workOrder->tenant_id) {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
+
+        // Eliminar archivo físico del disco local
+        if (Storage::disk('local')->exists($image->image_path)) {
+            Storage::disk('local')->delete($image->image_path);
         }
 
         $image->delete();

@@ -11,7 +11,6 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-
 use Illuminate\Support\Facades\Log;
 
 class WorkOrderStatusUpdated implements ShouldBroadcastNow
@@ -25,8 +24,7 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
         public WorkOrder $workOrder,
         public string $oldStatus,
         public string $newStatus
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -35,9 +33,10 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        Log::info('Broadcasting WorkOrderStatusUpdated on channel: taller.' . $this->workOrder->tenant_id . ' as kanban.updated');
+        Log::info('Broadcasting WorkOrderStatusUpdated on channel: taller.'.$this->workOrder->tenant_id.' as kanban.updated');
+
         return [
-            new PrivateChannel('taller.' . $this->workOrder->tenant_id),
+            new PrivateChannel('taller.'.$this->workOrder->tenant_id),
         ];
     }
 
@@ -59,7 +58,7 @@ class WorkOrderStatusUpdated implements ShouldBroadcastNow
         return [
             'work_order_id' => $this->workOrder->id,
             'plate' => $this->workOrder->vehicle->plate,
-            'vehicle' => $this->workOrder->vehicle->brand . ' ' . $this->workOrder->vehicle->model,
+            'vehicle' => $this->workOrder->vehicle->brand.' '.$this->workOrder->vehicle->model,
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
             'timestamp' => now()->toISOString(),

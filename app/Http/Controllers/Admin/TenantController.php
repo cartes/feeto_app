@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,7 +35,7 @@ class TenantController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'domain' => 'required|string|max:255|unique:tenants,domain,' . $tenant->id,
+            'domain' => 'required|string|max:255|unique:tenants,domain,'.$tenant->id,
             'plan' => 'nullable|string|max:50',
             'status' => 'required|in:active,suspended',
         ]);
@@ -59,15 +58,15 @@ class TenantController extends Controller
         if ($admin) {
             $admin->name = $validated['name'];
             $admin->email = $validated['email'];
-            
-            if (!empty($validated['password'])) {
+
+            if (! empty($validated['password'])) {
                 $admin->password = Hash::make($validated['password']);
             }
-            
+
             $admin->save();
         } else {
             // Crea un nuevo administrador si no existe
-            $admin = new User();
+            $admin = new User;
             $admin->name = $validated['name'];
             $admin->email = $validated['email'];
             $admin->password = Hash::make($validated['password'] ?? 'password');
@@ -81,7 +80,7 @@ class TenantController extends Controller
     public function suspend(Tenant $tenant): RedirectResponse
     {
         $newStatus = $tenant->status === 'suspended' ? 'active' : 'suspended';
-        
+
         $tenant->update(['status' => $newStatus]);
 
         return back()->with('success', "Estado del taller actualizado a {$newStatus}.");

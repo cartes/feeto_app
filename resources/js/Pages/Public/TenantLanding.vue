@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import LoginModal from '@/Components/LoginModal.vue';
 
 const props = defineProps({
     tenant: {
@@ -11,6 +12,7 @@ const props = defineProps({
 
 const page = usePage();
 const isSuccess = computed(() => page.props.flash?.booking_success === true);
+const showLoginModal = ref(false);
 
 const form = useForm({
     customer_name: '',
@@ -68,15 +70,15 @@ const minDate = computed(() => {
                     <span class="text-lg font-bold text-gray-900 tracking-tight">{{ tenant.name }}</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <Link
-                        :href="route('login')"
+                    <button
+                        @click="showLoginModal = true"
                         class="hidden sm:inline-flex items-center gap-2 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                         </svg>
                         Iniciar Sesión
-                    </Link>
+                    </button>
                     <button @click="scrollToForm" class="hidden sm:inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-orange-200">
                         Agendar Cita
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -330,6 +332,7 @@ const minDate = computed(() => {
             </p>
         </footer>
 
+        <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
     </div>
 </template>
 

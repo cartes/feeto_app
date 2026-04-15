@@ -30,7 +30,7 @@ class SmartReceptionController extends Controller
 
         // Sanitize: strip anything that isn't A-Z or 0-9, cap at 8 chars
         $rawPlate = strtoupper((string) ($aiResult['plate'] ?? ''));
-        $plate    = substr(preg_replace('/[^A-Z0-9]/', '', $rawPlate), 0, 8);
+        $plate = substr(preg_replace('/[^A-Z0-9]/', '', $rawPlate), 0, 8);
 
         // Cross-check with today's agenda
         $appointment = null;
@@ -62,21 +62,21 @@ class SmartReceptionController extends Controller
         */
 
         return response()->json([
-            'plate'      => $plate,
+            'plate' => $plate,
             'confidence' => $aiResult['confidence'] ?? null,
-            'vehicle'    => [
+            'vehicle' => [
                 'brand' => $aiResult['brand'] ?? null,
                 'model' => $aiResult['model'] ?? null,
                 'color' => $aiResult['color'] ?? null,
             ],
             'appointment' => $appointment ? [
-                'id'     => $appointment->id,
-                'time'   => $appointment->appointment_date->format('H:i'),
+                'id' => $appointment->id,
+                'time' => $appointment->appointment_date->format('H:i'),
                 'status' => $appointment->status,
-                'notes'  => $appointment->notes,
+                'notes' => $appointment->notes,
                 'client' => $appointment->client ? [
-                    'name'  => $appointment->client->name,
-                    'rut'   => $appointment->client->rut,
+                    'name' => $appointment->client->name,
+                    'rut' => $appointment->client->rut,
                     'phone' => $appointment->client->phone,
                 ] : null,
                 'vehicle' => $appointment->vehicle ? [

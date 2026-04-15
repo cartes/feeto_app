@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\ApiUsageLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Spatie\Multitenancy\Models\Tenant;
 
 class BoostrService
 {
@@ -27,6 +29,7 @@ class BoostrService
                 ->get($apiUrl);
 
             if ($response->successful()) {
+                ApiUsageLog::record('boostr', Tenant::current()?->id);
                 $data = $response->json();
 
                 // Extrayendo la información premium del vehículo

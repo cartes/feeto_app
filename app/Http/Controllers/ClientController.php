@@ -20,8 +20,10 @@ class ClientController extends Controller
 
         $clients = Client::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('rut', 'like', "%{$search}%");
+                // Escapar caracteres wildcard de LIKE para evitar inyección de patrones
+                $escaped = addcslashes($search, '%_');
+                $query->where('name', 'like', "%{$escaped}%")
+                    ->orWhere('rut', 'like', "%{$escaped}%");
             })
             ->latest()
             ->paginate(15)

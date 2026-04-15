@@ -26,14 +26,14 @@ class WorkOrderController extends Controller
         $orders = WorkOrder::with('vehicle.client')->get()->groupBy('status');
 
         $kanban = [
-            'recepcion'           => $orders->get('recepcion', []),
-            'diagnostico'         => $orders->get('diagnostico', []),
+            'recepcion' => $orders->get('recepcion', []),
+            'diagnostico' => $orders->get('diagnostico', []),
             'esperando_repuestos' => $orders->get('esperando_repuestos', []),
-            'listo'               => $orders->get('listo', []),
+            'listo' => $orders->get('listo', []),
         ];
 
         return Inertia::render('WorkOrders/Index', [
-            'kanban'   => $kanban,
+            'kanban' => $kanban,
             'tenantId' => Tenant::current() ? Tenant::current()->id : 0,
         ]);
     }
@@ -52,7 +52,7 @@ class WorkOrderController extends Controller
 
         return Inertia::render('WorkOrders/Show', [
             'workOrder' => $workOrder,
-            'products'  => $products,
+            'products' => $products,
         ]);
     }
 
@@ -61,14 +61,17 @@ class WorkOrderController extends Controller
      */
     public function addItem(StoreWorkOrderItemRequest $request, WorkOrder $workOrder): RedirectResponse
     {
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $this->authorizeWorkOrderAccess($workOrder);
+
         $validated = $request->validated();
         $totalPrice = $validated['quantity'] * $validated['unit_price'];
 
         $workOrder->items()->create([
-            'product_id'  => $validated['product_id'] ?? null,
+            'product_id' => $validated['product_id'] ?? null,
             'description' => $validated['description'],
-            'quantity'    => $validated['quantity'],
-            'unit_price'  => $validated['unit_price'],
+            'quantity' => $validated['quantity'],
+            'unit_price' => $validated['unit_price'],
             'total_price' => $totalPrice,
         ]);
 
@@ -89,6 +92,9 @@ class WorkOrderController extends Controller
      */
     public function removeItem(WorkOrder $workOrder, WorkOrderItem $item): RedirectResponse
     {
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $this->authorizeWorkOrderAccess($workOrder);
+
         // Restaurar stock si el ítem estaba ligado a un producto
         if ($item->product_id !== null) {
             Product::query()
@@ -108,6 +114,9 @@ class WorkOrderController extends Controller
      */
     public function updateStatus(Request $request, WorkOrder $workOrder): RedirectResponse
     {
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $this->authorizeWorkOrderAccess($workOrder);
+
         $validated = $request->validate([
             'status' => 'required|in:recepcion,diagnostico,esperando_repuestos,listo',
         ]);
@@ -117,8 +126,8 @@ class WorkOrderController extends Controller
 
         Log::info('Dispatching WorkOrderStatusUpdated', [
             'work_order_id' => $workOrder->id,
-            'tenant_id'     => $workOrder->tenant_id,
-            'new_status'    => $validated['status'],
+            'tenant_id' => $workOrder->tenant_id,
+            'new_status' => $validated['status'],
         ]);
 
         broadcast(new WorkOrderStatusUpdated(
@@ -137,5 +146,23 @@ class WorkOrderController extends Controller
     {
         $total = $workOrder->items()->sum('total_price');
         $workOrder->update(['total_amount' => $total]);
+    }
+
+    /**
+     * Verifica que el usuario autenticado tenga acceso a la work order.
+     */
+    private function authorizeWorkOrderAccess(WorkOrder $workOrder): void
+    {
+        $user = request()->user();
+
+        // Super admin puede acceder a todo
+        if ($user->is_super_admin) {
+            return;
+        }
+
+        // El usuario debe pertenecer al mismo tenant que la work order
+        if ($user->tenant_id !== $workOrder->tenant_id) {
+            abort(403, 'No tienes permiso para modificar esta orden de trabajo.');
+        }
     }
 }

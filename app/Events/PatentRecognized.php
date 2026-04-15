@@ -6,6 +6,7 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -44,11 +45,9 @@ class PatentRecognized implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        // En un SaaS real, normalmente usamos un canal privado por tenant.
-        // Para simplificar la prueba inicial sin Auth de canales complejo,
-        // Usaremos un canal público con el ID del tenant.
+        // Canal privado para aislar datos del tenant
         return [
-            new Channel('tenant.'.$this->tenantId.'.reception'),
+            new PrivateChannel('tenant.'.$this->tenantId.'.reception'),
         ];
     }
 

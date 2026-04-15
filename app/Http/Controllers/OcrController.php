@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\ApiUsageLog;
 use App\Services\BoostrService;
 use App\Services\OcrService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Spatie\Multitenancy\Models\Tenant;
 
 class OcrController extends Controller
 {
@@ -28,9 +31,12 @@ class OcrController extends Controller
         $file = $request->file('image');
 
         if (! $file->isValid()) {
+            // No exponer mensajes internos de error en producción
+            Log::error('Error de subida PHP: '.$file->getErrorMessage());
+
             return response()->json([
-                'message' => 'Error de subida PHP: '.$file->getErrorMessage(),
-                'errors' => ['image' => [$file->getErrorMessage()]],
+                'message' => 'La imagen subida no es válida. Por favor, intenta nuevamente.',
+                'errors' => ['image' => ['Archivo inválido.']],
             ], 422);
         }
 
@@ -41,6 +47,8 @@ class OcrController extends Controller
         $path = $file->store('ocr', 'public');
 
         $ocrResult = $this->ocrService->processImage($path);
+
+        ApiUsageLog::record('ocr', Tenant::current()?->id);
 
         if ($ocrResult['valid'] ?? false) {
             $vehicleData = $this->boostrService->getVehicleData((string) $ocrResult['plate']);

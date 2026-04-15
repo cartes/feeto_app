@@ -8,7 +8,7 @@ use Tests\Traits\CreatesTenant;
 
 class RegistrationTest extends TestCase
 {
-    use RefreshDatabase, CreatesTenant;
+    use CreatesTenant, RefreshDatabase;
 
     protected function setUp(): void
     {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WorkOrderImage extends Model
 {
@@ -11,4 +12,9 @@ class WorkOrderImage extends Model
         'image_path',
         'notes',
     ];
+
+    public function workOrder(): BelongsTo
+    {
+        return $this->belongsTo(WorkOrder::class);
+    }
 }

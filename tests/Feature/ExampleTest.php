@@ -8,7 +8,7 @@ use Tests\Traits\CreatesTenant;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase, CreatesTenant;
+    use CreatesTenant, RefreshDatabase;
 
     /**
      * A basic test example.

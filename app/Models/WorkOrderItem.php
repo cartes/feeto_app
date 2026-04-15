@@ -25,7 +25,7 @@ class WorkOrderItem extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'quantity'   => 'integer',
+        'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
     ];

@@ -17,19 +17,19 @@ class AppointmentController extends Controller
             ->orderBy('appointment_date')
             ->get()
             ->map(fn (Appointment $a): array => [
-                'id'               => $a->id,
-                'plate'            => $a->plate,
+                'id' => $a->id,
+                'plate' => $a->plate,
                 'appointment_date' => $a->appointment_date->format('H:i'),
-                'status'           => $a->status,
-                'notes'            => $a->notes,
-                'client'           => $a->client ? [
-                    'id'    => $a->client->id,
-                    'name'  => $a->client->name,
-                    'rut'   => $a->client->rut,
+                'status' => $a->status,
+                'notes' => $a->notes,
+                'client' => $a->client ? [
+                    'id' => $a->client->id,
+                    'name' => $a->client->name,
+                    'rut' => $a->client->rut,
                     'phone' => $a->client->phone,
                 ] : null,
                 'vehicle' => $a->vehicle ? [
-                    'id'    => $a->vehicle->id,
+                    'id' => $a->vehicle->id,
                     'plate' => $a->vehicle->plate,
                     'brand' => $a->vehicle->brand,
                     'model' => $a->vehicle->model,
@@ -39,7 +39,7 @@ class AppointmentController extends Controller
 
         return Inertia::render('Appointments/Index', [
             'appointments' => $appointments,
-            'today'        => now()->toDateString(),
+            'today' => now()->toDateString(),
         ]);
     }
 }

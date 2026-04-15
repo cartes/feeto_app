@@ -9,7 +9,7 @@ use Tests\Traits\CreatesTenant;
 
 class ProfileTest extends TestCase
 {
-    use RefreshDatabase, CreatesTenant;
+    use CreatesTenant, RefreshDatabase;
 
     protected function setUp(): void
     {

@@ -12,6 +12,7 @@ use App\Models\WorkOrder;
 use App\Services\BoostrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Inertia\Response;
 use Laravel\Ai\Files\Image;
 use Spatie\Multitenancy\Models\Tenant;
 
@@ -20,7 +21,7 @@ class ReceptionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): \Inertia\Response
+    public function create(): Response
     {
         return inertia('Reception/Create', [
             'tenantId' => app(Tenant::class)->current() ? app(Tenant::class)->current()->id : null,

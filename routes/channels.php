@@ -11,6 +11,7 @@ Broadcast::channel('taller.{tenantId}', function ($user, $tenantId) {
     if (app()->bound('currentTenant')) {
         return (string) app('currentTenant')->id === (string) $tenantId;
     }
+
     return false;
 });
 
@@ -19,5 +20,15 @@ Broadcast::channel('tenant.{tenantId}.work-orders', function ($user, $tenantId) 
     if (app()->bound('currentTenant')) {
         return (string) app('currentTenant')->id === (string) $tenantId;
     }
+
+    return false;
+});
+
+Broadcast::channel('tenant.{tenantId}.reception', function ($user, $tenantId) {
+    // Verificamos que el usuario pertenezca al tenant para recibir datos de recepción
+    if (app()->bound('currentTenant')) {
+        return (string) app('currentTenant')->id === (string) $tenantId;
+    }
+
     return false;
 });
