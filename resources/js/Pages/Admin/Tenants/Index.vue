@@ -37,7 +37,7 @@ const toggleStatus = (tenant) => {
                             <thead class="bg-slate-50">
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">Nombre de Taller</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Dominio</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Slug / URL</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Plan</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Usuarios</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Estado</th>
@@ -54,9 +54,19 @@ const toggleStatus = (tenant) => {
                                         <div class="text-xs text-slate-500 font-normal">RUT: {{ tenant.rut_taller || 'N/D' }}</div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                                        <a :href="'http://' + tenant.domain + (tenant.domain.includes('localhost') || tenant.domain.includes('127.0.0.1') ? ':8000' : '')" target="_blank" class="text-amber-600 hover:text-amber-900 hover:underline">
-                                           {{ tenant.domain }}
-                                        </a>
+                                        <div class="flex items-center gap-1.5">
+                                            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-mono text-slate-700">/taller/{{ tenant.slug }}</code>
+                                            <a
+                                                :href="'/taller/' + tenant.slug + '/dashboard'"
+                                                target="_blank"
+                                                class="text-slate-400 hover:text-amber-600 transition-colors"
+                                                title="Abrir taller"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </a>
+                                        </div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                         <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10 uppercase tracking-wide">

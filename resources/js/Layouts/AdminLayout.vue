@@ -60,6 +60,13 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
                 Planes
               </Link>
               <Link
+                :href="route('admin.payments.index')"
+                :class="route().current('admin.payments.*') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
+                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+              >
+                Pagos
+              </Link>
+              <Link
                 :href="route('admin.audit.index')"
                 :class="route().current('admin.audit.*') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
                 class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"

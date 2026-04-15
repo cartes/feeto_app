@@ -15,7 +15,10 @@ class TenantController extends Controller
 {
     public function index(): Response
     {
-        $tenants = Tenant::latest()->get();
+        $tenants = Tenant::query()
+            ->withCount('users')
+            ->latest()
+            ->get(['id', 'name', 'slug', 'rut_taller', 'is_active', 'status', 'plan', 'plan_id', 'max_users', 'subscription_ends_at']);
 
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Tenant;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,6 +37,22 @@ class PublicBookingController extends Controller
             'appointment_date' => ['required', 'date', 'after:now'],
             'pre_check_notes' => ['nullable', 'string', 'max:1000'],
         ]);
+
+        // Verificar disponibilidad: no permitir citas dentro de ±30 min del mismo taller
+        $date = new Carbon($validated['appointment_date']);
+        $conflict = Appointment::where('tenant_id', $tenantBySlug->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereBetween('appointment_date', [
+                $date->copy()->subMinutes(30),
+                $date->copy()->addMinutes(30),
+            ])
+            ->exists();
+
+        if ($conflict) {
+            return back()
+                ->withErrors(['appointment_date' => 'Ese horario ya está reservado. Por favor elige otro con al menos 30 minutos de diferencia.'])
+                ->withInput();
+        }
 
         Appointment::create([
             'tenant_id' => $tenantBySlug->id,

@@ -12,6 +12,7 @@ use App\Models\Setting;
 use App\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use MercadoPago\Client\Preference\PreferenceClient;
@@ -21,11 +22,55 @@ class PaymentController extends Controller
 {
     public function index(): Response
     {
+        $payments = Payment::query()
+            ->with(['tenant:id,name', 'plan:id,name'])
+            ->latest()
+            ->paginate(50)
+            ->through(fn (Payment $p) => [
+                'id' => $p->id,
+                'tenant' => $p->tenant?->name,
+                'plan' => $p->plan?->name,
+                'amount' => $p->amount,
+                'mp_fee_net' => $p->mp_fee_net,
+                'mp_fee_vat' => $p->mp_fee_vat,
+                'mp_fee_total' => $p->mpFeeTotal(),
+                'net_amount' => $p->net_amount,
+                'currency' => $p->currency,
+                'status' => $p->status,
+                'method' => $p->method,
+                'mp_payment_type' => $p->mp_payment_type,
+                'mp_installments' => $p->mp_installments,
+                'transaction_id' => $p->transaction_id,
+                'paid_at' => $p->paid_at?->toIso8601String(),
+                'created_at' => $p->created_at->toIso8601String(),
+            ]);
+
+        // Resumen mensual últimos 6 meses (solo aprobados)
+        $monthlySummary = Payment::query()
+            ->where('status', 'approved')
+            ->where('paid_at', '>=', now()->subMonths(6))
+            ->select(
+                DB::raw("DATE_FORMAT(paid_at, '%Y-%m') as month"),
+                DB::raw('count(*) as transactions'),
+                DB::raw('sum(amount) as gross'),
+                DB::raw('sum(mp_fee_net) as fees_net'),
+                DB::raw('sum(mp_fee_vat) as fees_vat'),
+                DB::raw('sum(net_amount) as net'),
+            )
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Totales generales
+        $totals = Payment::query()
+            ->where('status', 'approved')
+            ->selectRaw('sum(amount) as gross, sum(mp_fee_net) as fees_net, sum(mp_fee_vat) as fees_vat, sum(net_amount) as net, count(*) as transactions')
+            ->first();
+
         return Inertia::render('Admin/Payments/Index', [
-            'payments' => Payment::query()
-                ->with(['tenant:id,name', 'plan:id,name'])
-                ->latest()
-                ->paginate(50),
+            'payments' => $payments,
+            'monthly_summary' => $monthlySummary,
+            'totals' => $totals,
         ]);
     }
 

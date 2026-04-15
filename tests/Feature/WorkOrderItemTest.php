@@ -22,13 +22,14 @@ class WorkOrderItemTest extends TestCase
             ['rut_taller' => '12345678-9'],
             [
                 'name' => 'Taller Test',
+                'slug' => 'taller-test',
                 'domain' => 'test.feeto.test',
             ]
         );
 
         $tenant->makeCurrent();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['tenant_id' => $tenant->id]);
 
         $client = Client::create([
             'name' => 'Cliente Test',

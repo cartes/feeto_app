@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import LoginModal from '@/Components/LoginModal.vue';
+import Toast from '@/Components/Toast.vue';
 
 const props = defineProps({
     tenant: {
@@ -13,6 +14,14 @@ const props = defineProps({
 const page = usePage();
 const isSuccess = computed(() => page.props.flash?.booking_success === true);
 const showLoginModal = ref(false);
+
+// Toast state
+const toast = ref({ message: '', type: 'success' });
+
+function showToast(message, type = 'success') {
+    toast.value = { message: '', type }; // reset para re-trigger el watcher
+    setTimeout(() => { toast.value = { message, type }; }, 10);
+}
 
 const form = useForm({
     customer_name: '',
@@ -34,6 +43,16 @@ const formatPlate = (e) => {
 const submitBooking = () => {
     form.post(route('taller.booking.store', props.tenant.slug), {
         preserveScroll: true,
+        onSuccess: () => {
+            showToast('¡Cita confirmada! Te esperamos en el taller.', 'success');
+        },
+        onError: (errors) => {
+            if (errors.appointment_date) {
+                showToast(errors.appointment_date, 'error');
+            } else {
+                showToast('Por favor revisa los campos marcados en rojo.', 'warning');
+            }
+        },
     });
 };
 
@@ -333,6 +352,9 @@ const minDate = computed(() => {
         </footer>
 
         <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
+
+        <!-- Toast global -->
+        <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
     </div>
 </template>
 

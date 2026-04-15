@@ -73,11 +73,23 @@ class MercadoPagoWebhookController extends Controller
                 ->first();
 
             if ($payment) {
-                $payment->update([
-                    'status' => $mpPayment->status,
-                    'transaction_id' => (string) $mpPaymentId,
-                    'paid_at' => $mpPayment->status === 'approved' ? now() : null,
-                ]);
+                // Calcular comisiones desde fee_details de MP
+                $totalMpFee = 0.0;
+                if (! empty($mpPayment->fee_details)) {
+                    foreach ($mpPayment->fee_details as $fee) {
+                        $totalMpFee += (float) ($fee->amount ?? 0);
+                    }
+                }
+
+                $payment->calculateFees($totalMpFee);
+                $payment->status = $mpPayment->status;
+                $payment->transaction_id = (string) $mpPaymentId;
+                $payment->mp_payment_type = $mpPayment->payment_type_id ?? null;
+                $payment->mp_installments = $mpPayment->installments > 1
+                    ? (string) $mpPayment->installments
+                    : null;
+                $payment->paid_at = $mpPayment->status === 'approved' ? now() : null;
+                $payment->save();
 
                 if ($mpPayment->status === 'approved') {
                     Tenant::where('id', $tenantId)->update([
