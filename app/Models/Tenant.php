@@ -88,4 +88,9 @@ class Tenant extends SpatieTenant
     {
         return $this->belongsTo(Plan::class);
     }
+
+    public function branches(): HasMany
+    {
+        return $this->hasMany(Branch::class);
+    }
 }

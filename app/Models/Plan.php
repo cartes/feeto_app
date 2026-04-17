@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'name', 'slug', 'description', 'price_monthly', 'price_annual',
-    'features', 'max_users', 'is_active', 'is_popular', 'trial_days',
+    'features', 'max_users', 'max_branches', 'is_active', 'is_popular', 'trial_days',
     'discount_percent', 'discount_valid_until', 'sort_order',
 ])]
 class Plan extends Model

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SmartReceptionController;
 use App\Http\Controllers\Api\WorkOrderItemController;
 use App\Http\Controllers\Api\WorkOrderModalController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OcrController;
@@ -115,6 +116,11 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::resource('inventory', InventoryController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['inventory' => 'product']);
+
+        // Branches
+        Route::resource('branches', BranchController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['branches' => 'branch']);
 
         // Clients
         Route::resource('clients', ClientController::class)->only(['index', 'show']);

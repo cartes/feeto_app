@@ -27,6 +27,7 @@ class WorkOrder extends Model
 
     protected $fillable = [
         'vehicle_id',
+        'branch_id',
         'status',
         'observations',
         'uuid',
@@ -52,6 +53,11 @@ class WorkOrder extends Model
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function items(): HasMany

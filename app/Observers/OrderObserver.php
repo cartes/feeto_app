@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Order;
+use App\Models\Product;
 
 class OrderObserver
 {
@@ -17,6 +18,11 @@ class OrderObserver
         if ($order->isDirty('status') && $order->status === 'invoiced') {
             foreach ($order->items as $item) {
                 $product = $item->product;
+
+                // Verify product belongs to the same tenant
+                if ($product->tenant_id !== $order->tenant_id) {
+                    continue;
+                }
 
                 // Only decrement if it was pending (already reserved)
                 if ($order->getOriginal('status') === 'pending') {

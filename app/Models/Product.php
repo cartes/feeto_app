@@ -15,6 +15,7 @@ class Product extends Model
 
     protected $fillable = [
         'tenant_id',
+        'branch_id',
         'name',
         'sku',
         'description',
@@ -42,6 +43,14 @@ class Product extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Get the branch that owns the product.
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     /**
