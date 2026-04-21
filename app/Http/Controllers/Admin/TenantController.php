@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\TenantSetupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +14,8 @@ use Inertia\Response;
 
 class TenantController extends Controller
 {
+    public function __construct(protected TenantSetupService $tenantSetupService) {}
+
     public function index(): Response
     {
         $tenants = Tenant::query()
@@ -52,11 +55,12 @@ class TenantController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255', // En producción podrías revisar uniqueness
+            'email' => 'required|email|max:255',
             'password' => 'nullable|string|min:8',
         ]);
 
         $admin = $tenant->users()->first();
+        $isNewAdmin = $admin === null;
 
         if ($admin) {
             $admin->name = $validated['name'];
@@ -68,13 +72,16 @@ class TenantController extends Controller
 
             $admin->save();
         } else {
-            // Crea un nuevo administrador si no existe
             $admin = new User;
             $admin->name = $validated['name'];
             $admin->email = $validated['email'];
             $admin->password = Hash::make($validated['password'] ?? 'password');
             $admin->tenant_id = $tenant->id;
             $admin->save();
+        }
+
+        if ($isNewAdmin) {
+            $this->tenantSetupService->provisionTenant($tenant, $admin);
         }
 
         return back()->with('success', 'Administrador guardado correctamente.');

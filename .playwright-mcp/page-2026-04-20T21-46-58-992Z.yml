@@ -1,0 +1,206 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Feeto" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e8]
+        - generic [ref=e10]: Feeto
+      - navigation [ref=e11]:
+        - link "Características" [ref=e12] [cursor=pointer]:
+          - /url: "#features"
+        - link "Beneficios" [ref=e13] [cursor=pointer]:
+          - /url: "#benefits"
+        - link "Precios" [ref=e14] [cursor=pointer]:
+          - /url: "#pricing"
+      - generic [ref=e15]:
+        - button "Iniciar Sesión" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+          - text: Iniciar Sesión
+        - link "Probar Gratis" [ref=e19] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=e21]:
+    - generic [ref=e22]: Software para talleres mecánicos
+    - heading "Simplifica la gestión de tu taller y haz crecer tu negocio más rápido." [level=1] [ref=e24]
+    - paragraph [ref=e25]: Controla tus órdenes de trabajo, agenda, inventario y clientes desde un único sistema digital diseñado específicamente para talleres mecánicos.
+    - generic [ref=e26]:
+      - link "Prueba Gratis 14 Días" [ref=e27] [cursor=pointer]:
+        - /url: "#"
+        - text: Prueba Gratis 14 Días
+        - img [ref=e28]
+      - link "Agendar Demo" [ref=e30] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e31]
+        - text: Agendar Demo
+      - button "Ya tengo cuenta →" [ref=e33] [cursor=pointer]
+    - paragraph [ref=e34]: Sin tarjeta de crédito · Cancela cuando quieras · Soporte en español
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]: Recepción
+          - generic [ref=e46]: "3"
+        - generic [ref=e47]:
+          - generic [ref=e49]: GKSD72
+          - paragraph [ref=e51]: Toyota Hilux · Rojo
+          - paragraph [ref=e52]: Mantención preventiva 10.000 km
+        - generic [ref=e53]:
+          - generic [ref=e55]: BBTR41
+          - paragraph [ref=e57]: Chevrolet Spark · Blanco
+          - paragraph [ref=e58]: Revisión de frenos y pastillas
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: En Proceso
+          - generic [ref=e62]: "2"
+        - generic [ref=e63]:
+          - generic [ref=e65]: PLMK98
+          - paragraph [ref=e67]: Nissan Frontier · Gris
+          - paragraph [ref=e68]: Cambio de correa de distribución
+        - generic [ref=e71]:
+          - generic [ref=e73]: RRTN55
+          - paragraph [ref=e75]: Ford Ranger · Negro
+          - paragraph [ref=e76]: Diagnóstico electrónico OBD
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]: Listo
+          - generic [ref=e82]: "2"
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: CCBT19
+            - img [ref=e86]
+          - paragraph [ref=e88]: Suzuki Swift · Azul
+          - paragraph [ref=e89]: Afinación completa
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - generic [ref=e92]: DKSL77
+            - img [ref=e93]
+          - paragraph [ref=e95]: Honda CR-V · Plata
+          - paragraph [ref=e96]: Cambio de aceite y filtros
+  - generic [ref=e98]:
+    - generic [ref=e99]:
+      - paragraph [ref=e100]: Herramientas
+      - heading "Todo lo que necesita tu taller, en un solo lugar." [level=2] [ref=e101]
+      - paragraph [ref=e102]: Diseñado con talleres mecánicos reales para resolver los problemas reales del día a día.
+    - generic [ref=e103]:
+      - generic [ref=e104]:
+        - img [ref=e106]
+        - heading "Tablero Kanban en Vivo" [level=3] [ref=e108]
+        - paragraph [ref=e109]: Coordina equipos y órdenes en un flujo visual. Mueve trabajos entre etapas con un clic y ten siempre el control del piso del taller.
+        - generic [ref=e110]:
+          - generic [ref=e111]: Tiempo Real
+          - generic [ref=e112]: WebSockets
+      - generic [ref=e113]:
+        - img [ref=e115]
+        - heading "Inventario Inteligente" [level=3] [ref=e117]
+        - paragraph [ref=e118]: Controla tu stock de repuestos y evita compras de urgencia. Alertas automáticas cuando el inventario alcanza niveles mínimos.
+        - generic [ref=e119]:
+          - generic [ref=e120]: Stock Mínimo
+          - generic [ref=e121]: Alertas
+      - generic [ref=e122]:
+        - generic [ref=e123]: IA
+        - img [ref=e125]
+        - heading "Recepción con IA" [level=3] [ref=e128]
+        - paragraph [ref=e129]: Escanea patentes con la cámara de tu celular y agiliza el ingreso. Gemini AI lee la patente, cruza la agenda y te muestra los datos del cliente en segundos.
+        - generic [ref=e130]:
+          - generic [ref=e131]: Gemini AI
+          - generic [ref=e132]: ALPR
+  - generic [ref=e135]:
+    - generic [ref=e136]:
+      - paragraph [ref=e137]: Beneficios
+      - heading "Menos papel, menos caos, más tiempo para trabajar." [level=2] [ref=e138]:
+        - text: Menos papel, menos caos,
+        - text: más tiempo para trabajar.
+      - paragraph [ref=e139]: Digitaliza tu taller en menos de un día. Sin instalaciones, sin servidores, sin dolores de cabeza. Accede desde cualquier computador o celular.
+      - list [ref=e140]:
+        - listitem [ref=e141]:
+          - img [ref=e143]
+          - generic [ref=e145]:
+            - paragraph [ref=e146]: Histórico completo de cada vehículo
+            - paragraph [ref=e147]: Accede al registro de todas las visitas y trabajos realizados a cada auto al instante.
+        - listitem [ref=e148]:
+          - img [ref=e150]
+          - generic [ref=e152]:
+            - paragraph [ref=e153]: Notificaciones en tiempo real
+            - paragraph [ref=e154]: Tu equipo se entera al instante cuando cambia el estado de una orden de trabajo.
+        - listitem [ref=e155]:
+          - img [ref=e157]
+          - generic [ref=e159]:
+            - paragraph [ref=e160]: Multi-sucursal desde el día uno
+            - paragraph [ref=e161]: Cada taller tiene su propio espacio aislado y seguro. Escala sin límites.
+    - generic [ref=e162]:
+      - generic [ref=e163]:
+        - paragraph [ref=e164]: 3×
+        - paragraph [ref=e165]: más rápido en recibir un vehículo
+      - generic [ref=e166]:
+        - paragraph [ref=e167]: "0"
+        - paragraph [ref=e168]: instalaciones requeridas
+      - generic [ref=e169]:
+        - paragraph [ref=e170]: "+200"
+        - paragraph [ref=e171]: talleres mecánicos ya confían en Feeto
+  - generic [ref=e173]:
+    - generic [ref=e174]:
+      - generic [ref=e175]:
+        - img [ref=e177]
+        - generic [ref=e179]:
+          - heading "Soporte Humano Real" [level=3] [ref=e180]
+          - paragraph [ref=e181]: Habla con personas reales en español. Sin bots, sin tickets que duermen meses.
+      - generic [ref=e182]:
+        - img [ref=e184]
+        - generic [ref=e186]:
+          - heading "Seguridad en la Nube" [level=3] [ref=e187]
+          - paragraph [ref=e188]: Tus datos siempre respaldados. Cumplimiento con estándares internacionales de privacidad.
+      - generic [ref=e189]:
+        - img [ref=e191]
+        - generic [ref=e193]:
+          - heading "Sin Instalaciones Complejas" [level=3] [ref=e194]
+          - paragraph [ref=e195]: Abre el navegador y empieza. Nada que instalar, configurar ni mantener.
+    - generic [ref=e196]:
+      - generic [ref=e197]:
+        - heading "¿Listo para digitalizar tu taller?" [level=3] [ref=e198]
+        - paragraph [ref=e199]: 14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
+      - link "Empezar Gratis Ahora" [ref=e200] [cursor=pointer]:
+        - /url: "#"
+        - text: Empezar Gratis Ahora
+        - img [ref=e201]
+  - contentinfo [ref=e203]:
+    - generic [ref=e204]:
+      - generic [ref=e205]:
+        - img [ref=e207]
+        - generic [ref=e209]: Feeto
+      - navigation [ref=e210]:
+        - link "Términos de Servicio" [ref=e211] [cursor=pointer]:
+          - /url: "#"
+        - link "Política de Privacidad" [ref=e212] [cursor=pointer]:
+          - /url: "#"
+        - link "Contacto" [ref=e213] [cursor=pointer]:
+          - /url: "#"
+      - paragraph [ref=e214]: © 2026 Feeto. Todos los derechos reservados.
+  - dialog [ref=e215]:
+    - generic [ref=e220]:
+      - generic [ref=e221]:
+        - generic [ref=e222]:
+          - heading "Iniciar Sesión" [level=2] [ref=e223]
+          - paragraph [ref=e224]: Ingresa tus credenciales para continuar
+        - button [ref=e225] [cursor=pointer]:
+          - img [ref=e226]
+      - generic [ref=e228]:
+        - generic [ref=e229]:
+          - generic [ref=e230]: Correo electrónico
+          - textbox "Correo electrónico" [ref=e231]:
+            - /placeholder: "ej: nombre@empresa.com"
+            - text: admin@cartes.test
+        - generic [ref=e232]:
+          - generic [ref=e233]:
+            - generic [ref=e234]: Contraseña
+            - link "¿Olvidaste tu contraseña?" [ref=e235] [cursor=pointer]:
+              - /url: "#"
+          - textbox "Contraseña" [active] [ref=e236]:
+            - /placeholder: ••••••••
+            - text: password
+        - generic [ref=e237]:
+          - checkbox "Recordar sesión" [ref=e238]
+          - generic [ref=e239] [cursor=pointer]: Recordar sesión
+        - button "Entrar a mi cuenta" [ref=e241] [cursor=pointer]:
+          - generic [ref=e242]: Entrar a mi cuenta
+      - paragraph [ref=e244]:
+        - text: ¿No tienes una cuenta?
+        - link "Empieza gratis por 14 días" [ref=e245] [cursor=pointer]:
+          - /url: "#"

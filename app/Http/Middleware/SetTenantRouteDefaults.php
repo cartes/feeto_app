@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetTenantRouteDefaults
@@ -26,6 +27,7 @@ class SetTenantRouteDefaults
         $tenant = Tenant::current();
 
         if ($tenant && $tenant->slug) {
+            app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
             URL::defaults(['tenantBySlug' => $tenant->slug]);
         }
 

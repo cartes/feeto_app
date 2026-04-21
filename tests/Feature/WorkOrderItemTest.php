@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderItem;
+use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
@@ -31,7 +32,10 @@ class WorkOrderItemTest extends TestCase
         $tenant->makeCurrent();
         URL::defaults(['tenantBySlug' => $tenant->slug]);
 
+        app(TenantSetupService::class)->provisionTenant($tenant);
+
         $user = User::factory()->create(['tenant_id' => $tenant->id]);
+        $user->assignRole('Admin');
 
         $client = Client::create([
             'name' => 'Cliente Test',

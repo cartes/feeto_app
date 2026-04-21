@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps({
     initialActivities: {
@@ -10,9 +10,26 @@ const props = defineProps({
     }
 });
 
+const page = usePage();
 const DISMISSED_KEY = 'dismissed_activities';
 
-const getDismissed = () => JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
+const tenantId = computed(() => page.props.tenant?.id ?? page.props.auth?.user?.tenant_id ?? null);
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
+const hasPermission = (permission) => permissions.value.includes(permission);
+const canManageAppointments = computed(() => hasPermission('appointments.manage'));
+const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
+    .some((permission) => hasPermission(permission)));
+const canManageInventory = computed(() => hasPermission('inventory.manage'));
+const canManageCustomers = computed(() => hasPermission('customers.manage'));
+
+const getDismissed = () => {
+    if (typeof window === 'undefined' || !window.localStorage) {
+        return [];
+    }
+
+    return JSON.parse(window.localStorage.getItem(DISMISSED_KEY) || '[]');
+};
 
 const recentActivities = ref(
     props.initialActivities.filter(a => {
@@ -44,14 +61,16 @@ const dismissActivity = (activity) => {
     const dismissed = getDismissed();
     if (!dismissed.includes(uniqueId)) {
         dismissed.push(uniqueId);
-        localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
+        window.localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
     }
 };
 
 onMounted(() => {
-    const tenantId = usePage().props.auth.user.tenant_id;
+    if (!tenantId.value || !window.Echo?.private) {
+        return;
+    }
 
-    window.Echo.private(`taller.${tenantId}`)
+    window.Echo.private(`taller.${tenantId.value}`)
         .listen('.kanban.updated', (e) => {
             // IMPORTANTE: Solo agregamos el evento al array, NO recargamos la página
             recentActivities.value.unshift(e);
@@ -59,8 +78,11 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    const tenantId = usePage().props.auth.user.tenant_id;
-    window.Echo.leave(`taller.${tenantId}`);
+    if (!tenantId.value || !window.Echo?.leave) {
+        return;
+    }
+
+    window.Echo.leave(`taller.${tenantId.value}`);
 });
 </script>
 
@@ -101,7 +123,9 @@ onUnmounted(() => {
             <!-- Grid de Accesos (Estilo Técnico High-End) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <!-- 1. NUEVA RECEPCIÓN -->
-                <Link :href="route('receptions.create')"
+                <Link
+                    v-if="canManageAppointments"
+                    :href="route('receptions.create', tenantRouteParams)"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"
@@ -121,7 +145,9 @@ onUnmounted(() => {
                 </Link>
 
                 <!-- 2. TABLERO DE ÓRDENES -->
-                <Link :href="route('work-orders.index')"
+                <Link
+                    v-if="canViewWorkOrders"
+                    :href="route('work-orders.index', tenantRouteParams)"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"
@@ -137,7 +163,9 @@ onUnmounted(() => {
                 </Link>
 
                 <!-- 3. INVENTARIO -->
-                <Link :href="route('inventory.index')"
+                <Link
+                    v-if="canManageInventory"
+                    :href="route('inventory.index', tenantRouteParams)"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"
@@ -152,7 +180,9 @@ onUnmounted(() => {
                 </Link>
 
                 <!-- 4. CLIENTES -->
-                <Link :href="route('clients.index')"
+                <Link
+                    v-if="canManageCustomers"
+                    :href="route('clients.index', tenantRouteParams)"
                     class="group relative min-h-[120px] p-6 bg-white border border-gray-100 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:border-tech-orange/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] active:scale-[0.98] shadow-sm">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-gray-800" stroke-width="1.5"

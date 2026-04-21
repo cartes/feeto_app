@@ -1,0 +1,46 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e9]:
+        - heading "Feeto" [level=1] [ref=e10]
+        - paragraph [ref=e11]: Gestión de Taller
+    - navigation [ref=e12]:
+      - link "Dashboard" [ref=e13] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/dashboard
+        - img [ref=e14]
+        - generic [ref=e16]: Dashboard
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - img [ref=e19]
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Admin Taller Automotriz Cartes
+          - paragraph [ref=e22]: admin@cartes.test
+      - button "Cerrar Sesión" [ref=e23] [cursor=pointer]:
+        - img [ref=e24]
+        - text: Cerrar Sesión
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e29]:
+        - generic:
+          - img
+        - textbox "Buscar patentes, órdenes, reportes..." [ref=e30]
+      - button [ref=e32] [cursor=pointer]:
+        - img [ref=e33]
+    - main [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - heading "Dashboard Operativo" [level=1] [ref=e39]
+            - paragraph [ref=e44]: Sistema Activo | Santiago Hub
+          - generic [ref=e45]:
+            - paragraph [ref=e46]: Cronología
+            - paragraph [ref=e47]: lunes, 20 de abril de 2026
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - heading "Actividad en Tiempo Real" [level=3] [ref=e51]
+            - generic [ref=e55]: En Vivo
+          - generic [ref=e56]:
+            - img [ref=e58]
+            - paragraph [ref=e60]: Esperando actualizaciones del tablero...
+          - list

@@ -8,6 +8,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 const page = usePage();
 const tenantId = page.props.tenantId;
 const planType = page.props.planType;
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
@@ -57,7 +58,7 @@ const fetchVehicleData = async (ppu) => {
     errorMsg.value = null;
 
     try {
-        const response = await axios.post(route('receptions.preview'), {
+        const response = await axios.post(route('receptions.preview', tenantRouteParams.value), {
             patente: ppu
         });
         const data = response.data;
@@ -98,7 +99,7 @@ watch(() => form.plate, (newVal) => {
 });
 
 const handleCreateOrder = () => {
-    form.post(route('receptions.store_order'), {
+    form.post(route('receptions.store_order', tenantRouteParams.value), {
         onSuccess: () => {
             showModal.value = false;
         },
@@ -117,7 +118,7 @@ const handleImageUpload = async (event) => {
     formData.append('image', file);
 
     try {
-        const response = await window.axios.post(route('receptions.store'), formData, {
+        const response = await window.axios.post(route('receptions.store', tenantRouteParams.value), formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         if (response.data.queue) {

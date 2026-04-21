@@ -1,0 +1,192 @@
+- generic [ref=e424]:
+  - complementary [ref=e425]:
+    - generic [ref=e426]:
+      - img [ref=e428]
+      - generic [ref=e430]:
+        - heading "Feeto" [level=1] [ref=e431]
+        - paragraph [ref=e432]: Gestión de Taller
+    - navigation [ref=e433]:
+      - link "Dashboard" [ref=e434] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/dashboard
+        - img [ref=e435]
+        - generic [ref=e437]: Dashboard
+      - link "Recepción" [ref=e438] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/receptions/create
+        - img [ref=e439]
+        - generic [ref=e441]: Recepción
+      - link "Órdenes" [ref=e442] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/work-orders
+        - img [ref=e443]
+        - generic [ref=e445]: Órdenes
+      - link "Inventario" [ref=e446] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/inventory
+        - img [ref=e447]
+        - generic [ref=e449]: Inventario
+      - link "Clientes" [ref=e450] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/clients
+        - img [ref=e451]
+        - generic [ref=e453]: Clientes
+      - link "Configuración" [ref=e454] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/settings
+        - img [ref=e455]
+        - generic [ref=e458]: Configuración
+    - generic [ref=e459]:
+      - generic [ref=e460]:
+        - img [ref=e461]
+        - generic [ref=e462]:
+          - paragraph [ref=e463]: Admin Taller Automotriz Cartes
+          - paragraph [ref=e464]: admin@cartes.test
+      - button "Cerrar Sesión" [ref=e465] [cursor=pointer]:
+        - img [ref=e466]
+        - text: Cerrar Sesión
+  - generic [ref=e468]:
+    - banner [ref=e469]:
+      - generic [ref=e471]:
+        - generic:
+          - img
+        - textbox "Buscar patentes, órdenes, reportes..." [ref=e472]
+      - button [ref=e474] [cursor=pointer]:
+        - img [ref=e475]
+    - main [ref=e477]:
+      - generic [ref=e478]:
+        - generic [ref=e479]:
+          - heading "Inventario" [level=1] [ref=e480]
+          - paragraph [ref=e481]: Gestiona los repuestos e insumos del taller.
+        - generic [ref=e482]:
+          - generic [ref=e483]:
+            - generic:
+              - img
+            - textbox "Buscar por nombre o SKU..." [ref=e484]
+          - button "Agregar" [ref=e485] [cursor=pointer]:
+            - img [ref=e486]
+            - text: Agregar
+      - table [ref=e490]:
+        - rowgroup [ref=e491]:
+          - row "Producto SKU Costo Venta Stock Acciones" [ref=e492]:
+            - columnheader "Producto" [ref=e493]
+            - columnheader "SKU" [ref=e494]
+            - columnheader "Costo" [ref=e495]
+            - columnheader "Venta" [ref=e496]
+            - columnheader "Stock" [ref=e497]
+            - columnheader "Acciones" [ref=e498]
+        - rowgroup [ref=e499]:
+          - row "Aceite Motor Liqui Moly 10W40 Aceite motor semisintético Liqui Moly 10W40, botella 1L. ACE-LM-10W40 $31.500 $45.000 50" [ref=e500]:
+            - cell "Aceite Motor Liqui Moly 10W40 Aceite motor semisintético Liqui Moly 10W40, botella 1L." [ref=e501]:
+              - generic [ref=e502]: Aceite Motor Liqui Moly 10W40
+              - generic [ref=e503]: Aceite motor semisintético Liqui Moly 10W40, botella 1L.
+            - cell "ACE-LM-10W40" [ref=e504]
+            - cell "$31.500" [ref=e505]
+            - cell "$45.000" [ref=e506]
+            - cell "50" [ref=e507]:
+              - generic [ref=e509]: "50"
+            - cell [ref=e510]:
+              - generic [ref=e511]:
+                - button "Editar" [ref=e512] [cursor=pointer]:
+                  - img [ref=e513]
+                - button "Eliminar" [ref=e515] [cursor=pointer]:
+                  - img [ref=e516]
+          - row "Aceite Motor Shell Helix 5W30 Aceite motor sintético Shell Helix Ultra 5W30, botella 1L. ACE-SH-5W30 $24.500 $35.000 40" [ref=e518]:
+            - cell "Aceite Motor Shell Helix 5W30 Aceite motor sintético Shell Helix Ultra 5W30, botella 1L." [ref=e519]:
+              - generic [ref=e520]: Aceite Motor Shell Helix 5W30
+              - generic [ref=e521]: Aceite motor sintético Shell Helix Ultra 5W30, botella 1L.
+            - cell "ACE-SH-5W30" [ref=e522]
+            - cell "$24.500" [ref=e523]
+            - cell "$35.000" [ref=e524]
+            - cell "40" [ref=e525]:
+              - generic [ref=e527]: "40"
+            - cell [ref=e528]:
+              - generic [ref=e529]:
+                - button "Editar" [ref=e530] [cursor=pointer]:
+                  - img [ref=e531]
+                - button "Eliminar" [ref=e533] [cursor=pointer]:
+                  - img [ref=e534]
+          - row "Batería 55 Amperes Batería libre de mantenimiento 55 Ah 12V, apta para vehículos livianos. BAT-55AH $45.500 $65.000 10" [ref=e536]:
+            - cell "Batería 55 Amperes Batería libre de mantenimiento 55 Ah 12V, apta para vehículos livianos." [ref=e537]:
+              - generic [ref=e538]: Batería 55 Amperes
+              - generic [ref=e539]: Batería libre de mantenimiento 55 Ah 12V, apta para vehículos livianos.
+            - cell "BAT-55AH" [ref=e540]
+            - cell "$45.500" [ref=e541]
+            - cell "$65.000" [ref=e542]
+            - cell "10" [ref=e543]:
+              - generic [ref=e545]: "10"
+            - cell [ref=e546]:
+              - generic [ref=e547]:
+                - button "Editar" [ref=e548] [cursor=pointer]:
+                  - img [ref=e549]
+                - button "Eliminar" [ref=e551] [cursor=pointer]:
+                  - img [ref=e552]
+          - row "Filtro de Combustible Diesel Filtro de combustible para motores diésel, alta retención de impurezas. FIL-COMB-DSL $12.600 $18.000 15" [ref=e554]:
+            - cell "Filtro de Combustible Diesel Filtro de combustible para motores diésel, alta retención de impurezas." [ref=e555]:
+              - generic [ref=e556]: Filtro de Combustible Diesel
+              - generic [ref=e557]: Filtro de combustible para motores diésel, alta retención de impurezas.
+            - cell "FIL-COMB-DSL" [ref=e558]
+            - cell "$12.600" [ref=e559]
+            - cell "$18.000" [ref=e560]
+            - cell "15" [ref=e561]:
+              - generic [ref=e563]: "15"
+            - cell [ref=e564]:
+              - generic [ref=e565]:
+                - button "Editar" [ref=e566] [cursor=pointer]:
+                  - img [ref=e567]
+                - button "Eliminar" [ref=e569] [cursor=pointer]:
+                  - img [ref=e570]
+          - row "Filtro de Polen Acondicionado Filtro de habitáculo con carbón activado, compatible con la mayoría de vehículos. FIL-POLEN-AC $8.400 $12.000 25" [ref=e572]:
+            - cell "Filtro de Polen Acondicionado Filtro de habitáculo con carbón activado, compatible con la mayoría de vehículos." [ref=e573]:
+              - generic [ref=e574]: Filtro de Polen Acondicionado
+              - generic [ref=e575]: Filtro de habitáculo con carbón activado, compatible con la mayoría de vehículos.
+            - cell "FIL-POLEN-AC" [ref=e576]
+            - cell "$8.400" [ref=e577]
+            - cell "$12.000" [ref=e578]
+            - cell "25" [ref=e579]:
+              - generic [ref=e581]: "25"
+            - cell [ref=e582]:
+              - generic [ref=e583]:
+                - button "Editar" [ref=e584] [cursor=pointer]:
+                  - img [ref=e585]
+                - button "Eliminar" [ref=e587] [cursor=pointer]:
+                  - img [ref=e588]
+          - row "Pastillas de Freno Delanteras Kit pastillas de freno delanteras semimetálicas, par. FRE-PAS-DEL $19.600 $28.000 30" [ref=e590]:
+            - cell "Pastillas de Freno Delanteras Kit pastillas de freno delanteras semimetálicas, par." [ref=e591]:
+              - generic [ref=e592]: Pastillas de Freno Delanteras
+              - generic [ref=e593]: Kit pastillas de freno delanteras semimetálicas, par.
+            - cell "FRE-PAS-DEL" [ref=e594]
+            - cell "$19.600" [ref=e595]
+            - cell "$28.000" [ref=e596]
+            - cell "30" [ref=e597]:
+              - generic [ref=e599]: "30"
+            - cell [ref=e600]:
+              - generic [ref=e601]:
+                - button "Editar" [ref=e602] [cursor=pointer]:
+                  - img [ref=e603]
+                - button "Eliminar" [ref=e605] [cursor=pointer]:
+                  - img [ref=e606]
+          - row "Líquido Limpiaparabrisas 1L Líquido limpiaparabrisas concentrado, botella 1L. LIM-PARA-1L $2.450 $3.500 100" [ref=e608]:
+            - cell "Líquido Limpiaparabrisas 1L Líquido limpiaparabrisas concentrado, botella 1L." [ref=e609]:
+              - generic [ref=e610]: Líquido Limpiaparabrisas 1L
+              - generic [ref=e611]: Líquido limpiaparabrisas concentrado, botella 1L.
+            - cell "LIM-PARA-1L" [ref=e612]
+            - cell "$2.450" [ref=e613]
+            - cell "$3.500" [ref=e614]
+            - cell "100" [ref=e615]:
+              - generic [ref=e617]: "100"
+            - cell [ref=e618]:
+              - generic [ref=e619]:
+                - button "Editar" [ref=e620] [cursor=pointer]:
+                  - img [ref=e621]
+                - button "Eliminar" [ref=e623] [cursor=pointer]:
+                  - img [ref=e624]
+          - row "Neumático Goodyear 205/55 R16 Neumático Goodyear EfficientGrip Performance 205/55 R16 91V. NEU-GY-20555R16 $59.500 $85.000 40" [ref=e626]:
+            - cell "Neumático Goodyear 205/55 R16 Neumático Goodyear EfficientGrip Performance 205/55 R16 91V." [ref=e627]:
+              - generic [ref=e628]: Neumático Goodyear 205/55 R16
+              - generic [ref=e629]: Neumático Goodyear EfficientGrip Performance 205/55 R16 91V.
+            - cell "NEU-GY-20555R16" [ref=e630]
+            - cell "$59.500" [ref=e631]
+            - cell "$85.000" [ref=e632]
+            - cell "40" [ref=e633]:
+              - generic [ref=e635]: "40"
+            - cell [ref=e636]:
+              - generic [ref=e637]:
+                - button "Editar" [ref=e638] [cursor=pointer]:
+                  - img [ref=e639]
+                - button "Eliminar" [ref=e641] [cursor=pointer]:
+                  - img [ref=e642]

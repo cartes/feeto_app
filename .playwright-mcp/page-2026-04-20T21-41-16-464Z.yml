@@ -1,0 +1,94 @@
+- generic [ref=e1]:
+  - iframe [ref=e106]:
+    - main [ref=f1e2]:
+      - generic [ref=f1e4]:
+        - heading "403" [level=1] [ref=f1e5]
+        - generic [ref=f1e6]: User does not have the right roles.
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - img [ref=e7]
+        - generic [ref=e9]:
+          - heading "Feeto" [level=1] [ref=e10]
+          - paragraph [ref=e11]: Gestión de Taller
+      - navigation [ref=e12]:
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/taller/cartes/dashboard
+          - img [ref=e14]
+          - generic [ref=e16]: Dashboard
+        - link "Recepción" [active] [ref=e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/taller/cartes/receptions/create
+          - img [ref=e18]
+          - generic [ref=e20]: Recepción
+        - link "Órdenes" [ref=e21] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/taller/cartes/work-orders
+          - img [ref=e22]
+          - generic [ref=e24]: Órdenes
+        - link "Inventario" [ref=e25] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/taller/cartes/inventory
+          - img [ref=e26]
+          - generic [ref=e28]: Inventario
+        - link "Clientes" [ref=e29] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/taller/cartes/clients
+          - img [ref=e30]
+          - generic [ref=e32]: Clientes
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - img [ref=e35]
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: Admin Taller Automotriz Cartes
+            - paragraph [ref=e38]: admin@cartes.test
+        - button "Cerrar Sesión" [ref=e39] [cursor=pointer]:
+          - img [ref=e40]
+          - text: Cerrar Sesión
+    - generic [ref=e42]:
+      - banner [ref=e43]:
+        - generic [ref=e45]:
+          - generic:
+            - img
+          - textbox "Buscar patentes, órdenes, reportes..." [ref=e46]
+        - button [ref=e48] [cursor=pointer]:
+          - img [ref=e49]
+      - main [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - heading "Dashboard Operativo" [level=1] [ref=e55]
+              - paragraph [ref=e60]: Sistema Activo | Santiago Hub
+            - generic [ref=e61]:
+              - paragraph [ref=e62]: Cronología
+              - paragraph [ref=e63]: lunes, 20 de abril de 2026
+          - generic [ref=e64]:
+            - link "Nueva Recepción" [ref=e65] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/taller/cartes/receptions/create
+              - img [ref=e67]
+              - generic [ref=e70]:
+                - text: Nueva
+                - text: Recepción
+              - img [ref=e72]
+            - link "Tablero de Órdenes" [ref=e74] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/taller/cartes/work-orders
+              - img [ref=e76]
+              - generic [ref=e79]:
+                - text: Tablero de
+                - text: Órdenes
+            - link "Inventario de Stock" [ref=e80] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/taller/cartes/inventory
+              - img [ref=e82]
+              - generic [ref=e84]:
+                - text: Inventario
+                - text: de Stock
+            - link "Gestión de Clientes" [ref=e85] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/taller/cartes/clients
+              - img [ref=e87]
+              - generic [ref=e91]:
+                - text: Gestión de
+                - text: Clientes
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - heading "Actividad en Tiempo Real" [level=3] [ref=e95]
+              - generic [ref=e99]: En Vivo
+            - generic [ref=e100]:
+              - img [ref=e102]
+              - paragraph [ref=e104]: Esperando actualizaciones del tablero...
+            - list

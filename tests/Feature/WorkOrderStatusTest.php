@@ -29,6 +29,7 @@ class WorkOrderStatusTest extends TestCase
         $this->user = User::factory()->create([
             'tenant_id' => $tenant->id,
         ]);
+        $this->user->assignRole('Admin');
 
         $client = Client::create([
             'name' => 'Cliente Test',

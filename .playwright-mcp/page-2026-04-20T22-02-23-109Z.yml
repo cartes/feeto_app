@@ -1,0 +1,66 @@
+- generic [ref=e353]:
+  - complementary [ref=e354]:
+    - generic [ref=e355]:
+      - img [ref=e357]
+      - generic [ref=e359]:
+        - heading "Feeto" [level=1] [ref=e360]
+        - paragraph [ref=e361]: Gestión de Taller
+    - navigation [ref=e362]:
+      - link "Dashboard" [ref=e363] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/dashboard
+        - img [ref=e364]
+        - generic [ref=e366]: Dashboard
+      - link "Recepción" [ref=e367] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/receptions/create
+        - img [ref=e368]
+        - generic [ref=e370]: Recepción
+      - link "Órdenes" [ref=e371] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/work-orders
+        - img [ref=e372]
+        - generic [ref=e374]: Órdenes
+      - link "Inventario" [ref=e375] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/inventory
+        - img [ref=e376]
+        - generic [ref=e378]: Inventario
+      - link "Clientes" [ref=e379] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/clients
+        - img [ref=e380]
+        - generic [ref=e382]: Clientes
+      - link "Configuración" [ref=e383] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/settings
+        - img [ref=e384]
+        - generic [ref=e387]: Configuración
+    - generic [ref=e388]:
+      - generic [ref=e389]:
+        - img [ref=e390]
+        - generic [ref=e391]:
+          - paragraph [ref=e392]: Admin Taller Automotriz Cartes
+          - paragraph [ref=e393]: admin@cartes.test
+      - button "Cerrar Sesión" [ref=e394] [cursor=pointer]:
+        - img [ref=e395]
+        - text: Cerrar Sesión
+  - generic [ref=e397]:
+    - banner [ref=e398]:
+      - generic [ref=e400]:
+        - generic:
+          - img
+        - textbox "Buscar patentes, órdenes, reportes..." [ref=e401]
+      - button [ref=e403] [cursor=pointer]:
+        - img [ref=e404]
+    - main [ref=e406]:
+      - generic [ref=e408]:
+        - generic [ref=e409]: Escáner Inteligente
+        - generic [ref=e410]:
+          - heading "Gestión Más Inteligente." [level=1] [ref=e411]:
+            - text: Gestión
+            - text: Más Inteligente.
+          - paragraph [ref=e412]: Reconocimiento visual de vehículos
+        - button "Capturar Imagen" [ref=e413] [cursor=pointer]:
+          - img [ref=e414]
+          - generic [ref=e417]: Capturar Imagen
+        - generic [ref=e418]:
+          - paragraph [ref=e419]: Patente Detectada
+          - heading "---" [level=2] [ref=e420]
+        - generic [ref=e421]:
+          - button "Comenzar Escaneo" [ref=e422] [cursor=pointer]
+          - button "¿No puedes escanear? Ingresar manualmente" [ref=e423] [cursor=pointer]

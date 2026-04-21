@@ -1,5 +1,6 @@
 <?php
 
+use App\Multitenancy\SwitchPermissionTeamTask;
 use App\TenantFinder\PathOrDomainTenantFinder;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Events\CallQueuedListener;
@@ -39,6 +40,7 @@ return [
      */
     'switch_tenant_tasks' => [
         PrefixCacheTask::class,
+        SwitchPermissionTeamTask::class,
     ],
 
     /*

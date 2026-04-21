@@ -1,0 +1,171 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Feeto" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e8]
+        - generic [ref=e10]: Feeto
+      - navigation [ref=e11]:
+        - link "Características" [ref=e12] [cursor=pointer]:
+          - /url: "#features"
+        - link "Beneficios" [ref=e13] [cursor=pointer]:
+          - /url: "#benefits"
+        - link "Precios" [ref=e14] [cursor=pointer]:
+          - /url: "#pricing"
+      - link "Dashboard" [ref=e16] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/dashboard
+  - generic [ref=e18]:
+    - generic [ref=e19]: Software para talleres mecánicos
+    - heading "Simplifica la gestión de tu taller y haz crecer tu negocio más rápido." [level=1] [ref=e21]
+    - paragraph [ref=e22]: Controla tus órdenes de trabajo, agenda, inventario y clientes desde un único sistema digital diseñado específicamente para talleres mecánicos.
+    - generic [ref=e23]:
+      - link "Prueba Gratis 14 Días" [ref=e24] [cursor=pointer]:
+        - /url: "#"
+        - text: Prueba Gratis 14 Días
+        - img [ref=e25]
+      - link "Agendar Demo" [ref=e27] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e28]
+        - text: Agendar Demo
+      - button "Ya tengo cuenta →" [ref=e30] [cursor=pointer]
+    - paragraph [ref=e31]: Sin tarjeta de crédito · Cancela cuando quieras · Soporte en español
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Recepción
+          - generic [ref=e43]: "3"
+        - generic [ref=e44]:
+          - generic [ref=e46]: GKSD72
+          - paragraph [ref=e48]: Toyota Hilux · Rojo
+          - paragraph [ref=e49]: Mantención preventiva 10.000 km
+        - generic [ref=e50]:
+          - generic [ref=e52]: BBTR41
+          - paragraph [ref=e54]: Chevrolet Spark · Blanco
+          - paragraph [ref=e55]: Revisión de frenos y pastillas
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: En Proceso
+          - generic [ref=e59]: "2"
+        - generic [ref=e60]:
+          - generic [ref=e62]: PLMK98
+          - paragraph [ref=e64]: Nissan Frontier · Gris
+          - paragraph [ref=e65]: Cambio de correa de distribución
+        - generic [ref=e68]:
+          - generic [ref=e70]: RRTN55
+          - paragraph [ref=e72]: Ford Ranger · Negro
+          - paragraph [ref=e73]: Diagnóstico electrónico OBD
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e78]: Listo
+          - generic [ref=e79]: "2"
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]: CCBT19
+            - img [ref=e83]
+          - paragraph [ref=e85]: Suzuki Swift · Azul
+          - paragraph [ref=e86]: Afinación completa
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - generic [ref=e89]: DKSL77
+            - img [ref=e90]
+          - paragraph [ref=e92]: Honda CR-V · Plata
+          - paragraph [ref=e93]: Cambio de aceite y filtros
+  - generic [ref=e95]:
+    - generic [ref=e96]:
+      - paragraph [ref=e97]: Herramientas
+      - heading "Todo lo que necesita tu taller, en un solo lugar." [level=2] [ref=e98]
+      - paragraph [ref=e99]: Diseñado con talleres mecánicos reales para resolver los problemas reales del día a día.
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - img [ref=e103]
+        - heading "Tablero Kanban en Vivo" [level=3] [ref=e105]
+        - paragraph [ref=e106]: Coordina equipos y órdenes en un flujo visual. Mueve trabajos entre etapas con un clic y ten siempre el control del piso del taller.
+        - generic [ref=e107]:
+          - generic [ref=e108]: Tiempo Real
+          - generic [ref=e109]: WebSockets
+      - generic [ref=e110]:
+        - img [ref=e112]
+        - heading "Inventario Inteligente" [level=3] [ref=e114]
+        - paragraph [ref=e115]: Controla tu stock de repuestos y evita compras de urgencia. Alertas automáticas cuando el inventario alcanza niveles mínimos.
+        - generic [ref=e116]:
+          - generic [ref=e117]: Stock Mínimo
+          - generic [ref=e118]: Alertas
+      - generic [ref=e119]:
+        - generic [ref=e120]: IA
+        - img [ref=e122]
+        - heading "Recepción con IA" [level=3] [ref=e125]
+        - paragraph [ref=e126]: Escanea patentes con la cámara de tu celular y agiliza el ingreso. Gemini AI lee la patente, cruza la agenda y te muestra los datos del cliente en segundos.
+        - generic [ref=e127]:
+          - generic [ref=e128]: Gemini AI
+          - generic [ref=e129]: ALPR
+  - generic [ref=e132]:
+    - generic [ref=e133]:
+      - paragraph [ref=e134]: Beneficios
+      - heading "Menos papel, menos caos, más tiempo para trabajar." [level=2] [ref=e135]:
+        - text: Menos papel, menos caos,
+        - text: más tiempo para trabajar.
+      - paragraph [ref=e136]: Digitaliza tu taller en menos de un día. Sin instalaciones, sin servidores, sin dolores de cabeza. Accede desde cualquier computador o celular.
+      - list [ref=e137]:
+        - listitem [ref=e138]:
+          - img [ref=e140]
+          - generic [ref=e142]:
+            - paragraph [ref=e143]: Histórico completo de cada vehículo
+            - paragraph [ref=e144]: Accede al registro de todas las visitas y trabajos realizados a cada auto al instante.
+        - listitem [ref=e145]:
+          - img [ref=e147]
+          - generic [ref=e149]:
+            - paragraph [ref=e150]: Notificaciones en tiempo real
+            - paragraph [ref=e151]: Tu equipo se entera al instante cuando cambia el estado de una orden de trabajo.
+        - listitem [ref=e152]:
+          - img [ref=e154]
+          - generic [ref=e156]:
+            - paragraph [ref=e157]: Multi-sucursal desde el día uno
+            - paragraph [ref=e158]: Cada taller tiene su propio espacio aislado y seguro. Escala sin límites.
+    - generic [ref=e159]:
+      - generic [ref=e160]:
+        - paragraph [ref=e161]: 3×
+        - paragraph [ref=e162]: más rápido en recibir un vehículo
+      - generic [ref=e163]:
+        - paragraph [ref=e164]: "0"
+        - paragraph [ref=e165]: instalaciones requeridas
+      - generic [ref=e166]:
+        - paragraph [ref=e167]: "+200"
+        - paragraph [ref=e168]: talleres mecánicos ya confían en Feeto
+  - generic [ref=e170]:
+    - generic [ref=e171]:
+      - generic [ref=e172]:
+        - img [ref=e174]
+        - generic [ref=e176]:
+          - heading "Soporte Humano Real" [level=3] [ref=e177]
+          - paragraph [ref=e178]: Habla con personas reales en español. Sin bots, sin tickets que duermen meses.
+      - generic [ref=e179]:
+        - img [ref=e181]
+        - generic [ref=e183]:
+          - heading "Seguridad en la Nube" [level=3] [ref=e184]
+          - paragraph [ref=e185]: Tus datos siempre respaldados. Cumplimiento con estándares internacionales de privacidad.
+      - generic [ref=e186]:
+        - img [ref=e188]
+        - generic [ref=e190]:
+          - heading "Sin Instalaciones Complejas" [level=3] [ref=e191]
+          - paragraph [ref=e192]: Abre el navegador y empieza. Nada que instalar, configurar ni mantener.
+    - generic [ref=e193]:
+      - generic [ref=e194]:
+        - heading "¿Listo para digitalizar tu taller?" [level=3] [ref=e195]
+        - paragraph [ref=e196]: 14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
+      - link "Empezar Gratis Ahora" [ref=e197] [cursor=pointer]:
+        - /url: "#"
+        - text: Empezar Gratis Ahora
+        - img [ref=e198]
+  - contentinfo [ref=e200]:
+    - generic [ref=e201]:
+      - generic [ref=e202]:
+        - img [ref=e204]
+        - generic [ref=e206]: Feeto
+      - navigation [ref=e207]:
+        - link "Términos de Servicio" [ref=e208] [cursor=pointer]:
+          - /url: "#"
+        - link "Política de Privacidad" [ref=e209] [cursor=pointer]:
+          - /url: "#"
+        - link "Contacto" [ref=e210] [cursor=pointer]:
+          - /url: "#"
+      - paragraph [ref=e211]: © 2026 Feeto. Todos los derechos reservados.

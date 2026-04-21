@@ -1,0 +1,81 @@
+- generic [ref=e644]:
+  - complementary [ref=e645]:
+    - generic [ref=e646]:
+      - img [ref=e648]
+      - generic [ref=e650]:
+        - heading "Feeto" [level=1] [ref=e651]
+        - paragraph [ref=e652]: Gestión de Taller
+    - navigation [ref=e653]:
+      - link "Dashboard" [ref=e654] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/dashboard
+        - img [ref=e655]
+        - generic [ref=e657]: Dashboard
+      - link "Recepción" [ref=e658] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/receptions/create
+        - img [ref=e659]
+        - generic [ref=e661]: Recepción
+      - link "Órdenes" [ref=e662] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/work-orders
+        - img [ref=e663]
+        - generic [ref=e665]: Órdenes
+      - link "Inventario" [ref=e666] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/inventory
+        - img [ref=e667]
+        - generic [ref=e669]: Inventario
+      - link "Clientes" [ref=e670] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/clients
+        - img [ref=e671]
+        - generic [ref=e673]: Clientes
+      - link "Configuración" [ref=e674] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/taller/cartes/settings
+        - img [ref=e675]
+        - generic [ref=e678]: Configuración
+    - generic [ref=e679]:
+      - generic [ref=e680]:
+        - img [ref=e681]
+        - generic [ref=e682]:
+          - paragraph [ref=e683]: Admin Taller Automotriz Cartes
+          - paragraph [ref=e684]: admin@cartes.test
+      - button "Cerrar Sesión" [ref=e685] [cursor=pointer]:
+        - img [ref=e686]
+        - text: Cerrar Sesión
+  - generic [ref=e688]:
+    - banner [ref=e689]:
+      - generic [ref=e691]:
+        - generic:
+          - img
+        - textbox "Buscar patentes, órdenes, reportes..." [ref=e692]
+      - button [ref=e694] [cursor=pointer]:
+        - img [ref=e695]
+    - main [ref=e697]:
+      - generic [ref=e698]:
+        - generic [ref=e699]:
+          - generic [ref=e700]:
+            - heading "Configuración" [level=1] [ref=e701]
+            - paragraph [ref=e702]: Administra usuarios, sucursales y ajustes del taller
+          - generic [ref=e705]: Taller Automotriz Cartes
+        - generic [ref=e706]:
+          - button "Usuarios (1/2)" [ref=e707] [cursor=pointer]
+          - button "Sucursales (0)" [ref=e708] [cursor=pointer]
+        - generic [ref=e709]:
+          - button "Nuevo Usuario" [ref=e711] [cursor=pointer]:
+            - img [ref=e712]
+            - text: Nuevo Usuario
+          - table [ref=e715]:
+            - rowgroup [ref=e716]:
+              - row "Usuario Email Rol Acción" [ref=e717]:
+                - columnheader "Usuario" [ref=e718]
+                - columnheader "Email" [ref=e719]
+                - columnheader "Rol" [ref=e720]
+                - columnheader "Acción" [ref=e721]
+            - rowgroup [ref=e722]:
+              - row "A Admin Taller Automotriz Cartes admin@cartes.test Admin Eliminar" [ref=e723]:
+                - cell "A Admin Taller Automotriz Cartes" [ref=e724]:
+                  - generic [ref=e725]:
+                    - generic [ref=e726]: A
+                    - generic [ref=e727]: Admin Taller Automotriz Cartes
+                - cell "admin@cartes.test" [ref=e728]
+                - cell "Admin" [ref=e729]:
+                  - generic [ref=e730]: Admin
+                - cell "Eliminar" [ref=e731]:
+                  - button "Eliminar" [ref=e732] [cursor=pointer]

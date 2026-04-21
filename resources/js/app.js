@@ -1,17 +1,37 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { route as ziggyRoute, ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+let rememberedTenantSlug = window.history.state?.page?.props?.tenant?.slug || null;
 
 const routeParameterNames = (routeName) => {
     const uri = window.Ziggy?.routes?.[routeName]?.uri || '';
 
     return [...uri.matchAll(/{([^}?]+)\??}/g)].map((match) => match[1]);
+};
+
+const tenantSlugFromPath = (path) => {
+    const tenantPathMatch = path.match(/^\/taller\/([^/]+)/);
+
+    return tenantPathMatch?.[1] ? decodeURIComponent(tenantPathMatch[1]) : null;
+};
+
+const rememberTenantSlug = (page = null) => {
+    rememberedTenantSlug = page?.props?.tenant?.slug
+        || tenantSlugFromPath(page?.url || '')
+        || tenantSlugFromPath(window.location.pathname)
+        || rememberedTenantSlug;
+};
+
+const currentTenantSlug = () => {
+    rememberTenantSlug(window.history.state?.page);
+
+    return rememberedTenantSlug;
 };
 
 const withTenantRouteDefault = (routeName, params) => {
@@ -25,25 +45,25 @@ const withTenantRouteDefault = (routeName, params) => {
         return params;
     }
 
-    const currentTenantSlug = ziggyRoute().params.tenantBySlug;
+    const tenantSlug = currentTenantSlug();
 
-    if (!currentTenantSlug) {
+    if (!tenantSlug) {
         return params;
     }
 
     if (params === undefined || params === null) {
-        return { tenantBySlug: currentTenantSlug };
+        return { tenantBySlug: tenantSlug };
     }
 
     if (Array.isArray(params)) {
-        return [currentTenantSlug, ...params];
+        return [tenantSlug, ...params];
     }
 
     if (['string', 'number'].includes(typeof params)) {
-        return parameterNames.length === 1 ? params : [currentTenantSlug, params];
+        return parameterNames.length === 1 ? params : [tenantSlug, params];
     }
 
-    return { tenantBySlug: currentTenantSlug, ...params };
+    return { tenantBySlug: tenantSlug, ...params };
 };
 
 const routeWithTenantDefaults = (routeName, params, absolute, config) => ziggyRoute(
@@ -54,6 +74,8 @@ const routeWithTenantDefaults = (routeName, params, absolute, config) => ziggyRo
 );
 
 window.route = routeWithTenantDefaults;
+router.on('beforeUpdate', rememberTenantSlug);
+router.on('navigate', rememberTenantSlug);
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

@@ -3,12 +3,13 @@
 namespace Tests\Traits;
 
 use App\Models\Tenant;
+use App\Services\TenantSetupService;
 use Illuminate\Support\Facades\URL;
 
 trait CreatesTenant
 {
     /**
-     * Creates a dummy tenant and makes it current.
+     * Creates a dummy tenant, provisions roles/permissions, and makes it current.
      */
     protected function setUpTenant(): Tenant
     {
@@ -23,6 +24,8 @@ trait CreatesTenant
 
         $tenant->makeCurrent();
         URL::defaults(['tenantBySlug' => $tenant->slug]);
+
+        app(TenantSetupService::class)->provisionTenant($tenant);
 
         return $tenant;
     }

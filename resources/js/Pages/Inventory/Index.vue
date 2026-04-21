@@ -1,8 +1,10 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
+const page = usePage();
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const props = defineProps({
     products: Object,
     filters: Object,
@@ -18,7 +20,7 @@ let searchTimeout;
 watch(search, (value) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-        router.get(route('inventory.index'), { search: value }, {
+        router.get(route('inventory.index', tenantRouteParams.value), { search: value }, {
             preserveState: true,
             replace: true,
         });
@@ -59,12 +61,12 @@ const openEditModal = (product) => {
 
 const handleSubmit = () => {
     if (editingProduct.value) {
-        form.put(route('inventory.update', editingProduct.value.id), {
+        form.put(route('inventory.update', { ...tenantRouteParams.value, product: editingProduct.value.id }), {
             onSuccess: () => { showModal.value = false; },
             preserveScroll: true,
         });
     } else {
-        form.post(route('inventory.store'), {
+        form.post(route('inventory.store', tenantRouteParams.value), {
             onSuccess: () => { showModal.value = false; },
             preserveScroll: true,
         });
@@ -72,7 +74,7 @@ const handleSubmit = () => {
 };
 
 const handleDelete = (product) => {
-    router.delete(route('inventory.destroy', product.id), {
+    router.delete(route('inventory.destroy', { ...tenantRouteParams.value, product: product.id }), {
         preserveScroll: true,
         onSuccess: () => { showDeleteConfirm.value = null; },
     });

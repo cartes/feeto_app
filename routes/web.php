@@ -21,17 +21,22 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\TallerDashboardController;
+use App\Http\Controllers\TenantSettingsController;
+use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
 use App\Http\Middleware\SetTenantRouteDefaults;
 use App\Models\Tenant;
+use App\Services\TenantSetupService;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,54 +85,92 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
     ->group(function () {
         Route::get('/dashboard', TallerDashboardController::class)->name('taller.dashboard');
 
-        // Nueva Recepción
-        Route::get('/receptions/create', [ReceptionController::class, 'create'])->name('receptions.create');
+        // Nueva Recepción — Admin y Recepcionista
+        Route::get('/receptions/create', [ReceptionController::class, 'create'])
+            ->middleware('role:Admin|Recepcionista')
+            ->name('receptions.create');
         Route::post('/receptions', [ReceptionController::class, 'store'])
-            ->middleware('throttle:20,1')
+            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista'])
             ->name('receptions.store');
         Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
-            ->middleware('throttle:30,1')
+            ->middleware(['throttle:30,1', 'role:Admin|Recepcionista'])
             ->name('receptions.preview');
-        Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])->name('receptions.store_order');
+        Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])
+            ->middleware('role:Admin|Recepcionista')
+            ->name('receptions.store_order');
 
-        // OCR de Patentes (Antiguo - se puede dejar para retrocompatibilidad por ahora)
+        // OCR de Patentes
         Route::post('/ocr/process', [OcrController::class, 'process'])
-            ->middleware('throttle:20,1')
+            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista'])
             ->name('ocr.process');
 
-        // Work Orders / Kanban
+        // Work Orders / Kanban — Admin, Recepcionista y Mecanico (con restricciones granulares en controlador)
         Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
         Route::get('/work-orders/{workOrder}', [WorkOrderController::class, 'show'])->name('work-orders.show');
-        Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status.update');
-        Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])->name('work-orders.items.store');
-        Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])->name('work-orders.items.destroy');
+        Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])
+            ->middleware('role:Admin|Recepcionista|Mecanico')
+            ->name('work-orders.status.update');
+        Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])
+            ->middleware('role:Admin|Mecanico')
+            ->name('work-orders.items.store');
+        Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])
+            ->middleware('role:Admin|Mecanico')
+            ->name('work-orders.items.destroy');
 
         // API Modals
         Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
         Route::post('/api/work-orders/{id}/images', [WorkOrderModalController::class, 'uploadImage'])->name('api.work-orders.images.upload');
         Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
 
-        Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])->name('api.work-orders.items.store');
-        Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])->name('api.work-orders.items.destroy');
+        Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])
+            ->middleware('role:Admin|Mecanico')
+            ->name('api.work-orders.items.store');
+        Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])
+            ->middleware('role:Admin|Mecanico')
+            ->name('api.work-orders.items.destroy');
 
         Route::get('/api/products', [ProductController::class, 'index'])->name('api.products.index');
 
-        // Inventory
+        // Inventory — solo Admin
         Route::resource('inventory', InventoryController::class)
             ->only(['index', 'store', 'update', 'destroy'])
-            ->parameters(['inventory' => 'product']);
+            ->parameters(['inventory' => 'product'])
+            ->middleware('role:Admin');
 
-        // Branches
+        // Branches — solo Admin
         Route::resource('branches', BranchController::class)
             ->only(['index', 'store', 'update', 'destroy'])
-            ->parameters(['branches' => 'branch']);
+            ->parameters(['branches' => 'branch'])
+            ->middleware('role:Admin');
 
-        // Clients
-        Route::resource('clients', ClientController::class)->only(['index', 'show']);
+        // Clients — Admin y Recepcionista
+        Route::resource('clients', ClientController::class)
+            ->only(['index', 'show'])
+            ->middleware('role:Admin|Recepcionista');
 
-        // Appointments & Smart Reception
-        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-        Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])->name('api.appointments.scan-plate');
+        // Appointments & Smart Reception — Admin y Recepcionista
+        Route::get('/appointments', [AppointmentController::class, 'index'])
+            ->middleware('role:Admin|Recepcionista')
+            ->name('appointments.index');
+        Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])
+            ->middleware('role:Admin|Recepcionista')
+            ->name('api.appointments.scan-plate');
+
+        // Gestión de usuarios del taller — solo Admin
+        Route::get('/users', [TenantUserController::class, 'index'])
+            ->middleware('role:Admin')
+            ->name('tenant.users.index');
+        Route::post('/users', [TenantUserController::class, 'store'])
+            ->middleware('role:Admin')
+            ->name('tenant.users.store');
+        Route::delete('/users/{user}', [TenantUserController::class, 'destroy'])
+            ->middleware('role:Admin')
+            ->name('tenant.users.destroy');
+
+        // Configuración del taller — solo Admin
+        Route::get('/settings', [TenantSettingsController::class, 'index'])
+            ->middleware('role:Admin')
+            ->name('taller.settings');
 
         // Perfil
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -206,3 +249,64 @@ Route::post('/webhooks/mercadopago', MercadoPagoWebhookController::class)
     ->withoutMiddleware([PreventRequestForgery::class]);
 
 require __DIR__.'/auth.php';
+
+// *** RUTA TEMPORAL DE DIAGNÓSTICO — eliminar en producción ***
+if (config('app.env') === 'local') {
+    Route::get('/debug/roles', function () {
+        $results = [];
+
+        $tenants = Tenant::with('users.roles')->get();
+
+        foreach ($tenants as $tenant) {
+            $tenant->makeCurrent();
+            $tenantData = [
+                'tenant' => $tenant->name,
+                'slug' => $tenant->slug,
+                'roles_en_bd' => Role::pluck('name'),
+                'users' => [],
+            ];
+
+            foreach ($tenant->users as $user) {
+                $tenantData['users'][] = [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->pluck('name'),
+                ];
+            }
+
+            $results[] = $tenantData;
+            Tenant::forgetCurrent();
+        }
+
+        return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+    })->name('debug.roles');
+
+    Route::get('/debug/fix-roles', function () {
+        $tenants = Tenant::with('users.roles')->get();
+        $fixed = [];
+
+        foreach ($tenants as $tenant) {
+            $tenant->makeCurrent();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+            // Crear roles si no existen
+            app(TenantSetupService::class)->provisionTenant($tenant);
+
+            foreach ($tenant->users as $user) {
+                $user->refresh();
+                if ($user->roles->isEmpty()) {
+                    $user->assignRole('Admin');
+                    $user->refresh();
+                    $fixed[] = "Asignado Admin a {$user->name} en {$tenant->name}";
+                }
+            }
+
+            Tenant::forgetCurrent();
+        }
+
+        return response()->json([
+            'mensaje' => 'Fix completado',
+            'acciones' => $fixed ?: ['Sin cambios necesarios'],
+        ], 200, [], JSON_PRETTY_PRINT);
+    })->name('debug.fix-roles');
+}
