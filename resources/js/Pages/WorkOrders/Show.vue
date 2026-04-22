@@ -9,6 +9,7 @@ const props = defineProps({
     workOrder: Object,
     products: Array,
     services: Array,
+    discountPolicy: Object,
 });
 
 const planAccess = computed(() => page.props.planAccess ?? null);
@@ -97,6 +98,7 @@ const addForm = useForm({
     description: '',
     quantity: 1,
     unit_price: '',
+    discount_percent: 0,
 });
 
 const sendQuoteForm = useForm({});
@@ -126,6 +128,10 @@ const filteredServices = computed(() => {
         || service.code?.toLowerCase().includes(query)
     ));
 });
+
+const previewSubtotal = computed(() => Number(addForm.quantity || 0) * Number(addForm.unit_price || 0));
+const previewDiscountAmount = computed(() => previewSubtotal.value * (Number(addForm.discount_percent || 0) / 100));
+const previewTotal = computed(() => previewSubtotal.value - previewDiscountAmount.value);
 
 const selectMode = (mode) => {
     selectedMode.value = mode;
@@ -178,6 +184,7 @@ const selectService = (service) => {
 const resetForm = () => {
     addForm.reset();
     addForm.quantity = 1;
+    addForm.discount_percent = 0;
     selectedProduct.value = null;
     selectedService.value = null;
     productSearch.value = '';
@@ -331,6 +338,9 @@ const sendQuote = () => {
                                         <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
                                         <p v-if="item.product?.sku" class="mt-1 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
                                         <p v-if="item.service?.code" class="mt-1 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
+                                        <p v-if="Number(item.discount_percent) > 0" class="mt-1 text-[10px] font-black uppercase tracking-widest text-rose-500">
+                                            Desc. {{ item.discount_percent }}% · ahorro {{ formatCurrency(item.discount_amount) }}
+                                        </p>
                                     </td>
                                     <td class="px-4 py-4">
                                         <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
@@ -338,7 +348,12 @@ const sendQuote = () => {
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>
-                                    <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ formatCurrency(item.unit_price) }}</td>
+                                    <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">
+                                        <span v-if="Number(item.discount_percent) > 0" class="block text-[10px] text-gray-400 line-through">
+                                            {{ formatCurrency(item.original_unit_price) }}
+                                        </span>
+                                        <span>{{ formatCurrency(item.unit_price) }}</span>
+                                    </td>
                                     <td class="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</td>
                                     <td class="px-4 py-4 text-right">
                                         <button
@@ -371,6 +386,14 @@ const sendQuote = () => {
                             <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#F9A826] hover:text-[#dd9219]">
                                 Gestionar Servicios
                             </Link>
+                        </div>
+
+                        <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Política de descuentos</p>
+                            <p class="mt-2 text-sm font-medium text-amber-900">
+                                Hasta {{ props.discountPolicy?.threshold ?? 0 }}% se puede aplicar sin aprobación. Sobre ese umbral se requiere rol
+                                {{ (props.discountPolicy?.approver_roles || []).join(' o ') }}.
+                            </p>
                         </div>
 
                         <div class="grid grid-cols-3 gap-2">
@@ -470,7 +493,7 @@ const sendQuote = () => {
                                 <p v-if="addForm.errors.description" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.description }}</p>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cantidad</label>
                                     <input
@@ -493,11 +516,33 @@ const sendQuote = () => {
                                     />
                                     <p v-if="addForm.errors.unit_price" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.unit_price }}</p>
                                 </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Descuento (%)</label>
+                                    <input
+                                        v-model.number="addForm.discount_percent"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
+                                    />
+                                    <p v-if="addForm.errors.discount_percent" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.discount_percent }}</p>
+                                </div>
                             </div>
 
                             <div class="flex items-center justify-between rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Subtotal</span>
-                                <span class="text-base font-black text-orange-600">{{ formatCurrency((addForm.quantity || 0) * (addForm.unit_price || 0)) }}</span>
+                                <div>
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Subtotal</span>
+                                    <p v-if="Number(addForm.discount_percent) > 0" class="mt-1 text-[10px] font-bold uppercase tracking-widest text-rose-500">
+                                        Descuento {{ addForm.discount_percent }}% · ahorro {{ formatCurrency(previewDiscountAmount) }}
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <span v-if="Number(addForm.discount_percent) > 0" class="block text-xs font-semibold text-gray-400 line-through">
+                                        {{ formatCurrency(previewSubtotal) }}
+                                    </span>
+                                    <span class="text-base font-black text-orange-600">{{ formatCurrency(previewTotal) }}</span>
+                                </div>
                             </div>
 
                             <button

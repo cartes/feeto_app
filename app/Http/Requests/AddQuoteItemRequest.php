@@ -26,6 +26,7 @@ class AddQuoteItemRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:255'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
             'unit_price' => ['nullable', 'numeric', 'min:0'],
+            'discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 
@@ -44,5 +45,17 @@ class AddQuoteItemRequest extends FormRequest
                 $validator->errors()->add('description', 'Debes ingresar una descripción o seleccionar un repuesto o servicio.');
             }
         });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'discount_percent.numeric' => 'El descuento debe ser numérico.',
+            'discount_percent.min' => 'El descuento no puede ser negativo.',
+            'discount_percent.max' => 'El descuento no puede superar el 100%.',
+        ];
     }
 }

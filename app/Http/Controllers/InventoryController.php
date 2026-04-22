@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Tenant;
+use App\Services\PlanFeatureService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -42,6 +44,7 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:100'],
+            'type' => ['nullable', 'string', 'in:repuesto_nacional,repuesto_internacional,insumo'],
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
@@ -62,6 +65,7 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:100'],
+            'type' => ['nullable', 'string', 'in:repuesto_nacional,repuesto_internacional,insumo'],
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
@@ -72,6 +76,49 @@ class InventoryController extends Controller
         $product->update($validated);
 
         return redirect()->route('inventory.index')->with('success', 'Repuesto actualizado.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $inventory)
+    {
+        $tenant = Tenant::current();
+        $isAdvanced = $tenant?->hasFeature(PlanFeatureService::FEATURE_ADVANCED_INVENTORY) ?? false;
+
+        $productType = $inventory->type ?? 'repuesto_nacional';
+
+        $similares = Product::where('id', '!=', $inventory->id)
+            ->where('type', $productType)
+            ->limit(5)
+            ->get();
+
+        $relacionados = [];
+        if ($isAdvanced) {
+            $price = $inventory->selling_price;
+            $minPrice = $price * 0.8;
+            $maxPrice = $price * 1.2;
+
+            $relacionados = Product::where('id', '!=', $inventory->id)
+                ->whereBetween('selling_price', [$minPrice, $maxPrice])
+                ->limit(5)
+                ->get();
+        }
+
+        // Return JSON explicitly since the frontend might request it via API, or we can just render the page if it's a direct visit.
+        if (request()->wantsJson()) {
+            return response()->json([
+                'product' => $inventory,
+                'similares' => $similares,
+                'relacionados' => $relacionados,
+            ]);
+        }
+
+        return Inertia::render('Inventory/Show', [
+            'product' => $inventory,
+            'similares' => $similares,
+            'relacionados' => $relacionados,
+        ]);
     }
 
     /**

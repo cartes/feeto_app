@@ -24,7 +24,9 @@ class TenantUserController extends Controller
             ->with('roles')
             ->get(['id', 'name', 'email', 'created_at']);
 
-        $roles = Role::all(['id', 'name']);
+        $roles = Role::query()
+            ->whereIn('name', ['Admin', 'Recepcionista', 'Supervisor', 'Jefe', 'Mecanico'])
+            ->get(['id', 'name']);
 
         return Inertia::render('Users/Index', [
             'users' => $users->map(fn (User $user) => [

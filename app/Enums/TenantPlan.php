@@ -141,6 +141,7 @@ enum TenantPlan: string
                 PlanFeatureService::FEATURE_ADVANCED_INVENTORY,
                 PlanFeatureService::FEATURE_SALES_MANAGEMENT,
                 PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
+                PlanFeatureService::FEATURE_COMMERCIAL_REPORTS,
             ],
             self::EMPRESA => [
                 PlanFeatureService::FEATURE_AI_RECEPTION,

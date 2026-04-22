@@ -25,6 +25,9 @@ class QuoteItem extends Model
         'item_type',
         'description',
         'quantity',
+        'original_unit_price',
+        'discount_percent',
+        'discount_amount',
         'unit_price',
         'total_price',
     ];
@@ -34,6 +37,9 @@ class QuoteItem extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2',
+        'original_unit_price' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
     ];

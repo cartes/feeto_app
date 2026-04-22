@@ -27,6 +27,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    overdueInvoices: {
+        type: Array,
+        default: () => [],
+    },
     today: {
         type: String,
         default: '',
@@ -43,6 +47,7 @@ const dismissedKey = 'dismissed_activities';
 const tenantId = computed(() => page.props.tenant?.id ?? page.props.auth?.user?.tenant_id ?? null);
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
+const roles = computed(() => page.props.auth?.user?.roles ?? []);
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canManageAppointments = computed(() => hasPermission('appointments.manage'));
 const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
@@ -50,6 +55,7 @@ const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-
 const canManageInventory = computed(() => hasPermission('inventory.manage'));
 const canManageCustomers = computed(() => hasPermission('customers.manage'));
 const canViewReports = computed(() => hasPermission('reports.view'));
+const isAdmin = computed(() => roles.value.includes('Admin'));
 const planAccess = computed(() => page.props.planAccess ?? {});
 const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
 const calendarSchedulingEnabled = computed(() => planAccess.value?.calendar_scheduling ?? false);
@@ -57,6 +63,8 @@ const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quot
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 const calendarUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.calendar_scheduling ?? 'Mejora tu plan para acceder a esta función');
 const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
+
+const inventoryAlerts = ref([]);
 
 const getDismissed = () => {
     if (typeof window === 'undefined' || !window.localStorage) {
@@ -162,6 +170,30 @@ onMounted(() => {
     window.Echo.private(`taller.${tenantId.value}`)
         .listen('.kanban.updated', (event) => {
             recentActivities.value.unshift(event);
+        })
+        .listen('StockDepleted', (event) => {
+            inventoryAlerts.value.unshift({
+                id: Date.now(),
+                type: 'danger',
+                title: 'Quiebre de Stock',
+                message: `El producto ${event.product.name} (SKU: ${event.product.sku}) se ha quedado sin stock físico.`
+            });
+        })
+        .listen('SafetyStockReached', (event) => {
+            inventoryAlerts.value.unshift({
+                id: Date.now(),
+                type: 'warning',
+                title: 'Stock de Seguridad Alcanzado',
+                message: `El producto ${event.product.name} (SKU: ${event.product.sku}) llegó a su stock mínimo de ${event.product.min_stock}.`
+            });
+        })
+        .listen('MinimumMarginWarning', (event) => {
+            inventoryAlerts.value.unshift({
+                id: Date.now(),
+                type: 'danger',
+                title: 'Alerta de Margen Mínimo',
+                message: `La venta del producto ${event.product.name} tiene un margen muy bajo (${event.item.unit_price} vs costo ${event.product.cost_price}).`
+            });
         });
 });
 
@@ -211,6 +243,29 @@ onUnmounted(() => {
                     </div>
                     <p class="mt-6 text-lg font-black uppercase tracking-tight text-gray-900">{{ item.label }}</p>
                 </Link>
+            </div>
+
+            <!-- Alertas de Inventario -->
+            <div v-if="inventoryAlerts.length > 0" class="space-y-3">
+                <div 
+                    v-for="alert in inventoryAlerts" 
+                    :key="alert.id"
+                    :class="[
+                        'rounded-2xl border p-4 flex justify-between items-start',
+                        alert.type === 'danger' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'
+                    ]"
+                >
+                    <div>
+                        <p :class="['text-sm font-black', alert.type === 'danger' ? 'text-red-900' : 'text-amber-900']">{{ alert.title }}</p>
+                        <p :class="['mt-1 text-sm', alert.type === 'danger' ? 'text-red-700' : 'text-amber-700']">{{ alert.message }}</p>
+                    </div>
+                    <button 
+                        @click="inventoryAlerts = inventoryAlerts.filter(a => a.id !== alert.id)"
+                        :class="['text-xs font-bold uppercase tracking-wide px-2 py-1 rounded hover:bg-white/50 transition', alert.type === 'danger' ? 'text-red-600' : 'text-amber-600']"
+                    >
+                        Descartar
+                    </button>
+                </div>
             </div>
 
             <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm">
@@ -436,6 +491,54 @@ onUnmounted(() => {
                         </li>
                     </ul>
                 </div>
+            </div>
+
+            <div
+                v-if="isAdmin"
+                class="rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm"
+            >
+                <div class="mb-5 flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Cobranza</p>
+                        <h2 class="mt-1 text-2xl font-black text-gray-900">Facturas atrasadas</h2>
+                    </div>
+                    <Link
+                        :href="route('invoices.index', tenantRouteParams)"
+                        class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-rose-600"
+                    >
+                        Ver facturas
+                    </Link>
+                </div>
+
+                <div
+                    v-if="overdueInvoices.length === 0"
+                    class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center"
+                >
+                    <p class="text-sm font-bold text-gray-500">Sin facturas atrasadas</p>
+                    <p class="mt-1 text-sm text-gray-400">Aquí aparecerán los clientes con mora activa.</p>
+                </div>
+
+                <ul v-else class="grid gap-3 lg:grid-cols-2">
+                    <li
+                        v-for="invoice in overdueInvoices"
+                        :key="invoice.id"
+                        class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-black text-gray-900">{{ invoice.invoice_number || `Factura #${invoice.id}` }}</p>
+                                <p class="mt-1 text-sm text-gray-500">{{ invoice.client_name }}</p>
+                                <p class="mt-1 text-xs font-bold uppercase tracking-wide text-rose-500">
+                                    {{ invoice.days_overdue }} día<span v-if="invoice.days_overdue !== 1">s</span> de atraso
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-black text-rose-500">{{ new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(invoice.amount_due) }}</p>
+                                <p class="mt-1 text-xs text-gray-400">Vence {{ invoice.due_at }}</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </TallerLayout>

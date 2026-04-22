@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\ClientInvoice;
 use App\Models\QuoteEvent;
 use App\Models\Tenant;
 use App\Models\User;
@@ -88,12 +89,36 @@ class TallerDashboardController extends Controller
             ->map(fn (Appointment $appointment): array => $this->serializeNotification($appointment))
             ->values();
 
+        $overdueInvoices = $user->hasRole('Admin') && $tenant->hasFeature(PlanFeatureService::FEATURE_SALES_MANAGEMENT)
+            ? ClientInvoice::query()
+                ->with('client')
+                ->whereIn('status', [
+                    ClientInvoice::STATUS_PENDING,
+                    ClientInvoice::STATUS_PARTIAL,
+                    ClientInvoice::STATUS_OVERDUE,
+                ])
+                ->whereDate('due_at', '<', now()->toDateString())
+                ->where('amount_due', '>', 0)
+                ->orderBy('due_at')
+                ->limit(5)
+                ->get()
+                ->map(fn (ClientInvoice $invoice): array => [
+                    'id' => $invoice->id,
+                    'invoice_number' => $invoice->invoice_number,
+                    'client_name' => $invoice->client?->name ?? 'Cliente',
+                    'amount_due' => (float) $invoice->amount_due,
+                    'due_at' => $invoice->due_at?->toDateString(),
+                    'days_overdue' => (int) $invoice->due_at->diffInDays(now()),
+                ])
+            : collect();
+
         return Inertia::render('Dashboard', [
             'initialActivities' => $initialActivities,
             'quoteNotifications' => $quoteNotifications,
             'appointments' => $serializedAppointments,
             'todayAppointments' => $todayAppointments,
             'appointmentNotifications' => $appointmentNotifications,
+            'overdueInvoices' => $overdueInvoices,
             'today' => now()->toDateString(),
             'tenant' => $tenant->only('id', 'name', 'slug'),
             'calendarRange' => [

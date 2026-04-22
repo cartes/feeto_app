@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\ClientInvoice;
 use App\Models\Quote;
+use App\Models\Tenant;
+use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -41,12 +44,19 @@ class ClientController extends Controller
      */
     public function show(Client $client): Response
     {
-        $client->load('vehicles.workOrders.quote.items');
+        $client->load([
+            'vehicles.workOrders.quote.items',
+            'invoices.workOrder.vehicle',
+            'invoices.quote',
+        ]);
 
         $quotes = $client->vehicles
             ->flatMap(fn ($vehicle) => $vehicle->workOrders)
             ->map(fn ($workOrder) => $workOrder->quote)
             ->filter();
+
+        $invoices = $client->invoices->sortByDesc('due_at')->values();
+        $tenant = Tenant::current();
 
         return Inertia::render('Clients/Show', [
             'client' => $client,
@@ -60,6 +70,27 @@ class ClientController extends Controller
                     ->where('status', Quote::STATUS_ACCEPTED)
                     ->sum('subtotal_amount'),
             ],
+            'invoiceSummary' => [
+                'total_invoices' => $invoices->count(),
+                'overdue_invoices' => $invoices->filter(fn (ClientInvoice $invoice): bool => $invoice->isOverdue())->count(),
+                'total_amount' => (float) $invoices->sum('amount_total'),
+                'amount_due' => (float) $invoices->sum('amount_due'),
+                'overdue_amount' => (float) $invoices
+                    ->filter(fn (ClientInvoice $invoice): bool => $invoice->isOverdue())
+                    ->sum('amount_due'),
+            ],
+            'invoices' => $invoices->map(fn (ClientInvoice $invoice): array => [
+                'id' => $invoice->id,
+                'invoice_number' => $invoice->invoice_number,
+                'status' => $invoice->status,
+                'amount_total' => (float) $invoice->amount_total,
+                'amount_due' => (float) $invoice->amount_due,
+                'issued_at' => $invoice->issued_at?->toDateString(),
+                'due_at' => $invoice->due_at?->toDateString(),
+                'last_whatsapp_reminder_sent_at' => $invoice->last_whatsapp_reminder_sent_at?->toISOString(),
+                'work_order_id' => $invoice->work_order_id,
+            ])->values(),
+            'salesManagementEnabled' => $tenant?->hasFeature(PlanFeatureService::FEATURE_SALES_MANAGEMENT) ?? false,
         ]);
     }
 }

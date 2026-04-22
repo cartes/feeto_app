@@ -137,7 +137,7 @@ const handleImageUpload = async (event) => {
 
 onMounted(() => {
     if (window.Echo) {
-        window.Echo.channel(`tenant.${tenantId}.reception`)
+        window.Echo.private(`tenant.${tenantId}.reception`)
             .listen('PatentRecognized', (e) => {
                 isAnalyzing.value = false;
                 if (e.patente === "ERROR_FORMATO") {
@@ -156,7 +156,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     if (window.Echo) {
-        window.Echo.leaveChannel(`tenant.${tenantId}.reception`);
+        window.Echo.leave(`tenant.${tenantId}.reception`);
     }
 });
 </script>

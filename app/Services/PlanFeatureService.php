@@ -75,7 +75,7 @@ class PlanFeatureService
             self::FEATURE_COMMERCIAL_REPORTS => [
                 'label' => 'Reportes comerciales',
                 'description' => 'Compatibilidad con el gating legacy de reportes avanzados.',
-                'min_plan' => 'Empresarial',
+                'min_plan' => 'Profesional',
             ],
         ];
     }

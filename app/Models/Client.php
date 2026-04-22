@@ -18,10 +18,23 @@ class Client extends Model
         'name',
         'phone',
         'email',
+        'max_credit_limit',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'max_credit_limit' => 'decimal:2',
     ];
 
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(ClientInvoice::class);
     }
 }

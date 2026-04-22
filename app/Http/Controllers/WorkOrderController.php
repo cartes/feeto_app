@@ -18,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Multitenancy\Models\Tenant;
@@ -70,6 +71,10 @@ class WorkOrderController extends Controller
             'workOrder' => $workOrder,
             'products' => $products,
             'services' => $services,
+            'discountPolicy' => [
+                'threshold' => Tenant::current()?->maxDiscountWithoutApproval() ?? 10,
+                'approver_roles' => ['Jefe', 'Supervisor'],
+            ],
         ]);
     }
 
@@ -85,6 +90,8 @@ class WorkOrderController extends Controller
         $quote = $this->quoteFor($workOrder);
 
         $itemPayload = $this->buildItemPayload($validated);
+        $this->ensureDiscountIsAllowed($request, $itemPayload['discount_percent']);
+
         $quote->items()->create($itemPayload);
 
         $this->markQuoteAsDraft($quote);
@@ -92,6 +99,8 @@ class WorkOrderController extends Controller
         $this->recordQuoteEvent($quote, 'staff', 'item_added', 'Se agregó un ítem a la cotización.', [
             'description' => $itemPayload['description'],
             'item_type' => $itemPayload['item_type'],
+            'discount_percent' => $itemPayload['discount_percent'],
+            'discount_amount' => $itemPayload['discount_amount'],
         ]);
 
         return back();
@@ -203,23 +212,27 @@ class WorkOrderController extends Controller
         $service = null;
         $itemType = QuoteItem::TYPE_MANUAL;
         $description = (string) ($validated['description'] ?? '');
-        $unitPrice = (float) ($validated['unit_price'] ?? 0);
+        $baseUnitPrice = (float) ($validated['unit_price'] ?? 0);
 
         if (! empty($validated['product_id'])) {
             $product = Product::query()->findOrFail($validated['product_id']);
             $itemType = QuoteItem::TYPE_PRODUCT;
             $description = $product->name;
-            $unitPrice = (float) $product->selling_price;
+            $baseUnitPrice = (float) $product->selling_price;
         }
 
         if (! empty($validated['service_id'])) {
             $service = Service::query()->findOrFail($validated['service_id']);
             $itemType = QuoteItem::TYPE_SERVICE;
             $description = $service->name;
-            $unitPrice = (float) $service->selling_price;
+            $baseUnitPrice = (float) $service->selling_price;
         }
 
         $quantity = (float) $validated['quantity'];
+        $discountPercent = round((float) ($validated['discount_percent'] ?? 0), 2);
+        $discountMultiplier = max(0, 1 - ($discountPercent / 100));
+        $discountedUnitPrice = round($baseUnitPrice * $discountMultiplier, 2);
+        $discountAmount = round(($baseUnitPrice - $discountedUnitPrice) * $quantity, 2);
 
         return [
             'product_id' => $product?->id,
@@ -227,8 +240,11 @@ class WorkOrderController extends Controller
             'item_type' => $itemType,
             'description' => $description,
             'quantity' => $quantity,
-            'unit_price' => $unitPrice,
-            'total_price' => $quantity * $unitPrice,
+            'original_unit_price' => $baseUnitPrice,
+            'discount_percent' => $discountPercent,
+            'discount_amount' => $discountAmount,
+            'unit_price' => $discountedUnitPrice,
+            'total_price' => round($quantity * $discountedUnitPrice, 2),
         ];
     }
 
@@ -259,6 +275,28 @@ class WorkOrderController extends Controller
             'event_type' => $eventType,
             'description' => $description,
             'metadata' => $metadata,
+        ]);
+    }
+
+    private function ensureDiscountIsAllowed(Request $request, float $discountPercent): void
+    {
+        $tenant = Tenant::current();
+
+        if (! $tenant || $discountPercent <= $tenant->maxDiscountWithoutApproval()) {
+            return;
+        }
+
+        $user = $request->user();
+
+        if ($user->is_super_admin || $user->hasAnyRole(['Jefe', 'Supervisor'])) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'discount_percent' => sprintf(
+                'Los descuentos mayores a %s%% requieren rol Jefe o Supervisor.',
+                rtrim(rtrim(number_format($tenant->maxDiscountWithoutApproval(), 2, '.', ''), '0'), '.')
+            ),
         ]);
     }
 }

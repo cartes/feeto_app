@@ -7,6 +7,7 @@ namespace App\Events;
 use App\Models\WorkOrder;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -39,7 +40,7 @@ class WorkOrderDraftCreated implements ShouldBroadcastNow
     {
         // Emitir a los trabajadores del taller (Usamos tenant para aislar evento)
         return [
-            new Channel('tenant.'.$this->tenantId.'.work-orders'),
+            new PrivateChannel('tenant.'.$this->tenantId.'.work-orders'),
         ];
     }
 }

@@ -30,6 +30,8 @@ class Tenant extends SpatieTenant
         'billing_api_key' => 'encrypted',
         'whatsapp_api_token' => 'encrypted',
         'subscription_ends_at' => 'datetime',
+        'kanban_columns' => 'array',
+        'max_discount_without_approval' => 'decimal:2',
     ];
 
     protected static function boot(): void
@@ -119,6 +121,11 @@ class Tenant extends SpatieTenant
             $featureService->frontendFeatureKeys(),
             fn (string $feature): bool => $this->hasFeature($feature),
         ));
+    }
+
+    public function maxDiscountWithoutApproval(): float
+    {
+        return (float) ($this->getAttribute('max_discount_without_approval') ?? 10);
     }
 
     private function resolveTenantPlan(): ?TenantPlan

@@ -15,14 +15,16 @@ use App\Http\Controllers\Api\WorkOrderModalController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientInvoiceController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SupervisorReportController;
 use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
@@ -117,13 +119,13 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->middleware('role:Admin|Recepcionista|Mecanico')
             ->name('work-orders.status.update');
         Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])
-            ->middleware('role:Admin|Mecanico')
+            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
             ->name('work-orders.items.store');
         Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])
-            ->middleware('role:Admin|Mecanico')
+            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
             ->name('work-orders.items.destroy');
         Route::post('/work-orders/{workOrder}/quote/send', [QuoteController::class, 'send'])
-            ->middleware('role:Admin|Recepcionista|Mecanico')
+            ->middleware('role:Admin|Recepcionista|Supervisor|Jefe|Mecanico')
             ->name('work-orders.quote.send');
 
         // API Modals
@@ -132,17 +134,17 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
 
         Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])
-            ->middleware('role:Admin|Mecanico')
+            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
             ->name('api.work-orders.items.store');
         Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])
-            ->middleware('role:Admin|Mecanico')
+            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
             ->name('api.work-orders.items.destroy');
 
         Route::get('/api/products', [ProductController::class, 'index'])->name('api.products.index');
 
         // Inventory — solo Admin
         Route::resource('inventory', InventoryController::class)
-            ->only(['index', 'store', 'update', 'destroy'])
+            ->only(['index', 'show', 'store', 'update', 'destroy'])
             ->parameters(['inventory' => 'product'])
             ->middleware('role:Admin');
 
@@ -185,10 +187,24 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/settings', [TenantSettingsController::class, 'index'])
             ->middleware('role:Admin')
             ->name('taller.settings');
-
-        Route::get('/reports', [ReportController::class, 'index'])
+        Route::patch('/settings/commercial', [TenantSettingsController::class, 'updateCommercial'])
             ->middleware('role:Admin')
+            ->name('taller.settings.commercial.update');
+
+        Route::get('/reports', [SalesReportController::class, 'index'])
+            ->middleware('role:Admin|Supervisor|Jefe')
             ->name('reports.index');
+        Route::get('/reports/ventas', [SalesReportController::class, 'index'])
+            ->middleware('role:Admin|Supervisor|Jefe')
+            ->name('reports.sales');
+        Route::get('/reports/supervisores', [SupervisorReportController::class, 'index'])
+            ->middleware('role:Admin|Supervisor|Jefe')
+            ->name('reports.supervisors');
+
+        Route::resource('invoices', ClientInvoiceController::class)
+            ->only(['index', 'show', 'store'])
+            ->parameters(['invoices' => 'clientInvoice'])
+            ->middleware('role:Admin|Recepcionista|Supervisor|Jefe');
 
         // Perfil
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -23,6 +23,7 @@ class StoreTenantUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password_confirmation' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'exists:roles,name'],
         ];
     }

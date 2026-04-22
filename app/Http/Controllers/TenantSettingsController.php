@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateTenantCommercialSettingsRequest;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\BranchLimitService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -36,7 +38,7 @@ class TenantSettingsController extends Controller
             ->get(['id', 'name', 'code', 'address', 'phone', 'email', 'is_main', 'is_active']);
 
         $roles = Role::query()
-            ->whereIn('name', ['Admin', 'Recepcionista', 'Mecanico'])
+            ->whereIn('name', ['Admin', 'Recepcionista', 'Supervisor', 'Jefe', 'Mecanico'])
             ->get(['id', 'name']);
 
         return Inertia::render('Settings/Index', [
@@ -57,7 +59,19 @@ class TenantSettingsController extends Controller
                 ...$tenant->only('id', 'name', 'slug'),
                 'plan' => $tenant->currentPlan()->value,
                 'plan_label' => $tenant->currentPlan()->label(),
+                'max_discount_without_approval' => $tenant->maxDiscountWithoutApproval(),
             ],
         ]);
+    }
+
+    public function updateCommercial(UpdateTenantCommercialSettingsRequest $request): RedirectResponse
+    {
+        $tenant = Tenant::current();
+
+        $tenant->update([
+            'max_discount_without_approval' => $request->validated('max_discount_without_approval'),
+        ]);
+
+        return back()->with('success', 'La política comercial del taller fue actualizada.');
     }
 }

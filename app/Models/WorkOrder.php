@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\PlanFeatureService;
 use App\Traits\TenantAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -81,11 +82,26 @@ class WorkOrder extends Model
      */
     public static function statuses(): array
     {
+        $tenant = Tenant::current();
+
+        if ($tenant && $tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_KANBAN)) {
+            if (! empty($tenant->kanban_columns)) {
+                return $tenant->kanban_columns;
+            }
+
+            return [
+                self::STATUS_RECEPCION,
+                self::STATUS_DIAGNOSTICO,
+                self::STATUS_ESPERANDO_REPUESTOS,
+                self::STATUS_CONTROL_CALIDAD,
+                self::STATUS_LISTO,
+            ];
+        }
+
         return [
             self::STATUS_RECEPCION,
-            self::STATUS_DIAGNOSTICO,
-            self::STATUS_ESPERANDO_REPUESTOS,
-            self::STATUS_CONTROL_CALIDAD,
+            'taller',
+            'aviso_cliente',
             self::STATUS_LISTO,
         ];
     }
