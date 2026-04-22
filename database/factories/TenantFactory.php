@@ -28,8 +28,8 @@ class TenantFactory extends Factory
             'domain' => Str::slug($name).'.feeto.cl',
             'rut_taller' => fake()->numerify('##.###.###-#'),
             'is_active' => true,
-            'plan_type' => 'starter',
-            'plan' => 'starter',
+            'plan_type' => 'gratuito',
+            'plan' => 'gratuito',
             'status' => 'active',
         ];
     }

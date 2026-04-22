@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureTenantFeatureEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RecordPageVisit;
 use App\Http\Middleware\SetTenantRouteDefaults;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'tenant.feature' => EnsureTenantFeatureEnabled::class,
         ]);
 
         $middleware->prependToPriorityList(RoleMiddleware::class, NeedsTenant::class);

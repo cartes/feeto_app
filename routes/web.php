@@ -96,7 +96,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->middleware('role:Admin|Recepcionista')
             ->name('receptions.create');
         Route::post('/receptions', [ReceptionController::class, 'store'])
-            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista'])
+            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
             ->name('receptions.store');
         Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
             ->middleware(['throttle:30,1', 'role:Admin|Recepcionista'])
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
 
         // OCR de Patentes
         Route::post('/ocr/process', [OcrController::class, 'process'])
-            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista'])
+            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
             ->name('ocr.process');
 
         // Work Orders / Kanban — Admin, Recepcionista y Mecanico (con restricciones granulares en controlador)
@@ -167,7 +167,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->middleware('role:Admin|Recepcionista')
             ->name('appointments.index');
         Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])
-            ->middleware('role:Admin|Recepcionista')
+            ->middleware(['role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
             ->name('api.appointments.scan-plate');
 
         // Gestión de usuarios del taller — solo Admin

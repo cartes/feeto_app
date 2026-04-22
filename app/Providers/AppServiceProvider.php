@@ -6,8 +6,10 @@ use App\Listeners\RecordLoginLog;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Observers\OrderItemObserver;
 use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
         Order::observe(OrderObserver::class);
         OrderItem::observe(OrderItemObserver::class);
+        User::observe(UserObserver::class);
 
         Event::listen(Login::class, RecordLoginLog::class);
 

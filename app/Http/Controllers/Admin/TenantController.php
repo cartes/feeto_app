@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
@@ -9,6 +10,7 @@ use App\Services\TenantSetupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,7 +44,7 @@ class TenantController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255|unique:tenants,domain,'.$tenant->id,
-            'plan' => 'nullable|string|max:50',
+            'plan' => ['required', Rule::enum(TenantPlan::class)],
             'status' => 'required|in:active,suspended',
         ]);
 

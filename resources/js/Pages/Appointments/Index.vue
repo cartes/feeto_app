@@ -1,11 +1,22 @@
 <script setup>
-import { ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
-import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { computed, ref } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
+import AppointmentList from '@/Components/AppointmentList.vue';
+import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
     appointments: {
+        type: Array,
+        default: () => [],
+    },
+    todayAppointments: {
+        type: Array,
+        default: () => [],
+    },
+    appointmentNotifications: {
         type: Array,
         default: () => [],
     },
@@ -13,354 +24,329 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    calendarRange: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
-// ─── State ─────────────────────────────────────────────────────────────────
+const page = usePage();
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const planAccess = computed(() => page.props.planAccess ?? {});
+const calendarSchedulingEnabled = computed(() => planAccess.value?.calendar_scheduling ?? false);
+const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
+const calendarUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.calendar_scheduling ?? 'Mejora tu plan para acceder a esta función');
+const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
 
-const cameraInputRef    = ref(null);
-const isScanning        = ref(false);
-const scanError         = ref(null);
-const scanResult        = ref(null);   // { plate, confidence, vehicle, appointment }
-
-// ─── Status helpers ─────────────────────────────────────────────────────────
-
-const STATUS_LABELS = {
-    pending:   'Pendiente',
-    arrived:   'Llegó',
-    cancelled: 'Cancelado',
-};
-
-const STATUS_COLORS = {
-    pending:   'bg-amber-100 text-amber-800',
-    arrived:   'bg-emerald-100 text-emerald-800',
-    cancelled: 'bg-red-100 text-red-800',
-};
-
-const statusLabel = (status) => STATUS_LABELS[status] ?? status;
-const statusColor = (status) => STATUS_COLORS[status] ?? 'bg-gray-100 text-gray-700';
-
-// ─── Scan logic ─────────────────────────────────────────────────────────────
+const cameraInputRef = ref(null);
+const isScanning = ref(false);
+const scanError = ref(null);
+const scanResult = ref(null);
 
 const openCamera = () => {
     scanResult.value = null;
-    scanError.value  = null;
+    scanError.value = null;
     cameraInputRef.value?.click();
 };
 
 const processPlateImage = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) return;
 
-    // Reset input so the same file can be re-selected
+    if (!file) {
+        return;
+    }
+
     event.target.value = '';
 
-    isScanning.value  = true;
-    scanResult.value  = null;
-    scanError.value   = null;
+    isScanning.value = true;
+    scanResult.value = null;
+    scanError.value = null;
 
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-        const { data } = await axios.post(route('api.appointments.scan-plate'), formData, {
+        const { data } = await axios.post(route('api.appointments.scan-plate', tenantRouteParams.value), formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
+
         scanResult.value = data;
-    } catch (err) {
-        const msg = err.response?.data?.message ?? 'Error al procesar la imagen. Intenta nuevamente.';
-        scanError.value = msg;
+    } catch (error) {
+        scanError.value = error.response?.data?.message ?? 'Error al procesar la imagen. Intenta nuevamente.';
     } finally {
         isScanning.value = false;
     }
 };
 
 const goToKanban = () => {
-    router.visit(route('work-orders.index'));
+    router.visit(route('work-orders.index', tenantRouteParams.value));
 };
+
+const hasNotifications = computed(() => props.appointmentNotifications.length > 0);
+
+const notificationStatusClass = (status) => ({
+    pending: 'bg-amber-100 text-amber-800',
+    arrived: 'bg-emerald-100 text-emerald-800',
+    cancelled: 'bg-red-100 text-red-800',
+}[status] ?? 'bg-gray-100 text-gray-700');
 </script>
 
 <template>
     <Head title="Agendamiento y Recepción" />
 
     <TallerLayout>
-
-        <!-- Header -->
-        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 px-1">
-            <div>
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight uppercase">
-                    Agendamiento y Recepción
-                </h1>
-                <p class="text-sm font-medium text-gray-500 mt-1">
-                    Agenda del día · {{ today }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Two-panel layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            <!-- ═══════════════════════════════════════════════════════════
-                 LEFT PANEL – Today's Agenda
-                 ═══════════════════════════════════════════════════════════ -->
-            <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-
-                <div class="flex items-center justify-between mb-1">
-                    <h2 class="text-lg font-bold text-gray-900 tracking-tight">Agenda de Hoy</h2>
-                    <span
-                        class="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full"
-                    >
-                        {{ appointments.length }} cita{{ appointments.length !== 1 ? 's' : '' }}
-                    </span>
-                </div>
-
-                <!-- Empty state -->
-                <div
-                    v-if="appointments.length === 0"
-                    class="flex flex-col items-center justify-center py-16 text-center"
-                >
-                    <div class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-400">Sin citas programadas para hoy</p>
-                </div>
-
-                <!-- Appointment list -->
-                <ul v-else class="flex flex-col gap-3">
-                    <li
-                        v-for="appt in appointments"
-                        :key="appt.id"
-                        class="flex items-start gap-4 p-4 rounded-2xl border border-gray-100 hover:border-[#F9A826]/40 hover:bg-amber-50/30 transition-all"
-                    >
-                        <!-- Time -->
-                        <div class="flex-shrink-0 w-14 text-center">
-                            <span class="text-xl font-black text-gray-900 tabular-nums">
-                                {{ appt.appointment_date }}
-                            </span>
-                            <p class="text-[10px] font-medium text-gray-400 mt-0.5">hrs</p>
-                        </div>
-
-                        <!-- Divider -->
-                        <div class="w-px self-stretch bg-gray-100"></div>
-
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="font-bold text-sm text-gray-900 truncate">
-                                    {{ appt.plate }}
-                                </span>
-                                <span
-                                    :class="statusColor(appt.status)"
-                                    class="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
-                                >
-                                    {{ statusLabel(appt.status) }}
-                                </span>
-                            </div>
-
-                            <p v-if="appt.client" class="text-sm text-gray-600 mt-0.5 truncate">
-                                {{ appt.client.name }}
-                            </p>
-
-                            <p v-if="appt.vehicle" class="text-xs text-gray-400 mt-0.5 truncate">
-                                {{ appt.vehicle.brand }} {{ appt.vehicle.model }}
-                                <span v-if="appt.vehicle.color">· {{ appt.vehicle.color }}</span>
-                            </p>
-
-                            <p v-if="appt.notes" class="text-xs text-gray-400 mt-1 italic truncate">
-                                "{{ appt.notes }}"
-                            </p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- ═══════════════════════════════════════════════════════════
-                 RIGHT PANEL – Smart Reception
-                 ═══════════════════════════════════════════════════════════ -->
-            <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-6">
-
+        <div class="space-y-8">
+            <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
-                    <h2 class="text-lg font-bold text-gray-900 tracking-tight">Recepción Inteligente</h2>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Captura la patente con la cámara y cruzamos con la agenda en segundos.
+                    <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Agendamiento</p>
+                    <h1 class="mt-2 text-3xl font-black tracking-tight text-gray-900">Agenda y Recepción</h1>
+                    <p class="mt-2 text-sm font-medium text-gray-500">
+                        Seguimiento diario de citas y recepción asistida por patente.
                     </p>
                 </div>
 
-                <!-- Hidden camera input -->
-                <input
-                    ref="cameraInputRef"
-                    type="file"
-                    accept="image/*"
-                    capture="camera"
-                    class="hidden"
-                    @change="processPlateImage"
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-500 shadow-sm">
+                        Hoy {{ today }}
+                    </span>
+                    <Link
+                        :href="route('receptions.create', tenantRouteParams)"
+                        class="rounded-full bg-[#F9A826] px-5 py-3 text-sm font-black uppercase tracking-wide text-white shadow-[0_12px_24px_rgba(249,168,38,0.25)] transition hover:bg-[#E59A22]"
+                    >
+                        Ir a Recepción
+                    </Link>
+                </div>
+            </div>
+
+            <PlanUpgradeBanner
+                v-if="!calendarSchedulingEnabled"
+                title="Calendario interactivo no disponible"
+                :message="`Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage}`"
+            />
+
+            <div v-if="calendarSchedulingEnabled" class="space-y-6">
+                <AppointmentCalendar
+                    :appointments="appointments"
+                    :today="today"
                 />
 
-                <!-- ── Scan button ── -->
-                <button
-                    :disabled="isScanning"
-                    class="relative w-full flex flex-col items-center justify-center gap-4 rounded-3xl py-14 px-6
-                           bg-gradient-to-br from-[#F9A826] to-[#e8920d] text-white
-                           shadow-lg shadow-[#F9A826]/40 hover:shadow-xl hover:shadow-[#F9A826]/50
-                           active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
-                    @click="openCamera"
-                >
-                    <!-- Glow ring -->
-                    <span class="absolute inset-0 rounded-3xl ring-4 ring-[#F9A826]/20 animate-pulse"></span>
+                <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Resumen del día</p>
+                                <h2 class="mt-1 text-xl font-black text-gray-900">Citas de hoy</h2>
+                            </div>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600">
+                                {{ todayAppointments.length }} cita{{ todayAppointments.length !== 1 ? 's' : '' }}
+                            </span>
+                        </div>
 
-                    <!-- Icon -->
-                    <span v-if="!isScanning">
-                        <svg class="w-16 h-16 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </span>
-                    <span v-else>
-                        <svg class="w-12 h-12 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                    </span>
-
-                    <span class="text-xl font-black tracking-wide drop-shadow-sm">
-                        {{ isScanning ? 'Analizando patente con IA…' : 'Escanear Patente de Ingreso' }}
-                    </span>
-
-                    <span v-if="!isScanning" class="text-sm font-medium text-white/80">
-                        Toca para abrir la cámara
-                    </span>
-                </button>
-
-                <!-- ── Error state ── -->
-                <Transition
-                    enter-active-class="transition duration-300 ease-out"
-                    enter-from-class="opacity-0 translate-y-2"
-                    enter-to-class="opacity-100 translate-y-0"
-                >
-                    <div
-                        v-if="scanError"
-                        class="flex items-start gap-3 rounded-2xl bg-red-50 border border-red-200 p-4"
-                    >
-                        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-sm font-medium text-red-700">{{ scanError }}</p>
+                        <AppointmentList
+                            :appointments="todayAppointments"
+                            empty-title="Sin citas para hoy"
+                            empty-description="No hay ingresos programados para la jornada actual."
+                            :show-date="false"
+                        />
                     </div>
-                </Transition>
 
-                <!-- ── Success card ── -->
-                <Transition
-                    enter-active-class="transition duration-400 ease-out"
-                    enter-from-class="opacity-0 scale-95"
-                    enter-to-class="opacity-100 scale-100"
-                >
-                    <div
-                        v-if="scanResult"
-                        class="rounded-2xl border border-gray-100 overflow-hidden shadow-sm"
-                    >
-                        <!-- Plate detected -->
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 border-b border-gray-100">
-                            <div
-                                class="flex-shrink-0 bg-gray-900 text-white rounded-xl px-4 py-2 font-black text-xl tracking-widest font-mono shadow"
-                            >
-                                {{ scanResult.plate || '——' }}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-semibold text-emerald-600 uppercase tracking-widest">
-                                    ✓ Patente detectada
-                                </p>
-                                <p
-                                    v-if="scanResult.vehicle?.brand"
-                                    class="text-sm text-gray-600 mt-0.5 truncate"
-                                >
-                                    {{ scanResult.vehicle.brand }} {{ scanResult.vehicle.model }}
-                                    <span v-if="scanResult.vehicle.color">· {{ scanResult.vehicle.color }}</span>
-                                </p>
-                            </div>
-                            <div
-                                v-if="scanResult.confidence != null"
-                                class="flex-shrink-0 text-right"
-                            >
-                                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Confianza</p>
-                                <p class="text-sm font-bold text-gray-700">
-                                    {{ Math.round(scanResult.confidence * 100) }}%
-                                </p>
-                            </div>
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                        <div class="mb-4">
+                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Alertas</p>
+                            <h2 class="mt-1 text-xl font-black text-gray-900">Próximas citas</h2>
                         </div>
 
-                        <!-- Appointment found -->
-                        <div v-if="scanResult.appointment" class="p-4 bg-emerald-50">
-                            <div class="flex items-start gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-emerald-800">
-                                        Cita encontrada para
-                                        <span v-if="scanResult.appointment.client">
-                                            {{ scanResult.appointment.client.name }}
-                                        </span>
-                                        <span v-else>cliente sin registrar</span>
-                                        a las {{ scanResult.appointment.time }} hrs
-                                    </p>
-                                    <p v-if="scanResult.appointment.client?.phone" class="text-xs text-emerald-700 mt-0.5">
-                                        📞 {{ scanResult.appointment.client.phone }}
-                                    </p>
-                                    <p v-if="scanResult.appointment.notes" class="text-xs text-emerald-700 mt-0.5 italic">
-                                        "{{ scanResult.appointment.notes }}"
-                                    </p>
-                                </div>
-                            </div>
+                        <div
+                            v-if="!hasNotifications"
+                            class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center"
+                        >
+                            <p class="text-sm font-bold text-gray-500">Sin alertas de agenda</p>
+                            <p class="mt-1 text-sm text-gray-400">Cuando existan nuevas citas o movimientos aparecerán aquí.</p>
+                        </div>
 
-                            <button
-                                class="mt-4 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl
-                                       bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white
-                                       text-sm font-bold tracking-wide transition-all shadow-sm"
-                                @click="goToKanban"
+                        <ul v-else class="flex flex-col gap-3">
+                            <li
+                                v-for="notification in appointmentNotifications"
+                                :key="notification.id"
+                                class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
                             >
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                                </svg>
-                                Ingresar al Kanban
-                            </button>
-                        </div>
-
-                        <!-- No appointment found -->
-                        <div v-else class="p-4 bg-amber-50">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-sm font-black text-gray-900">{{ notification.title }}</p>
+                                        <p class="mt-1 text-sm text-gray-500">{{ notification.description }}</p>
+                                    </div>
+                                    <span
+                                        :class="notificationStatusClass(notification.status)"
+                                        class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
+                                    >
+                                        {{ notification.status }}
+                                    </span>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-bold text-amber-800">Sin cita agendada para hoy</p>
-                                    <p class="text-xs text-amber-700 mt-0.5">
-                                        La patente <strong>{{ scanResult.plate }}</strong> no tiene cita registrada hoy.
-                                        Puedes crear una orden de trabajo directamente.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
-                </Transition>
-
+                </div>
             </div>
-            <!-- end right panel -->
 
+            <div v-else class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+                <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Agenda básica</p>
+                            <h2 class="mt-1 text-xl font-black text-gray-900">Listado de citas</h2>
+                        </div>
+                        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600">
+                            {{ appointments.length }} cita{{ appointments.length !== 1 ? 's' : '' }}
+                        </span>
+                    </div>
+
+                    <AppointmentList
+                        :appointments="appointments"
+                        empty-title="Sin citas en el mes actual"
+                        empty-description="Aún no hay citas registradas en este periodo."
+                    />
+                </div>
+
+                <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                    <div class="mb-4">
+                        <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Notificaciones</p>
+                        <h2 class="mt-1 text-xl font-black text-gray-900">Próximos ingresos</h2>
+                    </div>
+
+                    <div
+                        v-if="!hasNotifications"
+                        class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center"
+                    >
+                        <p class="text-sm font-bold text-gray-500">Sin movimientos programados</p>
+                        <p class="mt-1 text-sm text-gray-400">Aquí verás un resumen rápido de las próximas citas.</p>
+                    </div>
+
+                    <ul v-else class="flex flex-col gap-3">
+                        <li
+                            v-for="notification in appointmentNotifications"
+                            :key="notification.id"
+                            class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
+                        >
+                            <p class="text-sm font-black text-gray-900">{{ notification.title }}</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ notification.description }}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+                <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                    <div class="mb-4">
+                        <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Recepción inteligente</p>
+                        <h2 class="mt-1 text-xl font-black text-gray-900">Escaneo por patente</h2>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Captura la patente con la cámara y cruza la información contra las citas del día.
+                        </p>
+                    </div>
+
+                    <PlanUpgradeBanner
+                        v-if="!aiReceptionEnabled"
+                        title="Escáner con IA no disponible"
+                        :message="`Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage}`"
+                    />
+
+                    <div v-else class="space-y-4">
+                        <input
+                            ref="cameraInputRef"
+                            type="file"
+                            accept="image/*"
+                            capture="camera"
+                            class="hidden"
+                            @change="processPlateImage"
+                        />
+
+                        <button
+                            :disabled="isScanning"
+                            class="relative flex w-full flex-col items-center justify-center gap-4 rounded-[2rem] bg-gradient-to-br from-[#F9A826] to-[#E8920D] px-6 py-14 text-white shadow-[0_18px_36px_rgba(249,168,38,0.28)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+                            @click="openCamera"
+                        >
+                            <span class="absolute inset-0 rounded-[2rem] ring-4 ring-[#F9A826]/20"></span>
+                            <svg v-if="!isScanning" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <svg v-else class="h-12 w-12 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            <span class="text-xl font-black tracking-wide">
+                                {{ isScanning ? 'Analizando patente...' : 'Escanear patente de ingreso' }}
+                            </span>
+                            <span class="text-sm font-medium text-white/80">
+                                {{ isScanning ? 'Esperando respuesta del motor de IA' : 'Toca para abrir la cámara' }}
+                            </span>
+                        </button>
+
+                        <div
+                            v-if="scanError"
+                            class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+                        >
+                            {{ scanError }}
+                        </div>
+
+                        <div
+                            v-if="scanResult"
+                            class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white"
+                        >
+                            <div class="flex items-center gap-4 border-b border-gray-100 bg-gray-50 p-4">
+                                <div class="rounded-xl bg-gray-900 px-4 py-2 font-mono text-xl font-black tracking-widest text-white">
+                                    {{ scanResult.plate || '------' }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-black uppercase tracking-[0.2em] text-emerald-600">Patente detectada</p>
+                                    <p v-if="scanResult.vehicle?.brand" class="truncate text-sm text-gray-600">
+                                        {{ scanResult.vehicle.brand }} {{ scanResult.vehicle.model }}
+                                        <span v-if="scanResult.vehicle.color">· {{ scanResult.vehicle.color }}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div v-if="scanResult.appointment" class="space-y-3 bg-emerald-50 p-4">
+                                <p class="text-sm font-bold text-emerald-800">
+                                    Cita encontrada para {{ scanResult.appointment.client?.name || 'cliente sin registrar' }}
+                                    a las {{ scanResult.appointment.time }} hrs
+                                </p>
+                                <p v-if="scanResult.appointment.notes" class="text-xs italic text-emerald-700">
+                                    "{{ scanResult.appointment.notes }}"
+                                </p>
+                                <button
+                                    type="button"
+                                    class="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-emerald-700"
+                                    @click="goToKanban"
+                                >
+                                    Ingresar al Kanban
+                                </button>
+                            </div>
+
+                            <div v-else class="bg-amber-50 p-4">
+                                <p class="text-sm font-bold text-amber-800">Sin cita agendada para hoy</p>
+                                <p class="mt-1 text-xs text-amber-700">
+                                    La patente {{ scanResult.plate }} no tiene una cita registrada en la jornada actual.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
+                    <div class="mb-4">
+                        <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Resumen rápido</p>
+                        <h2 class="mt-1 text-xl font-black text-gray-900">Citas de hoy</h2>
+                    </div>
+
+                    <AppointmentList
+                        :appointments="todayAppointments"
+                        empty-title="Jornada sin citas"
+                        empty-description="No hay recepciones agendadas para el día de hoy."
+                        :show-date="false"
+                    />
+                </div>
+            </div>
         </div>
-        <!-- end grid -->
-
     </TallerLayout>
 </template>

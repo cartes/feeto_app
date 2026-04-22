@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TenantPlan;
+use App\Services\PlanFeatureService;
 use Database\Factories\PlanFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -68,6 +70,17 @@ class Plan extends Model
 
     public function includesFeatureKey(string $feature): bool
     {
-        return in_array($feature, $this->feature_keys ?? [], true);
+        $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature);
+        $featureKeys = array_map(
+            static fn (string $featureKey): string => PlanFeatureService::normalizeFeatureKey($featureKey),
+            $this->feature_keys ?? [],
+        );
+
+        return in_array($normalizedFeature, $featureKeys, true);
+    }
+
+    public function toTenantPlan(): ?TenantPlan
+    {
+        return TenantPlan::fromPlanModel($this);
     }
 }

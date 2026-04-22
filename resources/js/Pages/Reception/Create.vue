@@ -3,12 +3,15 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { usePage, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
+import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
 const tenantId = page.props.tenantId;
-const planType = page.props.planType;
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const planAccess = computed(() => page.props.planAccess ?? {});
+const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
+const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
 
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
@@ -170,42 +173,49 @@ onUnmounted(() => {
         </div>
 
         <!-- CASO PRO: Escáner de Patente IA -->
-        <PpuScanner v-if="planType !== 'freemium'" :recognized-ppu="formattedPlate || '---'"
+        <PpuScanner v-if="aiReceptionEnabled" :recognized-ppu="formattedPlate || '---'"
             :is-processing="isUploading || isAnalyzing" :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso"
             @retry="triggerCamera" @manual="handleManualEntry" />
 
-        <!-- CASO FREEMIUM: Ingreso Manual Directo -->
+        <!-- CASO GRATUITO: Ingreso Manual Directo -->
         <div v-else class="w-full flex flex-col items-center py-6 px-4">
-            <div
-                class="w-full max-w-lg bg-white/80 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-[#F9A826]/10 rounded-3xl flex items-center justify-center mb-8 rotate-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#F9A826]" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
+            <div class="w-full max-w-lg space-y-4">
+                <PlanUpgradeBanner
+                    title="Escáner con IA no disponible"
+                    :message="`Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage}`"
+                />
 
-                <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight uppercase">
-                    Recepción <br> <span class="text-slate-400">Manual</span>
-                </h1>
-                <p class="text-slate-500 font-medium text-sm mb-10 leading-relaxed max-w-xs">
-                    Inicia un nuevo registro de ingreso ingresando la patente del vehículo.
-                </p>
+                <div
+                    class="w-full bg-white/80 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center text-center">
+                    <div class="w-20 h-20 bg-[#F9A826]/10 rounded-3xl flex items-center justify-center mb-8 rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#F9A826]" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
 
-                <button @click="handleManualEntry"
-                    class="group w-full py-6 bg-[#F9A826] text-white rounded-3xl text-lg font-black uppercase shadow-[0_15px_30px_rgba(249,168,38,0.3)] hover:bg-[#E59A22] transition-all active:scale-95 flex items-center justify-center gap-3">
-                    <span>Nueva Recepción</span>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
+                    <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight uppercase">
+                        Recepción <br> <span class="text-slate-400">Manual</span>
+                    </h1>
+                    <p class="text-slate-500 font-medium text-sm mb-10 leading-relaxed max-w-xs">
+                        Inicia un nuevo registro de ingreso ingresando la patente del vehículo.
+                    </p>
 
-                <div class="mt-8 pt-6 border-t border-slate-50 w-full flex items-center justify-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Plan Freemium</p>
+                    <button @click="handleManualEntry"
+                        class="group w-full py-6 bg-[#F9A826] text-white rounded-3xl text-lg font-black uppercase shadow-[0_15px_30px_rgba(249,168,38,0.3)] hover:bg-[#E59A22] transition-all active:scale-95 flex items-center justify-center gap-3">
+                        <span>Nueva Recepción</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+
+                    <div class="mt-8 pt-6 border-t border-slate-50 w-full flex items-center justify-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ingreso Manual Obligatorio</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\PlanFeatureService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -36,7 +37,7 @@ class PlanControllerTest extends TestCase
                 'price_monthly' => 29990,
                 'price_annual' => 299990,
                 'features' => ['Feature 1', 'Feature 2'],
-                'feature_keys' => ['commercial_quotes_enabled'],
+                'feature_keys' => [PlanFeatureService::FEATURE_SALES_MANAGEMENT],
                 'max_users' => 5,
                 'trial_days' => 14,
                 'is_active' => true,
@@ -46,7 +47,7 @@ class PlanControllerTest extends TestCase
 
         $response->assertRedirect(route('admin.plans.index'));
         $this->assertDatabaseHas('plans', ['name' => 'Plan Test', 'price_monthly' => 29990]);
-        $this->assertEquals(['commercial_quotes_enabled'], Plan::query()->where('name', 'Plan Test')->first()?->feature_keys);
+        $this->assertEquals([PlanFeatureService::FEATURE_SALES_MANAGEMENT], Plan::query()->where('name', 'Plan Test')->first()?->feature_keys);
     }
 
     public function test_plan_can_be_updated(): void
@@ -59,7 +60,7 @@ class PlanControllerTest extends TestCase
                 'price_monthly' => 39990,
                 'price_annual' => 399990,
                 'features' => ['New Feature'],
-                'feature_keys' => ['commercial_quotes_enabled', 'commercial_reports_enabled'],
+                'feature_keys' => [PlanFeatureService::FEATURE_SALES_MANAGEMENT, PlanFeatureService::FEATURE_AUTO_WHATSAPP],
                 'max_users' => 10,
                 'trial_days' => 7,
                 'is_active' => true,
@@ -70,7 +71,7 @@ class PlanControllerTest extends TestCase
         $response->assertRedirect(route('admin.plans.index'));
         $this->assertDatabaseHas('plans', ['id' => $plan->id, 'name' => 'New Name']);
         $this->assertEquals(
-            ['commercial_quotes_enabled', 'commercial_reports_enabled'],
+            [PlanFeatureService::FEATURE_SALES_MANAGEMENT, PlanFeatureService::FEATURE_AUTO_WHATSAPP],
             $plan->refresh()->feature_keys
         );
     }

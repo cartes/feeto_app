@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\QuoteEvent;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -14,8 +18,6 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    public function __construct(protected PlanFeatureService $planFeatureService) {}
-
     public function __invoke(Request $request): InertiaResponse|Response
     {
         $tenant = Tenant::current();
@@ -36,10 +38,10 @@ class TallerDashboardController extends Controller
             ->latest('updated_at')
             ->limit(5)
             ->get()
-            ->map(fn ($order) => [
+            ->map(fn (WorkOrder $order): array => [
                 'work_order_id' => $order->id,
                 'plate' => $order->vehicle->plate ?? 'N/A',
-                'vehicle' => ($order->vehicle->brand ?? '').' '.($order->vehicle->model ?? ''),
+                'vehicle' => trim(($order->vehicle->brand ?? '').' '.($order->vehicle->model ?? '')),
                 'new_status' => $order->status,
                 'timestamp' => $order->updated_at->toISOString(),
             ]);
@@ -50,7 +52,7 @@ class TallerDashboardController extends Controller
                 ->latest()
                 ->limit(8)
                 ->get()
-                ->map(fn (QuoteEvent $event) => [
+                ->map(fn (QuoteEvent $event): array => [
                     'id' => $event->id,
                     'description' => $event->description,
                     'event_type' => $event->event_type,
@@ -62,10 +64,105 @@ class TallerDashboardController extends Controller
                 ])
             : collect();
 
+        $calendarStart = now()->startOfMonth()->startOfDay();
+        $calendarEnd = now()->endOfMonth()->endOfDay();
+
+        $appointments = Appointment::query()
+            ->with(['client', 'vehicle'])
+            ->whereBetween('appointment_date', [$calendarStart, $calendarEnd])
+            ->orderBy('appointment_date')
+            ->get();
+
+        $serializedAppointments = $appointments
+            ->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))
+            ->values();
+
+        $todayAppointments = $appointments
+            ->filter(fn (Appointment $appointment): bool => $appointment->appointment_date->isToday())
+            ->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))
+            ->values();
+
+        $appointmentNotifications = $appointments
+            ->filter(fn (Appointment $appointment): bool => $appointment->appointment_date->isToday() || $appointment->appointment_date->isFuture())
+            ->take(5)
+            ->map(fn (Appointment $appointment): array => $this->serializeNotification($appointment))
+            ->values();
+
         return Inertia::render('Dashboard', [
             'initialActivities' => $initialActivities,
             'quoteNotifications' => $quoteNotifications,
+            'appointments' => $serializedAppointments,
+            'todayAppointments' => $todayAppointments,
+            'appointmentNotifications' => $appointmentNotifications,
+            'today' => now()->toDateString(),
             'tenant' => $tenant->only('id', 'name', 'slug'),
+            'calendarRange' => [
+                'start' => $calendarStart->toDateString(),
+                'end' => $calendarEnd->toDateString(),
+            ],
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializeAppointment(Appointment $appointment): array
+    {
+        $clientName = $appointment->client?->name ?? $appointment->customer_name ?? 'Cliente sin registrar';
+        $plate = $appointment->plate ?: $appointment->vehicle?->plate ?? 'N/A';
+
+        return [
+            'id' => $appointment->id,
+            'plate' => $plate,
+            'date' => $appointment->appointment_date->toDateString(),
+            'time' => $appointment->appointment_date->format('H:i'),
+            'status' => $appointment->status,
+            'notes' => $appointment->notes,
+            'scheduled_at' => $appointment->appointment_date->toISOString(),
+            'client' => [
+                'id' => $appointment->client?->id,
+                'name' => $clientName,
+                'rut' => $appointment->client?->rut,
+                'phone' => $appointment->client?->phone ?? $appointment->phone,
+            ],
+            'vehicle' => $appointment->vehicle ? [
+                'id' => $appointment->vehicle->id,
+                'plate' => $appointment->vehicle->plate,
+                'brand' => $appointment->vehicle->brand,
+                'model' => $appointment->vehicle->model,
+                'color' => $appointment->vehicle->color,
+            ] : null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializeNotification(Appointment $appointment): array
+    {
+        $clientName = $appointment->client?->name ?? $appointment->customer_name ?? 'Cliente sin registrar';
+        $plate = $appointment->plate ?: $appointment->vehicle?->plate ?? 'N/A';
+
+        return [
+            'id' => $appointment->id,
+            'title' => "Cita de {$clientName}",
+            'description' => "Patente {$plate} · {$this->formatDateLabel($appointment->appointment_date)} a las {$appointment->appointment_date->format('H:i')} hrs",
+            'status' => $appointment->status,
+            'date' => $appointment->appointment_date->toDateString(),
+            'time' => $appointment->appointment_date->format('H:i'),
+        ];
+    }
+
+    private function formatDateLabel(CarbonInterface $date): string
+    {
+        if ($date->isToday()) {
+            return 'hoy';
+        }
+
+        if ($date->isTomorrow()) {
+            return 'mañana';
+        }
+
+        return $date->locale('es_CL')->translatedFormat('d \d\e M');
     }
 }

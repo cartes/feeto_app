@@ -23,7 +23,8 @@ class PublicBookingController extends Controller
                 'slug' => $tenantBySlug->slug,
                 'domain' => $tenantBySlug->domain,
                 'rut_taller' => $tenantBySlug->rut_taller,
-                'plan' => $tenantBySlug->plan,
+                'plan' => $tenantBySlug->currentPlan()->value,
+                'plan_label' => $tenantBySlug->currentPlan()->label(),
             ],
         ]);
     }

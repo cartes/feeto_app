@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
                 'booking_success' => $request->session()->get('booking_success'),
             ],
             'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,
+            'tenantContext' => $this->resolveTenantContext($tenant),
             'planAccess' => $this->resolvePlanAccess($tenant),
         ];
     }
@@ -136,17 +137,48 @@ class HandleInertiaRequests extends Middleware
 
         $featureService = app(PlanFeatureService::class);
         $definitions = $featureService->definitions();
-        $planModel = $tenant->plan()->first();
+        $featureKeys = $tenant->enabledFeatureKeys();
+        $allFeatureKeys = $featureService->allFeatureKeys();
+        $plan = $tenant->currentPlan();
 
         return [
-            'plan_name' => $planModel?->name ?? $tenant->plan ?? $tenant->plan_type,
-            'feature_keys' => $planModel?->feature_keys ?? [],
-            'commercial_quotes_enabled' => $tenant->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES),
-            'commercial_reports_enabled' => $tenant->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_REPORTS),
-            'upgrade_messages' => collect($definitions)->mapWithKeys(
-                fn (array $definition, string $key): array => [$key => $featureService->upgradeMessage($key)]
+            'plan' => [
+                'code' => $plan->value,
+                'label' => $plan->label(),
+                'user_limit' => $tenant->userLimit(),
+            ],
+            'plan_name' => $plan->label(),
+            'feature_keys' => $featureKeys,
+            'features' => $featureKeys,
+            'upgrade_messages' => collect($allFeatureKeys)->mapWithKeys(
+                fn (string $featureKey): array => [$featureKey => $featureService->upgradeMessage($featureKey)]
             )->all(),
             'definitions' => $definitions,
+            ...collect($allFeatureKeys)->mapWithKeys(
+                fn (string $featureKey): array => [$featureKey => $tenant->hasFeature($featureKey)]
+            )->all(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolveTenantContext(?Tenant $tenant): ?array
+    {
+        if (! $tenant) {
+            return null;
+        }
+
+        $plan = $tenant->currentPlan();
+
+        return [
+            ...$tenant->only('id', 'name', 'slug'),
+            'plan' => [
+                'code' => $plan->value,
+                'label' => $plan->label(),
+                'user_limit' => $tenant->userLimit(),
+            ],
+            'features' => $tenant->enabledFeatureKeys(),
         ];
     }
 }

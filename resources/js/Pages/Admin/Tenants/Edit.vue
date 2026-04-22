@@ -14,7 +14,7 @@ const adminUser = props.tenant.users && props.tenant.users.length > 0 ? props.te
 const tenantForm = useForm({
     name: props.tenant.name || '',
     domain: props.tenant.domain || '',
-    plan: props.tenant.plan || 'básico',
+    plan: props.tenant.plan || 'gratuito',
     status: props.tenant.status || 'active',
 });
 
@@ -99,10 +99,10 @@ const submitAdmin = () => {
                             <div>
                                 <label for="plan" class="block text-sm font-medium text-gray-700">Plan de Suscripción</label>
                                 <select id="plan" v-model="tenantForm.plan" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
-                                    <option value="básico">Básico</option>
-                                    <option value="esencial">Esencial</option>
+                                    <option value="gratuito">Gratuito</option>
+                                    <option value="basico">Básico</option>
                                     <option value="profesional">Profesional</option>
-                                    <option value="enterprise">Enterprise</option>
+                                    <option value="empresa">Empresa</option>
                                 </select>
                                 <div v-if="tenantForm.errors.plan" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.plan }}</div>
                             </div>

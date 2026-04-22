@@ -25,7 +25,6 @@ class TenantUserController extends Controller
             ->get(['id', 'name', 'email', 'created_at']);
 
         $roles = Role::all(['id', 'name']);
-        $planModel = $tenant->plan()->first();
 
         return Inertia::render('Users/Index', [
             'users' => $users->map(fn (User $user) => [
@@ -36,7 +35,7 @@ class TenantUserController extends Controller
                 'created_at' => $user->created_at,
             ]),
             'roles' => $roles,
-            'planMaxUsers' => $planModel?->max_users ?? $tenant->max_users ?? 5,
+            'planMaxUsers' => $tenant->userLimit(),
             'currentCount' => $users->count(),
         ]);
     }
@@ -44,14 +43,6 @@ class TenantUserController extends Controller
     public function store(StoreTenantUserRequest $request): RedirectResponse
     {
         $tenant = Tenant::current();
-        $planModel = $tenant->plan()->first();
-        $maxUsers = $planModel?->max_users ?? $tenant->max_users ?? 5;
-
-        if ($tenant->users()->count() >= $maxUsers) {
-            return back()->withErrors([
-                'email' => "Tu plan permite un máximo de {$maxUsers} usuarios. Actualiza tu plan para agregar más.",
-            ]);
-        }
 
         $user = User::create([
             'name' => $request->validated('name'),

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TenantPlan;
+use App\Services\PlanFeatureService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -56,21 +58,107 @@ class Tenant extends SpatieTenant
 
     public function hasFeature(string $feature): bool
     {
-        $tenant = static::query()->find($this->getKey());
+        $tenant = $this->exists
+            ? $this->fresh(['features', 'plan']) ?? $this
+            : $this;
 
-        if (! $tenant) {
-            return false;
-        }
+        $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature);
+        $possibleFeatureKeys = PlanFeatureService::possibleFeatureKeys($feature);
 
         $override = $tenant->features()
-            ->where('feature', $feature)
+            ->whereIn('feature', $possibleFeatureKeys)
+            ->get()
+            ->sortByDesc(fn (TenantFeature $tenantFeature): int => $tenantFeature->feature === $normalizedFeature ? 1 : 0)
             ->first();
 
         if ($override !== null) {
             return $override->is_enabled;
         }
 
-        return $tenant->plan()->first()?->includesFeatureKey($feature) ?? false;
+        $resolvedPlan = $tenant->resolveTenantPlan();
+
+        if ($resolvedPlan !== null) {
+            return $resolvedPlan->includesFeature($normalizedFeature);
+        }
+
+        return $tenant->planModel()?->includesFeatureKey($normalizedFeature) ?? false;
+    }
+
+    public function currentPlan(): TenantPlan
+    {
+        return $this->resolveTenantPlan() ?? TenantPlan::GRATUITO;
+    }
+
+    public function userLimit(): int
+    {
+        $resolvedPlan = $this->resolveTenantPlan();
+
+        if ($resolvedPlan !== null) {
+            return $resolvedPlan->userLimit();
+        }
+
+        return (int) ($this->planModel()?->max_users ?? $this->getAttribute('max_users') ?? TenantPlan::GRATUITO->userLimit());
+    }
+
+    public function userLimitMessage(): string
+    {
+        $limit = $this->userLimit();
+        $planName = $this->currentPlan()->label();
+
+        return "El plan {$planName} permite un máximo de {$limit} usuarios. Actualiza tu plan para agregar más.";
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function enabledFeatureKeys(): array
+    {
+        $featureService = app(PlanFeatureService::class);
+
+        return array_values(array_filter(
+            $featureService->frontendFeatureKeys(),
+            fn (string $feature): bool => $this->hasFeature($feature),
+        ));
+    }
+
+    private function resolveTenantPlan(): ?TenantPlan
+    {
+        $storedPlan = $this->attributes['plan'] ?? null;
+
+        if (is_string($storedPlan)) {
+            $resolvedPlan = TenantPlan::fromStoredValue($storedPlan);
+
+            if ($resolvedPlan !== null) {
+                return $resolvedPlan;
+            }
+        }
+
+        $resolvedFromPlanModel = $this->planModel()?->toTenantPlan();
+
+        if ($resolvedFromPlanModel !== null) {
+            return $resolvedFromPlanModel;
+        }
+
+        $storedPlanType = $this->attributes['plan_type'] ?? null;
+
+        if (is_string($storedPlanType)) {
+            $resolvedPlan = TenantPlan::fromStoredValue($storedPlanType);
+
+            if ($resolvedPlan !== null) {
+                return $resolvedPlan;
+            }
+        }
+
+        return null;
+    }
+
+    private function planModel(): ?Plan
+    {
+        $planRelation = $this->relationLoaded('plan')
+            ? $this->getRelation('plan')
+            : $this->plan()->first();
+
+        return $planRelation instanceof Plan ? $planRelation : null;
     }
 
     public function users(): HasMany

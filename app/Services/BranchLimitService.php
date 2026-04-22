@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\TenantPlan;
 use App\Models\Tenant;
 
 class BranchLimitService
@@ -32,13 +33,13 @@ class BranchLimitService
      */
     public function getMaxBranchesForTenant(Tenant $tenant): int
     {
-        $plan = $tenant->plan;
+        $plan = $tenant->plan()->first();
 
-        if ($plan === null) {
-            return 1; // Default to 1 branch if no plan
+        if ($plan !== null) {
+            return (int) ($plan->features['max_branches'] ?? $plan->max_branches ?? 1);
         }
 
-        return (int) ($plan->features['max_branches'] ?? $plan->max_branches ?? 1);
+        return $tenant->currentPlan()?->maxBranches() ?? TenantPlan::GRATUITO->maxBranches();
     }
 
     /**

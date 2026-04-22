@@ -17,14 +17,20 @@ class TenantFeature extends Model
     ];
 
     public const FEATURES = [
+        'ai_reception' => 'Recepción asistida por IA',
+        'custom_kanban' => 'Kanban personalizado',
+        'calendar_scheduling' => 'Agenda en calendario',
+        'advanced_inventory' => 'Inventario avanzado',
+        'sales_management' => 'Gestión de ventas',
+        'auto_whatsapp' => 'WhatsApp automático',
+        'commercial_quotes_enabled' => 'Cotizaciones comerciales y aprobación del cliente',
+        'commercial_reports_enabled' => 'Reportes comerciales avanzados',
         'ocr_enabled' => 'Lectura de patentes con IA',
         'appointments_enabled' => 'Módulo de citas',
         'whatsapp_enabled' => 'Notificaciones WhatsApp',
         'smart_reception_enabled' => 'Recepción inteligente',
         'inventory_enabled' => 'Módulo de inventario',
         'clients_enabled' => 'Módulo de clientes',
-        'commercial_quotes_enabled' => 'Cotizaciones comerciales y aprobación del cliente',
-        'commercial_reports_enabled' => 'Reportes comerciales avanzados',
     ];
 
     public function tenant(): BelongsTo

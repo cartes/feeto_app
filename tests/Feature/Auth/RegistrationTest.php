@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;
@@ -34,5 +36,24 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('taller.dashboard', ['tenantBySlug' => 'taller-test']));
+    }
+
+    public function test_registration_is_blocked_when_tenant_user_limit_is_reached(): void
+    {
+        $tenant = Tenant::current();
+
+        User::factory()->create(['tenant_id' => $tenant->id]);
+        User::factory()->create(['tenant_id' => $tenant->id]);
+
+        $response = $this->from('/register')->post('/register', [
+            'name' => 'Usuario Extra',
+            'email' => 'extra@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertRedirect('/register');
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
     }
 }

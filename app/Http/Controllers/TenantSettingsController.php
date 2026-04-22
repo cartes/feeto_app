@@ -39,9 +39,6 @@ class TenantSettingsController extends Controller
             ->whereIn('name', ['Admin', 'Recepcionista', 'Mecanico'])
             ->get(['id', 'name']);
 
-        $planModel = $tenant->plan()->first();
-        $maxUsers = $planModel?->max_users ?? $tenant->max_users ?? 5;
-
         return Inertia::render('Settings/Index', [
             'users' => $users->map(fn (User $user) => [
                 'id' => $user->id,
@@ -52,11 +49,15 @@ class TenantSettingsController extends Controller
             ]),
             'branches' => $branches,
             'roles' => $roles,
-            'planMaxUsers' => $maxUsers,
+            'planMaxUsers' => $tenant->userLimit(),
             'currentUserCount' => $users->count(),
             'canCreateBranch' => $this->branchLimitService->canCreateBranch($tenant),
             'branchLimitInfo' => $this->branchLimitService->getLimitMessage($tenant),
-            'tenant' => $tenant->only('id', 'name', 'slug', 'plan_type'),
+            'tenant' => [
+                ...$tenant->only('id', 'name', 'slug'),
+                'plan' => $tenant->currentPlan()->value,
+                'plan_label' => $tenant->currentPlan()->label(),
+            ],
         ]);
     }
 }

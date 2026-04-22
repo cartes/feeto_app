@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Ai\Agents\PatentReaderAgent;
 use App\Events\PatentRecognized;
 use App\Models\Client;
+use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Services\BoostrService;
@@ -14,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
 use Laravel\Ai\Files\Image;
-use Spatie\Multitenancy\Models\Tenant;
 
 class ReceptionController extends Controller
 {
@@ -23,9 +23,11 @@ class ReceptionController extends Controller
      */
     public function create(): Response
     {
+        $tenant = Tenant::current();
+
         return inertia('Reception/Create', [
-            'tenantId' => app(Tenant::class)->current() ? app(Tenant::class)->current()->id : null,
-            'planType' => app(Tenant::class)->current() ? app(Tenant::class)->current()->plan_type : 'freemium',
+            'tenantId' => $tenant?->id,
+            'planType' => $tenant?->currentPlan()->value ?? 'gratuito',
         ]);
     }
 

@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Plan;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\PlanFeatureService;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -231,5 +232,54 @@ class TenantRolesTest extends TestCase
         $this->assertArrayHasKey('permissions', $sharedProps['auth']['user']);
         $this->assertContains('Admin', $sharedProps['auth']['user']['roles']);
         $this->assertContains('inventory.manage', $sharedProps['auth']['user']['permissions']);
+        $this->assertArrayHasKey('tenantContext', $sharedProps);
+        $this->assertEquals('gratuito', $sharedProps['tenantContext']['plan']['code']);
+        $this->assertEquals([], $sharedProps['tenantContext']['features']);
+    }
+
+    /** @test */
+    public function test_plan_features_are_shared_via_inertia(): void
+    {
+        $plan = Plan::factory()->create([
+            'slug' => 'profesional-test',
+            'name' => 'Profesional Test',
+            'max_users' => 10,
+            'feature_keys' => [
+                PlanFeatureService::FEATURE_AI_RECEPTION,
+                PlanFeatureService::FEATURE_CUSTOM_KANBAN,
+                PlanFeatureService::FEATURE_CALENDAR_SCHEDULING,
+                PlanFeatureService::FEATURE_ADVANCED_INVENTORY,
+                PlanFeatureService::FEATURE_SALES_MANAGEMENT,
+                PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
+            ],
+        ]);
+
+        $tenant = Tenant::factory()->create([
+            'plan_id' => $plan->id,
+            'plan' => 'profesional',
+            'plan_type' => 'profesional',
+        ]);
+        $admin = User::factory()->create(['tenant_id' => $tenant->id]);
+
+        app(TenantSetupService::class)->provisionTenant($tenant, $admin);
+
+        $this->actingAs($admin);
+
+        $response = $this->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]));
+
+        $sharedProps = $response->viewData('page')['props'] ?? [];
+
+        $this->assertEquals('profesional', $sharedProps['tenantContext']['plan']['code']);
+        $this->assertEquals(
+            [
+                PlanFeatureService::FEATURE_AI_RECEPTION,
+                PlanFeatureService::FEATURE_CUSTOM_KANBAN,
+                PlanFeatureService::FEATURE_CALENDAR_SCHEDULING,
+                PlanFeatureService::FEATURE_ADVANCED_INVENTORY,
+                PlanFeatureService::FEATURE_SALES_MANAGEMENT,
+            ],
+            $sharedProps['tenantContext']['features']
+        );
+        $this->assertTrue($sharedProps['planAccess'][PlanFeatureService::FEATURE_SALES_MANAGEMENT]);
     }
 }
