@@ -9,9 +9,7 @@ const props = defineProps({
     payment_settings: Object,
 });
 
-const page = usePage();
-const flash = computed(() => page.props.flash);
-const user = computed(() => page.props.auth.user);
+const user = computed(() => usePage().props.auth.user);
 
 const activeTab = ref('profile');
 
@@ -67,14 +65,6 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
     <Head title="Mi Perfil" />
 
     <AdminLayout>
-        <!-- Flash success -->
-        <div v-if="flash?.success" class="mb-6 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700 ring-1 ring-inset ring-emerald-600/20 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            {{ flash.success }}
-        </div>
-
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Mi Perfil</h1>
             <p class="mt-1 text-sm text-slate-500">Gestiona tu cuenta y credenciales de la plataforma.</p>

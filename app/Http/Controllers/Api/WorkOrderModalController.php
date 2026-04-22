@@ -19,10 +19,15 @@ class WorkOrderModalController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $workOrder = WorkOrder::with(['items', 'images', 'vehicle.client'])
+        $workOrder = WorkOrder::with(['quote.items.product', 'quote.items.service', 'images', 'vehicle.client'])
             ->findOrFail($id);
 
-        return response()->json($workOrder);
+        $payload = $workOrder->toArray();
+        $payload['items'] = $workOrder->quote?->items?->values()->all() ?? [];
+        $payload['quote'] = $workOrder->quote;
+        $payload['total_amount'] = (float) ($workOrder->quote?->subtotal_amount ?? $workOrder->total_amount);
+
+        return response()->json($payload);
     }
 
     /**

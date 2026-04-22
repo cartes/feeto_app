@@ -3,12 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Client;
+use App\Models\Plan;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
-use App\Models\WorkOrderItem;
+use App\Services\PlanFeatureService;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
@@ -33,6 +35,11 @@ class WorkOrderItemTest extends TestCase
         URL::defaults(['tenantBySlug' => $tenant->slug]);
 
         app(TenantSetupService::class)->provisionTenant($tenant);
+        $tenant->update([
+            'plan_id' => Plan::factory()->create([
+                'feature_keys' => [PlanFeatureService::FEATURE_COMMERCIAL_QUOTES],
+            ])->id,
+        ]);
 
         $user = User::factory()->create(['tenant_id' => $tenant->id]);
         $user->assignRole('Admin');
@@ -80,8 +87,11 @@ class WorkOrderItemTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('work_order_items', [
-            'work_order_id' => $workOrder->id,
+        $quote = Quote::query()->where('work_order_id', $workOrder->id)->first();
+
+        $this->assertNotNull($quote);
+        $this->assertDatabaseHas('quote_items', [
+            'quote_id' => $quote?->id,
             'description' => 'Mano de obra diagnóstico',
         ]);
 
@@ -89,7 +99,7 @@ class WorkOrderItemTest extends TestCase
         $this->assertEquals(35000, $workOrder->total_amount);
     }
 
-    public function test_adding_product_item_decrements_stock(): void
+    public function test_adding_product_item_does_not_decrement_stock_while_quote_is_pending(): void
     {
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
@@ -101,10 +111,10 @@ class WorkOrderItemTest extends TestCase
         ]);
 
         $product->refresh();
-        $this->assertEquals(7, $product->physical_stock); // 10 - 3
+        $this->assertEquals(10, $product->physical_stock);
     }
 
-    public function test_removing_item_restores_product_stock(): void
+    public function test_removing_item_keeps_product_stock_unchanged(): void
     {
         ['user' => $user, 'workOrder' => $workOrder, 'product' => $product] = $this->createPrerequisites();
 
@@ -115,7 +125,8 @@ class WorkOrderItemTest extends TestCase
             'unit_price' => $product->selling_price,
         ]);
 
-        $item = WorkOrderItem::first();
+        $quote = Quote::query()->where('work_order_id', $workOrder->id)->firstOrFail();
+        $item = $quote->items()->firstOrFail();
 
         $this->actingAs($user)->delete(route('work-orders.items.destroy', [
             'workOrder' => $workOrder->id,
@@ -123,9 +134,9 @@ class WorkOrderItemTest extends TestCase
         ]));
 
         $product->refresh();
-        $this->assertEquals(10, $product->physical_stock); // Stock restored
+        $this->assertEquals(10, $product->physical_stock);
 
-        $this->assertDatabaseMissing('work_order_items', ['id' => $item->id]);
+        $this->assertDatabaseMissing('quote_items', ['id' => $item->id]);
 
         $workOrder->refresh();
         $this->assertEquals(0, $workOrder->total_amount);

@@ -6,81 +6,115 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Quote;
+use App\Models\QuoteEvent;
+use App\Models\QuoteItem;
 use App\Models\WorkOrder;
-use App\Models\WorkOrderItem;
+use App\Services\PlanFeatureService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Spatie\Multitenancy\Models\Tenant;
 
 class WorkOrderItemController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function __construct(protected PlanFeatureService $planFeatureService) {}
+
     public function store(Request $request, WorkOrder $workOrder): JsonResponse
     {
+        $this->ensureCommercialQuotesEnabled();
+
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'product_id' => ['required', 'exists:products,id'],
+            'quantity' => ['required', 'numeric', 'min:0.01'],
         ]);
 
-        return DB::transaction(function () use ($validated, $workOrder) {
-            $product = Product::findOrFail($validated['product_id']);
+        $product = Product::findOrFail($validated['product_id']);
+        $quote = $this->quoteFor($workOrder);
+        $quantity = (float) $validated['quantity'];
 
-            // Verificar stock físico
-            if ($product->physical_stock < $validated['quantity']) {
-                throw ValidationException::withMessages([
-                    'quantity' => ['Stock insuficiente. Disponible: '.$product->physical_stock],
-                ]);
-            }
+        $item = $quote->items()->create([
+            'product_id' => $product->id,
+            'service_id' => null,
+            'item_type' => QuoteItem::TYPE_PRODUCT,
+            'description' => $product->name,
+            'quantity' => $quantity,
+            'unit_price' => $product->selling_price,
+            'total_price' => (float) $product->selling_price * $quantity,
+        ]);
 
-            $unitPrice = $product->selling_price;
-            $totalPrice = $unitPrice * $validated['quantity'];
+        $this->markQuoteAsDraft($quote);
+        $this->recalculateTotal($workOrder, $quote);
+        $this->recordEvent($quote, 'staff', 'item_added', 'Se agregó un repuesto a la cotización.');
 
-            // Crear el item
-            $item = $workOrder->items()->create([
-                'product_id' => $product->id,
-                'description' => $product->name,
-                'quantity' => $validated['quantity'],
-                'unit_price' => $unitPrice,
-                'total_price' => $totalPrice,
-            ]);
-
-            // Descontar stock
-            $product->decrement('physical_stock', $validated['quantity']);
-
-            // Actualizar total de la OT
-            $workOrder->increment('total_amount', $totalPrice);
-
-            return response()->json([
-                'message' => 'Producto agregado con éxito',
-                'item' => $item->load('product'),
-                'total_amount' => $workOrder->fresh()->total_amount,
-            ]);
-        });
+        return response()->json([
+            'message' => 'Producto agregado con éxito',
+            'item' => $item->load('product'),
+            'total_amount' => $workOrder->fresh()->total_amount,
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(WorkOrder $workOrder, WorkOrderItem $item): JsonResponse
+    public function destroy(WorkOrder $workOrder, QuoteItem $item): JsonResponse
     {
-        return DB::transaction(function () use ($workOrder, $item) {
-            // Revertir stock si hay producto asociado
-            if ($item->product_id) {
-                Product::where('id', $item->product_id)->increment('physical_stock', $item->quantity);
-            }
+        $this->ensureCommercialQuotesEnabled();
 
-            // Revertir total de la OT
-            $workOrder->decrement('total_amount', $item->total_price);
+        $quote = $this->quoteFor($workOrder);
 
-            $item->delete();
+        if ($item->quote_id !== $quote->id) {
+            throw new ModelNotFoundException;
+        }
 
-            return response()->json([
-                'message' => 'Item eliminado con éxito',
-                'total_amount' => $workOrder->fresh()->total_amount,
-            ]);
-        });
+        $item->delete();
+
+        $this->markQuoteAsDraft($quote);
+        $this->recalculateTotal($workOrder, $quote);
+        $this->recordEvent($quote, 'staff', 'item_removed', 'Se eliminó un ítem de la cotización.');
+
+        return response()->json([
+            'message' => 'Item eliminado con éxito',
+            'total_amount' => $workOrder->fresh()->total_amount,
+        ]);
+    }
+
+    private function quoteFor(WorkOrder $workOrder): Quote
+    {
+        return $workOrder->quote()->firstOrCreate([
+            'work_order_id' => $workOrder->id,
+        ]);
+    }
+
+    private function markQuoteAsDraft(Quote $quote): void
+    {
+        $quote->update([
+            'status' => Quote::STATUS_DRAFT,
+            'responded_at' => null,
+            'customer_response_notes' => null,
+        ]);
+    }
+
+    private function recalculateTotal(WorkOrder $workOrder, Quote $quote): void
+    {
+        $total = (float) $quote->items()->sum('total_price');
+        $quote->update(['subtotal_amount' => $total]);
+        $workOrder->update(['total_amount' => $total]);
+    }
+
+    private function recordEvent(Quote $quote, string $actorType, string $eventType, string $description): void
+    {
+        QuoteEvent::create([
+            'tenant_id' => $quote->tenant_id,
+            'work_order_id' => $quote->work_order_id,
+            'quote_id' => $quote->id,
+            'actor_type' => $actorType,
+            'event_type' => $eventType,
+            'description' => $description,
+        ]);
+    }
+
+    private function ensureCommercialQuotesEnabled(): void
+    {
+        if (! Tenant::current()?->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES)) {
+            abort(403, $this->planFeatureService->upgradeMessage(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES));
+        }
     }
 }

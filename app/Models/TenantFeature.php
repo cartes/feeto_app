@@ -23,6 +23,8 @@ class TenantFeature extends Model
         'smart_reception_enabled' => 'Recepción inteligente',
         'inventory_enabled' => 'Módulo de inventario',
         'clients_enabled' => 'Módulo de clientes',
+        'commercial_quotes_enabled' => 'Cotizaciones comerciales y aprobación del cliente',
+        'commercial_reports_enabled' => 'Reportes comerciales avanzados',
     ];
 
     public function tenant(): BelongsTo

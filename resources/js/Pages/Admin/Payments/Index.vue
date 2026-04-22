@@ -1,15 +1,12 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { computed } from 'vue';
 
 const props = defineProps({
     payments: Object,
     monthly_summary: Array,
     totals: Object,
 });
-
-const flash = computed(() => usePage().props.flash ?? {});
 
 const STATUS_CONFIG = {
     approved:  { label: 'Aprobado',  classes: 'bg-emerald-100 text-emerald-800' },
@@ -58,17 +55,6 @@ function monthLabel(ym) {
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Historial de Pagos</h1>
                 <p class="mt-1 text-sm text-slate-500">Desglose de ingresos, comisiones MP e IVA.</p>
             </div>
-        </div>
-
-        <!-- Flash messages -->
-        <div v-if="flash.success" class="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
-            {{ flash.success }}
-        </div>
-        <div v-if="flash.error" class="mb-4 rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">
-            {{ flash.error }}
-        </div>
-        <div v-if="flash.info" class="mb-4 rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-800">
-            {{ flash.info }}
         </div>
 
         <!-- Totales globales -->

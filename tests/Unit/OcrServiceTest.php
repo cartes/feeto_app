@@ -28,7 +28,6 @@ class OcrServiceTest extends TestCase
     {
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('cleanPlate');
-        $method->setAccessible(true);
 
         $this->assertEquals('ABCD12', $method->invoke($this->service, 'ABCD-I2'));
         $this->assertEquals('BCDF01', $method->invoke($this->service, 'BCDF O1'));
@@ -42,7 +41,6 @@ class OcrServiceTest extends TestCase
     {
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('validatePpu');
-        $method->setAccessible(true);
 
         // Valid modern
         $result = $method->invoke($this->service, 'BCDF12');
@@ -61,7 +59,6 @@ class OcrServiceTest extends TestCase
     {
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('validatePpu');
-        $method->setAccessible(true);
 
         // Valid old
         $result = $method->invoke($this->service, 'AB1234');

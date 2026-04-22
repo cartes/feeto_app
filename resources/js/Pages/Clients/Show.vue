@@ -4,6 +4,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
     client: Object,
+    quoteSummary: Object,
 });
 
 const getStatusColor = (status) => {
@@ -93,6 +94,25 @@ const formatDate = (dateString) => {
 
             <!-- Historial Clínico (Sección Principal) -->
             <div class="lg:col-span-2 space-y-8">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cotizaciones</p>
+                        <p class="mt-2 text-3xl font-black text-gray-900">{{ quoteSummary.total_quotes }}</p>
+                    </div>
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Aceptadas</p>
+                        <p class="mt-2 text-3xl font-black text-emerald-600">{{ quoteSummary.accepted_quotes }}</p>
+                    </div>
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Pendientes</p>
+                        <p class="mt-2 text-3xl font-black text-amber-500">{{ quoteSummary.pending_quotes }}</p>
+                    </div>
+                    <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto Aceptado</p>
+                        <p class="mt-2 text-xl font-black text-gray-900">{{ new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(quoteSummary.accepted_amount) }}</p>
+                    </div>
+                </div>
+
                 
                 <div class="bg-gray-50 rounded-[2.5rem] p-8 border border-gray-100">
                     <div class="flex items-center gap-3 mb-6">
@@ -149,6 +169,9 @@ const formatDate = (dateString) => {
                                         <span class="font-mono font-bold tracking-widest text-sm text-gray-500">OT-#{{ wo.id }}</span>
                                         <span :class="['text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border', getStatusColor(wo.status)]">
                                             {{ getStatusLabel(wo.status) }}
+                                        </span>
+                                        <span v-if="wo.quote" class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border bg-slate-50 text-slate-600 border-slate-200">
+                                            Cotización {{ wo.quote.status }}
                                         </span>
                                     </div>
                                     <div class="flex gap-2 items-center text-sm font-bold text-gray-900">

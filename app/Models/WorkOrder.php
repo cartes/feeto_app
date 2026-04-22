@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class WorkOrder extends Model
@@ -63,6 +64,11 @@ class WorkOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(WorkOrderItem::class);
+    }
+
+    public function quote(): HasOne
+    {
+        return $this->hasOne(Quote::class);
     }
 
     public function images(): HasMany

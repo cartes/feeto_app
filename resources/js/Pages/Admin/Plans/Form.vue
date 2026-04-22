@@ -1,14 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
     plan: Object,
+    featureDefinitions: Object,
 });
 
-const page = usePage();
-const flash = computed(() => page.props.flash);
 const isEditing = computed(() => !!props.plan);
 
 const form = useForm({
@@ -19,6 +18,7 @@ const form = useForm({
     max_users: props.plan?.max_users ?? '',
     trial_days: props.plan?.trial_days ?? 0,
     features: props.plan?.features ? [...props.plan.features] : [],
+    feature_keys: props.plan?.feature_keys ? [...props.plan.feature_keys] : [],
     is_active: props.plan?.is_active ?? true,
     is_popular: props.plan?.is_popular ?? false,
     discount_percent: props.plan?.discount_percent ?? '',
@@ -42,6 +42,17 @@ const removeFeature = (index) => {
     form.features.splice(index, 1);
 };
 
+const toggleFeatureKey = (featureKey) => {
+    const index = form.feature_keys.indexOf(featureKey);
+
+    if (index >= 0) {
+        form.feature_keys.splice(index, 1);
+        return;
+    }
+
+    form.feature_keys.push(featureKey);
+};
+
 const handleFeatureKeydown = (event) => {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -62,14 +73,6 @@ const submit = () => {
     <Head :title="isEditing ? `Editar Plan: ${plan.name}` : 'Nuevo Plan'" />
 
     <AdminLayout>
-        <!-- Flash success -->
-        <div v-if="flash?.success" class="mb-6 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700 ring-1 ring-inset ring-emerald-600/20 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            {{ flash.success }}
-        </div>
-
         <!-- Header -->
         <div class="mb-8 flex items-center gap-4">
             <Link
@@ -234,6 +237,32 @@ const submit = () => {
                 <div class="border-t border-gray-100"></div>
 
                 <!-- Features -->
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 mb-4">Módulos por plan</h2>
+                    <div class="space-y-3 max-w-2xl">
+                        <label
+                            v-for="(definition, featureKey) in featureDefinitions"
+                            :key="featureKey"
+                            class="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-3 cursor-pointer"
+                        >
+                            <input
+                                type="checkbox"
+                                :checked="form.feature_keys.includes(featureKey)"
+                                class="mt-1 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+                                @change="toggleFeatureKey(featureKey)"
+                            />
+                            <div class="space-y-1">
+                                <p class="text-sm font-semibold text-slate-900">{{ definition.label }}</p>
+                                <p class="text-xs text-slate-500">{{ definition.description }}</p>
+                                <p class="text-[11px] font-medium text-orange-600">Desde plan {{ definition.min_plan }}</p>
+                            </div>
+                        </label>
+                    </div>
+                    <div v-if="form.errors.feature_keys" class="mt-1 text-sm text-red-600">{{ form.errors.feature_keys }}</div>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
                 <div>
                     <h2 class="text-sm font-semibold text-slate-900 mb-4">Funcionalidades incluidas</h2>
                     <div class="max-w-lg space-y-3">

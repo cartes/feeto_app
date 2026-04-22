@@ -19,7 +19,10 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
@@ -54,6 +57,9 @@ Route::get('/', function () {
 Route::get('/ot/{uuid}', [TrackingController::class, 'show'])
     ->middleware('throttle:30,1')
     ->name('tracking.show');
+Route::post('/ot/{uuid}/quote/respond', [QuoteController::class, 'respond'])
+    ->middleware('throttle:20,1')
+    ->name('tracking.quote.respond');
 
 // Landing page pública del taller — embudo de conversión con Pre-Check ALPR
 Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->name('taller.landing');
@@ -116,6 +122,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])
             ->middleware('role:Admin|Mecanico')
             ->name('work-orders.items.destroy');
+        Route::post('/work-orders/{workOrder}/quote/send', [QuoteController::class, 'send'])
+            ->middleware('role:Admin|Recepcionista|Mecanico')
+            ->name('work-orders.quote.send');
 
         // API Modals
         Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');
@@ -135,6 +144,11 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::resource('inventory', InventoryController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['inventory' => 'product'])
+            ->middleware('role:Admin');
+
+        Route::resource('services', ServiceController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['services' => 'service'])
             ->middleware('role:Admin');
 
         // Branches — solo Admin
@@ -171,6 +185,10 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/settings', [TenantSettingsController::class, 'index'])
             ->middleware('role:Admin')
             ->name('taller.settings');
+
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->middleware('role:Admin')
+            ->name('reports.index');
 
         // Perfil
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

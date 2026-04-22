@@ -9,16 +9,20 @@ use App\Http\Requests\Admin\StorePlanRequest;
 use App\Http\Requests\Admin\UpdatePlanRequest;
 use App\Models\AuditLog;
 use App\Models\Plan;
+use App\Services\PlanFeatureService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PlanController extends Controller
 {
+    public function __construct(protected PlanFeatureService $planFeatureService) {}
+
     public function index(): Response
     {
         return Inertia::render('Admin/Plans/Index', [
             'plans' => Plan::orderBy('sort_order')->get(),
+            'featureDefinitions' => $this->planFeatureService->definitions(),
         ]);
     }
 
@@ -26,6 +30,7 @@ class PlanController extends Controller
     {
         return Inertia::render('Admin/Plans/Form', [
             'plan' => null,
+            'featureDefinitions' => $this->planFeatureService->definitions(),
         ]);
     }
 
@@ -42,6 +47,7 @@ class PlanController extends Controller
     {
         return Inertia::render('Admin/Plans/Form', [
             'plan' => $plan,
+            'featureDefinitions' => $this->planFeatureService->definitions(),
         ]);
     }
 

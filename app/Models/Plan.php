@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'name', 'slug', 'description', 'price_monthly', 'price_annual',
-    'features', 'max_users', 'max_branches', 'is_active', 'is_popular', 'trial_days',
+    'features', 'feature_keys', 'max_users', 'max_branches', 'is_active', 'is_popular', 'trial_days',
     'discount_percent', 'discount_valid_until', 'sort_order',
 ])]
 class Plan extends Model
@@ -24,6 +24,7 @@ class Plan extends Model
     /** @var array<string, string> */
     protected $casts = [
         'features' => 'array',
+        'feature_keys' => 'array',
         'is_active' => 'boolean',
         'is_popular' => 'boolean',
         'discount_valid_until' => 'date',
@@ -63,5 +64,10 @@ class Plan extends Model
         }
 
         return (int) round($this->price_monthly * (1 - $this->discount_percent / 100));
+    }
+
+    public function includesFeatureKey(string $feature): bool
+    {
+        return in_array($feature, $this->feature_keys ?? [], true);
     }
 }

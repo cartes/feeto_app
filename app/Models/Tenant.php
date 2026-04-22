@@ -56,7 +56,21 @@ class Tenant extends SpatieTenant
 
     public function hasFeature(string $feature): bool
     {
-        return $this->features()->where('feature', $feature)->where('is_enabled', true)->exists();
+        $tenant = static::query()->find($this->getKey());
+
+        if (! $tenant) {
+            return false;
+        }
+
+        $override = $tenant->features()
+            ->where('feature', $feature)
+            ->first();
+
+        if ($override !== null) {
+            return $override->is_enabled;
+        }
+
+        return $tenant->plan()->first()?->includesFeatureKey($feature) ?? false;
     }
 
     public function users(): HasMany

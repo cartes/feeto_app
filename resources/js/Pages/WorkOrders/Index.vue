@@ -1,14 +1,21 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { router, usePage, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
+import Dropdown from '@/Components/Dropdown.vue';
 
 const props = defineProps({
     kanban: Object,
     tenantId: Number
 });
+
+const page = usePage();
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const planAccess = computed(() => page.props.planAccess ?? null);
+const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
+const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 
 // Modal state
 const isModalOpen = ref(false);
@@ -272,16 +279,38 @@ onUnmounted(() => {
                             </div>
 
                             <!-- Drag Handle Sutil -->
-                            <div class="absolute top-4 right-4 text-slate-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
-                                </svg>
+                            <div class="absolute top-4 right-4 text-slate-300" @click.stop>
+                                <Dropdown align="right" width="48">
+                                    <template #trigger>
+                                        <button type="button" class="rounded-full p-1 transition-colors hover:bg-slate-100 hover:text-slate-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+                                            </svg>
+                                        </button>
+                                    </template>
+
+                                    <template #content>
+                                        <div class="flex flex-col py-2">
+                                            <Link :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })" class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                                                Ver detalle OT
+                                            </Link>
+                                            <Link v-if="commercialReportsEnabled && order.vehicle?.client?.id" :href="route('clients.show', { ...tenantRouteParams, client: order.vehicle.client.id })" class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                                                Ver reporte cliente
+                                            </Link>
+                                        </div>
+                                    </template>
+                                </Dropdown>
                             </div>
 
                             <div class="mt-8 mb-4">
-                                <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
-                                    {{ order.vehicle?.plate || 'S/P' }}
-                                </p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
+                                        {{ order.vehicle?.plate || 'S/P' }}
+                                    </p>
+                                    <span v-if="commercialQuotesEnabled && order.quote?.status" class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                        {{ order.quote.status }}
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="space-y-1 mb-2">
@@ -366,7 +395,7 @@ onUnmounted(() => {
 
                                     <div v-else-if="selectedWorkOrder">
                                         <!-- Budget Section -->
-                                        <div v-if="activeTab === 'budget'" class="space-y-8 animate-in slide-in-from-left-4 duration-500">
+                                        <div v-if="activeTab === 'budget' && commercialQuotesEnabled" class="space-y-8 animate-in slide-in-from-left-4 duration-500">
                                             <div class="bg-slate-50 rounded-[2rem] p-6">
                                                 <table class="w-full text-sm">
                                                     <thead>
@@ -429,6 +458,17 @@ onUnmounted(() => {
                                             </div>
                                         </div>
 
+                                        <div v-if="activeTab === 'budget' && !commercialQuotesEnabled" class="rounded-[2rem] border border-dashed border-orange-200 bg-orange-50/70 p-8 animate-in slide-in-from-left-4 duration-500">
+                                            <span class="inline-flex rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-600">Upgrade</span>
+                                            <h3 class="mt-4 text-xl font-black text-slate-900">Cotizaciones comerciales no disponibles</h3>
+                                            <p class="mt-2 text-sm font-medium text-slate-600">
+                                                Este tablero puede mover órdenes, pero el presupuesto formal con aprobación del cliente está reservado para planes superiores.
+                                            </p>
+                                            <p class="mt-3 text-sm font-semibold text-orange-700">
+                                                {{ planAccess?.upgrade_messages?.commercial_quotes_enabled }}
+                                            </p>
+                                        </div>
+
                                         <!-- Evidence Section -->
                                         <div v-if="activeTab === 'evidence'" class="space-y-8 animate-in slide-in-from-right-4 duration-500">
                                             <!-- Image Grid -->
@@ -463,7 +503,7 @@ onUnmounted(() => {
                                         </div>
 
                                         <!-- Preview Section -->
-                                        <div v-if="activeTab === 'preview'" class="animate-in zoom-in-95 duration-500">
+                                        <div v-if="activeTab === 'preview' && commercialQuotesEnabled" class="animate-in zoom-in-95 duration-500">
                                             <div class="max-w-xl mx-auto bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100">
                                                 <WorkOrderQuote :workOrder="selectedWorkOrder" />
                                             </div>

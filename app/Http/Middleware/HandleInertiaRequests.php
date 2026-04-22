@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\PermissionRegistrar;
@@ -45,7 +46,16 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => $authorization['permissions'],
                 ]) : null,
             ],
+            'flash' => fn (): array => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'warning' => $request->session()->get('warning'),
+                'info' => $request->session()->get('info'),
+                'status' => $request->session()->get('status'),
+                'booking_success' => $request->session()->get('booking_success'),
+            ],
             'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,
+            'planAccess' => $this->resolvePlanAccess($tenant),
         ];
     }
 
@@ -113,5 +123,30 @@ class HandleInertiaRequests extends Middleware
         return $user->relationLoaded('tenant')
             ? $user->tenant
             : $user->tenant()->first();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolvePlanAccess(?Tenant $tenant): ?array
+    {
+        if (! $tenant) {
+            return null;
+        }
+
+        $featureService = app(PlanFeatureService::class);
+        $definitions = $featureService->definitions();
+        $planModel = $tenant->plan()->first();
+
+        return [
+            'plan_name' => $planModel?->name ?? $tenant->plan ?? $tenant->plan_type,
+            'feature_keys' => $planModel?->feature_keys ?? [],
+            'commercial_quotes_enabled' => $tenant->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES),
+            'commercial_reports_enabled' => $tenant->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_REPORTS),
+            'upgrade_messages' => collect($definitions)->mapWithKeys(
+                fn (array $definition, string $key): array => [$key => $featureService->upgradeMessage($key)]
+            )->all(),
+            'definitions' => $definitions,
+        ];
     }
 }

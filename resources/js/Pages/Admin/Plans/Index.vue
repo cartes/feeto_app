@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
     plans: Array,
+    featureDefinitions: Object,
 });
 
 const formatCLP = (value) => {
@@ -56,6 +57,7 @@ const deletePlan = (plan) => {
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Precio Mensual</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Precio Anual</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Usuarios Max</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Módulos</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Trial</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Descuento</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Popular</th>
@@ -79,6 +81,18 @@ const deletePlan = (plan) => {
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                         {{ plan.max_users ?? '∞' }}
+                                    </td>
+                                    <td class="px-3 py-4 text-sm text-slate-500">
+                                        <div class="flex flex-wrap gap-1.5 max-w-xs">
+                                            <span
+                                                v-for="featureKey in (plan.feature_keys || [])"
+                                                :key="featureKey"
+                                                class="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-[11px] font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20"
+                                            >
+                                                {{ featureDefinitions[featureKey]?.label || featureKey }}
+                                            </span>
+                                            <span v-if="!(plan.feature_keys || []).length" class="text-slate-300">—</span>
+                                        </div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                         {{ plan.trial_days ? `${plan.trial_days}d` : '—' }}
@@ -111,7 +125,7 @@ const deletePlan = (plan) => {
                                     </td>
                                 </tr>
                                 <tr v-if="!plans || plans.length === 0">
-                                    <td colspan="9" class="py-10 text-center text-sm text-slate-500">
+                                    <td colspan="10" class="py-10 text-center text-sm text-slate-500">
                                         No hay planes creados aún.
                                         <Link :href="route('admin.plans.create')" class="ml-1 text-amber-600 hover:text-amber-800 font-medium">Crear el primero</Link>
                                     </td>

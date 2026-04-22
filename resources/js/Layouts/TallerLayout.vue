@@ -7,12 +7,16 @@ const user = computed(() => page.props.auth.user);
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const permissions = computed(() => user.value?.permissions ?? []);
 const roles = computed(() => user.value?.roles ?? []);
+const planAccess = computed(() => page.props.planAccess ?? null);
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canManageAppointments = computed(() => hasPermission('appointments.manage'));
 const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
     .some((permission) => hasPermission(permission)));
 const canManageInventory = computed(() => hasPermission('inventory.manage'));
 const canManageCustomers = computed(() => hasPermission('customers.manage'));
+const canViewReports = computed(() => hasPermission('reports.view'));
+const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
+const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 const canAccessSettings = computed(() => roles.value.includes('Admin') || hasPermission('users.manage') || hasPermission('branches.manage'));
 
 const navItems = computed(() => ([
@@ -20,7 +24,9 @@ const navItems = computed(() => ([
     { label: 'Recepción', icon: 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z', route: 'receptions.create', visible: canManageAppointments.value },
     { label: 'Órdenes', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01', route: 'work-orders.index', visible: canViewWorkOrders.value },
     { label: 'Inventario', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', route: 'inventory.index', visible: canManageInventory.value },
+    { label: 'Servicios', icon: 'M9 12h6m-3-3v6m6 5H6a2 2 0 01-2-2V8a2 2 0 012-2h3.172a2 2 0 011.414.586l.828.828A2 2 0 0012.828 8H18a2 2 0 012 2v8a2 2 0 01-2 2z', route: 'services.index', visible: canManageInventory.value && commercialQuotesEnabled.value },
     { label: 'Clientes', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', route: 'clients.index', visible: canManageCustomers.value },
+    { label: 'Reportes', icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z', route: 'reports.index', visible: canViewReports.value && commercialReportsEnabled.value },
 ]).filter((item) => item.visible));
 </script>
 

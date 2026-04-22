@@ -1,7 +1,11 @@
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
     workOrder: Object,
 });
+
+const quote = computed(() => props.workOrder?.quote ?? props.workOrder ?? { items: [], subtotal_amount: 0 });
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -21,12 +25,12 @@ const formatCurrency = (value) => {
         <div class="flex justify-between items-start border-b border-slate-100 pb-6">
             <div>
                 <h3 class="text-xl font-black text-slate-800">Cotización #{{ workOrder.id }}</h3>
-                <p class="text-xs font-bold text-slate-400 mt-1">{{ formatDate(workOrder.created_at) }}</p>
+                <p class="text-xs font-bold text-slate-400 mt-1">{{ formatDate(quote.sent_at || workOrder.created_at) }}</p>
             </div>
             <div class="text-right px-4 py-2 bg-orange-50 rounded-2xl border border-orange-100">
                 <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Total
                     Presupuestado</p>
-                <p class="text-xl font-black text-slate-900 mt-1 leading-none">{{ formatCurrency(workOrder.total_amount)
+                <p class="text-xl font-black text-slate-900 mt-1 leading-none">{{ formatCurrency(quote.subtotal_amount ?? workOrder.total_amount)
                     }}</p>
             </div>
         </div>
@@ -47,7 +51,7 @@ const formatCurrency = (value) => {
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                    <tr v-for="item in workOrder.items" :key="item.id">
+                    <tr v-for="item in quote.items" :key="item.id">
                         <td class="px-4 py-4 text-slate-700 font-medium">{{ item.description }}</td>
                         <td class="px-4 py-4 text-center text-slate-500 font-mono">{{ item.quantity }}</td>
                         <td class="px-4 py-4 text-right text-slate-800 font-black font-mono">

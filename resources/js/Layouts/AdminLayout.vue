@@ -1,19 +1,74 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import Toast from '@/Components/Toast.vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const flash = computed(() => page.props.flash ?? {});
 
 const userMenuOpen = ref(false);
 const userMenuRef = ref(null);
+const toast = ref({ message: '', type: 'success' });
 
 const handleClickOutside = (event) => {
     if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
         userMenuOpen.value = false;
     }
 };
+
+const showToast = (message, type = 'success') => {
+    if (!message) {
+        return;
+    }
+
+    toast.value = { message: '', type };
+
+    requestAnimationFrame(() => {
+        toast.value = { message, type };
+    });
+};
+
+watch(
+    () => [
+        flash.value.success,
+        flash.value.error,
+        flash.value.warning,
+        flash.value.info,
+        flash.value.status,
+    ],
+    ([success, error, warning, info, status]) => {
+        if (error) {
+            showToast(error, 'error');
+
+            return;
+        }
+
+        if (warning) {
+            showToast(warning, 'warning');
+
+            return;
+        }
+
+        if (success) {
+            showToast(success, 'success');
+
+            return;
+        }
+
+        if (info) {
+            showToast(info, 'info');
+
+            return;
+        }
+
+        if (status) {
+            showToast(status, 'info');
+        }
+    },
+    { immediate: true }
+);
 
 onMounted(() => document.addEventListener('click', handleClickOutside));
 onUnmounted(() => document.removeEventListener('click', handleClickOutside));
@@ -126,5 +181,11 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
         <slot />
       </div>
     </main>
+
+    <Toast
+      :message="toast.message"
+      :type="toast.type"
+      @dismiss="toast.message = ''"
+    />
   </div>
 </template>

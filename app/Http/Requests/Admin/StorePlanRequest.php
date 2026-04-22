@@ -23,6 +23,8 @@ class StorePlanRequest extends FormRequest
             'price_annual' => ['required', 'integer', 'min:0'],
             'features' => ['nullable', 'array'],
             'features.*' => ['string', 'max:200'],
+            'feature_keys' => ['nullable', 'array'],
+            'feature_keys.*' => ['string', 'max:100'],
             'max_users' => ['required', 'integer', 'min:1'],
             'is_active' => ['boolean'],
             'is_popular' => ['boolean'],

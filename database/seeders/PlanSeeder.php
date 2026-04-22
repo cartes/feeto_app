@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Plan;
+use App\Services\PlanFeatureService;
 use Illuminate\Database\Seeder;
 
 class PlanSeeder extends Seeder
@@ -29,6 +30,7 @@ class PlanSeeder extends Seeder
                     'Seguimiento de vehículos',
                     'Soporte por email',
                 ],
+                'feature_keys' => [],
             ],
             [
                 'name' => 'Profesional',
@@ -48,7 +50,11 @@ class PlanSeeder extends Seeder
                     'Módulo de citas',
                     'Inventario de repuestos',
                     'Módulo de clientes',
+                    'Cotizaciones comerciales y aprobación del cliente',
                     'Soporte prioritario',
+                ],
+                'feature_keys' => [
+                    PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
                 ],
             ],
             [
@@ -67,9 +73,14 @@ class PlanSeeder extends Seeder
                     'Todo lo del plan Profesional',
                     'Notificaciones WhatsApp',
                     'Recepción inteligente',
+                    'Cotizaciones comerciales y aprobación del cliente',
                     'Reportes avanzados',
                     'API acceso',
                     'Soporte 24/7',
+                ],
+                'feature_keys' => [
+                    PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
+                    PlanFeatureService::FEATURE_COMMERCIAL_REPORTS,
                 ],
             ],
         ];
