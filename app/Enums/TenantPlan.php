@@ -152,6 +152,7 @@ enum TenantPlan: string
                 PlanFeatureService::FEATURE_AUTO_WHATSAPP,
                 PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
                 PlanFeatureService::FEATURE_COMMERCIAL_REPORTS,
+                PlanFeatureService::FEATURE_CUSTOM_ROLES,
             ],
         };
     }

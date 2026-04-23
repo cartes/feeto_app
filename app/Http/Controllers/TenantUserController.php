@@ -25,7 +25,6 @@ class TenantUserController extends Controller
             ->get(['id', 'name', 'email', 'created_at']);
 
         $roles = Role::query()
-            ->whereIn('name', ['Admin', 'Recepcionista', 'Supervisor', 'Jefe', 'Mecanico'])
             ->get(['id', 'name']);
 
         return Inertia::render('Users/Index', [

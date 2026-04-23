@@ -22,6 +22,8 @@ class PlanFeatureService
 
     public const FEATURE_COMMERCIAL_REPORTS = 'commercial_reports_enabled';
 
+    public const FEATURE_CUSTOM_ROLES = 'custom_roles';
+
     /**
      * @return array<string, array{label: string, description: string, min_plan: string}>
      */
@@ -57,6 +59,11 @@ class PlanFeatureService
                 'label' => 'WhatsApp automático',
                 'description' => 'Envía automatizaciones y notificaciones por WhatsApp desde el sistema.',
                 'min_plan' => 'Empresarial',
+            ],
+            self::FEATURE_CUSTOM_ROLES => [
+                'label' => 'Roles personalizados',
+                'description' => 'Crea roles con permisos granulares completamente personalizados para tu equipo.',
+                'min_plan' => 'Empresa',
             ],
         ];
     }

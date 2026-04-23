@@ -38,6 +38,8 @@ class TenantRolesTest extends TestCase
         $this->assertTrue(Role::where('name', 'Admin')->exists());
         $this->assertTrue(Role::where('name', 'Recepcionista')->exists());
         $this->assertTrue(Role::where('name', 'Mecanico')->exists());
+        $this->assertTrue(Role::where('name', 'Supervisor')->exists());
+        $this->assertTrue(Role::where('name', 'Jefe')->exists());
 
         Tenant::forgetCurrent();
     }
@@ -137,8 +139,8 @@ class TenantRolesTest extends TestCase
         $countB = Role::count();
         Tenant::forgetCurrent();
 
-        $this->assertEquals(3, $countA);
-        $this->assertEquals(3, $countB);
+        $this->assertEquals(5, $countA);
+        $this->assertEquals(5, $countB);
     }
 
     /** @test */

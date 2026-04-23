@@ -26,6 +26,7 @@ use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupervisorReportController;
 use App\Http\Controllers\TallerDashboardController;
+use App\Http\Controllers\TenantRoleController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
@@ -93,39 +94,39 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
     ->group(function () {
         Route::get('/dashboard', TallerDashboardController::class)->name('taller.dashboard');
 
-        // Nueva Recepción — Admin y Recepcionista
+        // Nueva Recepción — Usuarios con permiso appointments.manage
         Route::get('/receptions/create', [ReceptionController::class, 'create'])
-            ->middleware('role:Admin|Recepcionista')
+            ->middleware('permission:appointments.manage')
             ->name('receptions.create');
         Route::post('/receptions', [ReceptionController::class, 'store'])
-            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
+            ->middleware(['throttle:20,1', 'permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('receptions.store');
         Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
-            ->middleware(['throttle:30,1', 'role:Admin|Recepcionista'])
+            ->middleware(['throttle:30,1', 'permission:appointments.manage'])
             ->name('receptions.preview');
         Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])
-            ->middleware('role:Admin|Recepcionista')
+            ->middleware('permission:appointments.manage')
             ->name('receptions.store_order');
 
         // OCR de Patentes
         Route::post('/ocr/process', [OcrController::class, 'process'])
-            ->middleware(['throttle:20,1', 'role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
+            ->middleware(['throttle:20,1', 'permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('ocr.process');
 
-        // Work Orders / Kanban — Admin, Recepcionista y Mecanico (con restricciones granulares en controlador)
+        // Work Orders / Kanban — permisos granulares por acción
         Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
         Route::get('/work-orders/{workOrder}', [WorkOrderController::class, 'show'])->name('work-orders.show');
         Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])
-            ->middleware('role:Admin|Recepcionista|Mecanico')
+            ->middleware('permission:work-orders.update-status')
             ->name('work-orders.status.update');
         Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])
-            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
+            ->middleware('permission:work-orders.manage-items')
             ->name('work-orders.items.store');
         Route::delete('/work-orders/{workOrder}/items/{item}', [WorkOrderController::class, 'removeItem'])
-            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
+            ->middleware('permission:work-orders.manage-items')
             ->name('work-orders.items.destroy');
         Route::post('/work-orders/{workOrder}/quote/send', [QuoteController::class, 'send'])
-            ->middleware('role:Admin|Recepcionista|Supervisor|Jefe|Mecanico')
+            ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('work-orders.quote.send');
 
         // API Modals
@@ -134,77 +135,97 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::delete('/api/work-orders/images/{imageId}', [WorkOrderModalController::class, 'destroyImage'])->name('api.work-orders.images.destroy');
 
         Route::post('/api/work-orders/{workOrder}/items', [WorkOrderItemController::class, 'store'])
-            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
+            ->middleware('permission:work-orders.manage-items')
             ->name('api.work-orders.items.store');
         Route::delete('/api/work-orders/{workOrder}/items/{item}', [WorkOrderItemController::class, 'destroy'])
-            ->middleware('role:Admin|Supervisor|Jefe|Mecanico')
+            ->middleware('permission:work-orders.manage-items')
             ->name('api.work-orders.items.destroy');
 
         Route::get('/api/products', [ProductController::class, 'index'])->name('api.products.index');
 
-        // Inventory — solo Admin
+        // Inventory — usuarios con permiso inventory.manage
         Route::resource('inventory', InventoryController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy'])
             ->parameters(['inventory' => 'product'])
-            ->middleware('role:Admin');
+            ->middleware('permission:inventory.manage');
 
         Route::resource('services', ServiceController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['services' => 'service'])
-            ->middleware('role:Admin');
+            ->middleware('permission:inventory.manage');
 
-        // Branches — solo Admin
+        // Branches — usuarios con permiso branches.manage
         Route::resource('branches', BranchController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['branches' => 'branch'])
-            ->middleware('role:Admin');
+            ->middleware('permission:branches.manage');
 
-        // Clients — Admin y Recepcionista
+        // Clients — usuarios con permiso customers.manage
         Route::resource('clients', ClientController::class)
             ->only(['index', 'show'])
-            ->middleware('role:Admin|Recepcionista');
+            ->middleware('permission:customers.manage');
 
-        // Appointments & Smart Reception — Admin y Recepcionista
+        // Appointments & Smart Reception — usuarios con permiso appointments.manage
         Route::get('/appointments', [AppointmentController::class, 'index'])
-            ->middleware('role:Admin|Recepcionista')
+            ->middleware('permission:appointments.manage')
             ->name('appointments.index');
         Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])
-            ->middleware(['role:Admin|Recepcionista', 'tenant.feature:ai_reception'])
+            ->middleware(['permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('api.appointments.scan-plate');
 
-        // Gestión de usuarios del taller — solo Admin
+        // Gestión de usuarios del taller — usuarios con permiso users.manage
         Route::get('/users', [TenantUserController::class, 'index'])
-            ->middleware('role:Admin')
+            ->middleware('permission:users.manage')
             ->name('tenant.users.index');
         Route::post('/users', [TenantUserController::class, 'store'])
-            ->middleware('role:Admin')
+            ->middleware('permission:users.manage')
             ->name('tenant.users.store');
         Route::delete('/users/{user}', [TenantUserController::class, 'destroy'])
-            ->middleware('role:Admin')
+            ->middleware('permission:users.manage')
             ->name('tenant.users.destroy');
 
-        // Configuración del taller — solo Admin
+        // Configuración del taller — usuarios con permiso users.manage
         Route::get('/settings', [TenantSettingsController::class, 'index'])
-            ->middleware('role:Admin')
+            ->middleware('permission:users.manage')
             ->name('taller.settings');
         Route::patch('/settings/commercial', [TenantSettingsController::class, 'updateCommercial'])
-            ->middleware('role:Admin')
+            ->middleware('permission:users.manage')
             ->name('taller.settings.commercial.update');
 
+        // Gestión de roles — usuarios con permiso users.manage (gate custom_roles en controlador)
+        Route::get('/settings/roles', [TenantRoleController::class, 'index'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.index');
+        Route::get('/settings/roles/create', [TenantRoleController::class, 'create'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.create');
+        Route::post('/settings/roles', [TenantRoleController::class, 'store'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.store');
+        Route::get('/settings/roles/{role}/edit', [TenantRoleController::class, 'edit'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.edit');
+        Route::put('/settings/roles/{role}', [TenantRoleController::class, 'update'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.update');
+        Route::delete('/settings/roles/{role}', [TenantRoleController::class, 'destroy'])
+            ->middleware('permission:users.manage')
+            ->name('taller.roles.destroy');
+
         Route::get('/reports', [SalesReportController::class, 'index'])
-            ->middleware('role:Admin|Supervisor|Jefe')
+            ->middleware('permission:reports.view')
             ->name('reports.index');
         Route::get('/reports/ventas', [SalesReportController::class, 'index'])
-            ->middleware('role:Admin|Supervisor|Jefe')
+            ->middleware('permission:reports.view')
             ->name('reports.sales');
         Route::get('/reports/supervisores', [SupervisorReportController::class, 'index'])
-            ->middleware('role:Admin|Supervisor|Jefe')
+            ->middleware('permission:reports.view')
             ->name('reports.supervisors');
 
         Route::resource('invoices', ClientInvoiceController::class)
             ->only(['index', 'show', 'store'])
             ->parameters(['invoices' => 'clientInvoice'])
-            ->middleware('role:Admin|Recepcionista|Supervisor|Jefe');
+            ->middleware('permission:financials.view');
 
         // Perfil
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

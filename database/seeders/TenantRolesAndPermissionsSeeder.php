@@ -29,7 +29,9 @@ class TenantRolesAndPermissionsSeeder extends Seeder
         'inventory' => ['inventory.manage'],
         'branches' => ['branches.manage'],
         'reports' => ['reports.view'],
+        'financials' => ['financials.view'],
         'users' => ['users.manage'],
+        'roles' => ['roles.manage'],
     ];
 
     /**
@@ -49,13 +51,16 @@ class TenantRolesAndPermissionsSeeder extends Seeder
             'inventory.manage',
             'branches.manage',
             'reports.view',
+            'financials.view',
             'users.manage',
+            'roles.manage',
         ],
         'Recepcionista' => [
             'appointments.manage',
             'customers.manage',
             'vehicles.manage',
             'work-orders.view',
+            'financials.view',
         ],
         'Supervisor' => [
             'appointments.manage',
@@ -66,6 +71,7 @@ class TenantRolesAndPermissionsSeeder extends Seeder
             'work-orders.manage-items',
             'inventory.manage',
             'reports.view',
+            'financials.view',
         ],
         'Jefe' => [
             'appointments.manage',
@@ -76,6 +82,7 @@ class TenantRolesAndPermissionsSeeder extends Seeder
             'work-orders.manage-items',
             'inventory.manage',
             'reports.view',
+            'financials.view',
         ],
         'Mecanico' => [
             'work-orders.view-own',

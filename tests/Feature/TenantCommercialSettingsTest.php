@@ -55,7 +55,7 @@ class TenantCommercialSettingsTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('Reports/Supervisors'));
     }
 
-    public function test_dashboard_shows_overdue_invoices_only_for_admin_role(): void
+    public function test_dashboard_shows_overdue_invoices_only_for_users_with_financials_permission(): void
     {
         $tenant = $this->setUpTenant();
         $tenant->update(['plan' => 'profesional']);
@@ -82,8 +82,8 @@ class TenantCommercialSettingsTest extends TestCase
         $admin = User::factory()->create(['tenant_id' => $tenant->id]);
         $admin->assignRole('Admin');
 
-        $receptionist = User::factory()->create(['tenant_id' => $tenant->id]);
-        $receptionist->assignRole('Recepcionista');
+        $mecanico = User::factory()->create(['tenant_id' => $tenant->id]);
+        $mecanico->assignRole('Mecanico');
 
         $this->actingAs($admin)
             ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
@@ -93,7 +93,7 @@ class TenantCommercialSettingsTest extends TestCase
                 ->has('overdueInvoices.0')
             );
 
-        $this->actingAs($receptionist)
+        $this->actingAs($mecanico)
             ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
