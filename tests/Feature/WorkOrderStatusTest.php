@@ -25,6 +25,7 @@ class WorkOrderStatusTest extends TestCase
         parent::setUp();
 
         $tenant = $this->setUpTenant();
+        $tenant->update(['plan_type' => 'basico']);
 
         $this->user = User::factory()->create([
             'tenant_id' => $tenant->id,
