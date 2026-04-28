@@ -1,10 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
+import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const user = computed(() => page.props.auth.user ?? null);
+const permissions = computed(() => user.value?.permissions ?? []);
+const userRoles = computed(() => user.value?.roles ?? []);
+const tenantContext = computed(() => page.props.tenantContext ?? null);
+const currentTab = computed(() => new URL(page.url, window.location.origin).searchParams.get('tab'));
 const props = defineProps({
     users: Array,
     branches: Array,
@@ -16,7 +22,12 @@ const props = defineProps({
     tenant: Object,
 });
 
-const activeTab = ref('users');
+const activeTab = computed(() => currentTab.value ?? 'users');
+const hasPermission = (permission) => permissions.value.includes(permission);
+const canAccessRoles = computed(() => (
+    (userRoles.value.includes('Admin') || hasPermission('users.manage'))
+    && (tenantContext.value?.features ?? []).includes('custom_roles')
+));
 
 // ── USUARIOS ──────────────────────────────────────────────
 const showUserForm = ref(false);
@@ -131,50 +142,14 @@ const roleColor = (role) => {
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="flex gap-2 bg-white/60 border border-white rounded-2xl p-1.5 shadow-sm w-fit">
-                <button
-                    id="tab-users"
-                    @click="activeTab = 'users'"
-                    class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-                    :class="activeTab === 'users' ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
-                >
-                    Usuarios ({{ currentUserCount }}/{{ planMaxUsers }})
-                </button>
-                <button
-                    id="tab-branches"
-                    @click="activeTab = 'branches'"
-                    class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-                    :class="activeTab === 'branches' ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
-                >
-                    Sucursales ({{ branches.length }})
-                </button>
-                <button
-                    id="tab-commercial"
-                    @click="activeTab = 'commercial'"
-                    class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-                    :class="activeTab === 'commercial' ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
-                >
-                    Comercial
-                </button>
-            </div>
-
-            <!-- Link a gestión de roles -->
-            <div class="flex items-center justify-between rounded-[1.5rem] bg-white px-5 py-4 shadow-sm">
-                <div>
-                    <p class="text-sm font-bold text-slate-700">Roles y Permisos</p>
-                    <p class="mt-0.5 text-xs text-slate-400">Gestiona los roles de tu equipo y sus niveles de acceso.</p>
-                </div>
-                <a
-                    :href="route('taller.roles.index', tenantRouteParams)"
-                    class="inline-flex items-center gap-2 rounded-[1.25rem] bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-200"
-                >
-                    Ver Roles
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
+            <SettingsSectionTabs
+                :tenant-route-params="tenantRouteParams"
+                :current-section="activeTab"
+                :can-access-roles="canAccessRoles"
+                :current-user-count="currentUserCount"
+                :plan-max-users="planMaxUsers"
+                :branches-count="branches.length"
+            />
 
             <!-- ── TAB USUARIOS ── -->
             <div v-if="activeTab === 'users'" class="space-y-5 animate-in fade-in duration-300">

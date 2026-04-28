@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
@@ -12,10 +13,23 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    planMaxUsers: {
+        type: Number,
+        default: null,
+    },
+    currentUserCount: {
+        type: Number,
+        default: null,
+    },
+    branchesCount: {
+        type: Number,
+        default: null,
+    },
 });
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const isSystemRole = computed(() => props.role.is_system ?? false);
 
 const form = useForm({
     name: props.role.name,
@@ -64,9 +78,20 @@ const submit = () => {
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Editar Rol: {{ role.name }}</h1>
                 <p class="mt-1 text-sm text-slate-500">
-                    Modifica el nombre y los permisos asignados a este rol personalizado.
+                    {{ isSystemRole
+                        ? 'Personaliza los permisos de este rol base para tu tenant. El nombre del rol se mantiene fijo.'
+                        : 'Modifica el nombre y los permisos asignados a este rol personalizado.' }}
                 </p>
             </div>
+
+            <SettingsSectionTabs
+                :tenant-route-params="tenantRouteParams"
+                current-section="roles"
+                :can-access-roles="true"
+                :current-user-count="currentUserCount"
+                :plan-max-users="planMaxUsers"
+                :branches-count="branchesCount"
+            />
 
             <form class="space-y-6" @submit.prevent="submit">
                 <!-- Nombre del Rol -->
@@ -78,9 +103,13 @@ const submit = () => {
                         id="roleName"
                         v-model="form.name"
                         type="text"
-                        class="mt-2 w-full rounded-[1rem] border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#F9A826] focus:ring-2 focus:ring-[#F9A826]/20"
+                        :disabled="isSystemRole"
+                        class="mt-2 w-full rounded-[1rem] border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#F9A826] focus:ring-2 focus:ring-[#F9A826]/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
                         :class="{ 'border-red-300': form.errors.name }"
                     />
+                    <p v-if="isSystemRole" class="mt-1.5 text-xs text-slate-500">
+                        Este nombre es parte del catálogo base y no se puede cambiar.
+                    </p>
                     <p v-if="form.errors.name" class="mt-1.5 text-xs text-red-600">{{ form.errors.name }}</p>
                 </div>
 
@@ -132,12 +161,12 @@ const submit = () => {
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3">
-                    <a
+                    <Link
                         :href="route('taller.roles.index', tenantRouteParams)"
                         class="rounded-[1.25rem] border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-gray-50"
                     >
                         Cancelar
-                    </a>
+                    </Link>
                     <button
                         type="submit"
                         class="inline-flex items-center gap-2 rounded-[1.25rem] bg-[#F9A826] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#e8971f] disabled:opacity-60"

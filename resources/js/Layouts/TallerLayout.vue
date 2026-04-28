@@ -8,6 +8,7 @@ const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlu
 const permissions = computed(() => user.value?.permissions ?? []);
 const roles = computed(() => user.value?.roles ?? []);
 const planAccess = computed(() => page.props.planAccess ?? null);
+const tenantContext = computed(() => page.props.tenantContext ?? null);
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canManageAppointments = computed(() => hasPermission('appointments.manage'));
 const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
@@ -18,6 +19,8 @@ const canViewReports = computed(() => hasPermission('reports.view'));
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 const canAccessSettings = computed(() => roles.value.includes('Admin') || hasPermission('users.manage') || hasPermission('branches.manage'));
+const hasCustomRoles = computed(() => (tenantContext.value?.features ?? []).includes('custom_roles'));
+const canAccessRoles = computed(() => canAccessSettings.value && hasCustomRoles.value);
 
 const navItems = computed(() => ([
     { label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', route: 'taller.dashboard', visible: true },
@@ -49,7 +52,7 @@ const navItems = computed(() => ([
             </div>
 
             <!-- Navegación Desktop -->
-            <nav class="flex-1 px-4 py-6 space-y-3">
+            <nav class="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-3">
                 <Link
                     v-for="(item, index) in navItems"
                     :key="index"
@@ -63,12 +66,11 @@ const navItems = computed(() => ([
                     <span>{{ item.label }}</span>
                 </Link>
 
-                <!-- Configuración: solo para Admin -->
                 <Link
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="route().current('taller.settings') ? 'bg-[#F9A826] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#F9A826] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -78,7 +80,7 @@ const navItems = computed(() => ([
                 </Link>
             </nav>
 
-            <div class="p-6 flex flex-col gap-3">
+            <section class="shrink-0 border-t border-white/60 p-6 flex flex-col gap-3 bg-white/30">
                  <div class="bg-white/80 p-3 rounded-[1.5rem] flex items-center gap-3 shadow-sm border border-white">
                     <img 
                         :src="`https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=F9A826&color=fff`" 
@@ -95,13 +97,13 @@ const navItems = computed(() => ([
                      method="post" 
                      as="button" 
                      class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-[1.25rem] transition-colors w-full text-center border border-transparent hover:border-red-100"
-                 >
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                     </svg>
-                     Cerrar Sesión
-                 </Link>
-            </div>
+                  >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Cerrar Sesión
+                  </Link>
+            </section>
         </aside>
 
         <!-- MAIN WRAPPER (Flexible para Desktop y Mobile) -->
@@ -144,11 +146,16 @@ const navItems = computed(() => ([
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </button>
-                    <!-- Logout Solo Mobile -->
-                    <Link :href="route('logout')" method="post" as="button" class="lg:hidden w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-shadow text-rose-500 hover:text-rose-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <Link
+                        :href="route('logout')"
+                        method="post"
+                        as="button"
+                        class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
+                        <span>Cerrar sesión</span>
                     </Link>
                 </div>
             </header>
@@ -186,12 +193,12 @@ const navItems = computed(() => ([
                     </svg>
                 </Link>
 
-                <!-- Configuración en mobile: solo Admin -->
+                <!-- Configuración en mobile: icono activo también cuando se está en roles -->
                 <Link
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
                     class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="route().current('taller.settings') ? 'bg-[#F9A826] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
+                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#F9A826] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

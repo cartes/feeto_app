@@ -27,9 +27,11 @@ class TenantRoleControllerTest extends TestCase
 
     private function createEmpresaTenantWithAdmin(): array
     {
+        $planSuffix = fake()->unique()->numberBetween(1000, 9999);
+
         $plan = Plan::factory()->create([
-            'slug' => 'empresa-test',
-            'name' => 'Empresa Test',
+            'slug' => "empresa-test-{$planSuffix}",
+            'name' => "Empresa Test {$planSuffix}",
             'max_users' => 20,
             'feature_keys' => [
                 PlanFeatureService::FEATURE_AI_RECEPTION,
@@ -78,6 +80,9 @@ class TenantRoleControllerTest extends TestCase
                 ->component('Settings/Roles/Index')
                 ->has('roles')
                 ->where('canManageRoles', true)
+                ->has('planMaxUsers')
+                ->has('currentUserCount')
+                ->has('branchesCount')
         );
     }
 
@@ -112,6 +117,9 @@ class TenantRoleControllerTest extends TestCase
             fn ($page) => $page
                 ->component('Settings/Roles/Create')
                 ->has('permissionGroups')
+                ->has('planMaxUsers')
+                ->has('currentUserCount')
+                ->has('branchesCount')
         );
     }
 
@@ -186,6 +194,37 @@ class TenantRoleControllerTest extends TestCase
     }
 
     /** @test */
+    public function test_role_name_can_be_reused_in_another_tenant(): void
+    {
+        [$tenantA, $adminA] = $this->createEmpresaTenantWithAdmin();
+        [$tenantB] = $this->createEmpresaTenantWithAdmin();
+
+        $tenantB->makeCurrent();
+        Role::create(['name' => 'Auditor', 'guard_name' => 'web']);
+        Tenant::forgetCurrent();
+
+        $this->actingAs($adminA);
+
+        $response = $this->post(route('taller.roles.store', ['tenantBySlug' => $tenantA->slug]), [
+            'name' => 'Auditor',
+            'permissions' => ['reports.view'],
+        ]);
+
+        $response->assertRedirect(route('taller.roles.index', ['tenantBySlug' => $tenantA->slug]));
+
+        $this->assertDatabaseHas('roles', [
+            'tenant_id' => $tenantA->id,
+            'name' => 'Auditor',
+            'guard_name' => 'web',
+        ]);
+        $this->assertDatabaseHas('roles', [
+            'tenant_id' => $tenantB->id,
+            'name' => 'Auditor',
+            'guard_name' => 'web',
+        ]);
+    }
+
+    /** @test */
     public function test_empresa_admin_can_edit_custom_role(): void
     {
         [$tenant, $admin] = $this->createEmpresaTenantWithAdmin();
@@ -207,6 +246,55 @@ class TenantRoleControllerTest extends TestCase
     }
 
     /** @test */
+    public function test_basic_plan_admin_gets_403_accessing_edit_form(): void
+    {
+        [$tenant, $admin] = $this->createBasicTenantWithAdmin();
+
+        $tenant->makeCurrent();
+        $customRole = Role::create(['name' => 'Temporal', 'guard_name' => 'web']);
+        Tenant::forgetCurrent();
+
+        $this->actingAs($admin);
+
+        $response = $this->get(route('taller.roles.edit', ['tenantBySlug' => $tenant->slug, 'role' => $customRole->id]));
+
+        $response->assertForbidden();
+    }
+
+    /** @test */
+    public function test_empresa_admin_cannot_edit_role_from_another_tenant(): void
+    {
+        [$tenantA, $adminA] = $this->createEmpresaTenantWithAdmin();
+        [$tenantB] = $this->createEmpresaTenantWithAdmin();
+
+        $tenantB->makeCurrent();
+        $otherTenantRole = Role::create(['name' => 'Auditor B', 'guard_name' => 'web']);
+        Tenant::forgetCurrent();
+
+        $this->actingAs($adminA);
+
+        $response = $this->get(route('taller.roles.edit', ['tenantBySlug' => $tenantA->slug, 'role' => $otherTenantRole->id]));
+
+        $response->assertNotFound();
+    }
+
+    /** @test */
+    public function test_empresa_admin_cannot_edit_global_role(): void
+    {
+        [$tenant, $admin] = $this->createEmpresaTenantWithAdmin();
+
+        Tenant::forgetCurrent();
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+        $globalRole = Role::create(['name' => 'Super-Admin', 'guard_name' => 'web']);
+
+        $this->actingAs($admin);
+
+        $response = $this->get(route('taller.roles.edit', ['tenantBySlug' => $tenant->slug, 'role' => $globalRole->id]));
+
+        $response->assertNotFound();
+    }
+
+    /** @test */
     public function test_empresa_admin_can_update_custom_role(): void
     {
         [$tenant, $admin] = $this->createEmpresaTenantWithAdmin();
@@ -223,11 +311,55 @@ class TenantRoleControllerTest extends TestCase
         ]);
 
         $response->assertRedirect(route('taller.roles.index', ['tenantBySlug' => $tenant->slug]));
-        $this->assertDatabaseHas('roles', ['name' => 'Auditor Senior']);
+        $this->assertDatabaseHas('roles', ['tenant_id' => $tenant->id, 'name' => 'Auditor Senior']);
     }
 
     /** @test */
-    public function test_cannot_edit_system_role(): void
+    public function test_basic_plan_admin_gets_403_on_update(): void
+    {
+        [$tenant, $admin] = $this->createBasicTenantWithAdmin();
+
+        $tenant->makeCurrent();
+        $customRole = Role::create(['name' => 'Temporal', 'guard_name' => 'web']);
+        Tenant::forgetCurrent();
+
+        $this->actingAs($admin);
+
+        $response = $this->put(route('taller.roles.update', ['tenantBySlug' => $tenant->slug, 'role' => $customRole->id]), [
+            'name' => 'Temporal 2',
+            'permissions' => ['reports.view'],
+        ]);
+
+        $response->assertForbidden();
+    }
+
+    /** @test */
+    public function test_empresa_admin_cannot_update_role_from_another_tenant(): void
+    {
+        [$tenantA, $adminA] = $this->createEmpresaTenantWithAdmin();
+        [$tenantB] = $this->createEmpresaTenantWithAdmin();
+
+        $tenantB->makeCurrent();
+        $otherTenantRole = Role::create(['name' => 'Auditor B', 'guard_name' => 'web']);
+        Tenant::forgetCurrent();
+
+        $this->actingAs($adminA);
+
+        $response = $this->put(route('taller.roles.update', ['tenantBySlug' => $tenantA->slug, 'role' => $otherTenantRole->id]), [
+            'name' => 'Intrusion Attempt',
+            'permissions' => ['reports.view'],
+        ]);
+
+        $response->assertNotFound();
+        $this->assertDatabaseHas('roles', [
+            'tenant_id' => $tenantB->id,
+            'name' => 'Auditor B',
+            'guard_name' => 'web',
+        ]);
+    }
+
+    /** @test */
+    public function test_empresa_admin_can_access_system_role_edit_form(): void
     {
         [$tenant, $admin] = $this->createEmpresaTenantWithAdmin();
 
@@ -239,7 +371,59 @@ class TenantRoleControllerTest extends TestCase
 
         $response = $this->get(route('taller.roles.edit', ['tenantBySlug' => $tenant->slug, 'role' => $systemRole->id]));
 
-        $response->assertForbidden();
+        $response->assertOk();
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Settings/Roles/Edit')
+                ->where('role.name', 'Mecanico')
+                ->where('role.is_system', true)
+        );
+    }
+
+    /** @test */
+    public function test_empresa_admin_can_customize_system_role_without_touching_global_definition(): void
+    {
+        [$tenant, $admin] = $this->createEmpresaTenantWithAdmin();
+
+        Tenant::forgetCurrent();
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+
+        /** @var Role $systemRole */
+        $systemRole = Role::query()
+            ->where('name', 'Mecanico')
+            ->whereNull('tenant_id')
+            ->firstOrFail();
+
+        $originalPermissions = $systemRole->permissions->pluck('name')->sort()->values()->all();
+
+        $this->actingAs($admin);
+
+        $response = $this->put(route('taller.roles.update', ['tenantBySlug' => $tenant->slug, 'role' => $systemRole->id]), [
+            'name' => 'Mecanico',
+            'permissions' => ['work-orders.view-own', 'inventory.manage'],
+        ]);
+
+        $response->assertRedirect(route('taller.roles.index', ['tenantBySlug' => $tenant->slug]));
+
+        $this->assertDatabaseHas('roles', [
+            'tenant_id' => $tenant->id,
+            'name' => 'Mecanico',
+            'guard_name' => 'web',
+        ]);
+
+        $tenantRole = Role::query()
+            ->where('tenant_id', $tenant->id)
+            ->where('name', 'Mecanico')
+            ->firstOrFail();
+        $this->assertTrue($tenantRole->hasPermissionTo('inventory.manage'));
+        $this->assertFalse($tenantRole->hasPermissionTo('work-orders.update-status'));
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+        $globalRole = Role::query()
+            ->where('name', 'Mecanico')
+            ->whereNull('tenant_id')
+            ->firstOrFail();
+        $this->assertSame($originalPermissions, $globalRole->permissions->pluck('name')->sort()->values()->all());
     }
 
     /** @test */

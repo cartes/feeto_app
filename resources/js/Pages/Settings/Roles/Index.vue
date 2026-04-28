@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 
@@ -16,6 +17,18 @@ const props = defineProps({
     permissionGroups: {
         type: Object,
         default: () => ({}),
+    },
+    planMaxUsers: {
+        type: Number,
+        default: null,
+    },
+    currentUserCount: {
+        type: Number,
+        default: null,
+    },
+    branchesCount: {
+        type: Number,
+        default: null,
     },
 });
 
@@ -78,6 +91,15 @@ const deleteRole = (roleId, roleName) => {
                     Nuevo Rol
                 </Link>
             </div>
+
+            <SettingsSectionTabs
+                :tenant-route-params="tenantRouteParams"
+                current-section="roles"
+                :can-access-roles="true"
+                :current-user-count="currentUserCount"
+                :plan-max-users="planMaxUsers"
+                :branches-count="branchesCount"
+            />
 
             <!-- Plan Upgrade Banner -->
             <PlanUpgradeBanner
@@ -144,7 +166,7 @@ const deleteRole = (roleId, roleName) => {
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-2">
                                     <Link
-                                        v-if="canManageRoles && !role.is_system"
+                                        v-if="canManageRoles"
                                         :href="route('taller.roles.edit', { ...tenantRouteParams, role: role.id })"
                                         class="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-200"
                                     >
@@ -161,7 +183,7 @@ const deleteRole = (roleId, roleName) => {
                                         v-if="role.is_system"
                                         class="text-xs text-slate-400"
                                     >
-                                        Solo lectura
+                                        Base del sistema
                                     </span>
                                 </div>
                             </td>

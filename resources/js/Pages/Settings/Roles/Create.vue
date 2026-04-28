@@ -1,12 +1,25 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
     permissionGroups: {
         type: Object,
         default: () => ({}),
+    },
+    planMaxUsers: {
+        type: Number,
+        default: null,
+    },
+    currentUserCount: {
+        type: Number,
+        default: null,
+    },
+    branchesCount: {
+        type: Number,
+        default: null,
     },
 });
 
@@ -63,6 +76,15 @@ const submit = () => {
                     Define un nombre para el rol y selecciona los permisos que tendrá acceso.
                 </p>
             </div>
+
+            <SettingsSectionTabs
+                :tenant-route-params="tenantRouteParams"
+                current-section="roles"
+                :can-access-roles="true"
+                :current-user-count="currentUserCount"
+                :plan-max-users="planMaxUsers"
+                :branches-count="branchesCount"
+            />
 
             <form class="space-y-6" @submit.prevent="submit">
                 <!-- Nombre del Rol -->
@@ -129,12 +151,12 @@ const submit = () => {
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3">
-                    <a
+                    <Link
                         :href="route('taller.roles.index', tenantRouteParams)"
                         class="rounded-[1.25rem] border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-gray-50"
                     >
                         Cancelar
-                    </a>
+                    </Link>
                     <button
                         type="submit"
                         class="inline-flex items-center gap-2 rounded-[1.25rem] bg-[#F9A826] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#e8971f] disabled:opacity-60"

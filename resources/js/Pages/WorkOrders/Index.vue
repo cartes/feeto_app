@@ -153,6 +153,64 @@ const columns = [
 const draggedItem = ref(null);
 const currentHoverColumn = ref(null);
 
+// Kanban horizontal scroll
+const kanbanRef = ref(null);
+const canScrollLeft = ref(false);
+const canScrollRight = ref(true);
+let scrollInterval = null;
+
+const updateScrollState = () => {
+    if (!kanbanRef.value) return;
+    canScrollLeft.value = kanbanRef.value.scrollLeft > 0;
+    canScrollRight.value = kanbanRef.value.scrollLeft < kanbanRef.value.scrollWidth - kanbanRef.value.clientWidth - 1;
+};
+
+const startScroll = (direction) => {
+    if (scrollInterval) return;
+    scrollInterval = setInterval(() => {
+        if (!kanbanRef.value) return;
+        kanbanRef.value.scrollLeft += direction === 'right' ? 12 : -12;
+        updateScrollState();
+    }, 16);
+};
+
+const stopScroll = () => {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+};
+
+// Drag-to-scroll (manito / grab cursor)
+const isGrabbing = ref(false);
+let grabStartX = 0;
+let grabScrollLeft = 0;
+
+const isInteractiveTarget = (target) =>
+    target.closest('[draggable="true"]') ||
+    target.closest('button') ||
+    target.closest('a') ||
+    target.closest('input') ||
+    target.closest('select');
+
+const onKanbanMouseDown = (e) => {
+    if (isInteractiveTarget(e.target)) return;
+    isGrabbing.value = true;
+    grabStartX = e.pageX - kanbanRef.value.offsetLeft;
+    grabScrollLeft = kanbanRef.value.scrollLeft;
+};
+
+const onKanbanMouseMove = (e) => {
+    if (!isGrabbing.value) return;
+    e.preventDefault();
+    const x = e.pageX - kanbanRef.value.offsetLeft;
+    const delta = (x - grabStartX) * 1.5;
+    kanbanRef.value.scrollLeft = grabScrollLeft - delta;
+    updateScrollState();
+};
+
+const onKanbanMouseUp = () => {
+    isGrabbing.value = false;
+};
+
 const onDragStart = (order, fromColumnId) => {
     draggedItem.value = { ...order, originalStatus: fromColumnId };
 };
@@ -214,6 +272,11 @@ onMounted(() => {
                 // Aquí podrías implementar la lógica para mover el card en el Kanban si es necesario
             });
     }
+
+    if (kanbanRef.value) {
+        kanbanRef.value.addEventListener('scroll', updateScrollState);
+        updateScrollState();
+    }
 });
 
 onUnmounted(() => {
@@ -221,6 +284,8 @@ onUnmounted(() => {
         window.Echo.leave(`tenant.${props.tenantId}.work-orders`);
         window.Echo.leave(`taller.${props.tenantId}`);
     }
+    stopScroll();
+    kanbanRef.value?.removeEventListener('scroll', updateScrollState);
 });
 </script>
 
@@ -234,7 +299,49 @@ onUnmounted(() => {
             <p class="text-sm text-slate-500 font-medium">Gestión del flujo de trabajo</p>
         </div>
 
-        <div class="h-[calc(100vh-220px)] lg:h-[calc(100vh-140px)] overflow-x-auto no-scrollbar pb-10">
+        <!-- Scroll arrows -->
+        <div class="flex items-center gap-2 mb-3">
+            <button
+                @mousedown="startScroll('left')"
+                @mouseup="stopScroll"
+                @mouseleave="stopScroll"
+                @touchstart.prevent="startScroll('left')"
+                @touchend="stopScroll"
+                :disabled="!canScrollLeft"
+                class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
+                :class="canScrollLeft ? 'text-slate-700 hover:bg-[#F9A826] hover:text-white hover:border-[#F9A826] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                aria-label="Scroll izquierda"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button
+                @mousedown="startScroll('right')"
+                @mouseup="stopScroll"
+                @mouseleave="stopScroll"
+                @touchstart.prevent="startScroll('right')"
+                @touchend="stopScroll"
+                :disabled="!canScrollRight"
+                class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
+                :class="canScrollRight ? 'text-slate-700 hover:bg-[#F9A826] hover:text-white hover:border-[#F9A826] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                aria-label="Scroll derecha"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <div
+            ref="kanbanRef"
+            class="h-[calc(100vh-260px)] lg:h-[calc(100vh-180px)] overflow-x-auto no-scrollbar pb-10 select-none"
+            :class="isGrabbing ? 'cursor-grabbing' : 'cursor-grab'"
+            @mousedown="onKanbanMouseDown"
+            @mousemove="onKanbanMouseMove"
+            @mouseup="onKanbanMouseUp"
+            @mouseleave="onKanbanMouseUp"
+        >
             <!-- Kanban Board -->
             <div class="flex gap-6 min-w-max h-full items-start">
                 

@@ -6,108 +6,56 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTenantRoleRequest;
 use App\Http\Requests\UpdateTenantRoleRequest;
+use App\Models\Branch;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\PlanFeatureService;
+use App\Services\TenantRoleCatalog;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class TenantRoleController extends Controller
 {
-    /**
-     * System roles that cannot be deleted or modified.
-     *
-     * @var list<string>
-     */
-    private const SYSTEM_ROLES = ['Admin', 'Recepcionista', 'Supervisor', 'Jefe', 'Mecanico'];
-
-    /**
-     * Permission groups for the frontend form, ordered by module.
-     *
-     * @var array<string, array{label: string, permissions: list<string>}>
-     */
-    private const PERMISSION_GROUPS = [
-        'appointments' => [
-            'label' => 'Agenda',
-            'permissions' => ['appointments.manage'],
-        ],
-        'customers' => [
-            'label' => 'Clientes y Vehículos',
-            'permissions' => ['customers.manage', 'vehicles.manage'],
-        ],
-        'work_orders' => [
-            'label' => 'Órdenes de Trabajo',
-            'permissions' => [
-                'work-orders.view',
-                'work-orders.view-own',
-                'work-orders.update-status',
-                'work-orders.manage-items',
-            ],
-        ],
-        'inventory' => [
-            'label' => 'Inventario',
-            'permissions' => ['inventory.manage'],
-        ],
-        'financials' => [
-            'label' => 'Financiero',
-            'permissions' => ['financials.view'],
-        ],
-        'reports' => [
-            'label' => 'Reportes',
-            'permissions' => ['reports.view'],
-        ],
-        'users' => [
-            'label' => 'Usuarios',
-            'permissions' => ['users.manage'],
-        ],
-        'branches' => [
-            'label' => 'Sucursales',
-            'permissions' => ['branches.manage'],
-        ],
-        'roles' => [
-            'label' => 'Roles',
-            'permissions' => ['roles.manage'],
-        ],
-    ];
-
     public function index(): Response
     {
         $tenant = Tenant::current();
         $canManageRoles = $tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES);
 
-        $roles = Role::query()
-            ->with('permissions')
-            ->get()
+        $roles = $this->visibleRolesForTenant($tenant)
             ->map(fn (Role $role): array => [
                 'id' => $role->id,
                 'name' => $role->name,
                 'permissions' => $role->permissions->pluck('name')->values()->all(),
-                'is_system' => in_array($role->name, self::SYSTEM_ROLES, true),
+                'is_system' => TenantRoleCatalog::isSystemRole($role->name),
             ]);
 
         return Inertia::render('Settings/Roles/Index', [
             'roles' => $roles,
             'canManageRoles' => $canManageRoles,
-            'permissionGroups' => self::PERMISSION_GROUPS,
+            'permissionGroups' => TenantRoleCatalog::permissionGroups(),
+            ...$this->settingsNavigationData($tenant),
         ]);
     }
 
     public function create(): Response
     {
         $tenant = Tenant::current();
-        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, 'Tu plan no permite crear roles personalizados.');
+        $this->ensureCustomRolesFeatureEnabled($tenant, 'Tu plan no permite crear roles personalizados.');
 
         return Inertia::render('Settings/Roles/Create', [
-            'permissionGroups' => self::PERMISSION_GROUPS,
+            'permissionGroups' => TenantRoleCatalog::permissionGroups(),
+            ...$this->settingsNavigationData($tenant),
         ]);
     }
 
     public function store(StoreTenantRoleRequest $request): RedirectResponse
     {
         $tenant = Tenant::current();
-        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, 'Tu plan no permite crear roles personalizados.');
+        $this->ensureCustomRolesFeatureEnabled($tenant, 'Tu plan no permite crear roles personalizados.');
 
         $role = Role::create([
             'name' => $request->validated('name'),
@@ -121,29 +69,38 @@ class TenantRoleController extends Controller
             ->with('success', "Rol \"{$role->name}\" creado correctamente.");
     }
 
-    public function edit(Role $role): Response
+    public function edit(int|string $role): Response
     {
         $tenant = Tenant::current();
-        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, 'Tu plan no permite editar roles personalizados.');
-        abort_if(in_array($role->name, self::SYSTEM_ROLES, true), 403, 'Los roles del sistema no pueden ser modificados.');
+        $this->ensureCustomRolesFeatureEnabled($tenant, 'Tu plan no permite editar roles personalizados.');
+
+        $role = $this->findVisibleRoleOrFail($tenant, $role);
 
         return Inertia::render('Settings/Roles/Edit', [
             'role' => [
                 'id' => $role->id,
                 'name' => $role->name,
                 'permissions' => $role->permissions->pluck('name')->values()->all(),
+                'is_system' => TenantRoleCatalog::isSystemRole($role->name),
             ],
-            'permissionGroups' => self::PERMISSION_GROUPS,
+            'permissionGroups' => TenantRoleCatalog::permissionGroups(),
+            ...$this->settingsNavigationData($tenant),
         ]);
     }
 
-    public function update(UpdateTenantRoleRequest $request, Role $role): RedirectResponse
+    public function update(UpdateTenantRoleRequest $request, int|string $role): RedirectResponse
     {
         $tenant = Tenant::current();
-        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, 'Tu plan no permite editar roles personalizados.');
-        abort_if(in_array($role->name, self::SYSTEM_ROLES, true), 403, 'Los roles del sistema no pueden ser modificados.');
+        $this->ensureCustomRolesFeatureEnabled($tenant, 'Tu plan no permite editar roles personalizados.');
 
-        $role->update(['name' => $request->validated('name')]);
+        $role = $this->findVisibleRoleOrFail($tenant, $role);
+        $isSystemRole = TenantRoleCatalog::isSystemRole($role->name);
+        $role = $this->resolveWritableRole($tenant, $role);
+
+        if (! $isSystemRole) {
+            $role->update(['name' => $request->validated('name')]);
+        }
+
         $role->syncPermissions($request->validated('permissions'));
 
         return redirect()
@@ -151,11 +108,13 @@ class TenantRoleController extends Controller
             ->with('success', "Rol \"{$role->name}\" actualizado correctamente.");
     }
 
-    public function destroy(Role $role): RedirectResponse
+    public function destroy(int|string $role): RedirectResponse
     {
         $tenant = Tenant::current();
-        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, 'Tu plan no permite eliminar roles personalizados.');
-        abort_if(in_array($role->name, self::SYSTEM_ROLES, true), 403, 'Los roles del sistema no pueden ser eliminados.');
+        $this->ensureCustomRolesFeatureEnabled($tenant, 'Tu plan no permite eliminar roles personalizados.');
+
+        $role = $this->findVisibleRoleOrFail($tenant, $role);
+        $this->ensureRoleCanBeDeleted($role);
 
         $roleName = $role->name;
         $role->delete();
@@ -163,5 +122,101 @@ class TenantRoleController extends Controller
         return redirect()
             ->route('taller.roles.index', ['tenantBySlug' => $tenant->slug])
             ->with('success', "Rol \"{$roleName}\" eliminado correctamente.");
+    }
+
+    private function ensureCustomRolesFeatureEnabled(Tenant $tenant, string $message): void
+    {
+        abort_unless($tenant->hasFeature(PlanFeatureService::FEATURE_CUSTOM_ROLES), 403, $message);
+    }
+
+    private function ensureRoleCanBeDeleted(Role $role): void
+    {
+        abort_if(TenantRoleCatalog::isSystemRole($role->name), 403, 'Los roles del sistema no pueden ser eliminados.');
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function settingsNavigationData(Tenant $tenant): array
+    {
+        return [
+            'planMaxUsers' => $tenant->userLimit(),
+            'currentUserCount' => User::query()
+                ->where('tenant_id', $tenant->id)
+                ->count(),
+            'branchesCount' => Branch::query()->count(),
+        ];
+    }
+
+    /**
+     * @return Collection<int, Role>
+     */
+    private function visibleRolesForTenant(Tenant $tenant): Collection
+    {
+        $tenantRoles = Role::query()
+            ->where('guard_name', 'web')
+            ->with('permissions')
+            ->where('tenant_id', $tenant->id)
+            ->get();
+
+        $globalSystemRoles = Role::query()
+            ->where('guard_name', 'web')
+            ->whereNull('tenant_id')
+            ->whereIn('name', TenantRoleCatalog::systemRoles())
+            ->when(
+                $tenantRoles->isNotEmpty(),
+                fn (Builder $query) => $query->whereNotIn('name', $tenantRoles->pluck('name')->all()),
+            )
+            ->with('permissions')
+            ->get();
+
+        $systemRoleOrder = array_flip(TenantRoleCatalog::systemRoles());
+
+        return $tenantRoles
+            ->concat($globalSystemRoles)
+            ->sortBy(
+                fn (Role $role): string => sprintf(
+                    '%02d-%s',
+                    $systemRoleOrder[$role->name] ?? 99,
+                    $role->name,
+                ),
+            )
+            ->values();
+    }
+
+    private function findVisibleRoleOrFail(Tenant $tenant, int|string $roleId): Role
+    {
+        $tenantRole = Role::query()
+            ->where('guard_name', 'web')
+            ->where('tenant_id', $tenant->id)
+            ->with('permissions')
+            ->find($roleId);
+
+        if ($tenantRole instanceof Role) {
+            return $tenantRole;
+        }
+
+        return Role::query()
+            ->where('guard_name', 'web')
+            ->whereNull('tenant_id')
+            ->whereIn('name', TenantRoleCatalog::systemRoles())
+            ->with('permissions')
+            ->findOrFail($roleId);
+    }
+
+    private function resolveWritableRole(Tenant $tenant, Role $role): Role
+    {
+        if (
+            (int) $role->getAttribute('tenant_id') === (int) $tenant->id
+            || ! TenantRoleCatalog::isSystemRole($role->name)
+        ) {
+            return $role;
+        }
+
+        return Role::query()->firstOrCreate([
+            'tenant_id' => $tenant->id,
+            'name' => $role->name,
+            'guard_name' => 'web',
+        ]);
     }
 }
