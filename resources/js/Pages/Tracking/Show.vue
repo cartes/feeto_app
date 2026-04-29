@@ -7,6 +7,10 @@ const props = defineProps({
     workOrder: Object,
     quoteStatuses: Array,
     commercialQuotesEnabled: Boolean,
+    ufValue: {
+        type: Number,
+        default: null,
+    },
 });
 
 const quote = computed(() => props.workOrder.quote ?? null);
@@ -104,7 +108,7 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                     </span>
                 </div>
 
-                <WorkOrderQuote :workOrder="workOrder" />
+                <WorkOrderQuote :workOrder="workOrder" :uf-value="ufValue" />
 
                 <div v-if="quote.status === 'pending_customer'" class="mt-6 space-y-4 rounded-3xl border border-orange-100 bg-orange-50/60 p-5">
                     <div>

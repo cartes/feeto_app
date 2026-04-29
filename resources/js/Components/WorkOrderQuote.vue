@@ -3,6 +3,10 @@ import { computed } from 'vue';
 
 const props = defineProps({
     workOrder: Object,
+    ufValue: {
+        type: Number,
+        default: null,
+    },
 });
 
 const quote = computed(() => props.workOrder?.quote ?? props.workOrder ?? { items: [], subtotal_amount: 0 });
@@ -17,6 +21,15 @@ const formatDate = (dateString) => {
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
 };
+
+const formatUf = (clpValue) => {
+    if (!props.ufValue || !clpValue) return null;
+    const uf = Number(clpValue) / props.ufValue;
+    return new Intl.NumberFormat('es-CL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(uf);
+};
 </script>
 
 <template>
@@ -30,8 +43,12 @@ const formatCurrency = (value) => {
             <div class="text-right px-4 py-2 bg-orange-50 rounded-2xl border border-orange-100">
                 <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Total
                     Presupuestado</p>
-                <p class="text-xl font-black text-slate-900 mt-1 leading-none">{{ formatCurrency(quote.subtotal_amount ?? workOrder.total_amount)
-                    }}</p>
+                <p class="text-xl font-black text-slate-900 mt-1 leading-none">
+                    {{ formatCurrency(quote.subtotal_amount ?? workOrder.total_amount) }}
+                </p>
+                <p v-if="formatUf(quote.subtotal_amount ?? workOrder.total_amount)" class="text-[10px] font-bold text-orange-400 mt-0.5">
+                    ≈ UF {{ formatUf(quote.subtotal_amount ?? workOrder.total_amount) }}
+                </p>
             </div>
         </div>
 
@@ -54,8 +71,11 @@ const formatCurrency = (value) => {
                     <tr v-for="item in quote.items" :key="item.id">
                         <td class="px-4 py-4 text-slate-700 font-medium">{{ item.description }}</td>
                         <td class="px-4 py-4 text-center text-slate-500 font-mono">{{ item.quantity }}</td>
-                        <td class="px-4 py-4 text-right text-slate-800 font-black font-mono">
-                            {{ formatCurrency(item.total_price) }}
+                        <td class="px-4 py-4 text-right">
+                            <span class="text-slate-800 font-black font-mono">{{ formatCurrency(item.total_price) }}</span>
+                            <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium text-slate-400 font-mono">
+                                UF {{ formatUf(item.total_price) }}
+                            </span>
                         </td>
                     </tr>
                 </tbody>

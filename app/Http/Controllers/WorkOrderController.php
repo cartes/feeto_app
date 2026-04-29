@@ -13,6 +13,7 @@ use App\Models\QuoteItem;
 use App\Models\Service;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
+use App\Services\UfService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,10 @@ use Spatie\Multitenancy\Models\Tenant;
 
 class WorkOrderController extends Controller
 {
-    public function __construct(protected PlanFeatureService $planFeatureService) {}
+    public function __construct(
+        protected PlanFeatureService $planFeatureService,
+        protected UfService $ufService,
+    ) {}
 
     /**
      * Muestra el Tablero Kanban con todas las órdenes de trabajo del taller.
@@ -71,6 +75,7 @@ class WorkOrderController extends Controller
             'workOrder' => $workOrder,
             'products' => $products,
             'services' => $services,
+            'uf_value' => $this->ufService->getCurrentValue(),
             'discountPolicy' => [
                 'threshold' => Tenant::current()?->maxDiscountWithoutApproval() ?? 10,
                 'approver_roles' => ['Jefe', 'Supervisor'],

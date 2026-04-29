@@ -10,6 +10,10 @@ const props = defineProps({
     products: Array,
     services: Array,
     discountPolicy: Object,
+    ufValue: {
+        type: Number,
+        default: null,
+    },
 });
 
 const planAccess = computed(() => page.props.planAccess ?? null);
@@ -57,6 +61,15 @@ const formatCurrency = (amount) => new Intl.NumberFormat('es-CL', {
     currency: 'CLP',
     maximumFractionDigits: 0,
 }).format(Number(amount || 0));
+
+const formatUf = (clpValue) => {
+    if (!props.ufValue || !clpValue) return null;
+    const uf = Number(clpValue) / props.ufValue;
+    return new Intl.NumberFormat('es-CL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(uf);
+};
 
 const formatDateTime = (value) => {
     if (!value) {
@@ -268,6 +281,9 @@ const sendQuote = () => {
                         <div class="rounded-[1.75rem] border border-gray-100 bg-gray-50 p-5">
                             <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
                             <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</p>
+                            <p v-if="formatUf(quote.subtotal_amount)" class="mt-1 text-xs font-semibold text-gray-400">
+                                ≈ UF {{ formatUf(quote.subtotal_amount) }}
+                            </p>
                             <p class="mt-2 text-xs font-medium text-gray-500">{{ items.length }} ítems cargados</p>
                         </div>
 
@@ -354,7 +370,12 @@ const sendQuote = () => {
                                         </span>
                                         <span>{{ formatCurrency(item.unit_price) }}</span>
                                     </td>
-                                    <td class="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</td>
+                                    <td class="px-4 py-4 text-right">
+                                        <span class="text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</span>
+                                        <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium tabular-nums text-gray-400">
+                                            UF {{ formatUf(item.total_price) }}
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-4 text-right">
                                         <button
                                             type="button"
@@ -371,7 +392,12 @@ const sendQuote = () => {
                             <tfoot>
                                 <tr class="border-t-2 border-gray-100 bg-gray-50/50">
                                     <td colspan="4" class="px-8 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-600">Total Cotización</td>
-                                    <td class="px-4 py-4 text-right text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</td>
+                                    <td class="px-4 py-4 text-right">
+                                        <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</span>
+                                        <span v-if="formatUf(quote.subtotal_amount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">
+                                            UF {{ formatUf(quote.subtotal_amount) }}
+                                        </span>
+                                    </td>
                                     <td></td>
                                 </tr>
                             </tfoot>

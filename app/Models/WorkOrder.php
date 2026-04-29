@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Services\PlanFeatureService;
-use App\Traits\TenantAware;
+use App\Traits\BelongsToTenantAndSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 class WorkOrder extends Model
 {
-    use HasFactory, TenantAware;
+    use BelongsToTenantAndSoftDeletes, HasFactory;
 
     public const STATUS_RECEPCION = 'recepcion';
 
