@@ -36,15 +36,28 @@ class WorkOrderController extends Controller
      */
     public function index(): Response
     {
-        $orders = WorkOrder::with(['vehicle.client', 'quote'])->get()->groupBy('status');
+        $statuses = WorkOrder::statuses();
+        $tenantId = Tenant::current()?->id;
 
-        $kanban = collect(WorkOrder::statuses())
+        $orders = WorkOrder::query()
+            ->select(['id', 'uuid', 'vehicle_id', 'status', 'created_at', 'tenant_id'])
+            ->with([
+                'vehicle' => fn ($query) => $query->select(['id', 'client_id', 'plate', 'brand', 'model', 'tenant_id']),
+                'vehicle.client' => fn ($query) => $query->select(['id', 'name', 'tenant_id']),
+                'quote' => fn ($query) => $query->select(['id', 'work_order_id', 'status', 'tenant_id']),
+            ])
+            ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
+            ->whereIn('status', $statuses)
+            ->get()
+            ->groupBy('status');
+
+        $kanban = collect($statuses)
             ->mapWithKeys(fn (string $status): array => [$status => $orders->get($status, [])])
             ->all();
 
         return Inertia::render('WorkOrders/Index', [
             'kanban' => $kanban,
-            'tenantId' => Tenant::current() ? Tenant::current()->id : 0,
+            'tenantId' => $tenantId ?? 0,
         ]);
     }
 
