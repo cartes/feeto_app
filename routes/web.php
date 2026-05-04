@@ -107,6 +107,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/receptions/preview', [ReceptionController::class, 'preview'])
             ->middleware(['throttle:30,1', 'permission:appointments.manage'])
             ->name('receptions.preview');
+        Route::get('/receptions/clients/search', [ReceptionController::class, 'searchClients'])
+            ->middleware('permission:appointments.manage')
+            ->name('receptions.clients.search');
         Route::post('/receptions/store-order', [ReceptionController::class, 'storeOrder'])
             ->middleware('permission:appointments.manage')
             ->name('receptions.store_order');

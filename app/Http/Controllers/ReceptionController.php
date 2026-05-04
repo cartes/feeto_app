@@ -6,11 +6,16 @@ namespace App\Http\Controllers;
 
 use App\Ai\Agents\PatentReaderAgent;
 use App\Events\PatentRecognized;
+use App\Http\Requests\PreviewReceptionRequest;
+use App\Http\Requests\SearchReceptionClientsRequest;
+use App\Http\Requests\StoreReceptionOrderRequest;
 use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Services\BoostrService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
@@ -34,7 +39,7 @@ class ReceptionController extends Controller
     /**
      * Procesamiento asíncrono de OCR y obtención de datos automáticos.
      */
-    public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr)
+    public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr): JsonResponse
     {
         $request->validate([
             'image' => 'required|image|max:10240', // Max 10MB
@@ -75,26 +80,11 @@ class ReceptionController extends Controller
                     ];
                 }
 
-                // C. Persistencia de datos del vehículo si no existe (No creamos la OT aún)
-                $client = Client::firstOrCreate(
-                    ['rut' => $vehicleData['rut_dueno']],
-                    ['name' => $vehicleData['nombre_dueno']]
-                );
-
-                $vehicle = Vehicle::firstOrCreate(
-                    ['plate' => $patenteLimpia],
-                    [
-                        'client_id' => $client->id,
-                        'brand' => $vehicleData['marca'],
-                        'model' => $vehicleData['modelo'],
-                        'vin' => $vehicleData['vin'] ?? null,
-                    ]
-                );
-
-                // D. Emitir el evento para que el frontend del que escanea no se quede pensando
+                // C. Emitir el resultado sin persistirlo aún; la confirmación manual
+                // define si el dueño debe mantenerse o reasignarse.
                 broadcast(new PatentRecognized($patenteLimpia, '', [
-                    'brand' => $vehicleData['marca'] ?? 'N/A',
-                    'model' => $vehicleData['modelo'] ?? 'N/A',
+                    'brand' => $vehicleData['marca'] ?? ($response['marca'] ?? 'N/A'),
+                    'model' => $vehicleData['modelo'] ?? ($response['modelo'] ?? 'N/A'),
                     'color' => $vehicleData['color'] ?? 'SIN DATO',
                     'client' => $vehicleData['nombre_dueno'] ?? 'SIN DATO',
                     'rut' => $vehicleData['rut_dueno'] ?? 'SIN DATO',
@@ -112,37 +102,31 @@ class ReceptionController extends Controller
     /**
      * Guarda definitivamente la Orden de Trabajo desde la Previsualización.
      */
-    public function storeOrder(Request $request)
+    public function storeOrder(StoreReceptionOrderRequest $request): RedirectResponse
     {
-        $request->validate([
-            'plate' => 'required|string',
-            'brand' => 'required|string',
-            'model' => 'required|string',
-            'client_name' => 'required|string',
-            'client_rut' => 'required|string',
-            'client_email' => 'nullable|email',
-            'client_phone' => 'nullable|string',
+        $plate = $this->normalizePlate($request->validated('plate'));
+        $vehicle = Vehicle::query()->with('client')->firstOrNew(['plate' => $plate]);
+        $vehicleAlreadyExists = $vehicle->exists;
+
+        $vehicle->fill([
+            'plate' => $plate,
+            'brand' => $request->validated('brand'),
+            'model' => $request->validated('model'),
         ]);
 
-        // Aseguramos que el cliente exista/se actualice
-        $client = Client::updateOrCreate(
-            ['rut' => $request->client_rut],
-            array_filter([
-                'name' => $request->client_name,
-                'email' => $request->client_email,
-                'phone' => $request->client_phone,
-            ])
-        );
+        if ($vehicleAlreadyExists && ! $request->boolean('reassign_vehicle_owner')) {
+            $currentClient = $vehicle->client;
 
-        // Aseguramos que el vehículo exista/se actualice
-        $vehicle = Vehicle::updateOrCreate(
-            ['plate' => strtoupper(preg_replace('/[^A-Z0-9]/i', '', $request->plate))],
-            [
-                'client_id' => $client->id,
-                'brand' => $request->brand,
-                'model' => $request->model,
-            ]
-        );
+            if ($currentClient instanceof Client) {
+                $this->fillClientFromRequest($currentClient, $request);
+            } else {
+                $vehicle->client()->associate($this->resolveClientFromRequest($request));
+            }
+        } else {
+            $vehicle->client()->associate($this->resolveClientFromRequest($request));
+        }
+
+        $vehicle->save();
 
         // Creamos la OT iniciada en estado borrador (recepcion)
         $workOrder = WorkOrder::create([
@@ -157,13 +141,10 @@ class ReceptionController extends Controller
     /**
      * Vista previa de la orden antes de guardar.
      */
-    public function preview(Request $request, BoostrService $boostr)
+    public function preview(PreviewReceptionRequest $request, BoostrService $boostr): JsonResponse
     {
-        $request->validate(['patente' => 'required|string']);
-
         // Limpiamos la patente por si acaso
-        $patenteRaw = $request->patente;
-        $patente = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $patenteRaw));
+        $patente = $this->normalizePlate($request->validated('patente'));
 
         // 1. Buscamos si existe en la base de datos (aislado por tenant automáticamente)
         $vehicle = Vehicle::where('plate', $patente)->with('client')->first();
@@ -171,6 +152,8 @@ class ReceptionController extends Controller
         if ($vehicle) {
             return response()->json([
                 'is_new' => false,
+                'vehicle_exists' => true,
+                'owner_source' => 'internal',
                 'vehicle' => [
                     'brand' => $vehicle->brand,
                     'model' => $vehicle->model,
@@ -178,8 +161,11 @@ class ReceptionController extends Controller
                     'plate' => $vehicle->plate,
                 ],
                 'client' => [
+                    'id' => $vehicle->client?->id,
                     'name' => $vehicle->client->name,
                     'rut' => $vehicle->client->rut,
+                    'email' => $vehicle->client->email,
+                    'phone' => $vehicle->client->phone,
                 ],
             ]);
         }
@@ -191,7 +177,9 @@ class ReceptionController extends Controller
             // Si Boostr también falla, devolvemos un objeto vacío para que el frontend pida llenado manual
             return response()->json([
                 'is_new' => true,
+                'vehicle_exists' => false,
                 'not_found' => true,
+                'owner_source' => 'manual',
                 'vehicle' => [
                     'plate' => $patente,
                     'brand' => 'NO IDENTIFICADO',
@@ -199,14 +187,19 @@ class ReceptionController extends Controller
                     'vin' => 'N/A',
                 ],
                 'client' => [
+                    'id' => null,
                     'name' => 'CLIENTE NUEVO',
                     'rut' => '',
+                    'email' => '',
+                    'phone' => '',
                 ],
             ]);
         }
 
         return response()->json([
             'is_new' => true,
+            'vehicle_exists' => false,
+            'owner_source' => 'boostr',
             'vehicle' => [
                 'brand' => $vehicleData['marca'] ?? 'N/A',
                 'model' => $vehicleData['modelo'] ?? 'N/A',
@@ -214,9 +207,68 @@ class ReceptionController extends Controller
                 'plate' => $patente,
             ],
             'client' => [
+                'id' => null,
                 'name' => $vehicleData['nombre_dueno'] ?? 'SIN DATO',
                 'rut' => $vehicleData['rut_dueno'] ?? 'SIN DATO',
+                'email' => '',
+                'phone' => '',
             ],
         ]);
+    }
+
+    public function searchClients(SearchReceptionClientsRequest $request): JsonResponse
+    {
+        $search = $request->validated('search');
+        $escapedSearch = addcslashes($search, '%_');
+
+        $clients = Client::query()
+            ->where(function ($query) use ($escapedSearch): void {
+                $query
+                    ->where('name', 'like', "%{$escapedSearch}%")
+                    ->orWhere('rut', 'like', "%{$escapedSearch}%");
+            })
+            ->orderBy('name')
+            ->limit(8)
+            ->get(['id', 'name', 'rut', 'email', 'phone']);
+
+        return response()->json([
+            'clients' => $clients,
+        ]);
+    }
+
+    private function normalizePlate(string $plate): string
+    {
+        return strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $plate));
+    }
+
+    private function resolveClientFromRequest(StoreReceptionOrderRequest $request): Client
+    {
+        $selectedClientId = $request->integer('selected_client_id');
+
+        if ($selectedClientId > 0) {
+            $client = Client::query()->findOrFail($selectedClientId);
+
+            return $this->fillClientFromRequest($client, $request);
+        }
+
+        $client = Client::query()->firstOrNew([
+            'rut' => $request->validated('client_rut'),
+        ]);
+
+        return $this->fillClientFromRequest($client, $request);
+    }
+
+    private function fillClientFromRequest(Client $client, StoreReceptionOrderRequest $request): Client
+    {
+        $client->fill(array_filter([
+            'name' => $request->validated('client_name'),
+            'rut' => $request->validated('client_rut'),
+            'email' => $request->validated('client_email'),
+            'phone' => $request->validated('client_phone'),
+        ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+
+        $client->save();
+
+        return $client;
     }
 }
