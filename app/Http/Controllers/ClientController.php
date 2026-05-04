@@ -48,10 +48,17 @@ class ClientController extends Controller
             'vehicles.workOrders.quote.items',
             'invoices.workOrder.vehicle',
             'invoices.quote',
+            'internalNotes.user',
         ]);
 
-        $quotes = $client->vehicles
-            ->flatMap(fn ($vehicle) => $vehicle->workOrders)
+        $workOrders = $client->vehicles->flatMap(fn ($vehicle) => $vehicle->workOrders);
+        $finishedWorkOrders = $workOrders->where('status', \App\Models\WorkOrder::STATUS_LISTO);
+        
+        $totalSpent = $finishedWorkOrders->sum('total_amount');
+        $lastVisit = $workOrders->sortByDesc('created_at')->first()?->created_at?->toDateString();
+        $averageTicket = $finishedWorkOrders->count() > 0 ? $totalSpent / $finishedWorkOrders->count() : 0;
+
+        $quotes = $workOrders
             ->map(fn ($workOrder) => $workOrder->quote)
             ->filter();
 
@@ -60,6 +67,11 @@ class ClientController extends Controller
 
         return Inertia::render('Clients/Show', [
             'client' => $client,
+            'crmMetrics' => [
+                'total_spent' => (float) $totalSpent,
+                'last_visit' => $lastVisit,
+                'average_ticket' => (float) $averageTicket,
+            ],
             'quoteSummary' => [
                 'total_quotes' => $quotes->count(),
                 'accepted_quotes' => $quotes->where('status', Quote::STATUS_ACCEPTED)->count(),

@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
@@ -12,7 +12,10 @@ const props = defineProps({
     invoiceSummary: Object,
     invoices: Array,
     salesManagementEnabled: Boolean,
+    crmMetrics: Object,
 });
+
+const activeTab = ref('vehiculos'); // 'vehiculos', 'historial', 'notas'
 
 const invoiceForm = useForm({
     client_id: props.client.id,
@@ -87,6 +90,17 @@ const submitInvoice = () => {
             invoiceForm.client_id = props.client.id;
             invoiceForm.issued_at = new Date().toISOString().slice(0, 10);
         },
+    });
+};
+
+const noteForm = useForm({
+    content: '',
+});
+
+const submitNote = () => {
+    noteForm.post(route('clients.notes.store', { ...tenantRouteParams.value, client: props.client.id }), {
+        preserveScroll: true,
+        onSuccess: () => noteForm.reset(),
     });
 };
 </script>
@@ -166,22 +180,18 @@ const submitInvoice = () => {
                 </div>
 
                 <div class="lg:col-span-2 space-y-8">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cotizaciones</p>
-                            <p class="mt-2 text-3xl font-black text-gray-900">{{ quoteSummary.total_quotes }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Gasto Total</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(crmMetrics.total_spent) }}</p>
                         </div>
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Aceptadas</p>
-                            <p class="mt-2 text-3xl font-black text-emerald-600">{{ quoteSummary.accepted_quotes }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Última Visita</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ crmMetrics.last_visit ? formatDate(crmMetrics.last_visit) : 'N/A' }}</p>
                         </div>
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Saldo Pendiente</p>
-                            <p class="mt-2 text-3xl font-black text-rose-500">{{ formatCurrency(invoiceSummary.amount_due) }}</p>
-                        </div>
-                        <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Facturas Atrasadas</p>
-                            <p class="mt-2 text-3xl font-black text-gray-900">{{ invoiceSummary.overdue_invoices }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Ticket Promedio</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(crmMetrics.average_ticket) }}</p>
                         </div>
                     </div>
 
@@ -265,7 +275,13 @@ const submitInvoice = () => {
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 rounded-[2.5rem] p-8 border border-gray-100">
+                    <div class="flex gap-4 border-b border-gray-200">
+                        <button @click="activeTab = 'vehiculos'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'vehiculos' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Mis Vehículos</button>
+                        <button @click="activeTab = 'historial'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Historial de Visitas</button>
+                        <button @click="activeTab = 'notas'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'notas' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Notas Internas</button>
+                    </div>
+
+                    <div v-show="activeTab === 'vehiculos'" class="bg-gray-50 rounded-[2.5rem] p-8 border border-gray-100">
                         <div class="flex items-center gap-3 mb-6">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                             <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Vehículos Asociados</h3>
@@ -295,7 +311,7 @@ const submitInvoice = () => {
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-[2.5rem] p-8 border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+                    <div v-show="activeTab === 'historial'" class="bg-white rounded-[2.5rem] p-8 border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
                         <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
                             <span class="w-2.5 h-2.5 rounded-full bg-[#F9A826]"></span>
                             <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Historial Clínico (Órdenes)</h3>
@@ -333,6 +349,42 @@ const submitInvoice = () => {
                                         </a>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-show="activeTab === 'notas'" class="bg-white rounded-[2.5rem] p-8 border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+                        <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Muro de Notas Internas</h3>
+                        </div>
+
+                        <form @submit.prevent="submitNote" class="mb-8 bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                            <textarea v-model="noteForm.content" rows="3" placeholder="Escribe una nota interna sobre el cliente..." class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"></textarea>
+                            <div class="mt-3 flex justify-end">
+                                <button type="submit" :disabled="noteForm.processing" class="rounded-2xl bg-gray-900 px-5 py-2 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
+                                    {{ noteForm.processing ? 'Guardando...' : 'Agregar Nota' }}
+                                </button>
+                            </div>
+                        </form>
+
+                        <div v-if="!client.internal_notes || client.internal_notes.length === 0" class="text-center py-10">
+                            <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Sin Notas</p>
+                            <p class="text-xs text-gray-400 mt-1">No hay notas internas registradas para este cliente.</p>
+                        </div>
+
+                        <div v-else class="space-y-4">
+                            <div v-for="note in client.internal_notes" :key="note.id" class="p-5 rounded-2xl border border-gray-100 bg-white shadow-sm flex flex-col gap-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 uppercase">
+                                            {{ note.user?.name.charAt(0) }}
+                                        </div>
+                                        <span class="font-bold text-sm text-gray-900">{{ note.user?.name }}</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-gray-400">{{ formatDate(note.created_at) }}</span>
+                                </div>
+                                <p class="text-sm text-gray-700 leading-relaxed">{{ note.content }}</p>
                             </div>
                         </div>
                     </div>

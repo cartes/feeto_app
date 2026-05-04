@@ -171,6 +171,10 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->only(['index', 'show'])
             ->middleware('permission:customers.manage');
 
+        Route::post('clients/{client}/notes', [\App\Http\Controllers\InternalNoteController::class, 'store'])
+            ->middleware('permission:customers.manage')
+            ->name('clients.notes.store');
+
         // Appointments & Smart Reception — usuarios con permiso appointments.manage
         Route::get('/appointments', [AppointmentController::class, 'index'])
             ->middleware('permission:appointments.manage')

@@ -37,4 +37,14 @@ class Client extends Model
     {
         return $this->hasMany(ClientInvoice::class);
     }
+
+    public function internalNotes(): HasMany
+    {
+        return $this->hasMany(InternalNote::class);
+    }
+
+    public function workOrders(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(WorkOrder::class, Vehicle::class);
+    }
 }
