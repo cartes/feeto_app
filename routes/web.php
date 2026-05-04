@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\PublicCheckoutController;
+use App\Http\Controllers\Subscription\BillingController;
+use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
@@ -228,6 +231,16 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->middleware('permission:financials.view');
 
         // Perfil
+        // Suscripción — autogestión del tenant
+        Route::prefix('/subscription')->name('subscription.')->group(function (): void {
+            Route::get('/planes', [TenantSubscriptionController::class, 'plans'])->name('plans');
+            Route::post('/preference', [TenantSubscriptionController::class, 'createPreference'])->name('preference');
+            Route::get('/exito', [TenantSubscriptionController::class, 'success'])->name('success');
+            Route::get('/fallo', [TenantSubscriptionController::class, 'failure'])->name('failure');
+            Route::get('/pendiente', [TenantSubscriptionController::class, 'pending'])->name('pending');
+            Route::get('/billing', [BillingController::class, 'index'])->name('billing');
+        });
+
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -297,6 +310,17 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::get('/payments/failure', [PaymentController::class, 'failure'])->name('payments.failure');
         Route::get('/payments/pending', [PaymentController::class, 'pending'])->name('payments.pending');
     });
+
+// Checkout público por slug — permite comprar suscripción sin autenticación
+Route::prefix('/checkout/{tenantBySlug}')->name('checkout.')->group(function (): void {
+    Route::get('/', [PublicCheckoutController::class, 'show'])->name('show');
+    Route::post('/preference', [PublicCheckoutController::class, 'createPreference'])
+        ->middleware('throttle:10,1')
+        ->name('preference');
+    Route::get('/exito', [PublicCheckoutController::class, 'success'])->name('success');
+    Route::get('/fallo', [PublicCheckoutController::class, 'failure'])->name('failure');
+    Route::get('/pendiente', [PublicCheckoutController::class, 'pending'])->name('pending');
+});
 
 // Mercado Pago webhook (sin CSRF, sin auth — validado por firma HMAC)
 Route::post('/webhooks/mercadopago', MercadoPagoWebhookController::class)

@@ -30,6 +30,8 @@ const navItems = computed(() => ([
     { label: 'Servicios', icon: 'M9 12h6m-3-3v6m6 5H6a2 2 0 01-2-2V8a2 2 0 012-2h3.172a2 2 0 011.414.586l.828.828A2 2 0 0012.828 8H18a2 2 0 012 2v8a2 2 0 01-2 2z', route: 'services.index', visible: canManageInventory.value && commercialQuotesEnabled.value },
     { label: 'Clientes', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', route: 'clients.index', visible: canManageCustomers.value },
     { label: 'Reportes', icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z', route: 'reports.index', visible: canViewReports.value && commercialReportsEnabled.value },
+    { label: 'Suscripción', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route: 'subscription.plans', visible: canAccessSettings.value },
+    { label: 'Facturación', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route: 'subscription.billing', visible: canAccessSettings.value },
 ]).filter((item) => item.visible));
 </script>
 

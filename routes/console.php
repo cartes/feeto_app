@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\NotifyExpiringSubscriptions;
+use App\Jobs\SendRenewalReminders;
 use App\Jobs\QueueOverdueInvoiceWhatsAppReminders;
 use App\Jobs\SuspendExpiredTenants;
 use Illuminate\Foundation\Inspiring;
@@ -14,3 +15,4 @@ Artisan::command('inspire', function () {
 Schedule::job(new SuspendExpiredTenants)->daily();
 Schedule::job(new NotifyExpiringSubscriptions)->dailyAt('08:00');
 Schedule::job(new QueueOverdueInvoiceWhatsAppReminders)->dailyAt('09:00');
+Schedule::job(new SendRenewalReminders)->dailyAt('09:30');

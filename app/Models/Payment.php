@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'tenant_id', 'plan_id', 'amount', 'currency', 'status',
+    'tenant_id', 'plan_id', 'amount', 'currency', 'billing_period', 'status',
     'method', 'transaction_id', 'mp_preference_id', 'mp_payment_id',
     'mp_fee_net', 'mp_fee_vat', 'net_amount', 'mp_payment_type', 'mp_installments',
     'paid_at', 'metadata',
 ])]
 class Payment extends Model
 {
+    use HasFactory;
     /** @var array<string, string> */
     protected $casts = [
         'paid_at' => 'datetime',
@@ -25,6 +27,10 @@ class Payment extends Model
         'mp_fee_vat' => 'integer',
         'net_amount' => 'integer',
     ];
+
+    public const BILLING_MONTHLY = 'monthly';
+
+    public const BILLING_ANNUAL = 'annual';
 
     public const STATUS_PENDING = 'pending';
 

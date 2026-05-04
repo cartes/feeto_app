@@ -179,6 +179,8 @@ class HandleInertiaRequests extends Middleware
                 'user_limit' => $tenant->userLimit(),
             ],
             'features' => $tenant->enabledFeatureKeys(),
+            'subscription_ends_at' => $tenant->subscription_ends_at?->toIso8601String(),
+            'is_active' => $tenant->is_active,
         ];
     }
 }

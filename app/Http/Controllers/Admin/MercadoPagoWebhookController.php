@@ -92,8 +92,12 @@ class MercadoPagoWebhookController extends Controller
                 $payment->save();
 
                 if ($mpPayment->status === 'approved') {
+                    $ends = $payment->billing_period === Payment::BILLING_ANNUAL
+                        ? now()->addYear()
+                        : now()->addMonth();
+
                     Tenant::where('id', $tenantId)->update([
-                        'subscription_ends_at' => now()->addMonth(),
+                        'subscription_ends_at' => $ends,
                         'is_active' => true,
                     ]);
 
