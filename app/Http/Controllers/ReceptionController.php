@@ -118,7 +118,7 @@ class ReceptionController extends Controller
             $currentClient = $vehicle->client;
 
             if ($currentClient instanceof Client) {
-                $this->fillClientFromRequest($currentClient, $request);
+                $this->fillClientContactFromRequest($currentClient, $request);
             } else {
                 $vehicle->client()->associate($this->resolveClientFromRequest($request));
             }
@@ -263,6 +263,18 @@ class ReceptionController extends Controller
         $client->fill(array_filter([
             'name' => $request->validated('client_name'),
             'rut' => $request->validated('client_rut'),
+            'email' => $request->validated('client_email'),
+            'phone' => $request->validated('client_phone'),
+        ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+
+        $client->save();
+
+        return $client;
+    }
+
+    private function fillClientContactFromRequest(Client $client, StoreReceptionOrderRequest $request): Client
+    {
+        $client->fill(array_filter([
             'email' => $request->validated('client_email'),
             'phone' => $request->validated('client_phone'),
         ], static fn (mixed $value): bool => $value !== null && $value !== ''));

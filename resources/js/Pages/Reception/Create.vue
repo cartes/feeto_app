@@ -16,13 +16,37 @@ const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messa
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
 const isSearching = ref(false);
+const isSearchingClients = ref(false);
 const showModal = ref(false);
-const isNewClient = ref(true);
+const isExistingVehicle = ref(false);
 
 const recognizedPlate = ref(null);
 const vehicleInfo = ref(null);
 const fileInput = ref(null);
 const errorMsg = ref(null);
+const ownerSource = ref('manual');
+const clientSearch = ref('');
+const clientMatches = ref([]);
+const selectedExistingClient = ref(null);
+
+const createEmptyClient = () => ({
+    id: null,
+    name: '',
+    rut: '',
+    email: '',
+    phone: '',
+});
+
+const defaultClient = ref(createEmptyClient());
+
+const debounce = (fn, delay) => {
+    let timeoutId;
+
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
 
 const form = useForm({
     plate: '',
@@ -32,6 +56,8 @@ const form = useForm({
     client_rut: '',
     client_email: '',
     client_phone: '',
+    selected_client_id: null,
+    reassign_vehicle_owner: false,
 });
 
 const formattedPlate = computed(() => {
@@ -43,16 +69,58 @@ const formattedPlate = computed(() => {
     return clean;
 });
 
-const triggerCamera = () => {
+const ownerSourceLabel = computed(() => {
+    if (ownerSource.value === 'internal') {
+        return 'Dueño guardado en Feeto';
+    }
+
+    if (ownerSource.value === 'boostr') {
+        return 'Sugerencia de Boostr';
+    }
+
+    return 'Ingreso manual';
+});
+
+const applyClientData = (client) => {
+    form.client_name = client?.name || '';
+    form.client_rut = client?.rut || '';
+    form.client_email = client?.email || '';
+    form.client_phone = client?.phone || '';
+};
+
+const resetClientSearchState = () => {
+    clientSearch.value = '';
+    clientMatches.value = [];
+    selectedExistingClient.value = null;
+    form.selected_client_id = null;
+};
+
+const resetReceptionState = () => {
     recognizedPlate.value = null;
     vehicleInfo.value = null;
     errorMsg.value = null;
+    isExistingVehicle.value = false;
+    ownerSource.value = 'manual';
+    defaultClient.value = createEmptyClient();
+    resetClientSearchState();
+    form.reset();
+    form.clearErrors();
+    form.reassign_vehicle_owner = false;
+};
+
+const closeModal = () => {
+    showModal.value = false;
+    resetReceptionState();
+};
+
+const triggerCamera = () => {
+    resetReceptionState();
+    showModal.value = false;
     fileInput.value.click();
 };
 
 const handleManualEntry = () => {
-    form.reset();
-    form.plate = '';
+    resetReceptionState();
     showModal.value = true;
 };
 
@@ -65,15 +133,22 @@ const fetchVehicleData = async (ppu) => {
             patente: ppu
         });
         const data = response.data;
-        isNewClient.value = data.is_new;
+        isExistingVehicle.value = data.vehicle_exists ?? !data.is_new;
+        ownerSource.value = data.owner_source || 'manual';
+        defaultClient.value = {
+            id: data.client?.id || null,
+            name: data.client?.name || '',
+            rut: data.client?.rut || '',
+            email: data.client?.email || '',
+            phone: data.client?.phone || '',
+        };
 
+        resetClientSearchState();
         form.plate = data.vehicle?.plate || ppu;
         form.brand = data.vehicle?.brand || '';
         form.model = data.vehicle?.model || '';
-        form.client_name = data.client?.name || '';
-        form.client_rut = data.client?.rut || '';
-        form.client_email = data.client?.email || '';
-        form.client_phone = data.client?.phone || '';
+        applyClientData(defaultClient.value);
+        form.reassign_vehicle_owner = false;
 
         return true;
     } catch (error) {
@@ -94,6 +169,51 @@ const handleConfirmIngreso = async (ppu) => {
     if (success) showModal.value = true;
 };
 
+const fetchClientMatches = async (search) => {
+    const normalizedSearch = search.trim();
+
+    if (normalizedSearch.length < 2) {
+        clientMatches.value = [];
+        return;
+    }
+
+    isSearchingClients.value = true;
+
+    try {
+        const response = await axios.get(route('receptions.clients.search', tenantRouteParams.value), {
+            params: { search: normalizedSearch },
+        });
+
+        clientMatches.value = response.data.clients || [];
+    } catch (error) {
+        clientMatches.value = [];
+    } finally {
+        isSearchingClients.value = false;
+    }
+};
+
+const debouncedFetchClientMatches = debounce((value) => {
+    void fetchClientMatches(value);
+}, 300);
+
+const selectExistingClient = (client) => {
+    selectedExistingClient.value = client;
+    form.selected_client_id = client.id;
+    form.reassign_vehicle_owner = isExistingVehicle.value;
+    clientSearch.value = `${client.name} · ${client.rut}`;
+    clientMatches.value = [];
+    applyClientData(client);
+};
+
+const clearSelectedClient = () => {
+    resetClientSearchState();
+    applyClientData(defaultClient.value);
+
+    if (isExistingVehicle.value) {
+        form.reassign_vehicle_owner = false;
+    }
+};
+
 // Autosearch when 6 characters reached in manual input
 watch(() => form.plate, (newVal) => {
     if (showModal.value && newVal && newVal.length === 6 && !isSearching.value) {
@@ -101,10 +221,30 @@ watch(() => form.plate, (newVal) => {
     }
 });
 
+watch(clientSearch, (value) => {
+    const selectedLabel = selectedExistingClient.value
+        ? `${selectedExistingClient.value.name} · ${selectedExistingClient.value.rut}`
+        : null;
+
+    if (selectedLabel !== null && value === selectedLabel) {
+        return;
+    }
+
+    debouncedFetchClientMatches(value);
+});
+
+watch(() => form.reassign_vehicle_owner, (shouldReassign) => {
+    if (!shouldReassign && isExistingVehicle.value) {
+        resetClientSearchState();
+        applyClientData(defaultClient.value);
+    }
+});
+
 const handleCreateOrder = () => {
     form.post(route('receptions.store_order', tenantRouteParams.value), {
         onSuccess: () => {
             showModal.value = false;
+            resetReceptionState();
         },
     });
 };
@@ -223,7 +363,7 @@ onUnmounted(() => {
         <!-- MODAL DE VISTA PREVIA EDITABLE (Estilo Taller-Friendly & Light Theme) -->
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                @click="showModal = false"></div>
+                @click="closeModal"></div>
 
             <div
                 class="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_32px_64px_rgba(0,0,0,0.1)] overflow-x-hidden animate-in zoom-in duration-300">
@@ -232,16 +372,20 @@ onUnmounted(() => {
                 <div class="p-6 lg:p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                     <div class="flex flex-col gap-1">
                         <h2 class="text-2xl font-black text-gray-900 tracking-tight uppercase">Orden de Trabajo</h2>
-                        <span v-if="isNewClient"
-                            class="w-fit bg-[#F9A826]/10 text-[#F9A826] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#F9A826]/20">
-                            Cliente Nuevo
+                        <span v-if="isExistingVehicle"
+                            class="w-fit bg-emerald-100 text-emerald-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-emerald-200">
+                            Vehículo Registrado
                         </span>
                         <span v-else
-                            class="w-fit bg-emerald-100 text-emerald-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-emerald-200">
-                            Cliente Existente
+                            class="w-fit bg-[#F9A826]/10 text-[#F9A826] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#F9A826]/20">
+                            Vehículo Nuevo
+                        </span>
+                        <span
+                            class="w-fit bg-slate-100 text-slate-500 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-slate-200">
+                            {{ ownerSourceLabel }}
                         </span>
                     </div>
-                    <button @click="showModal = false"
+                    <button @click="closeModal"
                         class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all border border-gray-200 shadow-sm">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -292,12 +436,122 @@ onUnmounted(() => {
                         </div>
                     </div>
 
+                    <!-- Asociación del Cliente -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Asignación del
+                                Cliente</p>
+                        </div>
+
+                        <div v-if="isExistingVehicle"
+                            class="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 space-y-4">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                                        Vehículo ya asociado
+                                    </p>
+                                    <p class="text-sm font-bold text-slate-900">
+                                        {{ defaultClient.name || 'Cliente sin nombre' }}
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        Si no reasignas, la orden seguirá vinculada a este cliente.
+                                    </p>
+                                </div>
+
+                                <label class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 border border-emerald-200 shadow-sm">
+                                    <input v-model="form.reassign_vehicle_owner" type="checkbox"
+                                        class="rounded border-gray-300 text-[#F9A826] focus:ring-[#F9A826]" />
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-700">
+                                        Reasignar dueño
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div v-else class="rounded-3xl border border-slate-200 bg-slate-50/80 p-5">
+                            <p class="text-xs font-semibold leading-relaxed text-slate-600">
+                                <span v-if="ownerSource === 'boostr'">
+                                    Boostr sugirió un propietario para esta patente. Puedes mantener esa sugerencia,
+                                    buscar un cliente existente o ingresar otro manualmente.
+                                </span>
+                                <span v-else>
+                                    No encontramos un propietario confirmado. Busca un cliente existente o completa sus
+                                    datos manualmente.
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label
+                                class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Buscar
+                                cliente existente</label>
+                            <div class="relative">
+                                <input v-model="clientSearch" type="text"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-semibold rounded-2xl px-5 py-4 pr-12 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                    placeholder="Buscar por nombre o RUT" />
+                                <div v-if="isSearchingClients"
+                                    class="absolute inset-y-0 right-4 flex items-center text-gray-300">
+                                    <div
+                                        class="h-5 w-5 rounded-full border-2 border-gray-200 border-t-[#F9A826] animate-spin">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="selectedExistingClient"
+                                class="rounded-3xl border border-sky-200 bg-sky-50/70 p-4 flex items-start justify-between gap-4">
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-sky-600">
+                                        Cliente seleccionado
+                                    </p>
+                                    <p class="text-sm font-bold text-slate-900">{{ selectedExistingClient.name }}</p>
+                                    <p class="text-xs font-semibold text-slate-500">
+                                        {{ selectedExistingClient.rut }}<span v-if="selectedExistingClient.phone"> · {{
+                                            selectedExistingClient.phone }}</span>
+                                    </p>
+                                </div>
+                                <button type="button" @click="clearSelectedClient"
+                                    class="shrink-0 rounded-full bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 border border-slate-200 hover:bg-slate-100 transition-colors">
+                                    Quitar
+                                </button>
+                            </div>
+
+                            <div v-else-if="clientMatches.length > 0"
+                                class="rounded-3xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                                <button v-for="client in clientMatches" :key="client.id" type="button"
+                                    @click="selectExistingClient(client)"
+                                    class="w-full px-5 py-4 text-left border-b last:border-b-0 border-gray-100 hover:bg-slate-50 transition-colors">
+                                    <p class="text-sm font-bold text-slate-900 uppercase">{{ client.name }}</p>
+                                    <p class="text-xs font-semibold text-slate-500">
+                                        {{ client.rut }}<span v-if="client.phone"> · {{ client.phone }}</span><span
+                                            v-if="client.email"> · {{ client.email }}</span>
+                                    </p>
+                                </button>
+                            </div>
+
+                            <p v-else-if="clientSearch.trim().length >= 2 && !isSearchingClients"
+                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
+                                No encontramos coincidencias en este taller.
+                            </p>
+
+                            <p v-if="form.errors.selected_client_id" class="text-red-500 text-[10px] font-medium ml-1">
+                                {{ form.errors.selected_client_id }}
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Datos del Cliente -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Datos del
-                                Propietario</p>
+                                Cliente</p>
+                        </div>
+                        <div v-if="isExistingVehicle && !form.reassign_vehicle_owner"
+                            class="rounded-3xl border border-amber-200 bg-amber-50/80 px-4 py-3">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-700">
+                                Se mantendrá el dueño actual del vehículo y se actualizarán sus datos de contacto.
+                            </p>
                         </div>
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -342,7 +596,7 @@ onUnmounted(() => {
 
                     <!-- Acciones -->
                     <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
-                        <button type="button" @click="showModal = false"
+                        <button type="button" @click="closeModal"
                             class="order-2 sm:order-1 flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full font-bold transition-all active:scale-95 text-sm uppercase">
                             CANCELAR
                         </button>
