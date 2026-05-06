@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Ai\Agents\PatentReaderAgent;
 use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
+use App\Services\BoostrService;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\URL;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;
 
@@ -130,6 +134,59 @@ class ReceptionControllerTest extends TestCase
         ]);
         $this->assertDatabaseCount('work_orders', 1);
         $this->assertSame(WorkOrder::STATUS_RECEPCION, WorkOrder::query()->firstOrFail()->status);
+    }
+
+    public function test_store_returns_recognized_plate_without_queue_worker(): void
+    {
+        $tenant = $this->setUpTenant();
+        $tenant->forceFill([
+            'plan' => 'profesional',
+            'plan_type' => 'profesional',
+        ])->save();
+        $admin = $this->createAdmin($tenant);
+
+        PatentReaderAgent::fake([
+            [
+                'patente' => 'GKSB78',
+                'marca' => 'Toyota',
+                'modelo' => 'Hilux',
+            ],
+        ])->preventStrayPrompts();
+
+        $this->mock(BoostrService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getVehicleData')
+                ->once()
+                ->with('GKSB78')
+                ->andReturn([
+                    'marca' => 'Toyota',
+                    'modelo' => 'Hilux',
+                    'color' => 'Blanco',
+                    'nombre_dueno' => 'Pedro Cliente',
+                    'rut_dueno' => '11111111-1',
+                ]);
+        });
+
+        $response = $this->actingAs($admin)->post(route('receptions.store', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'image' => UploadedFile::fake()->image('vehicle.jpg'),
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'valid' => true,
+                'patente' => 'GKSB78',
+                'vehicle' => [
+                    'brand' => 'Toyota',
+                    'model' => 'Hilux',
+                    'color' => 'Blanco',
+                    'client' => 'Pedro Cliente',
+                    'rut' => '11111111-1',
+                ],
+            ])
+            ->assertJsonMissing(['queue' => true]);
+
+        PatentReaderAgent::assertPrompted('Extrae la patente chilena');
     }
 
     public function test_store_order_can_reassign_vehicle_to_selected_existing_client(): void

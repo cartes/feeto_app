@@ -254,8 +254,11 @@ const handleImageUpload = async (event) => {
     if (!file) return;
 
     isUploading.value = true;
+    isAnalyzing.value = false;
     errorMsg.value = null;
     recognizedPlate.value = null;
+    vehicleInfo.value = null;
+    event.target.value = '';
 
     const formData = new FormData();
     formData.append('image', file);
@@ -264,14 +267,32 @@ const handleImageUpload = async (event) => {
         const response = await window.axios.post(route('receptions.store', tenantRouteParams.value), formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
+
         if (response.data.queue) {
             isUploading.value = false;
             isAnalyzing.value = true;
+
+            return;
         }
+
+        const plate = response.data?.patente;
+
+        if (!response.data?.valid || !plate) {
+            errorMsg.value = response.data?.error || "FALLÓ ESCANEO";
+
+            return;
+        }
+
+        recognizedPlate.value = plate;
+        vehicleInfo.value = {
+            brand: response.data.vehicle?.brand || 'SIN DATO',
+            model: response.data.vehicle?.model || 'SIN DATO',
+            color: response.data.vehicle?.color || 'SIN DATO',
+        };
     } catch (error) {
-        errorMsg.value = "ERROR DE CONEXIÓN.";
+        errorMsg.value = error.response?.data?.error || "ERROR DE CONEXIÓN.";
+    } finally {
         isUploading.value = false;
-        isAnalyzing.value = false;
     }
 };
 

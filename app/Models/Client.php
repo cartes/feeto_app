@@ -8,6 +8,7 @@ use App\Traits\TenantAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Client extends Model
 {
@@ -38,12 +39,17 @@ class Client extends Model
         return $this->hasMany(ClientInvoice::class);
     }
 
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     public function internalNotes(): HasMany
     {
         return $this->hasMany(InternalNote::class);
     }
 
-    public function workOrders(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function workOrders(): HasManyThrough
     {
         return $this->hasManyThrough(WorkOrder::class, Vehicle::class);
     }

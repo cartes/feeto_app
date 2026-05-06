@@ -8,6 +8,9 @@ const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlu
 
 const props = defineProps({
     client: Object,
+    vehicles: Array,
+    historyTimeline: Array,
+    internalNotes: Array,
     quoteSummary: Object,
     invoiceSummary: Object,
     invoices: Array,
@@ -15,7 +18,7 @@ const props = defineProps({
     crmMetrics: Object,
 });
 
-const activeTab = ref('vehiculos'); // 'vehiculos', 'historial', 'notas'
+const activeTab = ref('historial');
 
 const invoiceForm = useForm({
     client_id: props.client.id,
@@ -25,6 +28,10 @@ const invoiceForm = useForm({
     issued_at: new Date().toISOString().slice(0, 10),
     due_at: '',
     notes: '',
+});
+
+const noteForm = useForm({
+    content: '',
 });
 
 const clientWhatsAppLink = computed(() => {
@@ -42,45 +49,66 @@ const clientWhatsAppLink = computed(() => {
     return `https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`;
 });
 
-const getStatusColor = (status) => {
-    switch (status) {
-        case 'recepcion': return 'bg-amber-100 text-amber-600 border-amber-200';
-        case 'diagnostico': return 'bg-blue-100 text-blue-600 border-blue-200';
-        case 'esperando_repuestos': return 'bg-purple-100 text-purple-600 border-purple-200';
-        case 'control_calidad': return 'bg-cyan-100 text-cyan-600 border-cyan-200';
-        case 'listo': return 'bg-emerald-100 text-emerald-600 border-emerald-200';
-        default: return 'bg-gray-100 text-gray-600 border-gray-200';
-    }
-};
+const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    maximumFractionDigits: 0,
+}).format(Number(value || 0));
 
-const getStatusLabel = (status) => {
-    switch (status) {
-        case 'recepcion': return 'En Recepción';
-        case 'diagnostico': return 'En Diagnóstico';
-        case 'esperando_repuestos': return 'Faltan Repuestos';
-        case 'control_calidad': return 'Control de Calidad';
-        case 'listo': return 'Listo / Entregado';
-        default: return status;
-    }
-};
-
-const formatDate = (dateString) => {
-    if (!dateString) {
-        return '';
+const formatDate = (value) => {
+    if (!value) {
+        return 'Sin fecha';
     }
 
-    return new Date(dateString).toLocaleDateString('es-CL', {
+    return new Date(value).toLocaleDateString('es-CL', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
     });
 };
 
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
+const formatDateTime = (value) => {
+    if (!value) {
+        return 'Sin fecha';
+    }
+
+    return new Date(value).toLocaleString('es-CL', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const noteAuthorInitial = (note) => (note.user?.name?.charAt(0) ?? 'N').toUpperCase();
+const clientInitial = computed(() => props.client.name?.charAt(0)?.toUpperCase() ?? 'C');
+
+const eventTypeClasses = (type) => {
+    switch (type) {
+        case 'work_order':
+            return 'border-amber-200 bg-amber-50 text-amber-700';
+        case 'appointment':
+            return 'border-sky-200 bg-sky-50 text-sky-700';
+        case 'internal_note':
+            return 'border-purple-200 bg-purple-50 text-purple-700';
+        default:
+            return 'border-gray-200 bg-gray-50 text-gray-700';
+    }
+};
+
+const eventStatusClasses = (type) => {
+    switch (type) {
+        case 'work_order':
+            return 'bg-gray-900 text-white';
+        case 'appointment':
+            return 'bg-sky-600 text-white';
+        case 'internal_note':
+            return 'bg-purple-600 text-white';
+        default:
+            return 'bg-gray-500 text-white';
+    }
+};
 
 const submitInvoice = () => {
     invoiceForm.post(route('invoices.store', tenantRouteParams.value), {
@@ -92,10 +120,6 @@ const submitInvoice = () => {
         },
     });
 };
-
-const noteForm = useForm({
-    content: '',
-});
 
 const submitNote = () => {
     noteForm.post(route('clients.notes.store', { ...tenantRouteParams.value, client: props.client.id }), {
@@ -110,129 +134,172 @@ const submitNote = () => {
 
     <TallerLayout>
         <div class="space-y-8">
-            <div class="flex items-center justify-between">
-                <Link :href="route('clients.index', tenantRouteParams)" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#F9A826] transition-colors uppercase tracking-widest">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <Link :href="route('clients.index', tenantRouteParams)"
+                    class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-[#F9A826]">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Volver al Directorio
+                    Volver al directorio
                 </Link>
 
-                <a
-                    v-if="clientWhatsAppLink"
-                    :href="clientWhatsAppLink"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-green-600"
-                >
+                <a v-if="clientWhatsAppLink" :href="clientWhatsAppLink" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center justify-center rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-green-600">
                     Seguimiento por WhatsApp
                 </a>
             </div>
 
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div class="lg:col-span-1 border border-gray-100 bg-white rounded-[2.5rem] p-8 shadow-sm h-fit">
+                <aside class="space-y-6 rounded-[2.5rem] border border-gray-100 bg-white p-8 shadow-sm lg:col-span-1">
                     <div class="flex flex-col items-center text-center">
-                        <div class="w-24 h-24 bg-[#F9A826]/10 text-[#F9A826] rounded-3xl flex items-center justify-center text-3xl font-black mb-4 uppercase tracking-widest">
-                            {{ client.name.charAt(0) }}
+                        <div
+                            class="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-[#F9A826]/10 text-3xl font-black uppercase tracking-widest text-[#F9A826]">
+                            {{ clientInitial }}
                         </div>
-                        <h2 class="text-2xl font-black text-gray-900 tracking-tight uppercase">{{ client.name }}</h2>
-                        <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">Cliente Registrado</p>
+                        <h1 class="text-2xl font-black uppercase tracking-tight text-gray-900">{{ client.name }}</h1>
+                        <p class="mt-1 text-xs font-bold uppercase tracking-widest text-gray-400">Perfil CRM unificado</p>
                     </div>
 
-                    <div class="mt-8 space-y-4">
-                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                            </svg>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-0.5">RUT</p>
-                                <p class="text-sm font-bold text-gray-800">{{ client.rut }}</p>
-                            </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="rounded-2xl bg-gray-50/80 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">RUT</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900">{{ client.rut }}</p>
                         </div>
-                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-0.5">Teléfono</p>
-                                <p class="text-sm font-bold text-gray-800">{{ client.phone || 'No registrado' }}</p>
-                            </div>
+                        <div class="rounded-2xl bg-gray-50/80 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Teléfono</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900">{{ client.phone || 'No registrado' }}</p>
                         </div>
-                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-0.5">Email</p>
-                                <p class="text-sm font-bold text-gray-800 truncate" :title="client.email">{{ client.email || 'No registrado' }}</p>
-                            </div>
+                        <div class="rounded-2xl bg-gray-50/80 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</p>
+                            <p class="mt-1 break-all text-sm font-bold text-gray-900">{{ client.email || 'No registrado' }}</p>
                         </div>
-                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-3.866 0-7 1.79-7 4v5h14v-5c0-2.21-3.134-4-7-4zm0 0V5m0 3a3 3 0 100-6 3 3 0 000 6z" />
-                            </svg>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-0.5">Crédito Máximo</p>
-                                <p class="text-sm font-bold text-gray-800">{{ formatCurrency(client.max_credit_limit) }}</p>
+                        <div class="rounded-2xl bg-gray-50/80 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Crédito máximo</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900">{{ formatCurrency(client.max_credit_limit) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[2rem] border border-gray-100 bg-gray-50/70 p-5">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Resumen de relación</p>
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cliente desde</p>
+                                <p class="mt-2 text-sm font-black text-gray-900">{{ formatDate(client.created_at) }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vehículos</p>
+                                <p class="mt-2 text-2xl font-black text-gray-900">{{ crmMetrics.vehicles_count }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Visitas</p>
+                                <p class="mt-2 text-2xl font-black text-gray-900">{{ crmMetrics.visits_count }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Notas</p>
+                                <p class="mt-2 text-2xl font-black text-gray-900">{{ crmMetrics.notes_count }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </aside>
 
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div class="space-y-8 lg:col-span-2">
+                    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Gasto Total</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Gasto total</p>
                             <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(crmMetrics.total_spent) }}</p>
                         </div>
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Última Visita</p>
-                            <p class="mt-2 text-3xl font-black text-gray-900">{{ crmMetrics.last_visit ? formatDate(crmMetrics.last_visit) : 'N/A' }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Última visita</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ formatDate(crmMetrics.last_visit) }}</p>
                         </div>
                         <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Ticket Promedio</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Ticket promedio</p>
                             <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(crmMetrics.average_ticket) }}</p>
                         </div>
-                    </div>
+                        <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vehículos asociados</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ crmMetrics.vehicles_count }}</p>
+                        </div>
+                        <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Visitas registradas</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ crmMetrics.visits_count }}</p>
+                        </div>
+                        <div class="rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Notas internas</p>
+                            <p class="mt-2 text-3xl font-black text-gray-900">{{ crmMetrics.notes_count }}</p>
+                        </div>
+                    </section>
 
-                    <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+                    <section class="rounded-[2.5rem] border border-gray-100 bg-white p-8 shadow-sm">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div class="rounded-2xl bg-gray-50 px-4 py-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cotizaciones</p>
+                                <p class="mt-2 text-2xl font-black text-gray-900">{{ quoteSummary.total_quotes }}</p>
+                                <p class="mt-1 text-xs font-semibold text-gray-500">{{ quoteSummary.accepted_quotes }} aceptadas</p>
+                            </div>
+                            <div class="rounded-2xl bg-gray-50 px-4 py-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto cotizado</p>
+                                <p class="mt-2 text-2xl font-black text-gray-900">{{ formatCurrency(quoteSummary.quoted_amount) }}</p>
+                                <p class="mt-1 text-xs font-semibold text-gray-500">{{ quoteSummary.pending_quotes }} pendientes</p>
+                            </div>
+                            <div class="rounded-2xl bg-gray-50 px-4 py-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto aceptado</p>
+                                <p class="mt-2 text-2xl font-black text-emerald-600">{{ formatCurrency(quoteSummary.accepted_amount) }}</p>
+                                <p class="mt-1 text-xs font-semibold text-gray-500">{{ quoteSummary.rejected_quotes }} rechazadas</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rounded-[2.5rem] border border-gray-100 bg-white p-8 shadow-sm">
                         <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
                             <div>
                                 <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Crédito y cobranza</p>
-                                <h3 class="mt-2 text-xl font-black text-gray-900 uppercase tracking-tight">Facturación del cliente</h3>
+                                <h2 class="mt-2 text-xl font-black uppercase tracking-tight text-gray-900">Facturación del cliente</h2>
                                 <p class="mt-2 text-sm font-medium text-gray-500">Controla su línea de crédito, saldo pendiente y recordatorios manuales.</p>
                             </div>
 
-                            <form v-if="salesManagementEnabled" class="grid w-full gap-3 rounded-3xl border border-gray-100 bg-gray-50 p-5 xl:max-w-xl xl:grid-cols-2" @submit.prevent="submitInvoice">
+                            <form v-if="salesManagementEnabled"
+                                class="grid w-full gap-3 rounded-3xl border border-gray-100 bg-gray-50 p-5 xl:max-w-xl xl:grid-cols-2"
+                                @submit.prevent="submitInvoice">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Número factura</label>
-                                    <input v-model="invoiceForm.invoice_number" type="text" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" placeholder="FAC-001" />
+                                    <input v-model="invoiceForm.invoice_number" type="text"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                        placeholder="FAC-001" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto total</label>
-                                    <input v-model="invoiceForm.amount_total" type="number" min="1" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                    <input v-model="invoiceForm.amount_total" type="number" min="1"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
                                     <p v-if="invoiceForm.errors.amount_total" class="text-xs text-rose-500">{{ invoiceForm.errors.amount_total }}</p>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Saldo pendiente</label>
-                                    <input v-model="invoiceForm.amount_due" type="number" min="0" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                    <input v-model="invoiceForm.amount_due" type="number" min="0"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Emisión</label>
-                                    <input v-model="invoiceForm.issued_at" type="date" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                    <input v-model="invoiceForm.issued_at" type="date"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vencimiento</label>
-                                    <input v-model="invoiceForm.due_at" type="date" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                    <input v-model="invoiceForm.due_at" type="date"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
                                     <p v-if="invoiceForm.errors.due_at" class="text-xs text-rose-500">{{ invoiceForm.errors.due_at }}</p>
                                 </div>
                                 <div class="space-y-1 xl:col-span-2">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Notas</label>
-                                    <textarea v-model="invoiceForm.notes" rows="3" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" placeholder="Detalle del trabajo, condiciones o seguimiento..." />
+                                    <textarea v-model="invoiceForm.notes" rows="3"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                        placeholder="Detalle del trabajo, condiciones o seguimiento..." />
                                 </div>
-                                <div class="xl:col-span-2 flex justify-end">
-                                    <button type="submit" :disabled="invoiceForm.processing" class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
-                                        {{ invoiceForm.processing ? 'Registrando...' : 'Registrar Factura' }}
+                                <div class="flex justify-end xl:col-span-2">
+                                    <button type="submit" :disabled="invoiceForm.processing"
+                                        class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
+                                        {{ invoiceForm.processing ? 'Registrando...' : 'Registrar factura' }}
                                     </button>
                                 </div>
                             </form>
@@ -244,26 +311,24 @@ const submitNote = () => {
                                 <p class="mt-2 text-2xl font-black text-gray-900">{{ invoiceSummary.total_invoices }}</p>
                             </div>
                             <div class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto Total Facturado</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto total facturado</p>
                                 <p class="mt-2 text-2xl font-black text-gray-900">{{ formatCurrency(invoiceSummary.total_amount) }}</p>
                             </div>
                             <div class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto en Mora</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto en mora</p>
                                 <p class="mt-2 text-2xl font-black text-rose-500">{{ formatCurrency(invoiceSummary.overdue_amount) }}</p>
                             </div>
                         </div>
 
                         <div v-if="salesManagementEnabled" class="mt-6 space-y-3">
-                            <div v-if="invoices.length === 0" class="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm font-medium text-gray-500">
+                            <div v-if="invoices.length === 0"
+                                class="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm font-medium text-gray-500">
                                 Todavía no hay facturas registradas para este cliente.
                             </div>
 
-                            <Link
-                                v-for="invoice in invoices"
-                                :key="invoice.id"
+                            <Link v-for="invoice in invoices" :key="invoice.id"
                                 :href="route('invoices.show', { ...tenantRouteParams, clientInvoice: invoice.id })"
-                                class="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50/70 px-4 py-4 transition-colors hover:bg-gray-50"
-                            >
+                                class="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50/70 px-4 py-4 transition-colors hover:bg-gray-50">
                                 <div>
                                     <p class="text-sm font-black text-gray-900">{{ invoice.invoice_number || `Factura #${invoice.id}` }}</p>
                                     <p class="mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">
@@ -273,121 +338,162 @@ const submitNote = () => {
                                 <span class="text-sm font-black text-rose-500">{{ formatCurrency(invoice.amount_due) }}</span>
                             </Link>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="flex gap-4 border-b border-gray-200">
-                        <button @click="activeTab = 'vehiculos'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'vehiculos' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Mis Vehículos</button>
-                        <button @click="activeTab = 'historial'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Historial de Visitas</button>
-                        <button @click="activeTab = 'notas'" :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'notas' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">Notas Internas</button>
-                    </div>
-
-                    <div v-show="activeTab === 'vehiculos'" class="bg-gray-50 rounded-[2.5rem] p-8 border border-gray-100">
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Vehículos Asociados</h3>
+                    <section class="space-y-6">
+                        <div class="flex flex-wrap gap-6 border-b border-gray-200">
+                            <button @click="activeTab = 'historial'"
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                Timeline CRM
+                            </button>
+                            <button @click="activeTab = 'vehiculos'"
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'vehiculos' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                Vehículos
+                            </button>
+                            <button @click="activeTab = 'notas'"
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'notas' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                Notas internas
+                            </button>
                         </div>
 
-                        <div v-if="client.vehicles.length === 0" class="text-center py-6">
-                            <p class="text-sm text-gray-500 font-medium">Este cliente no tiene vehículos asociados.</p>
-                        </div>
-
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div v-for="vehicle in client.vehicles" :key="vehicle.id" class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h4 class="font-black text-lg text-gray-900 uppercase">{{ vehicle.brand }} <span class="text-gray-500">{{ vehicle.model }}</span></h4>
-                                    <div class="bg-gray-100 px-3 py-1 rounded-lg border border-gray-200">
-                                        <span class="font-mono font-bold tracking-widest text-[#F9A826] text-sm">{{ vehicle.plate }}</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap gap-2 text-xs">
-                                    <span class="bg-gray-50 px-2 py-1 flex items-center gap-1 rounded font-medium text-gray-600 border border-gray-100">
-                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full inline-block"></span> Color: {{ vehicle.color || 'N/A' }}
-                                    </span>
-                                    <span class="bg-gray-50 px-2 py-1 flex items-center gap-1 rounded font-medium text-gray-600 border border-gray-100">
-                                        VIN: {{ vehicle.vin || 'N/A' }}
-                                    </span>
-                                </div>
+                        <div v-show="activeTab === 'historial'" class="rounded-[2.5rem] border border-gray-200 bg-white p-8 shadow-sm">
+                            <div class="mb-6 flex items-center gap-3 border-b border-gray-100 pb-6">
+                                <span class="h-2.5 w-2.5 rounded-full bg-[#F9A826]"></span>
+                                <h3 class="text-xl font-black uppercase tracking-tight text-gray-900">Historial unificado</h3>
                             </div>
-                        </div>
-                    </div>
 
-                    <div v-show="activeTab === 'historial'" class="bg-white rounded-[2.5rem] p-8 border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-                        <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#F9A826]"></span>
-                            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Historial Clínico (Órdenes)</h3>
-                        </div>
+                            <div v-if="historyTimeline.length === 0" class="py-10 text-center">
+                                <p class="text-sm font-bold uppercase tracking-widest text-gray-500">Sin eventos</p>
+                                <p class="mt-1 text-xs text-gray-400">Este cliente aún no registra visitas ni actividad interna.</p>
+                            </div>
 
-                        <div v-if="client.vehicles.flatMap(v => v.work_orders).length === 0" class="text-center py-10">
-                            <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Sin Entradas</p>
-                            <p class="text-xs text-gray-400 mt-1">Este cliente no ha registrado ingresos al taller.</p>
-                        </div>
+                            <div v-else class="space-y-4">
+                                <article v-for="event in historyTimeline" :key="event.id"
+                                    class="rounded-[2rem] border border-gray-100 bg-gray-50/70 p-5">
+                                    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                        <div class="space-y-3">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest"
+                                                    :class="eventTypeClasses(event.type)">
+                                                    {{ event.type_label }}
+                                                </span>
+                                                <span v-if="event.status_label"
+                                                    class="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest"
+                                                    :class="eventStatusClasses(event.type)">
+                                                    {{ event.status_label }}
+                                                </span>
+                                                <span v-if="event.quote"
+                                                    class="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600">
+                                                    Cotización {{ event.quote.status }}
+                                                </span>
+                                            </div>
 
-                        <div v-else class="space-y-4">
-                            <div v-for="vehicle in client.vehicles" :key="`wo-${vehicle.id}`" class="space-y-4">
-                                <div v-for="wo in vehicle.work_orders" :key="wo.id" class="group flex flex-col md:flex-row gap-4 md:items-center justify-between p-5 rounded-2xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50/50 transition-all bg-white">
-                                    <div class="flex flex-col gap-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-mono font-bold tracking-widest text-sm text-gray-500">OT-#{{ wo.id }}</span>
-                                            <span :class="['text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border', getStatusColor(wo.status)]">
-                                                {{ getStatusLabel(wo.status) }}
-                                            </span>
-                                            <span v-if="wo.quote" class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border bg-slate-50 text-slate-600 border-slate-200">
-                                                Cotización {{ wo.quote.status }}
-                                            </span>
+                                            <div>
+                                                <h4 class="text-lg font-black uppercase tracking-tight text-gray-900">{{ event.title }}</h4>
+                                                <p class="mt-1 text-sm font-semibold text-gray-500">{{ event.subtitle }}</p>
+                                            </div>
+
+                                            <p class="max-w-2xl text-sm leading-relaxed text-gray-600">{{ event.description }}</p>
+
+                                            <div class="flex flex-wrap gap-3 text-xs font-bold uppercase tracking-widest text-gray-400">
+                                                <span>{{ formatDateTime(event.occurred_at) }}</span>
+                                                <span v-if="event.amount !== null" class="text-gray-500">{{ formatCurrency(event.amount) }}</span>
+                                                <a v-if="event.tracking_url" :href="event.tracking_url" target="_blank"
+                                                    class="text-blue-600 transition-colors hover:text-blue-700">
+                                                    Ver tracking
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div class="flex gap-2 items-center text-sm font-bold text-gray-900">
-                                            <span class="uppercase tracking-wide">{{ vehicle.brand }} {{ vehicle.model }}</span>
-                                            <span class="text-gray-300">•</span>
-                                            <span class="font-mono text-[#F9A826] bg-[#F9A826]/10 px-1.5 py-0.5 rounded">{{ vehicle.plate }}</span>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+
+                        <div v-show="activeTab === 'vehiculos'" class="rounded-[2.5rem] border border-gray-100 bg-gray-50 p-8">
+                            <div class="mb-6 flex items-center gap-3">
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                                <h3 class="text-xl font-black uppercase tracking-tight text-gray-900">Vehículos asociados</h3>
+                            </div>
+
+                            <div v-if="vehicles.length === 0" class="py-6 text-center">
+                                <p class="text-sm font-medium text-gray-500">Este cliente no tiene vehículos asociados.</p>
+                            </div>
+
+                            <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div v-for="vehicle in vehicles" :key="vehicle.id"
+                                    class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
+                                    <div class="mb-3 flex items-start justify-between gap-4">
+                                        <div>
+                                            <h4 class="text-lg font-black uppercase text-gray-900">
+                                                {{ vehicle.brand || 'Vehículo' }}
+                                                <span class="text-gray-500">{{ vehicle.model || 'Sin modelo' }}</span>
+                                            </h4>
+                                            <p class="mt-1 font-mono text-sm font-bold tracking-widest text-[#F9A826]">{{ vehicle.plate }}</p>
                                         </div>
-                                        <p class="text-xs text-gray-500 mt-1 line-clamp-1 max-w-lg">{{ wo.observations || 'Sin observaciones al ingreso.' }}</p>
+                                        <span
+                                            class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                            {{ vehicle.work_orders_count }} OT
+                                        </span>
                                     </div>
-                                    <div class="flex md:flex-col items-center md:items-end justify-between font-medium text-xs text-gray-400 gap-2">
-                                        <div>{{ formatDate(wo.created_at) }}</div>
-                                        <a target="_blank" v-if="wo.uuid" :href="route('tracking.show', wo.uuid)" class="flex items-center gap-1 text-[10px] uppercase font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded tracking-widest border border-blue-100 transition-colors">
-                                            Enlace Cliente
-                                        </a>
+
+                                    <div class="flex flex-wrap gap-2 text-xs">
+                                        <span class="rounded-full border border-gray-100 bg-gray-50 px-2.5 py-1 font-semibold text-gray-600">
+                                            Color: {{ vehicle.color || 'N/A' }}
+                                        </span>
+                                        <span class="rounded-full border border-gray-100 bg-gray-50 px-2.5 py-1 font-semibold text-gray-600">
+                                            VIN: {{ vehicle.vin || 'N/A' }}
+                                        </span>
                                     </div>
+
+                                    <p class="mt-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+                                        Última OT: {{ formatDate(vehicle.last_work_order_at) }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div v-show="activeTab === 'notas'" class="bg-white rounded-[2.5rem] p-8 border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-                        <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
-                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Muro de Notas Internas</h3>
-                        </div>
-
-                        <form @submit.prevent="submitNote" class="mb-8 bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                            <textarea v-model="noteForm.content" rows="3" placeholder="Escribe una nota interna sobre el cliente..." class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"></textarea>
-                            <div class="mt-3 flex justify-end">
-                                <button type="submit" :disabled="noteForm.processing" class="rounded-2xl bg-gray-900 px-5 py-2 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
-                                    {{ noteForm.processing ? 'Guardando...' : 'Agregar Nota' }}
-                                </button>
+                        <div v-show="activeTab === 'notas'" class="rounded-[2.5rem] border border-gray-200 bg-white p-8 shadow-sm">
+                            <div class="mb-6 flex items-center gap-3 border-b border-gray-100 pb-6">
+                                <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
+                                <h3 class="text-xl font-black uppercase tracking-tight text-gray-900">Notas internas</h3>
                             </div>
-                        </form>
 
-                        <div v-if="!client.internal_notes || client.internal_notes.length === 0" class="text-center py-10">
-                            <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Sin Notas</p>
-                            <p class="text-xs text-gray-400 mt-1">No hay notas internas registradas para este cliente.</p>
-                        </div>
-
-                        <div v-else class="space-y-4">
-                            <div v-for="note in client.internal_notes" :key="note.id" class="p-5 rounded-2xl border border-gray-100 bg-white shadow-sm flex flex-col gap-2">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 uppercase">
-                                            {{ note.user?.name.charAt(0) }}
-                                        </div>
-                                        <span class="font-bold text-sm text-gray-900">{{ note.user?.name }}</span>
-                                    </div>
-                                    <span class="text-xs font-medium text-gray-400">{{ formatDate(note.created_at) }}</span>
+                            <form @submit.prevent="submitNote" class="mb-8 rounded-2xl border border-gray-100 bg-gray-50 p-5">
+                                <textarea v-model="noteForm.content" rows="3"
+                                    placeholder="Escribe una nota interna sobre el cliente..."
+                                    class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"></textarea>
+                                <p v-if="noteForm.errors.content" class="mt-2 text-xs text-rose-500">{{ noteForm.errors.content }}</p>
+                                <div class="mt-3 flex justify-end">
+                                    <button type="submit" :disabled="noteForm.processing"
+                                        class="rounded-2xl bg-gray-900 px-5 py-2 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
+                                        {{ noteForm.processing ? 'Guardando...' : 'Agregar nota' }}
+                                    </button>
                                 </div>
-                                <p class="text-sm text-gray-700 leading-relaxed">{{ note.content }}</p>
+                            </form>
+
+                            <div v-if="internalNotes.length === 0" class="py-10 text-center">
+                                <p class="text-sm font-bold uppercase tracking-widest text-gray-500">Sin notas</p>
+                                <p class="mt-1 text-xs text-gray-400">No hay notas internas registradas para este cliente.</p>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <article v-for="note in internalNotes" :key="note.id"
+                                    class="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-bold uppercase text-gray-600">
+                                                {{ noteAuthorInitial(note) }}
+                                            </div>
+                                            <span class="text-sm font-bold text-gray-900">{{ note.user?.name || 'Equipo interno' }}</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-400">{{ formatDateTime(note.created_at) }}</span>
+                                    </div>
+                                    <p class="text-sm leading-relaxed text-gray-700">{{ note.content }}</p>
+                                </article>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>

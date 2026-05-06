@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClientRequest;
 use App\Models\Client;
-use App\Models\ClientInvoice;
-use App\Models\Quote;
 use App\Models\Tenant;
+use App\Models\WorkOrder;
+use App\Services\ClientCrmService;
 use App\Services\PlanFeatureService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ClientController extends Controller
 {
+    public function __construct(protected ClientCrmService $clientCrmService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -23,14 +27,45 @@ class ClientController extends Controller
         $search = $request->input('search');
 
         $clients = Client::query()
-            ->when($search, function ($query, $search) {
-                // Escapar caracteres wildcard de LIKE para evitar inyección de patrones
+            ->when($search, function ($query, $search): void {
                 $escaped = addcslashes($search, '%_');
                 $query->where('name', 'like', "%{$escaped}%")
                     ->orWhere('rut', 'like', "%{$escaped}%");
             })
+            ->select('clients.*')
+            ->withCount(['vehicles', 'appointments', 'internalNotes'])
+            ->selectSub(
+                WorkOrder::query()
+                    ->withoutGlobalScope('tenant')
+                    ->join('vehicles', 'vehicles.id', '=', 'work_orders.vehicle_id')
+                    ->whereColumn('vehicles.client_id', 'clients.id')
+                    ->whereColumn('work_orders.tenant_id', 'clients.tenant_id')
+                    ->selectRaw('count(*)'),
+                'work_orders_count',
+            )
+            ->selectSub(
+                WorkOrder::query()
+                    ->withoutGlobalScope('tenant')
+                    ->join('vehicles', 'vehicles.id', '=', 'work_orders.vehicle_id')
+                    ->whereColumn('vehicles.client_id', 'clients.id')
+                    ->whereColumn('work_orders.tenant_id', 'clients.tenant_id')
+                    ->where('work_orders.status', WorkOrder::STATUS_LISTO)
+                    ->selectRaw('coalesce(sum(work_orders.total_amount), 0)'),
+                'total_spent',
+            )
+            ->selectSub(
+                WorkOrder::query()
+                    ->withoutGlobalScope('tenant')
+                    ->join('vehicles', 'vehicles.id', '=', 'work_orders.vehicle_id')
+                    ->whereColumn('vehicles.client_id', 'clients.id')
+                    ->whereColumn('work_orders.tenant_id', 'clients.tenant_id')
+                    ->selectRaw('max(work_orders.created_at)'),
+                'latest_work_order_at',
+            )
+            ->withMax('appointments as latest_appointment_at', 'appointment_date')
             ->latest()
             ->paginate(15)
+            ->through(fn (Client $client): array => $this->clientCrmService->buildIndexItem($client))
             ->withQueryString();
 
         return Inertia::render('Clients/Index', [
@@ -40,68 +75,25 @@ class ClientController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreClientRequest $request): RedirectResponse
+    {
+        Client::create($request->validated());
+
+        return redirect()->back()->with('success', 'Cliente creado exitosamente.');
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Client $client): Response
     {
-        $client->load([
-            'vehicles.workOrders.quote.items',
-            'invoices.workOrder.vehicle',
-            'invoices.quote',
-            'internalNotes.user',
-        ]);
-
-        $workOrders = $client->vehicles->flatMap(fn ($vehicle) => $vehicle->workOrders);
-        $finishedWorkOrders = $workOrders->where('status', \App\Models\WorkOrder::STATUS_LISTO);
-        
-        $totalSpent = $finishedWorkOrders->sum('total_amount');
-        $lastVisit = $workOrders->sortByDesc('created_at')->first()?->created_at?->toDateString();
-        $averageTicket = $finishedWorkOrders->count() > 0 ? $totalSpent / $finishedWorkOrders->count() : 0;
-
-        $quotes = $workOrders
-            ->map(fn ($workOrder) => $workOrder->quote)
-            ->filter();
-
-        $invoices = $client->invoices->sortByDesc('due_at')->values();
+        $profile = $this->clientCrmService->buildProfile($client);
         $tenant = Tenant::current();
 
         return Inertia::render('Clients/Show', [
-            'client' => $client,
-            'crmMetrics' => [
-                'total_spent' => (float) $totalSpent,
-                'last_visit' => $lastVisit,
-                'average_ticket' => (float) $averageTicket,
-            ],
-            'quoteSummary' => [
-                'total_quotes' => $quotes->count(),
-                'accepted_quotes' => $quotes->where('status', Quote::STATUS_ACCEPTED)->count(),
-                'rejected_quotes' => $quotes->where('status', Quote::STATUS_REJECTED)->count(),
-                'pending_quotes' => $quotes->where('status', Quote::STATUS_PENDING_CUSTOMER)->count(),
-                'quoted_amount' => (float) $quotes->sum('subtotal_amount'),
-                'accepted_amount' => (float) $quotes
-                    ->where('status', Quote::STATUS_ACCEPTED)
-                    ->sum('subtotal_amount'),
-            ],
-            'invoiceSummary' => [
-                'total_invoices' => $invoices->count(),
-                'overdue_invoices' => $invoices->filter(fn (ClientInvoice $invoice): bool => $invoice->isOverdue())->count(),
-                'total_amount' => (float) $invoices->sum('amount_total'),
-                'amount_due' => (float) $invoices->sum('amount_due'),
-                'overdue_amount' => (float) $invoices
-                    ->filter(fn (ClientInvoice $invoice): bool => $invoice->isOverdue())
-                    ->sum('amount_due'),
-            ],
-            'invoices' => $invoices->map(fn (ClientInvoice $invoice): array => [
-                'id' => $invoice->id,
-                'invoice_number' => $invoice->invoice_number,
-                'status' => $invoice->status,
-                'amount_total' => (float) $invoice->amount_total,
-                'amount_due' => (float) $invoice->amount_due,
-                'issued_at' => $invoice->issued_at?->toDateString(),
-                'due_at' => $invoice->due_at?->toDateString(),
-                'last_whatsapp_reminder_sent_at' => $invoice->last_whatsapp_reminder_sent_at?->toISOString(),
-                'work_order_id' => $invoice->work_order_id,
-            ])->values(),
+            ...$profile,
             'salesManagementEnabled' => $tenant?->hasFeature(PlanFeatureService::FEATURE_SALES_MANAGEMENT) ?? false,
         ]);
     }

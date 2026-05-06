@@ -1,9 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\PublicCheckoutController;
-use App\Http\Controllers\Subscription\BillingController;
-use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
@@ -19,14 +16,18 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientInvoiceController;
+use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
+use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Subscription\BillingController;
+use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\SupervisorReportController;
 use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantRoleController;
@@ -168,10 +169,10 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
 
         // Clients — usuarios con permiso customers.manage
         Route::resource('clients', ClientController::class)
-            ->only(['index', 'show'])
+            ->only(['index', 'show', 'store'])
             ->middleware('permission:customers.manage');
 
-        Route::post('clients/{client}/notes', [\App\Http\Controllers\InternalNoteController::class, 'store'])
+        Route::post('clients/{client}/notes', [InternalNoteController::class, 'store'])
             ->middleware('permission:customers.manage')
             ->name('clients.notes.store');
 

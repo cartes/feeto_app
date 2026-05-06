@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreInternalNoteRequest;
 use App\Models\Client;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class InternalNoteController extends Controller
 {
-    public function store(Request $request, Client $client)
+    public function store(StoreInternalNoteRequest $request, Client $client): RedirectResponse
     {
-        $validated = $request->validate([
-            'content' => ['required', 'string', 'max:1000'],
-        ]);
-
         $client->internalNotes()->create([
-            'content' => $validated['content'],
+            'content' => $request->validated('content'),
             'user_id' => $request->user()->id,
         ]);
 

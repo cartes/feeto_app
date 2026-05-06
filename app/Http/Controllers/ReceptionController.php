@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Ai\Agents\PatentReaderAgent;
-use App\Events\PatentRecognized;
 use App\Http\Requests\PreviewReceptionRequest;
 use App\Http\Requests\SearchReceptionClientsRequest;
 use App\Http\Requests\StoreReceptionOrderRequest;
@@ -18,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Response;
 use Laravel\Ai\Files\Image;
 
@@ -37,7 +37,7 @@ class ReceptionController extends Controller
     }
 
     /**
-     * Procesamiento asíncrono de OCR y obtención de datos automáticos.
+     * Procesamiento OCR y obtención de datos automáticos.
      */
     public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr): JsonResponse
     {
@@ -45,58 +45,57 @@ class ReceptionController extends Controller
             'image' => 'required|image|max:10240', // Max 10MB
         ]);
 
-        // 1. Recibir imagen nativa de la cámara
         $imagePath = $request->file('image')->store('reception/temp', 'public');
-        $image = Image::fromPath(storage_path('app/public/'.$imagePath));
 
-        // 2. Procesamiento Asíncrono con el AI SDK
-        $agent->queue('Extrae la patente chilena', attachments: [$image])
-            ->then(function ($response) use ($boostr) {
+        try {
+            $response = $agent->prompt(
+                'Extrae la patente chilena',
+                attachments: [Image::fromPath(storage_path('app/public/'.$imagePath))]
+            );
 
-                // A. Limpiar y Validar la Patente (Regex Chile)
-                $patenteSucia = $response['patente'] ?? '';
-                // Quitamos todo lo que no sea letra o número
-                $patenteLimpia = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $patenteSucia));
-                // Heurística para errores comunes de OCR en Chile
-                $patenteLimpia = str_replace(['O', 'I'], ['0', '1'], $patenteLimpia);
+            $patenteLimpia = $this->normalizePlate((string) ($response['patente'] ?? ''));
+            $patenteLimpia = str_replace(['O', 'I'], ['0', '1'], $patenteLimpia);
 
-                if (! preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
-                    broadcast(new PatentRecognized('ERROR_FORMATO', ''));
+            if (! preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
+                return response()->json([
+                    'valid' => false,
+                    'error' => 'FALLÓ ESCANEO',
+                ], 422);
+            }
 
-                    return;
-                }
+            $vehicleData = $boostr->getVehicleData($patenteLimpia);
 
-                // B. Obtención de datos del vehículo (Priorizamos la IA sobre el mockup si falla Boostr)
-                $vehicleData = $boostr->getVehicleData($patenteLimpia);
+            if (! $vehicleData) {
+                $vehicleData = [
+                    'rut_dueno' => 'PROVISORIO',
+                    'nombre_dueno' => 'CLIENTE NUEVO (SIN API)',
+                    'marca' => $response['marca'] ?? 'GENÉRICO',
+                    'modelo' => $response['modelo'] ?? 'GENÉRICO',
+                    'vin' => null,
+                ];
+            }
 
-                if (! $vehicleData) {
-                    // Si Boostr falla o no hay API key, usamos lo que detectó la IA el paso anterior
-                    $vehicleData = [
-                        'rut_dueno' => 'PROVISORIO',
-                        'nombre_dueno' => 'CLIENTE NUEVO (SIN API)',
-                        'marca' => $response['marca'] ?? 'GENÉRICO',
-                        'modelo' => $response['modelo'] ?? 'GENÉRICO',
-                        'vin' => null,
-                    ];
-                }
-
-                // C. Emitir el resultado sin persistirlo aún; la confirmación manual
-                // define si el dueño debe mantenerse o reasignarse.
-                broadcast(new PatentRecognized($patenteLimpia, '', [
+            return response()->json([
+                'valid' => true,
+                'patente' => $patenteLimpia,
+                'vehicle' => [
                     'brand' => $vehicleData['marca'] ?? ($response['marca'] ?? 'N/A'),
                     'model' => $vehicleData['modelo'] ?? ($response['modelo'] ?? 'N/A'),
                     'color' => $vehicleData['color'] ?? 'SIN DATO',
                     'client' => $vehicleData['nombre_dueno'] ?? 'SIN DATO',
                     'rut' => $vehicleData['rut_dueno'] ?? 'SIN DATO',
-                ]));
-            })
-            ->catch(function (\Throwable $e) {
-                Log::error('Fallo en OCR: '.$e->getMessage());
-                broadcast(new PatentRecognized('ERROR_FORMATO', ''));
-            });
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Fallo en OCR: '.$e->getMessage());
 
-        // 3. Respuesta inmediata al Frontend (No bloquea la pantalla)
-        return response()->json(['message' => 'Analizando patente...', 'queue' => true]);
+            return response()->json([
+                'valid' => false,
+                'error' => 'ERROR AL ANALIZAR LA IMAGEN.',
+            ], 500);
+        } finally {
+            Storage::disk('public')->delete($imagePath);
+        }
     }
 
     /**
