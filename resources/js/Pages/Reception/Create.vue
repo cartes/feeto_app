@@ -22,6 +22,7 @@ const isExistingVehicle = ref(false);
 
 const recognizedPlate = ref(null);
 const vehicleInfo = ref(null);
+const previewImageUrl = ref(null);
 const fileInput = ref(null);
 const errorMsg = ref(null);
 const ownerSource = ref('manual');
@@ -38,6 +39,13 @@ const createEmptyClient = () => ({
 });
 
 const defaultClient = ref(createEmptyClient());
+
+const revokePreviewImage = () => {
+    if (previewImageUrl.value) {
+        URL.revokeObjectURL(previewImageUrl.value);
+        previewImageUrl.value = null;
+    }
+};
 
 const debounce = (fn, delay) => {
     let timeoutId;
@@ -98,6 +106,7 @@ const resetClientSearchState = () => {
 const resetReceptionState = () => {
     recognizedPlate.value = null;
     vehicleInfo.value = null;
+    revokePreviewImage();
     errorMsg.value = null;
     isExistingVehicle.value = false;
     ownerSource.value = 'manual';
@@ -258,6 +267,8 @@ const handleImageUpload = async (event) => {
     errorMsg.value = null;
     recognizedPlate.value = null;
     vehicleInfo.value = null;
+    revokePreviewImage();
+    previewImageUrl.value = URL.createObjectURL(file);
     event.target.value = '';
 
     const formData = new FormData();
@@ -319,6 +330,8 @@ onUnmounted(() => {
     if (window.Echo) {
         window.Echo.leave(`tenant.${tenantId}.reception`);
     }
+
+    revokePreviewImage();
 });
 </script>
 
@@ -335,7 +348,8 @@ onUnmounted(() => {
 
         <!-- CASO PRO: Escáner de Patente IA -->
         <PpuScanner v-if="aiReceptionEnabled" :recognized-ppu="formattedPlate || '---'"
-            :is-processing="isUploading || isAnalyzing" :vehicle-info="vehicleInfo" @confirm="handleConfirmIngreso"
+            :is-processing="isUploading || isAnalyzing" :vehicle-info="vehicleInfo" :preview-image-url="previewImageUrl"
+            @confirm="handleConfirmIngreso"
             @retry="triggerCamera" @manual="handleManualEntry" />
 
         <!-- CASO GRATUITO: Ingreso Manual Directo -->

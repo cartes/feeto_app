@@ -13,6 +13,10 @@ const props = defineProps({
     vehicleInfo: {
         type: Object,
         default: null
+    },
+    previewImageUrl: {
+        type: String,
+        default: null
     }
 });
 
@@ -29,6 +33,8 @@ const handleRetry = () => {
 const hasValidPlate = computed(() => {
     return props.recognizedPpu && props.recognizedPpu !== '---' && props.recognizedPpu !== 'AAAA-11';
 });
+
+const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
 </script>
 
 <template>
@@ -58,6 +64,10 @@ const hasValidPlate = computed(() => {
                 'w-full aspect-video lg:aspect-[21/9] bg-gradient-to-br from-slate-100 to-slate-200 rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden border border-slate-50 shadow-inner group transition-all',
                 isProcessing ? 'cursor-wait' : 'cursor-pointer hover:shadow-md hover:border-[#F9A826]/30 active:scale-[0.98]'
             ]">
+                <img v-if="hasPreviewImage" :src="previewImageUrl" alt="Vista previa del vehículo"
+                    class="absolute inset-0 h-full w-full object-cover" />
+                <div v-if="hasPreviewImage" class="absolute inset-0 bg-gradient-to-t from-slate-900/35 via-slate-900/5 to-white/10"></div>
+
                 <div v-if="isProcessing"
                     class="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-md z-10">
                     <div class="flex flex-col items-center gap-3">
@@ -68,7 +78,7 @@ const hasValidPlate = computed(() => {
                     </div>
                 </div>
 
-                <svg xmlns="http://www.w3.org/2000/svg"
+                <svg v-if="!hasPreviewImage" xmlns="http://www.w3.org/2000/svg"
                     class="h-12 w-12 text-slate-300 mx-auto transition-colors duration-300"
                     :class="{ 'group-hover:text-[#F9A826]': !isProcessing }" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -77,7 +87,12 @@ const hasValidPlate = computed(() => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span v-if="!isProcessing && !hasValidPlate"
+                <div v-if="hasPreviewImage && !isProcessing" class="absolute bottom-4 left-4 z-[1] rounded-full bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur-sm">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-700">
+                        Foto cargada
+                    </span>
+                </div>
+                <span v-if="!hasPreviewImage && !isProcessing && !hasValidPlate"
                     class="text-slate-400 font-semibold text-[11px] mt-2 transition-colors duration-300 group-hover:text-[#F9A826]">
                     Capturar Imagen
                 </span>
