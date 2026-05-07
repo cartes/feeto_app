@@ -8,6 +8,7 @@ use App\Ai\Agents\PatentReaderAgent;
 use App\Http\Requests\PreviewReceptionRequest;
 use App\Http\Requests\SearchReceptionClientsRequest;
 use App\Http\Requests\StoreReceptionOrderRequest;
+use App\Models\Appointment;
 use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\Vehicle;
@@ -127,12 +128,19 @@ class ReceptionController extends Controller
 
         $vehicle->save();
 
-        // Creamos la OT iniciada en estado borrador (recepcion)
-        $workOrder = WorkOrder::create([
+        WorkOrder::create([
             'vehicle_id' => $vehicle->id,
             'status' => 'recepcion',
             'observations' => 'Creada vía Modal de Recepción Digital',
         ]);
+
+        $appointmentId = $request->integer('appointment_id');
+        if ($appointmentId > 0) {
+            $appointment = Appointment::find($appointmentId);
+            if ($appointment && $appointment->status === 'pending') {
+                $appointment->update(['status' => 'arrived', 'vehicle_id' => $vehicle->id]);
+            }
+        }
 
         return redirect()->route('work-orders.index')->with('success', 'Orden creada exitosamente');
     }
@@ -142,10 +150,22 @@ class ReceptionController extends Controller
      */
     public function preview(PreviewReceptionRequest $request, BoostrService $boostr): JsonResponse
     {
-        // Limpiamos la patente por si acaso
         $patente = $this->normalizePlate($request->validated('patente'));
 
-        // 1. Buscamos si existe en la base de datos (aislado por tenant automáticamente)
+        $appointment = Appointment::where(function ($q) use ($patente): void {
+            $q->where('plate', $patente)
+                ->orWhereRaw("REPLACE(REPLACE(plate, '-', ''), '·', '') = ?", [$patente]);
+        })->where('status', 'pending')->orderBy('appointment_date')->first();
+
+        $appointmentPayload = $appointment ? [
+            'id' => $appointment->id,
+            'date' => $appointment->appointment_date,
+            'notes' => $appointment->notes,
+            'pre_check_notes' => $appointment->pre_check_notes,
+            'customer_name' => $appointment->customer_name,
+            'phone' => $appointment->phone,
+        ] : null;
+
         $vehicle = Vehicle::where('plate', $patente)->with('client')->first();
 
         if ($vehicle) {
@@ -153,6 +173,7 @@ class ReceptionController extends Controller
                 'is_new' => false,
                 'vehicle_exists' => true,
                 'owner_source' => 'internal',
+                'appointment' => $appointmentPayload,
                 'vehicle' => [
                     'brand' => $vehicle->brand,
                     'model' => $vehicle->model,
@@ -169,28 +190,27 @@ class ReceptionController extends Controller
             ]);
         }
 
-        // 2. Si es nuevo, consultamos a Boostr (API externa)
         $vehicleData = $boostr->getVehicleData($patente);
 
         if (! $vehicleData) {
-            // Si Boostr también falla, devolvemos un objeto vacío para que el frontend pida llenado manual
             return response()->json([
                 'is_new' => true,
                 'vehicle_exists' => false,
                 'not_found' => true,
                 'owner_source' => 'manual',
+                'appointment' => $appointmentPayload,
                 'vehicle' => [
                     'plate' => $patente,
-                    'brand' => 'NO IDENTIFICADO',
-                    'model' => 'NO IDENTIFICADO',
-                    'vin' => 'N/A',
+                    'brand' => '',
+                    'model' => '',
+                    'vin' => null,
                 ],
                 'client' => [
                     'id' => null,
-                    'name' => 'CLIENTE NUEVO',
+                    'name' => $appointment?->customer_name ?? '',
                     'rut' => '',
                     'email' => '',
-                    'phone' => '',
+                    'phone' => $appointment?->phone ?? '',
                 ],
             ]);
         }
@@ -199,6 +219,7 @@ class ReceptionController extends Controller
             'is_new' => true,
             'vehicle_exists' => false,
             'owner_source' => 'boostr',
+            'appointment' => $appointmentPayload,
             'vehicle' => [
                 'brand' => $vehicleData['marca'] ?? 'N/A',
                 'model' => $vehicleData['modelo'] ?? 'N/A',

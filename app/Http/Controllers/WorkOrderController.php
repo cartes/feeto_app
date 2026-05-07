@@ -8,13 +8,12 @@ use App\Events\WorkOrderStatusUpdated;
 use App\Http\Requests\AddQuoteItemRequest;
 use App\Models\Product;
 use App\Models\Quote;
-use App\Models\QuoteEvent;
 use App\Models\QuoteItem;
 use App\Models\Service;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\WorkOrderQuoteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +28,7 @@ class WorkOrderController extends Controller
     public function __construct(
         protected PlanFeatureService $planFeatureService,
         protected UfService $ufService,
+        protected WorkOrderQuoteService $workOrderQuoteService,
     ) {}
 
     /**
@@ -105,21 +105,10 @@ class WorkOrderController extends Controller
         $this->ensureCommercialQuotesEnabled();
 
         $validated = $request->validated();
-        $quote = $this->quoteFor($workOrder);
-
-        $itemPayload = $this->buildItemPayload($validated);
+        $itemPayload = $this->workOrderQuoteService->buildItemPayload($validated);
         $this->ensureDiscountIsAllowed($request, $itemPayload['discount_percent']);
 
-        $quote->items()->create($itemPayload);
-
-        $this->markQuoteAsDraft($quote);
-        $this->recalculateTotal($workOrder, $quote);
-        $this->recordQuoteEvent($quote, 'staff', 'item_added', 'Se agregó un ítem a la cotización.', [
-            'description' => $itemPayload['description'],
-            'item_type' => $itemPayload['item_type'],
-            'discount_percent' => $itemPayload['discount_percent'],
-            'discount_amount' => $itemPayload['discount_amount'],
-        ]);
+        $this->workOrderQuoteService->addItem($workOrder, $validated);
 
         return back();
     }
@@ -132,20 +121,7 @@ class WorkOrderController extends Controller
         $this->authorizeWorkOrderAccess($workOrder);
         $this->ensureCommercialQuotesEnabled();
 
-        $quote = $this->quoteFor($workOrder);
-
-        if ($item->quote_id !== $quote->id) {
-            throw new ModelNotFoundException;
-        }
-
-        $description = $item->description;
-        $item->delete();
-
-        $this->markQuoteAsDraft($quote);
-        $this->recalculateTotal($workOrder, $quote);
-        $this->recordQuoteEvent($quote, 'staff', 'item_removed', 'Se eliminó un ítem de la cotización.', [
-            'description' => $description,
-        ]);
+        $this->workOrderQuoteService->removeItem($workOrder, $item);
 
         return back();
     }
@@ -160,9 +136,15 @@ class WorkOrderController extends Controller
 
         $validated = $request->validate([
             'status' => ['required', Rule::in(WorkOrder::statuses())],
+            'confirmed_without_accepted_quote' => ['nullable', 'boolean'],
         ]);
 
         $oldStatus = $workOrder->status;
+
+        if ($this->requiresUnacceptedQuoteConfirmation($workOrder, $validated['status']) && ! $request->boolean('confirmed_without_accepted_quote')) {
+            return back()->with('warning', 'La cotización aún no está aceptada por el cliente. Debes confirmar el cambio para continuar.');
+        }
+
         $workOrder->update(['status' => $validated['status']]);
 
         Log::info('Dispatching WorkOrderStatusUpdated', [
@@ -178,16 +160,6 @@ class WorkOrderController extends Controller
         ));
 
         return back();
-    }
-
-    /**
-     * Recalcula y persiste el total de la Orden de Trabajo.
-     */
-    private function recalculateTotal(WorkOrder $workOrder, Quote $quote): void
-    {
-        $total = (float) $quote->items()->sum('total_price');
-        $quote->update(['subtotal_amount' => $total]);
-        $workOrder->update(['total_amount' => $total]);
     }
 
     /**
@@ -213,89 +185,6 @@ class WorkOrderController extends Controller
         }
     }
 
-    private function quoteFor(WorkOrder $workOrder): Quote
-    {
-        return $workOrder->quote()->firstOrCreate([
-            'work_order_id' => $workOrder->id,
-        ]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     * @return array<string, mixed>
-     */
-    private function buildItemPayload(array $validated): array
-    {
-        $product = null;
-        $service = null;
-        $itemType = QuoteItem::TYPE_MANUAL;
-        $description = (string) ($validated['description'] ?? '');
-        $baseUnitPrice = (float) ($validated['unit_price'] ?? 0);
-
-        if (! empty($validated['product_id'])) {
-            $product = Product::query()->findOrFail($validated['product_id']);
-            $itemType = QuoteItem::TYPE_PRODUCT;
-            $description = $product->name;
-            $baseUnitPrice = (float) $product->selling_price;
-        }
-
-        if (! empty($validated['service_id'])) {
-            $service = Service::query()->findOrFail($validated['service_id']);
-            $itemType = QuoteItem::TYPE_SERVICE;
-            $description = $service->name;
-            $baseUnitPrice = (float) $service->selling_price;
-        }
-
-        $quantity = (float) $validated['quantity'];
-        $discountPercent = round((float) ($validated['discount_percent'] ?? 0), 2);
-        $discountMultiplier = max(0, 1 - ($discountPercent / 100));
-        $discountedUnitPrice = round($baseUnitPrice * $discountMultiplier, 2);
-        $discountAmount = round(($baseUnitPrice - $discountedUnitPrice) * $quantity, 2);
-
-        return [
-            'product_id' => $product?->id,
-            'service_id' => $service?->id,
-            'item_type' => $itemType,
-            'description' => $description,
-            'quantity' => $quantity,
-            'original_unit_price' => $baseUnitPrice,
-            'discount_percent' => $discountPercent,
-            'discount_amount' => $discountAmount,
-            'unit_price' => $discountedUnitPrice,
-            'total_price' => round($quantity * $discountedUnitPrice, 2),
-        ];
-    }
-
-    private function markQuoteAsDraft(Quote $quote): void
-    {
-        $quote->update([
-            'status' => Quote::STATUS_DRAFT,
-            'responded_at' => null,
-            'customer_response_notes' => null,
-        ]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $metadata
-     */
-    private function recordQuoteEvent(
-        Quote $quote,
-        string $actorType,
-        string $eventType,
-        string $description,
-        array $metadata = []
-    ): void {
-        QuoteEvent::create([
-            'tenant_id' => $quote->tenant_id,
-            'work_order_id' => $quote->work_order_id,
-            'quote_id' => $quote->id,
-            'actor_type' => $actorType,
-            'event_type' => $eventType,
-            'description' => $description,
-            'metadata' => $metadata,
-        ]);
-    }
-
     private function ensureDiscountIsAllowed(Request $request, float $discountPercent): void
     {
         $tenant = Tenant::current();
@@ -316,5 +205,16 @@ class WorkOrderController extends Controller
                 rtrim(rtrim(number_format($tenant->maxDiscountWithoutApproval(), 2, '.', ''), '0'), '.')
             ),
         ]);
+    }
+
+    private function requiresUnacceptedQuoteConfirmation(WorkOrder $workOrder, string $newStatus): bool
+    {
+        if ($workOrder->status !== WorkOrder::STATUS_RECEPCION || $newStatus === WorkOrder::STATUS_RECEPCION) {
+            return false;
+        }
+
+        $quoteStatus = $workOrder->quote()->value('status');
+
+        return $quoteStatus !== Quote::STATUS_ACCEPTED;
     }
 }

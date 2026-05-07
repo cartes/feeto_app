@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use App\Models\Service;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderImage;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +28,16 @@ class WorkOrderModalController extends Controller
         $payload['items'] = $workOrder->quote?->items?->values()->all() ?? [];
         $payload['quote'] = $workOrder->quote;
         $payload['total_amount'] = (float) ($workOrder->quote?->subtotal_amount ?? $workOrder->total_amount);
+        $payload['catalogs'] = [
+            'products' => Product::query()
+                ->where('physical_stock', '>', 0)
+                ->orderBy('name')
+                ->get(['id', 'name', 'sku', 'selling_price', 'physical_stock']),
+            'services' => Service::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code', 'selling_price', 'estimated_minutes']),
+        ];
 
         return response()->json($payload);
     }

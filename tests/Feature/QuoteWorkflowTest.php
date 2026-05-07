@@ -147,6 +147,7 @@ class QuoteWorkflowTest extends TestCase
         $tenant->update([
             'plan_id' => Plan::factory()->create(['feature_keys' => []])->id,
         ]);
+        $tenant->makeCurrent();
 
         $this->actingAs($this->admin)
             ->post(route('work-orders.items.store', ['workOrder' => $this->workOrder->id]), [

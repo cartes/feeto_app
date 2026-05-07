@@ -29,6 +29,9 @@ const ownerSource = ref('manual');
 const clientSearch = ref('');
 const clientMatches = ref([]);
 const selectedExistingClient = ref(null);
+const appointmentData = ref(null);
+const isLookingUpRut = ref(false);
+const rutLookupResult = ref(null);
 
 const createEmptyClient = () => ({
     id: null,
@@ -66,6 +69,7 @@ const form = useForm({
     client_phone: '',
     selected_client_id: null,
     reassign_vehicle_owner: false,
+    appointment_id: null,
 });
 
 const formattedPlate = computed(() => {
@@ -89,6 +93,12 @@ const ownerSourceLabel = computed(() => {
     return 'Ingreso manual';
 });
 
+const formatAppointmentDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
 const applyClientData = (client) => {
     form.client_name = client?.name || '';
     form.client_rut = client?.rut || '';
@@ -101,6 +111,7 @@ const resetClientSearchState = () => {
     clientMatches.value = [];
     selectedExistingClient.value = null;
     form.selected_client_id = null;
+    rutLookupResult.value = null;
 };
 
 const resetReceptionState = () => {
@@ -111,6 +122,8 @@ const resetReceptionState = () => {
     isExistingVehicle.value = false;
     ownerSource.value = 'manual';
     defaultClient.value = createEmptyClient();
+    appointmentData.value = null;
+    rutLookupResult.value = null;
     resetClientSearchState();
     form.reset();
     form.clearErrors();
@@ -144,6 +157,7 @@ const fetchVehicleData = async (ppu) => {
         const data = response.data;
         isExistingVehicle.value = data.vehicle_exists ?? !data.is_new;
         ownerSource.value = data.owner_source || 'manual';
+        appointmentData.value = data.appointment || null;
         defaultClient.value = {
             id: data.client?.id || null,
             name: data.client?.name || '',
@@ -154,8 +168,21 @@ const fetchVehicleData = async (ppu) => {
 
         resetClientSearchState();
         form.plate = data.vehicle?.plate || ppu;
-        form.brand = data.vehicle?.brand || '';
-        form.model = data.vehicle?.model || '';
+        form.appointment_id = data.appointment?.id || null;
+
+        // Use AI-detected data as fallback when preview has no good data (new vehicle, Boostr unavailable)
+        const placeholder = ['NO IDENTIFICADO', 'N/A', 'SIN DATO', '', null, undefined];
+        const previewBrand = data.vehicle?.brand ?? '';
+        const previewModel = data.vehicle?.model ?? '';
+        const aiBrand = vehicleInfo.value?.brand;
+        const aiModel = vehicleInfo.value?.model;
+        form.brand = placeholder.includes(previewBrand) && aiBrand && aiBrand !== 'SIN DATO'
+            ? aiBrand
+            : previewBrand;
+        form.model = placeholder.includes(previewModel) && aiModel && aiModel !== 'SIN DATO'
+            ? aiModel
+            : previewModel;
+
         applyClientData(defaultClient.value);
         form.reassign_vehicle_owner = false;
 
@@ -223,6 +250,36 @@ const clearSelectedClient = () => {
     }
 };
 
+const lookupClientByRut = async (rut) => {
+    const clean = rut.replace(/[.\s-]/g, '').toUpperCase();
+    if (clean.length < 7 || selectedExistingClient.value) return;
+
+    isLookingUpRut.value = true;
+    rutLookupResult.value = null;
+
+    try {
+        const response = await axios.get(route('receptions.clients.search', tenantRouteParams.value), {
+            params: { search: clean },
+        });
+        const clients = response.data.clients || [];
+        const exactMatch = clients.find(c => c.rut?.replace(/[.\s-]/g, '').toUpperCase() === clean);
+        if (exactMatch) {
+            selectExistingClient(exactMatch);
+            rutLookupResult.value = 'found';
+        } else {
+            rutLookupResult.value = 'not-found';
+        }
+    } catch {
+        // silent fail
+    } finally {
+        isLookingUpRut.value = false;
+    }
+};
+
+const debouncedRutLookup = debounce((value) => {
+    void lookupClientByRut(value);
+}, 400);
+
 // Autosearch when 6 characters reached in manual input
 watch(() => form.plate, (newVal) => {
     if (showModal.value && newVal && newVal.length === 6 && !isSearching.value) {
@@ -246,6 +303,16 @@ watch(() => form.reassign_vehicle_owner, (shouldReassign) => {
     if (!shouldReassign && isExistingVehicle.value) {
         resetClientSearchState();
         applyClientData(defaultClient.value);
+    }
+});
+
+watch(() => form.client_rut, (newVal) => {
+    if (!newVal || selectedExistingClient.value) {
+        rutLookupResult.value = null;
+        return;
+    }
+    if (!isExistingVehicle.value || form.reassign_vehicle_owner) {
+        debouncedRutLookup(newVal);
     }
 });
 
@@ -419,6 +486,14 @@ onUnmounted(() => {
                             class="w-fit bg-slate-100 text-slate-500 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-slate-200">
                             {{ ownerSourceLabel }}
                         </span>
+                        <!-- Badge de cita agendada -->
+                        <span v-if="appointmentData"
+                            class="w-fit bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-blue-200 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Cita Agendada · {{ formatAppointmentDate(appointmentData.date) }}
+                        </span>
                     </div>
                     <button @click="closeModal"
                         class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all border border-gray-200 shadow-sm">
@@ -427,6 +502,14 @@ onUnmounted(() => {
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
+                </div>
+
+                <!-- Info de cita agendada (si existe) -->
+                <div v-if="appointmentData && appointmentData.notes"
+                    class="mx-6 lg:mx-8 mt-6 rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 space-y-1">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-blue-600">Notas del agendamiento</p>
+                    <p class="text-sm font-semibold text-slate-700">{{ appointmentData.notes }}</p>
+                    <p v-if="appointmentData.pre_check_notes" class="text-xs text-slate-500 mt-1">{{ appointmentData.pre_check_notes }}</p>
                 </div>
 
                 <!-- Formulario Editable -->
@@ -593,9 +676,17 @@ onUnmounted(() => {
                                 <div class="space-y-1.5">
                                     <label
                                         class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">RUT</label>
-                                    <input v-model="form.client_rut" type="text"
-                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
-                                        placeholder="12.345.678-9" />
+                                    <div class="relative">
+                                        <input v-model="form.client_rut" type="text"
+                                            class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                            placeholder="12.345.678-9" />
+                                        <div v-if="isLookingUpRut" class="absolute inset-y-0 right-4 flex items-center">
+                                            <div class="h-4 w-4 rounded-full border-2 border-gray-200 border-t-[#F9A826] animate-spin"></div>
+                                        </div>
+                                    </div>
+                                    <p v-if="rutLookupResult === 'found'" class="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">
+                                        ✓ Cliente encontrado y vinculado
+                                    </p>
                                     <p v-if="form.errors.client_rut" class="text-red-500 text-[10px] font-medium ml-1">
                                         {{ form.errors.client_rut }}</p>
                                 </div>

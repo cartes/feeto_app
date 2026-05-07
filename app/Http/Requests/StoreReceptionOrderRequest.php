@@ -48,6 +48,7 @@ class StoreReceptionOrderRequest extends FormRequest
                 }),
             ],
             'reassign_vehicle_owner' => ['required', 'boolean'],
+            'appointment_id' => ['nullable', 'integer'],
         ];
     }
 

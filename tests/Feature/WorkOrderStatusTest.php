@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\WorkOrderStatusUpdated;
 use App\Models\Client;
+use App\Models\Quote;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
@@ -88,5 +89,56 @@ class WorkOrderStatusTest extends TestCase
             ->assertSessionHasErrors(['status']);
 
         $this->assertSame(WorkOrder::STATUS_ESPERANDO_REPUESTOS, $this->workOrder->refresh()->status);
+    }
+
+    public function test_moving_from_reception_without_accepted_quote_requires_confirmation(): void
+    {
+        $receptionWorkOrder = WorkOrder::create([
+            'vehicle_id' => $this->workOrder->vehicle_id,
+            'status' => WorkOrder::STATUS_RECEPCION,
+        ]);
+
+        Quote::create([
+            'work_order_id' => $receptionWorkOrder->id,
+            'status' => Quote::STATUS_PENDING_CUSTOMER,
+            'subtotal_amount' => 25000,
+        ]);
+
+        $this->actingAs($this->user)
+            ->from(route('work-orders.index'))
+            ->put(route('work-orders.status.update', ['workOrder' => $receptionWorkOrder->id]), [
+                'status' => WorkOrder::STATUS_DIAGNOSTICO,
+            ])
+            ->assertRedirect(route('work-orders.index'))
+            ->assertSessionHas('warning');
+
+        $this->assertSame(WorkOrder::STATUS_RECEPCION, $receptionWorkOrder->fresh()->status);
+    }
+
+    public function test_moving_from_reception_without_accepted_quote_can_continue_after_confirmation(): void
+    {
+        Event::fake([WorkOrderStatusUpdated::class]);
+
+        $receptionWorkOrder = WorkOrder::create([
+            'vehicle_id' => $this->workOrder->vehicle_id,
+            'status' => WorkOrder::STATUS_RECEPCION,
+        ]);
+
+        Quote::create([
+            'work_order_id' => $receptionWorkOrder->id,
+            'status' => Quote::STATUS_REJECTED,
+            'subtotal_amount' => 25000,
+        ]);
+
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $receptionWorkOrder->id]), [
+                'status' => WorkOrder::STATUS_DIAGNOSTICO,
+                'confirmed_without_accepted_quote' => true,
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(WorkOrder::STATUS_DIAGNOSTICO, $receptionWorkOrder->fresh()->status);
+
+        Event::assertDispatched(WorkOrderStatusUpdated::class);
     }
 }

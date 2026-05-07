@@ -90,7 +90,6 @@ createInertiaApp({
             .use(ZiggyVue);
 
         vueApp.config.globalProperties.route = routeWithTenantDefaults;
-        vueApp.provide('route', routeWithTenantDefaults);
 
         return vueApp.mount(el);
     },

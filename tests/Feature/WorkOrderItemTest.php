@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Plan;
 use App\Models\Product;
 use App\Models\Quote;
+use App\Models\Service;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -72,7 +73,16 @@ class WorkOrderItemTest extends TestCase
             'min_stock' => 2,
         ]);
 
-        return compact('tenant', 'user', 'vehicle', 'workOrder', 'product');
+        $service = Service::create([
+            'name' => 'Cambio de aceite',
+            'code' => 'SERV-ACEITE',
+            'cost_price' => 12000,
+            'selling_price' => 35000,
+            'estimated_minutes' => 40,
+            'is_active' => true,
+        ]);
+
+        return compact('tenant', 'user', 'vehicle', 'workOrder', 'product', 'service');
     }
 
     public function test_can_add_labor_item_to_work_order(): void
@@ -140,5 +150,32 @@ class WorkOrderItemTest extends TestCase
 
         $workOrder->refresh();
         $this->assertEquals(0, $workOrder->total_amount);
+    }
+
+    public function test_api_can_add_service_item_to_work_order_quote(): void
+    {
+        ['user' => $user, 'workOrder' => $workOrder, 'service' => $service] = $this->createPrerequisites();
+
+        $response = $this->actingAs($user)->postJson(route('api.work-orders.items.store', [
+            'workOrder' => $workOrder->id,
+        ]), [
+            'service_id' => $service->id,
+            'quantity' => 1,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('item.item_type', 'service')
+            ->assertJsonPath('item.service_id', $service->id);
+
+        $quote = Quote::query()->where('work_order_id', $workOrder->id)->firstOrFail();
+
+        $this->assertDatabaseHas('quote_items', [
+            'quote_id' => $quote->id,
+            'service_id' => $service->id,
+            'description' => 'Cambio de aceite',
+            'item_type' => 'service',
+        ]);
+
+        $this->assertSame('35000.00', $quote->fresh()->subtotal_amount);
     }
 }

@@ -12,6 +12,7 @@ use App\Models\Client;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -25,6 +26,8 @@ class BroadcastingEventsTest extends TestCase
 
     private Tenant $tenant;
 
+    private User $user;
+
     private WorkOrder $workOrder;
 
     protected function setUp(): void
@@ -32,6 +35,9 @@ class BroadcastingEventsTest extends TestCase
         parent::setUp();
 
         $this->tenant = $this->setUpTenant();
+        $this->user = User::factory()->create([
+            'tenant_id' => $this->tenant->id,
+        ]);
 
         $client = Client::create([
             'name' => 'Cliente Test',
@@ -126,6 +132,16 @@ class BroadcastingEventsTest extends TestCase
         $this->assertSame($this->workOrder->id, $payload['work_order_id']);
         $this->assertSame(WorkOrder::STATUS_RECEPCION, $payload['old_status']);
         $this->assertSame(WorkOrder::STATUS_DIAGNOSTICO, $payload['new_status']);
+    }
+
+    public function test_authenticated_user_can_authorize_work_order_channel_for_own_tenant(): void
+    {
+        $this->actingAs($this->user)
+            ->post('/broadcasting/auth', [
+                'socket_id' => '1234.5678',
+                'channel_name' => 'private-tenant.'.$this->tenant->id.'.work-orders',
+            ])
+            ->assertOk();
     }
 
     public function test_stock_depleted_broadcasts_on_private_taller_channel(): void

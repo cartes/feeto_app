@@ -23,40 +23,77 @@ const selectedWorkOrder = ref(null);
 const isLoadingModal = ref(false);
 const activeTab = ref('budget'); // 'budget' or 'evidence'
 
+const quoteStatusConfig = {
+    draft: { label: 'Borrador', classes: 'border-slate-200 bg-slate-50 text-slate-500' },
+    pending_customer: { label: 'Pendiente cliente', classes: 'border-amber-200 bg-amber-50 text-amber-600' },
+    accepted: { label: 'Aceptada', classes: 'border-emerald-200 bg-emerald-50 text-emerald-600' },
+    rejected: { label: 'Rechazada', classes: 'border-rose-200 bg-rose-50 text-rose-600' },
+};
+
+const quoteItemTypeLabels = {
+    product: 'Repuesto',
+    service: 'Servicio',
+    manual: 'Manual',
+};
+
+const resolveQuoteStatus = (status) => quoteStatusConfig[status] ?? {
+    label: status || 'Sin cotización',
+    classes: 'border-slate-200 bg-slate-50 text-slate-500',
+};
+
+const formatQuoteStatusLabel = (status) => resolveQuoteStatus(status).label;
+const formatQuoteStatusClasses = (status) => resolveQuoteStatus(status).classes;
+
 // Form for adding items
+const itemMode = ref('product');
+const itemErrors = ref({});
 const itemForm = ref({
     product_id: '',
+    service_id: '',
     quantity: 1
 });
 
 const availableProducts = ref([]);
-const isSearching = ref(false);
+const availableServices = ref([]);
 
-const searchProducts = async (query) => {
-    if (query.length < 2) {
-        availableProducts.value = [];
-        return;
-    }
-    
-    isSearching.value = true;
-    try {
-        const response = await axios.get(route('api.products.index'), { params: { q: query } });
-        availableProducts.value = response.data;
-    } catch (error) {
-        console.error('Error searching products:', error);
-    } finally {
-        isSearching.value = false;
-    }
+const resetItemForm = () => {
+    itemMode.value = 'product';
+    itemErrors.value = {};
+    itemForm.value = {
+        product_id: '',
+        service_id: '',
+        quantity: 1,
+    };
 };
+
+const setItemMode = (mode) => {
+    itemMode.value = mode;
+    itemErrors.value = {};
+    itemForm.value.product_id = '';
+    itemForm.value.service_id = '';
+};
+
+const hydrateCatalogs = (workOrder) => {
+    availableProducts.value = workOrder?.catalogs?.products ?? [];
+    availableServices.value = workOrder?.catalogs?.services ?? [];
+};
+
+const requiresQuoteConfirmation = (order, nextStatus) => (
+    order?.originalStatus === 'recepcion'
+    && nextStatus !== 'recepcion'
+    && order?.quote?.status !== 'accepted'
+);
 
 const openModal = async (orderId) => {
     isModalOpen.value = true;
     isLoadingModal.value = true;
     selectedWorkOrder.value = null;
+    resetItemForm();
 
     try {
-        const response = await axios.get(route('api.work-orders.show', orderId));
-        selectedWorkOrder.value = response.data;
+        const orderResponse = await axios.get(route('api.work-orders.show', { id: orderId }));
+        selectedWorkOrder.value = orderResponse.data;
+        hydrateCatalogs(orderResponse.data);
     } catch (error) {
         console.error('Error fetching work order details:', error);
     } finally {
@@ -67,20 +104,35 @@ const openModal = async (orderId) => {
 const closeModal = () => {
     isModalOpen.value = false;
     selectedWorkOrder.value = null;
+    availableProducts.value = [];
+    availableServices.value = [];
+    resetItemForm();
 };
 
 const addItem = async () => {
-    if (!selectedWorkOrder.value || !itemForm.value.product_id) return;
+    if (!selectedWorkOrder.value) return;
+
+    itemErrors.value = {};
+
+    const payload = {
+        quantity: itemForm.value.quantity,
+    };
+
+    if (itemMode.value === 'product') {
+        payload.product_id = itemForm.value.product_id;
+    }
+
+    if (itemMode.value === 'service') {
+        payload.service_id = itemForm.value.service_id;
+    }
 
     try {
-        await axios.post(route('api.work-orders.items.store', selectedWorkOrder.value.id), itemForm.value);
-        // Refresh modal data
-        openModal(selectedWorkOrder.value.id);
-        itemForm.value = { product_id: '', quantity: 1 };
-        availableProducts.value = [];
+        await axios.post(route('api.work-orders.items.store', { workOrder: selectedWorkOrder.value.id }), payload);
+        await openModal(selectedWorkOrder.value.id);
+        resetItemForm();
     } catch (error) {
         if (error.response?.status === 422) {
-            alert(error.response.data.message || 'Error de validación');
+            itemErrors.value = error.response.data.errors ?? {};
         } else {
             console.error('Error adding item:', error);
         }
@@ -88,15 +140,14 @@ const addItem = async () => {
 };
 
 const removeItem = async (itemId) => {
-    if (!confirm('¿Estás seguro de quitar este ítem? se devolverá el stock al inventario.')) return;
+    if (!confirm('¿Estás seguro de quitar este ítem de la cotización?')) return;
 
     try {
         await axios.delete(route('api.work-orders.items.destroy', { 
             workOrder: selectedWorkOrder.value.id, 
             item: itemId 
         }));
-        // Refresh modal data
-        openModal(selectedWorkOrder.value.id);
+        await openModal(selectedWorkOrder.value.id);
     } catch (error) {
         console.error('Error removing item:', error);
     }
@@ -110,7 +161,7 @@ const uploadPhoto = async (event) => {
     formData.append('image', file);
 
     try {
-        await axios.post(route('api.work-orders.images.upload', selectedWorkOrder.value.id), formData, {
+        await axios.post(route('api.work-orders.images.upload', { id: selectedWorkOrder.value.id }), formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         // Refresh modal data
@@ -124,7 +175,7 @@ const deletePhoto = async (imageId) => {
     if (!confirm('¿Estás seguro de eliminar esta imagen?')) return;
 
     try {
-        await axios.delete(route('api.work-orders.images.destroy', imageId));
+        await axios.delete(route('api.work-orders.images.destroy', { imageId }));
         // Refresh modal data
         openModal(selectedWorkOrder.value.id);
     } catch (error) {
@@ -227,15 +278,24 @@ const onDrop = (columnId) => {
     const oldStatus = draggedItem.value.originalStatus;
 
     if (newStatus !== oldStatus) {
-        // Enviar la petición update vía Inertia sin recargas visuales (preserveScroll)
-        router.put(route('work-orders.status.update', draggedItem.value.id), {
-            status: newStatus
+        const confirmedWithoutAcceptedQuote = requiresQuoteConfirmation(draggedItem.value, newStatus);
+
+        if (confirmedWithoutAcceptedQuote) {
+            const shouldContinue = window.confirm('La cotización aún no está aceptada por el cliente. ¿Quieres mover igualmente esta OT al siguiente paso?');
+
+            if (!shouldContinue) {
+                draggedItem.value = null;
+                currentHoverColumn.value = null;
+                return;
+            }
+        }
+
+        router.put(route('work-orders.status.update', { workOrder: draggedItem.value.id }), {
+            status: newStatus,
+            confirmed_without_accepted_quote: confirmedWithoutAcceptedQuote,
         }, {
             preserveScroll: true,
             preserveState: true,
-            onSuccess: () => {
-                // Notificación o éxito manejado a través de Inertia (flash message usualmente)
-            }
         });
     }
 
@@ -414,8 +474,11 @@ onUnmounted(() => {
                                     <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
                                         {{ order.vehicle?.plate || 'S/P' }}
                                     </p>
-                                    <span v-if="commercialQuotesEnabled && order.quote?.status" class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                                        {{ order.quote.status }}
+                                    <span
+                                        v-if="commercialQuotesEnabled && order.quote?.status"
+                                        :class="['rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-widest', formatQuoteStatusClasses(order.quote.status)]"
+                                    >
+                                        {{ formatQuoteStatusLabel(order.quote.status) }}
                                     </span>
                                 </div>
                             </div>
@@ -453,6 +516,12 @@ onUnmounted(() => {
                                             <h2 class="text-2xl font-black text-slate-800">OT #{{ selectedWorkOrder.id }} — {{ selectedWorkOrder.vehicle?.plate }}</h2>
                                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ selectedWorkOrder.vehicle?.brand }} {{ selectedWorkOrder.vehicle?.model }}</p>
                                         </div>
+                                        <span
+                                            v-if="commercialQuotesEnabled && selectedWorkOrder.quote?.status"
+                                            :class="['rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', formatQuoteStatusClasses(selectedWorkOrder.quote.status)]"
+                                        >
+                                            {{ formatQuoteStatusLabel(selectedWorkOrder.quote.status) }}
+                                        </span>
                                         <button 
                                             @click="previewQuote"
                                             class="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
@@ -503,11 +572,34 @@ onUnmounted(() => {
                                     <div v-else-if="selectedWorkOrder">
                                         <!-- Budget Section -->
                                         <div v-if="activeTab === 'budget' && commercialQuotesEnabled" class="space-y-8 animate-in slide-in-from-left-4 duration-500">
+                                            <div class="flex flex-col gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 md:flex-row md:items-start md:justify-between">
+                                                <div class="space-y-2">
+                                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Estado comercial</p>
+                                                    <div class="flex flex-wrap items-center gap-3">
+                                                        <span
+                                                            :class="['rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', formatQuoteStatusClasses(selectedWorkOrder.quote?.status ?? 'draft')]"
+                                                        >
+                                                            {{ formatQuoteStatusLabel(selectedWorkOrder.quote?.status ?? 'draft') }}
+                                                        </span>
+                                                        <span v-if="selectedWorkOrder.quote?.sent_at" class="text-xs font-semibold text-slate-500">
+                                                            Enviada: {{ new Date(selectedWorkOrder.quote.sent_at).toLocaleString('es-CL') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p
+                                                    v-if="selectedWorkOrder.quote?.status !== 'accepted'"
+                                                    class="max-w-sm rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-semibold leading-relaxed text-amber-700"
+                                                >
+                                                    Si esta OT sale de Recepción sin cotización aceptada, el sistema mostrará una advertencia antes de continuar.
+                                                </p>
+                                            </div>
+
                                             <div class="bg-slate-50 rounded-[2rem] p-6">
                                                 <table class="w-full text-sm">
                                                     <thead>
                                                         <tr class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200">
                                                             <th class="pb-3">Descripción</th>
+                                                            <th class="pb-3">Tipo</th>
                                                             <th class="pb-3 text-center">Cant</th>
                                                             <th class="pb-3 text-right">Precio</th>
                                                             <th class="pb-3 text-right">Total</th>
@@ -516,6 +608,11 @@ onUnmounted(() => {
                                                     <tbody class="divide-y divide-slate-100">
                                                         <tr v-for="item in selectedWorkOrder.items" :key="item.id">
                                                             <td class="py-4 font-semibold text-slate-700">{{ item.description }}</td>
+                                                            <td class="py-4">
+                                                                <span class="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                                                    {{ quoteItemTypeLabels[item.item_type] ?? item.item_type }}
+                                                                </span>
+                                                            </td>
                                                             <td class="py-4 text-center text-slate-500 font-mono">{{ item.quantity }}</td>
                                                             <td class="py-4 text-right text-slate-500 font-mono">{{ formatCurrency(item.unit_price) }}</td>
                                                             <td class="py-4 text-right font-bold text-slate-800 font-mono">
@@ -530,7 +627,7 @@ onUnmounted(() => {
                                                     </tbody>
                                                     <tfoot>
                                                         <tr class="border-t-2 border-slate-200">
-                                                            <td colspan="3" class="pt-4 text-right text-xs font-black uppercase text-slate-400">Total OT</td>
+                                                            <td colspan="4" class="pt-4 text-right text-xs font-black uppercase text-slate-400">Total OT</td>
                                                             <td class="pt-4 text-right text-xl font-black text-slate-900 font-mono">{{ formatCurrency(selectedWorkOrder.total_amount) }}</td>
                                                         </tr>
                                                     </tfoot>
@@ -539,28 +636,85 @@ onUnmounted(() => {
 
                                             <!-- Add Item Form -->
                                             <div class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-6">
-                                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">Asignar Repuestos (Stock Activo)</h4>
-                                                <div class="flex flex-col md:flex-row gap-4 items-end">
-                                                    <div class="flex-1 w-full relative">
-                                                        <p class="text-[8px] font-bold text-slate-400 uppercase mb-1 ml-2">Buscar Producto</p>
-                                                        <select v-model="itemForm.product_id" class="w-full bg-slate-50 border-none rounded-xl text-xs font-bold py-3.5 focus:ring-2 focus:ring-[#F9A826] appearance-none cursor-pointer">
-                                                            <option value="" disabled>Seleccionar repuesto...</option>
-                                                            <option v-for="product in availableProducts" :key="product.id" :value="product.id">
-                                                                {{ product.name }} (Stock: {{ product.physical_stock }}) — {{ formatCurrency(product.selling_price) }}
-                                                            </option>
-                                                        </select>
-                                                        <!-- Botón de carga simple si no hay productos cargados -->
-                                                        <button v-if="availableProducts.length === 0" @click="searchProducts('')" class="absolute right-3 top-[26px] text-orange-500 text-[10px] font-black uppercase hover:underline">
-                                                            Cargar Todos
+                                                <div class="flex flex-col gap-5">
+                                                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                                        <div>
+                                                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Agregar a la cotización</h4>
+                                                            <p class="mt-2 text-sm font-semibold text-slate-700">Elige un repuesto del inventario o un servicio activo.</p>
+                                                        </div>
+                                                        <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                                                            <button
+                                                                type="button"
+                                                                @click="setItemMode('product')"
+                                                                :class="itemMode === 'product' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+                                                                class="rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            >
+                                                                Repuesto
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                @click="setItemMode('service')"
+                                                                :class="itemMode === 'service' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+                                                                class="rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            >
+                                                                Servicio
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex flex-col items-end gap-4 md:flex-row">
+                                                        <div class="w-full flex-1">
+                                                            <p class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">
+                                                                {{ itemMode === 'product' ? 'Buscar repuesto' : 'Buscar servicio' }}
+                                                            </p>
+                                                            <select
+                                                                v-if="itemMode === 'product'"
+                                                                v-model="itemForm.product_id"
+                                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#F9A826]"
+                                                            >
+                                                                <option value="" disabled>Seleccionar repuesto...</option>
+                                                                <option v-for="product in availableProducts" :key="product.id" :value="product.id">
+                                                                    {{ product.name }} (Stock: {{ product.physical_stock }}) — {{ formatCurrency(product.selling_price) }}
+                                                                </option>
+                                                            </select>
+                                                            <select
+                                                                v-else
+                                                                v-model="itemForm.service_id"
+                                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#F9A826]"
+                                                            >
+                                                                <option value="" disabled>Seleccionar servicio...</option>
+                                                                <option v-for="service in availableServices" :key="service.id" :value="service.id">
+                                                                    {{ service.name }} — {{ formatCurrency(service.selling_price) }}
+                                                                </option>
+                                                            </select>
+                                                            <p v-if="itemErrors.product_id" class="ml-1 mt-2 text-[10px] font-semibold text-rose-500">{{ itemErrors.product_id[0] }}</p>
+                                                            <p v-if="itemErrors.service_id" class="ml-1 mt-2 text-[10px] font-semibold text-rose-500">{{ itemErrors.service_id[0] }}</p>
+                                                            <p
+                                                                v-if="itemMode === 'product' && availableProducts.length === 0"
+                                                                class="ml-1 mt-2 text-[10px] font-semibold text-slate-400"
+                                                            >
+                                                                No hay repuestos con stock disponible.
+                                                            </p>
+                                                            <p
+                                                                v-if="itemMode === 'service' && availableServices.length === 0"
+                                                                class="ml-1 mt-2 text-[10px] font-semibold text-slate-400"
+                                                            >
+                                                                No hay servicios activos disponibles.
+                                                            </p>
+                                                        </div>
+
+                                                        <div class="w-full md:w-32">
+                                                            <p class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">Cant.</p>
+                                                            <input v-model.number="itemForm.quantity" type="number" min="1" class="w-full rounded-xl border-none bg-slate-50 py-3.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#F9A826]" />
+                                                            <p v-if="itemErrors.quantity" class="ml-1 mt-2 text-[10px] font-semibold text-rose-500">{{ itemErrors.quantity[0] }}</p>
+                                                        </div>
+
+                                                        <button @click="addItem" class="w-full whitespace-nowrap rounded-xl bg-slate-900 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-[#F9A826] active:scale-95 md:w-auto">
+                                                            Agregar ítem
                                                         </button>
                                                     </div>
-                                                    <div class="w-full md:w-32">
-                                                        <p class="text-[8px] font-bold text-slate-400 uppercase mb-1 ml-2">Cant.</p>
-                                                        <input v-model.number="itemForm.quantity" type="number" min="1" class="w-full bg-slate-50 border-none rounded-xl text-xs font-mono font-bold py-3.5 focus:ring-2 focus:ring-[#F9A826]" />
-                                                    </div>
-                                                    <button @click="addItem" class="w-full md:w-auto bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-8 py-4 rounded-xl hover:bg-[#F9A826] transition-all shadow-lg active:scale-95 whitespace-nowrap">
-                                                        Agregar Item
-                                                    </button>
+
+                                                    <p v-if="itemErrors.description" class="text-[10px] font-semibold text-rose-500">{{ itemErrors.description[0] }}</p>
                                                 </div>
                                             </div>
                                         </div>

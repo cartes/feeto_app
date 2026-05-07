@@ -19,13 +19,16 @@ class ProductController extends Controller
         $search = $request->get('q');
 
         $products = Product::query()
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('sku', 'like', "%{$search}%");
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%");
+                });
             })
             ->where('physical_stock', '>', 0)
-            ->limit(10)
-            ->get();
+            ->orderBy('name')
+            ->limit($search ? 20 : 200)
+            ->get(['id', 'name', 'sku', 'selling_price', 'physical_stock']);
 
         return response()->json($products);
     }
