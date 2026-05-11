@@ -8,21 +8,15 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Display the login view or redirect to home with modal trigger.
      */
-    public function create(): Response
+    public function create(): RedirectResponse
     {
-        return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
-        ]);
+        return redirect()->route('home', ['login' => 1]);
     }
 
     /**
@@ -37,12 +31,10 @@ class AuthenticatedSessionController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        // Superadmin → panel de administración
         if ($user->is_super_admin) {
             return redirect()->route('admin.dashboard');
         }
 
-        // Usuario de taller → dashboard de su taller por slug
         if ($user->tenant_id) {
             $user->load('tenant');
 
@@ -51,7 +43,6 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        // Fallback genérico
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

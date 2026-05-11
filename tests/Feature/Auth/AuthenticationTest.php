@@ -9,7 +9,8 @@ use Tests\Traits\CreatesTenant;
 
 class AuthenticationTest extends TestCase
 {
-    use CreatesTenant, RefreshDatabase;
+    use CreatesTenant;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -21,7 +22,7 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->get('/login');
 
-        $response->assertStatus(200);
+        $response->assertRedirect(route('home', ['login' => 1], false));
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Tenant;
 use App\Models\User;
+use Database\Seeders\DefaultServiceSeeder;
 use Database\Seeders\TenantRolesAndPermissionsSeeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -14,7 +15,8 @@ class TenantSetupService
     public function __construct(protected PermissionRegistrar $permissionRegistrar) {}
 
     /**
-     * Seeds roles/permissions for the given tenant and optionally assigns the Admin role to a user.
+     * Seeds roles/permissions and default services for the given tenant
+     * and optionally assigns the Admin role to a user.
      * Restores the previous tenant context after provisioning.
      */
     public function provisionTenant(Tenant $tenant, ?User $adminUser = null): void
@@ -25,6 +27,9 @@ class TenantSetupService
 
         $seeder = new TenantRolesAndPermissionsSeeder;
         $seeder->run();
+
+        $serviceSeeder = new DefaultServiceSeeder;
+        $serviceSeeder->run();
 
         if ($adminUser !== null) {
             $this->assignAdminRole($adminUser);
