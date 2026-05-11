@@ -30,9 +30,12 @@ use App\Http\Controllers\Subscription\BillingController;
 use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\SupervisorReportController;
 use App\Http\Controllers\TallerDashboardController;
+use App\Http\Controllers\TenantNotificationController;
 use App\Http\Controllers\TenantRoleController;
+use App\Http\Controllers\TenantSeoController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
+use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
@@ -73,6 +76,9 @@ Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->
 Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('taller.booking.store');
+Route::post('/taller/{tenantBySlug}/whatsapp-inquiry', [PublicWhatsAppInquiryController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('taller.whatsapp.inquiry');
 
 /*
 |--------------------------------------------------------------------------
@@ -202,6 +208,19 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::patch('/settings/commercial', [TenantSettingsController::class, 'updateCommercial'])
             ->middleware('permission:users.manage')
             ->name('taller.settings.commercial.update');
+        Route::patch('/settings/seo', [TenantSeoController::class, 'update'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.seo.update');
+        Route::post('/settings/seo/generate-description', [TenantSeoController::class, 'generateDescription'])
+            ->middleware(['permission:users.manage', 'throttle:10,1'])
+            ->name('taller.settings.seo.generate');
+
+        // Notificaciones CRM
+        Route::prefix('/notifications')->name('notifications.')->group(function (): void {
+            Route::get('/', [TenantNotificationController::class, 'index'])->name('index');
+            Route::post('/{notification}/read', [TenantNotificationController::class, 'markRead'])->name('read');
+            Route::post('/read-all', [TenantNotificationController::class, 'markAllRead'])->name('read-all');
+        });
 
         // Gestión de roles — usuarios con permiso users.manage (gate custom_roles en controlador)
         Route::get('/settings/roles', [TenantRoleController::class, 'index'])

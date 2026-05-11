@@ -14,6 +14,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    canAccessSeo: {
+        type: Boolean,
+        default: false,
+    },
     currentUserCount: {
         type: Number,
         default: null,
@@ -53,6 +57,14 @@ const isActive = (section) => props.currentSection === section;
             :class="isActive('commercial') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             Comercial
+        </Link>
+        <Link
+            v-if="canAccessSeo"
+            :href="route('taller.settings', { ...tenantRouteParams, tab: 'seo' })"
+            class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
+            :class="isActive('seo') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+        >
+            SEO &amp; WhatsApp
         </Link>
         <Link
             v-if="canAccessRoles"

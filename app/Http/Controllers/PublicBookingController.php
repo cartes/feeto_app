@@ -25,6 +25,9 @@ class PublicBookingController extends Controller
                 'rut_taller' => $tenantBySlug->rut_taller,
                 'plan' => $tenantBySlug->currentPlan()->value,
                 'plan_label' => $tenantBySlug->currentPlan()->label(),
+                'seo_description' => $tenantBySlug->seo_description,
+                'seo_address' => $tenantBySlug->seo_address,
+                'whatsapp_number' => $tenantBySlug->whatsapp_number,
             ],
         ]);
     }

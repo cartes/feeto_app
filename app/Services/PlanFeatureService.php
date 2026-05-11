@@ -24,6 +24,8 @@ class PlanFeatureService
 
     public const FEATURE_CUSTOM_ROLES = 'custom_roles';
 
+    public const FEATURE_SEO_MANAGER = 'seo_manager';
+
     /**
      * @return array<string, array{label: string, description: string, min_plan: string}>
      */
@@ -64,6 +66,11 @@ class PlanFeatureService
                 'label' => 'Roles personalizados',
                 'description' => 'Crea roles con permisos granulares completamente personalizados para tu equipo.',
                 'min_plan' => 'Empresa',
+            ],
+            self::FEATURE_SEO_MANAGER => [
+                'label' => 'SEO y WhatsApp',
+                'description' => 'Gestiona la descripción SEO del taller, dirección y botón de WhatsApp en tu página pública.',
+                'min_plan' => 'Básico',
             ],
         ];
     }

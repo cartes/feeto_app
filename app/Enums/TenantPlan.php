@@ -133,6 +133,7 @@ enum TenantPlan: string
             self::BASICO => [
                 PlanFeatureService::FEATURE_AI_RECEPTION,
                 PlanFeatureService::FEATURE_CUSTOM_KANBAN,
+                PlanFeatureService::FEATURE_SEO_MANAGER,
             ],
             self::PROFESIONAL => [
                 PlanFeatureService::FEATURE_AI_RECEPTION,
@@ -142,6 +143,7 @@ enum TenantPlan: string
                 PlanFeatureService::FEATURE_SALES_MANAGEMENT,
                 PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
                 PlanFeatureService::FEATURE_COMMERCIAL_REPORTS,
+                PlanFeatureService::FEATURE_SEO_MANAGER,
             ],
             self::EMPRESA => [
                 PlanFeatureService::FEATURE_AI_RECEPTION,
@@ -153,6 +155,7 @@ enum TenantPlan: string
                 PlanFeatureService::FEATURE_COMMERCIAL_QUOTES,
                 PlanFeatureService::FEATURE_COMMERCIAL_REPORTS,
                 PlanFeatureService::FEATURE_CUSTOM_ROLES,
+                PlanFeatureService::FEATURE_SEO_MANAGER,
             ],
         };
     }
