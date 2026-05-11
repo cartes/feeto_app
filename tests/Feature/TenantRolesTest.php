@@ -279,6 +279,7 @@ class TenantRolesTest extends TestCase
                 PlanFeatureService::FEATURE_CALENDAR_SCHEDULING,
                 PlanFeatureService::FEATURE_ADVANCED_INVENTORY,
                 PlanFeatureService::FEATURE_SALES_MANAGEMENT,
+                PlanFeatureService::FEATURE_SEO_MANAGER,
             ],
             $sharedProps['tenantContext']['features']
         );
