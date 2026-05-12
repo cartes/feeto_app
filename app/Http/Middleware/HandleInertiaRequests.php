@@ -137,8 +137,12 @@ class HandleInertiaRequests extends Middleware
 
         $featureService = app(PlanFeatureService::class);
         $definitions = $featureService->definitions();
-        $featureKeys = $tenant->enabledFeatureKeys();
         $allFeatureKeys = $featureService->allFeatureKeys();
+        $featureAvailability = $tenant->featureAvailabilityMap($allFeatureKeys);
+        $featureKeys = array_values(array_filter(
+            $featureService->frontendFeatureKeys(),
+            static fn (string $featureKey): bool => $featureAvailability[$featureKey] ?? false,
+        ));
         $plan = $tenant->currentPlan();
 
         return [
@@ -154,9 +158,7 @@ class HandleInertiaRequests extends Middleware
                 fn (string $featureKey): array => [$featureKey => $featureService->upgradeMessage($featureKey)]
             )->all(),
             'definitions' => $definitions,
-            ...collect($allFeatureKeys)->mapWithKeys(
-                fn (string $featureKey): array => [$featureKey => $tenant->hasFeature($featureKey)]
-            )->all(),
+            ...$featureAvailability,
         ];
     }
 
@@ -170,6 +172,7 @@ class HandleInertiaRequests extends Middleware
         }
 
         $plan = $tenant->currentPlan();
+        $featureKeys = $tenant->enabledFeatureKeys();
 
         return [
             ...$tenant->only('id', 'name', 'slug'),
@@ -178,7 +181,7 @@ class HandleInertiaRequests extends Middleware
                 'label' => $plan->label(),
                 'user_limit' => $tenant->userLimit(),
             ],
-            'features' => $tenant->enabledFeatureKeys(),
+            'features' => $featureKeys,
             'subscription_ends_at' => $tenant->subscription_ends_at?->toIso8601String(),
             'is_active' => $tenant->is_active,
         ];

@@ -18,6 +18,8 @@ const props = defineProps({
 
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
+const roles = computed(() => page.props.auth?.user?.roles ?? []);
+const isSuperAdmin = computed(() => Boolean(page.props.auth?.user?.is_super_admin));
 
 const quote = computed(() => props.workOrder.quote ?? {
     status: 'draft',
@@ -96,6 +98,30 @@ const whatsAppLink = computed(() => {
     const phone = props.workOrder.vehicle?.client?.phone ?? '';
     return `https://wa.me/${phone.replace(/\D/g, '')}?text=${whatsAppMessage.value}`;
 });
+const hasClientPhone = computed(() => Boolean(props.workOrder.vehicle?.client?.phone));
+const hasClientEmail = computed(() => Boolean(props.workOrder.vehicle?.client?.email));
+const canDeliverQuote = computed(() => (
+    isSuperAdmin.value || roles.value.some((role) => ['Admin', 'Supervisor', 'Jefe'].includes(role))
+));
+const canNotifyAdmin = computed(() => (
+    !canDeliverQuote.value && items.value.length > 0 && !['pending_customer', 'accepted'].includes(quote.value.status)
+));
+const canShareQuote = computed(() => quote.value.status === 'pending_customer');
+const mailSubject = computed(() => encodeURIComponent(`Cotización OT #${props.workOrder.id} disponible para revisión`));
+const mailBody = computed(() => {
+    const clientName = props.workOrder.vehicle?.client?.name ?? 'cliente';
+    const vehicle = `${props.workOrder.vehicle?.brand ?? ''} ${props.workOrder.vehicle?.model ?? ''}`.trim();
+
+    return encodeURIComponent(
+        `Hola ${clientName},%0D%0A%0D%0ATu cotización${vehicle ? ` para ${vehicle}` : ''} ya está disponible para revisión.%0D%0A%0D%0APuedes verla y responderla aquí:%0D%0A${trackingUrl.value}`
+    );
+});
+const mailToLink = computed(() => {
+    const email = props.workOrder.vehicle?.client?.email ?? '';
+
+    return `mailto:${email}?subject=${mailSubject.value}&body=${mailBody.value}`;
+});
+const sendChannel = ref('manual');
 
 const selectedMode = ref('manual');
 const selectedProduct = ref(null);
@@ -114,7 +140,10 @@ const addForm = useForm({
     discount_percent: 0,
 });
 
-const sendQuoteForm = useForm({});
+const sendQuoteForm = useForm({
+    channel: 'manual',
+});
+const notifyReadyForm = useForm({});
 
 const filteredProducts = computed(() => {
     if (!productSearch.value) {
@@ -218,8 +247,46 @@ const removeItem = (itemId) => {
     });
 };
 
+const shareQuoteByWhatsApp = () => {
+    if (!hasClientPhone.value) {
+        return;
+    }
+
+    window.open(whatsAppLink.value, '_blank', 'noopener');
+};
+
+const shareQuoteByEmail = () => {
+    if (!hasClientEmail.value) {
+        return;
+    }
+
+    window.location.href = mailToLink.value;
+};
+
+const shareQuoteByBoth = () => {
+    shareQuoteByWhatsApp();
+    shareQuoteByEmail();
+};
+
 const sendQuote = () => {
-    sendQuoteForm.post(route('work-orders.quote.send', props.workOrder.id), {
+    sendQuoteForm.channel = sendChannel.value;
+
+    sendQuoteForm.post(route('work-orders.quote.send', { workOrder: props.workOrder.id }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (sendChannel.value === 'whatsapp') {
+                shareQuoteByWhatsApp();
+            } else if (sendChannel.value === 'email') {
+                shareQuoteByEmail();
+            } else if (sendChannel.value === 'both') {
+                shareQuoteByBoth();
+            }
+        },
+    });
+};
+
+const notifyReady = () => {
+    notifyReadyForm.post(route('work-orders.quote.notify-ready', { workOrder: props.workOrder.id }), {
         preserveScroll: true,
     });
 };
@@ -287,18 +354,92 @@ const sendQuote = () => {
                             <p class="mt-2 text-xs font-medium text-gray-500">{{ items.length }} ítems cargados</p>
                         </div>
 
+                        <div v-if="commercialQuotesEnabled && canDeliverQuote" class="rounded-[1.75rem] border border-gray-100 bg-white p-4 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Canal de envío</p>
+                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                    :class="sendChannel === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
+                                    @click="sendChannel = 'manual'"
+                                >
+                                    Solo marcar
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                                    :class="sendChannel === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-50 text-gray-500'"
+                                    :disabled="!hasClientPhone"
+                                    @click="sendChannel = 'whatsapp'"
+                                >
+                                    WhatsApp
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                                    :class="sendChannel === 'email' ? 'bg-sky-600 text-white' : 'bg-gray-50 text-gray-500'"
+                                    :disabled="!hasClientEmail"
+                                    @click="sendChannel = 'email'"
+                                >
+                                    Email
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                                    :class="sendChannel === 'both' ? 'bg-[#F9A826] text-white' : 'bg-gray-50 text-gray-500'"
+                                    :disabled="!hasClientPhone || !hasClientEmail"
+                                    @click="sendChannel = 'both'"
+                                >
+                                    Ambos
+                                </button>
+                            </div>
+                            <p class="mt-3 text-xs font-medium text-gray-500">
+                                Activa el tracking del cliente y deja registrada la entrega comercial de la cotización.
+                            </p>
+                        </div>
+
                         <button
-                            v-if="commercialQuotesEnabled"
+                            v-if="commercialQuotesEnabled && canDeliverQuote"
                             type="button"
                             class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#F9A826] disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="sendQuoteForm.processing || items.length === 0 || quote.status === 'accepted'"
                             @click="sendQuote"
                         >
-                            {{ sendQuoteForm.processing ? 'Enviando...' : 'Enviar Cotización al Cliente' }}
+                            {{
+                                sendQuoteForm.processing
+                                    ? 'Enviando...'
+                                    : sendChannel === 'whatsapp'
+                                        ? 'Enviar al Cliente por WhatsApp'
+                                        : sendChannel === 'email'
+                                            ? 'Enviar al Cliente por Email'
+                                            : sendChannel === 'both'
+                                                ? 'Enviar al Cliente por Ambos'
+                                                : 'Marcar como Enviada al Cliente'
+                            }}
+                        </button>
+
+                        <div
+                            v-if="commercialQuotesEnabled && !canDeliverQuote"
+                            class="rounded-[1.75rem] border border-amber-100 bg-amber-50 px-4 py-4"
+                        >
+                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Revisión administrativa</p>
+                            <p class="mt-2 text-sm font-medium text-amber-900">
+                                Cuando termines la cotización, avisa al equipo administrador para que la envíe al cliente.
+                            </p>
+                        </div>
+
+                        <button
+                            v-if="commercialQuotesEnabled && !canDeliverQuote"
+                            type="button"
+                            class="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            :disabled="notifyReadyForm.processing || !canNotifyAdmin"
+                            @click="notifyReady"
+                        >
+                            {{ notifyReadyForm.processing ? 'Avisando...' : 'Avisar al Administrador que Está Lista' }}
                         </button>
 
                         <a
-                            v-if="commercialQuotesEnabled"
+                            v-if="commercialQuotesEnabled && canShareQuote && hasClientPhone"
                             :href="whatsAppLink"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -306,6 +447,23 @@ const sendQuote = () => {
                         >
                             Compartir por WhatsApp
                         </a>
+
+                        <a
+                            v-if="commercialQuotesEnabled && canShareQuote && hasClientEmail"
+                            :href="mailToLink"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-sky-700"
+                        >
+                            Compartir por Email
+                        </a>
+
+                        <button
+                            v-if="commercialQuotesEnabled && canShareQuote && hasClientPhone && hasClientEmail"
+                            type="button"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#F9A826] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#dd9219]"
+                            @click="shareQuoteByBoth"
+                        >
+                            Compartir por Ambos
+                        </button>
 
                         <a
                             v-if="commercialQuotesEnabled"

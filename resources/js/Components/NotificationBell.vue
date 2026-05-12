@@ -67,6 +67,7 @@ function formatTime(ts) {
 
 const notificationIcon = (type) => {
     if (type === 'whatsapp_inquiry') return '#25D366';
+    if (type === 'quote_ready') return '#F59E0B';
     return '#F9A826';
 };
 

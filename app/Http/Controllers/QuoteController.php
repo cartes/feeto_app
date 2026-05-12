@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RespondToQuoteRequest;
+use App\Http\Requests\SendQuoteRequest;
 use App\Models\Quote;
 use App\Models\QuoteEvent;
 use App\Models\Tenant;
+use App\Models\TenantNotification;
+use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
 use Illuminate\Http\RedirectResponse;
@@ -17,14 +20,13 @@ class QuoteController extends Controller
 {
     public function __construct(protected PlanFeatureService $planFeatureService) {}
 
-    public function send(Request $request, WorkOrder $workOrder): RedirectResponse
+    public function send(SendQuoteRequest $request, WorkOrder $workOrder): RedirectResponse
     {
         $this->authorizeWorkOrderAccess($request, $workOrder);
         $this->ensureCommercialQuotesEnabled(Tenant::current());
+        $this->ensureUserCanDeliverQuote($request->user());
 
-        $quote = $workOrder->quote()->firstOrCreate([
-            'work_order_id' => $workOrder->id,
-        ]);
+        $quote = $this->quoteFor($workOrder);
 
         if ($quote->status === Quote::STATUS_ACCEPTED) {
             return back()->withErrors([
@@ -38,6 +40,8 @@ class QuoteController extends Controller
             ]);
         }
 
+        $channel = $request->validated('channel') ?? 'manual';
+
         $quote->update([
             'status' => Quote::STATUS_PENDING_CUSTOMER,
             'sent_at' => now(),
@@ -49,10 +53,71 @@ class QuoteController extends Controller
             $quote,
             'staff',
             'quote_sent',
-            'Cotización enviada al cliente para su aprobación.'
+            $this->sendEventDescription($channel),
+            ['channel' => $channel]
         );
 
-        return back()->with('success', 'Cotización enviada al cliente.');
+        return back()->with('success', $this->sendSuccessMessage($channel));
+    }
+
+    public function notifyReady(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $this->authorizeWorkOrderAccess($request, $workOrder);
+        $this->ensureCommercialQuotesEnabled(Tenant::current());
+
+        $quote = $this->quoteFor($workOrder);
+        $user = $request->user();
+
+        if ($this->canDeliverQuote($user)) {
+            return back()->with('info', 'Tu rol ya puede enviar la cotización directamente al cliente.');
+        }
+
+        if ($quote->status === Quote::STATUS_PENDING_CUSTOMER) {
+            return back()->with('info', 'La cotización ya fue enviada al cliente.');
+        }
+
+        if ($quote->status === Quote::STATUS_ACCEPTED) {
+            return back()->with('info', 'La cotización ya fue aceptada por el cliente.');
+        }
+
+        if (! $quote->items()->exists()) {
+            return back()->withErrors([
+                'quote' => 'Debes agregar al menos un ítem antes de avisar que la cotización está lista.',
+            ]);
+        }
+
+        $clientName = $workOrder->vehicle?->client?->name ?? 'Cliente sin registrar';
+        $plate = $workOrder->vehicle?->plate ?? 'Sin patente';
+        $availableChannels = $this->availableChannels($workOrder);
+
+        TenantNotification::create([
+            'tenant_id' => $workOrder->tenant_id,
+            'type' => 'quote_ready',
+            'title' => 'Cotización lista para envío',
+            'body' => "La OT #{$workOrder->id} de {$clientName} ({$plate}) quedó lista para ser enviada al cliente.",
+            'data' => [
+                'work_order_id' => $workOrder->id,
+                'quote_id' => $quote->id,
+                'requested_by' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ],
+                'available_channels' => $availableChannels,
+            ],
+        ]);
+
+        $this->recordEvent(
+            $quote,
+            'staff',
+            'quote_ready_for_admin_review',
+            'Se avisó al equipo administrador que la cotización quedó lista para envío.',
+            [
+                'requested_by_user_id' => $user->id,
+                'available_channels' => $availableChannels,
+            ]
+        );
+
+        return back()->with('success', 'Avisamos al administrador para que envíe la cotización al cliente.');
     }
 
     public function respond(RespondToQuoteRequest $request, string $uuid): RedirectResponse
@@ -134,5 +199,64 @@ class QuoteController extends Controller
         if (! $tenant?->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES)) {
             abort(403, $this->planFeatureService->upgradeMessage(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES));
         }
+    }
+
+    private function quoteFor(WorkOrder $workOrder): Quote
+    {
+        return $workOrder->quote()->firstOrCreate([
+            'work_order_id' => $workOrder->id,
+        ]);
+    }
+
+    private function ensureUserCanDeliverQuote(User $user): void
+    {
+        if (! $this->canDeliverQuote($user)) {
+            abort(403, 'Solo Admin, Supervisor o Jefe pueden enviar la cotización al cliente.');
+        }
+    }
+
+    private function canDeliverQuote(User $user): bool
+    {
+        return $user->is_super_admin
+            || $user->hasAnyRole(['Admin', 'Supervisor', 'Jefe']);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function availableChannels(WorkOrder $workOrder): array
+    {
+        $channels = [];
+        $client = $workOrder->vehicle?->client;
+
+        if (filled($client?->phone)) {
+            $channels[] = 'whatsapp';
+        }
+
+        if (filled($client?->email)) {
+            $channels[] = 'email';
+        }
+
+        return $channels;
+    }
+
+    private function sendEventDescription(string $channel): string
+    {
+        return match ($channel) {
+            'whatsapp' => 'Cotización enviada al cliente para su aprobación por WhatsApp.',
+            'email' => 'Cotización enviada al cliente para su aprobación por correo electrónico.',
+            'both' => 'Cotización enviada al cliente para su aprobación por WhatsApp y correo electrónico.',
+            default => 'Cotización enviada al cliente para su aprobación.',
+        };
+    }
+
+    private function sendSuccessMessage(string $channel): string
+    {
+        return match ($channel) {
+            'whatsapp' => 'Cotización enviada al cliente. Puedes continuar el contacto por WhatsApp.',
+            'email' => 'Cotización enviada al cliente. Puedes continuar el contacto por correo.',
+            'both' => 'Cotización enviada al cliente. Puedes continuar el contacto por WhatsApp y correo.',
+            default => 'Cotización enviada al cliente.',
+        };
     }
 }

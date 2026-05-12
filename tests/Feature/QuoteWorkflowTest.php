@@ -8,6 +8,8 @@ use App\Models\Client;
 use App\Models\Plan;
 use App\Models\Quote;
 use App\Models\Service;
+use App\Models\Tenant;
+use App\Models\TenantNotification;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
@@ -22,6 +24,8 @@ class QuoteWorkflowTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
+    private User $mechanic;
 
     private WorkOrder $workOrder;
 
@@ -41,6 +45,11 @@ class QuoteWorkflowTest extends TestCase
             'tenant_id' => $tenant->id,
         ]);
         $this->admin->assignRole('Admin');
+
+        $this->mechanic = User::factory()->create([
+            'tenant_id' => $tenant->id,
+        ]);
+        $this->mechanic->assignRole('Mecanico');
 
         $client = Client::create([
             'name' => 'Cliente Cotizacion',
@@ -88,16 +97,53 @@ class QuoteWorkflowTest extends TestCase
         ]);
 
         $this->actingAs($this->admin)
-            ->post(route('work-orders.quote.send', ['workOrder' => $this->workOrder->id]))
+            ->post(route('work-orders.quote.send', ['workOrder' => $this->workOrder->id]), [
+                'channel' => 'both',
+            ])
             ->assertRedirect();
 
         $quote = Quote::query()->where('work_order_id', $this->workOrder->id)->firstOrFail();
+        $event = $quote->events()->where('event_type', 'quote_sent')->latest('id')->first();
 
         $this->assertSame(Quote::STATUS_PENDING_CUSTOMER, $quote->status);
         $this->assertNotNull($quote->sent_at);
+        $this->assertNotNull($event);
+        $this->assertSame('both', $event?->metadata['channel'] ?? null);
+    }
+
+    public function test_mechanic_can_notify_admin_when_quote_is_ready_but_cannot_send_it(): void
+    {
+        $this->actingAs($this->mechanic)
+            ->post(route('work-orders.items.store', ['workOrder' => $this->workOrder->id]), [
+                'service_id' => $this->service->id,
+                'description' => '',
+                'quantity' => 1,
+                'unit_price' => $this->service->selling_price,
+            ])
+            ->assertRedirect();
+
+        $this->actingAs($this->mechanic)
+            ->post(route('work-orders.quote.send', ['workOrder' => $this->workOrder->id]))
+            ->assertForbidden();
+
+        $this->actingAs($this->mechanic)
+            ->post(route('work-orders.quote.notify-ready', ['workOrder' => $this->workOrder->id]))
+            ->assertRedirect();
+
+        $quote = Quote::query()->where('work_order_id', $this->workOrder->id)->firstOrFail();
+        $notification = TenantNotification::query()
+            ->where('tenant_id', $this->admin->tenant_id)
+            ->where('type', 'quote_ready')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($notification);
+        $this->assertSame($this->workOrder->id, $notification?->data['work_order_id'] ?? null);
+        $this->assertSame($quote->id, $notification?->data['quote_id'] ?? null);
+        $this->assertSame($this->mechanic->id, $notification?->data['requested_by']['id'] ?? null);
         $this->assertDatabaseHas('quote_events', [
             'quote_id' => $quote->id,
-            'event_type' => 'quote_sent',
+            'event_type' => 'quote_ready_for_admin_review',
         ]);
     }
 
@@ -145,9 +191,16 @@ class QuoteWorkflowTest extends TestCase
     {
         $tenant = $this->admin->tenant()->firstOrFail();
         $tenant->update([
-            'plan_id' => Plan::factory()->create(['feature_keys' => []])->id,
+            'plan_id' => Plan::factory()->create([
+                'slug' => 'gratuito-test',
+                'name' => 'Gratuito Test',
+                'max_users' => 2,
+                'feature_keys' => [],
+            ])->id,
+            'plan' => 'gratuito',
+            'plan_type' => 'gratuito',
         ]);
-        $tenant->makeCurrent();
+        Tenant::forgetCurrent();
 
         $this->actingAs($this->admin)
             ->post(route('work-orders.items.store', ['workOrder' => $this->workOrder->id]), [

@@ -22,6 +22,7 @@ use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
+use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SalesReportController;
@@ -35,7 +36,6 @@ use App\Http\Controllers\TenantRoleController;
 use App\Http\Controllers\TenantSeoController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
-use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
@@ -141,6 +141,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/work-orders/{workOrder}/quote/send', [QuoteController::class, 'send'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('work-orders.quote.send');
+        Route::post('/work-orders/{workOrder}/quote/notify-ready', [QuoteController::class, 'notifyReady'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('work-orders.quote.notify-ready');
 
         // API Modals
         Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');

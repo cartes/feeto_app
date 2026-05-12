@@ -13,6 +13,13 @@ use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 
 class Tenant extends SpatieTenant
 {
+    /** @var array<string, bool>|null */
+    protected ?array $resolvedFeatureAvailability = null;
+
+    protected ?TenantPlan $resolvedTenantPlan = null;
+
+    protected bool $tenantPlanResolved = false;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -45,6 +52,15 @@ class Tenant extends SpatieTenant
         });
     }
 
+    public function setAttribute($key, $value): static
+    {
+        if (in_array((string) $key, ['plan', 'plan_id', 'plan_type'], true)) {
+            $this->resetResolvedPlanContext();
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     public static function generateUniqueSlug(string $name): string
     {
         $base = Str::slug($name);
@@ -60,46 +76,24 @@ class Tenant extends SpatieTenant
 
     public function hasFeature(string $feature): bool
     {
-        $tenant = $this->exists
-            ? $this->fresh(['features', 'plan']) ?? $this
-            : $this;
-
-        $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature);
-        $possibleFeatureKeys = PlanFeatureService::possibleFeatureKeys($feature);
-
-        $override = $tenant->features()
-            ->whereIn('feature', $possibleFeatureKeys)
-            ->get()
-            ->sortByDesc(fn (TenantFeature $tenantFeature): int => $tenantFeature->feature === $normalizedFeature ? 1 : 0)
-            ->first();
-
-        if ($override !== null) {
-            return $override->is_enabled;
-        }
-
-        $resolvedPlan = $tenant->resolveTenantPlan();
-
-        if ($resolvedPlan !== null) {
-            return $resolvedPlan->includesFeature($normalizedFeature);
-        }
-
-        return $tenant->planModel()?->includesFeatureKey($normalizedFeature) ?? false;
+        return $this->featureAvailabilityMap([$feature])[PlanFeatureService::normalizeFeatureKey($feature)] ?? false;
     }
 
     public function currentPlan(): TenantPlan
     {
-        return $this->resolveTenantPlan() ?? TenantPlan::GRATUITO;
+        if (! $this->tenantPlanResolved) {
+            $this->resolvedTenantPlan = $this->resolveTenantPlan();
+            $this->tenantPlanResolved = true;
+        }
+
+        return $this->resolvedTenantPlan ?? TenantPlan::GRATUITO;
     }
 
     public function userLimit(): int
     {
-        $resolvedPlan = $this->resolveTenantPlan();
+        $resolvedPlan = $this->currentPlan();
 
-        if ($resolvedPlan !== null) {
-            return $resolvedPlan->userLimit();
-        }
-
-        return (int) ($this->planModel()?->max_users ?? $this->getAttribute('max_users') ?? TenantPlan::GRATUITO->userLimit());
+        return (int) ($this->planModel()?->max_users ?? $this->getAttribute('max_users') ?? $resolvedPlan->userLimit());
     }
 
     public function userLimitMessage(): string
@@ -116,11 +110,47 @@ class Tenant extends SpatieTenant
     public function enabledFeatureKeys(): array
     {
         $featureService = app(PlanFeatureService::class);
+        $frontendFeatureKeys = $featureService->frontendFeatureKeys();
+        $featureAvailability = $this->featureAvailabilityMap($frontendFeatureKeys);
 
         return array_values(array_filter(
-            $featureService->frontendFeatureKeys(),
-            fn (string $feature): bool => $this->hasFeature($feature),
+            $frontendFeatureKeys,
+            static fn (string $feature): bool => $featureAvailability[$feature] ?? false,
         ));
+    }
+
+    /**
+     * @param  list<string>|null  $features
+     * @return array<string, bool>
+     */
+    public function featureAvailabilityMap(?array $features = null): array
+    {
+        $requestedFeatures = $features ?? app(PlanFeatureService::class)->allFeatureKeys();
+
+        $this->loadFeatureContext();
+
+        if ($this->resolvedFeatureAvailability === null) {
+            $resolvedPlan = $this->currentPlan();
+            $overrides = $this->featureOverrides();
+
+            $this->resolvedFeatureAvailability = collect(app(PlanFeatureService::class)->allFeatureKeys())
+                ->mapWithKeys(static function (string $feature) use ($overrides, $resolvedPlan): array {
+                    $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature);
+
+                    return [
+                        $normalizedFeature => $overrides[$normalizedFeature] ?? $resolvedPlan->includesFeature($normalizedFeature),
+                    ];
+                })
+                ->all();
+        }
+
+        return collect($requestedFeatures)
+            ->mapWithKeys(function (string $feature): array {
+                $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature);
+
+                return [$normalizedFeature => $this->resolvedFeatureAvailability[$normalizedFeature] ?? false];
+            })
+            ->all();
     }
 
     public function maxDiscountWithoutApproval(): float
@@ -161,11 +191,57 @@ class Tenant extends SpatieTenant
 
     private function planModel(): ?Plan
     {
-        $planRelation = $this->relationLoaded('plan')
-            ? $this->getRelation('plan')
-            : $this->plan()->first();
+        if ($this->exists) {
+            $this->loadMissing('plan');
+        }
+
+        $planRelation = $this->getRelation('plan');
 
         return $planRelation instanceof Plan ? $planRelation : null;
+    }
+
+    private function loadFeatureContext(): void
+    {
+        if (! $this->exists) {
+            return;
+        }
+
+        $this->loadMissing(['features', 'plan']);
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function featureOverrides(): array
+    {
+        $this->loadFeatureContext();
+
+        /** @var array<string, array{priority: int, is_enabled: bool}> $overrides */
+        $overrides = [];
+
+        /** @var TenantFeature $feature */
+        foreach ($this->features as $feature) {
+            $normalizedFeature = PlanFeatureService::normalizeFeatureKey($feature->feature);
+            $priority = $feature->feature === $normalizedFeature ? 1 : 0;
+
+            if (! isset($overrides[$normalizedFeature]) || $priority > $overrides[$normalizedFeature]['priority']) {
+                $overrides[$normalizedFeature] = [
+                    'priority' => $priority,
+                    'is_enabled' => $feature->is_enabled,
+                ];
+            }
+        }
+
+        return collect($overrides)
+            ->mapWithKeys(static fn (array $override, string $feature): array => [$feature => $override['is_enabled']])
+            ->all();
+    }
+
+    private function resetResolvedPlanContext(): void
+    {
+        $this->resolvedFeatureAvailability = null;
+        $this->resolvedTenantPlan = null;
+        $this->tenantPlanResolved = false;
     }
 
     public function users(): HasMany
