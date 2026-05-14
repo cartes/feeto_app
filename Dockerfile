@@ -24,10 +24,13 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
+COPY --from=vendor /app/vendor ./vendor
+
 COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 COPY postcss.config.js ./
+COPY tailwind.config.js ./
 
 RUN npm run build
 
