@@ -30,7 +30,7 @@ COPY tailwind.config.js ./
 RUN npm run build
 
 # ETAPA 3: Producción (PHP 8.5)
-FROM php:8.5-fpm-bookworm AS production
+FROM php:8.5-fpm-bookworm AS runtime
 WORKDIR /var/www/html
 
 # Instalamos dependencias del sistema incluyendo libpq-dev para Postgres
