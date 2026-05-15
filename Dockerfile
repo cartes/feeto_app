@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip \
     && pecl install redis \
-    && docker-php-ext-enable opcache redis \
+    && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiamos archivos desde las etapas anteriores
