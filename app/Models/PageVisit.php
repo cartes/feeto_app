@@ -28,7 +28,7 @@ class PageVisit extends Model
         static::upsert(
             [['tenant_id' => $tenantId, 'path' => $path, 'date' => now()->toDateString(), 'visits' => 1]],
             uniqueBy: ['tenant_id', 'path', 'date'],
-            update: ['visits' => \DB::raw('visits + 1')],
+            update: ['visits' => \DB::raw('page_visits.visits + 1')],
         );
     }
 }
