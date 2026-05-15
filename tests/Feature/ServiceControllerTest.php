@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Plan;
 use App\Models\Service;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Services\PlanFeatureService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -87,10 +88,12 @@ class ServiceControllerTest extends TestCase
 
     public function test_service_module_is_blocked_when_plan_does_not_include_it(): void
     {
-        $tenant = $this->admin->tenant()->firstOrFail();
+        $tenant = Tenant::current();
         $tenant->update([
-            'plan_id' => Plan::factory()->create(['feature_keys' => []])->id,
+            'plan_id' => Plan::factory()->create(['feature_keys' => [], 'max_users' => 3])->id,
         ]);
+        $tenant->refresh();
+        $tenant->makeCurrent();
 
         $this->actingAs($this->admin)
             ->get(route('services.index'))
