@@ -1,0 +1,128 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - navigation [ref=e6]:
+      - generic [ref=e7]:
+        - img [ref=e9]
+        - text: Taller
+        - generic [ref=e12]: Flow
+      - button "Probar aquí" [ref=e14] [cursor=pointer]
+    - generic [ref=e16]:
+      - generic [ref=e18]:
+        - generic [ref=e19]: 001 / T-FLOW
+        - heading "Acelera tu taller. Domina cada orden." [level=1] [ref=e20]:
+          - text: Acelera tu taller.
+          - emphasis [ref=e21]: Domina cada orden.
+      - generic [ref=e22]:
+        - link "Prueba gratis 14 días Sin tarjeta · cancela cuando quieras" [ref=e23] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e24]:
+            - generic [ref=e25]: Prueba gratis 14 días
+            - generic [ref=e26]: Sin tarjeta · cancela cuando quieras
+          - img [ref=e28]
+        - link "Agendar demo 15 minutos con un especialista en español" [ref=e30] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e31]:
+            - generic [ref=e32]: Agendar demo
+            - generic [ref=e33]: 15 minutos con un especialista en español
+          - img [ref=e35]
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]: Herramientas
+        - heading "Una sola plataforma para tu taller completo." [level=2] [ref=e42]:
+          - text: Una sola plataforma para
+          - emphasis [ref=e43]: tu taller completo.
+        - paragraph [ref=e44]: Diseñado con talleres mecánicos reales para resolver los problemas del día a día.
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - img [ref=e48]
+          - heading "Tablero Kanban en Vivo" [level=3] [ref=e50]
+          - paragraph [ref=e51]: Coordina equipos y órdenes en un flujo visual. Mueve trabajos entre etapas con un clic y ten siempre el control del piso del taller.
+          - generic [ref=e52]:
+            - generic [ref=e53]: Tiempo Real
+            - generic [ref=e54]: WebSockets
+        - generic [ref=e55]:
+          - img [ref=e57]
+          - heading "Inventario Inteligente" [level=3] [ref=e60]
+          - paragraph [ref=e61]: Stock al día con alertas de mínimos, control de proveedores y registro automático al cerrar cada orden.
+          - generic [ref=e62]:
+            - generic [ref=e63]: Stock Mínimo
+            - generic [ref=e64]: Alertas
+        - generic [ref=e65]:
+          - generic [ref=e66]: IA
+          - img [ref=e68]
+          - heading "Recepción con IA" [level=3] [ref=e73]
+          - paragraph [ref=e74]: Escanea patentes con la cámara de tu celular. Gemini AI lee la patente, cruza la agenda y muestra los datos del cliente en segundos.
+          - generic [ref=e75]:
+            - generic [ref=e76]: Gemini AI
+            - generic [ref=e77]: ALPR
+  - generic [ref=e80]:
+    - generic [ref=e81]:
+      - paragraph [ref=e82]: Beneficios
+      - heading "Menos papel, menos caos, más tiempo para trabajar." [level=2] [ref=e83]:
+        - text: Menos papel, menos caos,
+        - text: más tiempo para trabajar.
+      - paragraph [ref=e84]: Digitaliza tu taller en menos de un día. Sin instalaciones, sin servidores, sin dolores de cabeza. Accede desde cualquier computador o celular.
+      - list [ref=e85]:
+        - listitem [ref=e86]:
+          - img [ref=e88]
+          - generic [ref=e90]:
+            - paragraph [ref=e91]: Histórico completo de cada vehículo
+            - paragraph [ref=e92]: Accede al registro de todas las visitas y trabajos realizados a cada auto al instante.
+        - listitem [ref=e93]:
+          - img [ref=e95]
+          - generic [ref=e97]:
+            - paragraph [ref=e98]: Notificaciones en tiempo real
+            - paragraph [ref=e99]: Tu equipo se entera al instante cuando cambia el estado de una orden de trabajo.
+        - listitem [ref=e100]:
+          - img [ref=e102]
+          - generic [ref=e104]:
+            - paragraph [ref=e105]: Multi-sucursal desde el día uno
+            - paragraph [ref=e106]: Cada taller tiene su propio espacio aislado y seguro. Escala sin límites.
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - paragraph [ref=e109]: 3×
+        - paragraph [ref=e110]: más rápido en recibir un vehículo
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: "0"
+        - paragraph [ref=e113]: instalaciones requeridas
+      - generic [ref=e114]:
+        - paragraph [ref=e115]: "+200"
+        - paragraph [ref=e116]: talleres mecánicos ya confían en Feeto
+  - generic [ref=e118]:
+    - generic [ref=e119]:
+      - generic [ref=e120]:
+        - img [ref=e122]
+        - generic [ref=e124]:
+          - heading "Soporte Humano Real" [level=3] [ref=e125]
+          - paragraph [ref=e126]: Habla con personas reales en español. Sin bots, sin tickets que duermen meses.
+      - generic [ref=e127]:
+        - img [ref=e129]
+        - generic [ref=e131]:
+          - heading "Seguridad en la Nube" [level=3] [ref=e132]
+          - paragraph [ref=e133]: Tus datos siempre respaldados. Cumplimiento con estándares internacionales de privacidad.
+      - generic [ref=e134]:
+        - img [ref=e136]
+        - generic [ref=e138]:
+          - heading "Sin Instalaciones Complejas" [level=3] [ref=e139]
+          - paragraph [ref=e140]: Abre el navegador y empieza. Nada que instalar, configurar ni mantener.
+    - generic [ref=e141]:
+      - generic [ref=e142]:
+        - heading "¿Listo para digitalizar tu taller?" [level=3] [ref=e143]
+        - paragraph [ref=e144]: 14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
+      - link "Empezar Gratis Ahora" [ref=e145] [cursor=pointer]:
+        - /url: "#"
+        - text: Empezar Gratis Ahora
+        - img [ref=e146]
+  - contentinfo [ref=e148]:
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - img [ref=e152]
+        - generic [ref=e154]: Feeto
+      - navigation [ref=e155]:
+        - link "Términos de Servicio" [ref=e156] [cursor=pointer]:
+          - /url: "#"
+        - link "Política de Privacidad" [ref=e157] [cursor=pointer]:
+          - /url: "#"
+        - link "Contacto" [ref=e158] [cursor=pointer]:
+          - /url: "#"
+      - paragraph [ref=e159]: © 2026 Feeto. Todos los derechos reservados.

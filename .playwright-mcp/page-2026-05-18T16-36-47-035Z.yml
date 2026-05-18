@@ -1,0 +1,142 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - navigation [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e9]
+          - text: Taller
+          - generic [ref=e12]: Flow
+        - button "Abrir menú" [expanded] [active] [ref=e14] [cursor=pointer]:
+          - img [ref=e161]
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - link "Características" [ref=e166] [cursor=pointer]:
+            - /url: "#features"
+          - link "Beneficios" [ref=e167] [cursor=pointer]:
+            - /url: "#benefits"
+          - link "Precios" [ref=e168] [cursor=pointer]:
+            - /url: "#pricing"
+        - generic [ref=e169]:
+          - button "Iniciar sesión" [ref=e170] [cursor=pointer]
+          - link "Probar gratis" [ref=e171] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: 001 / T-FLOW
+        - heading "Acelera tu taller. Domina cada orden." [level=1] [ref=e21]:
+          - text: Acelera tu taller.
+          - emphasis [ref=e22]: Domina cada orden.
+      - generic [ref=e23]:
+        - link "Prueba gratis 14 días Crea tu cuenta y empieza hoy mismo" [ref=e24] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/register
+          - generic [ref=e25]:
+            - generic [ref=e26]: Prueba gratis 14 días
+            - generic [ref=e27]: Crea tu cuenta y empieza hoy mismo
+          - img [ref=e29]
+        - link "Ver funcionalidades Explora agenda, órdenes, inventario y recepción con IA" [ref=e31] [cursor=pointer]:
+          - /url: "#features"
+          - generic [ref=e32]:
+            - generic [ref=e33]: Ver funcionalidades
+            - generic [ref=e34]: Explora agenda, órdenes, inventario y recepción con IA
+          - img [ref=e36]
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]: Herramientas
+        - heading "Una sola plataforma para tu taller completo." [level=2] [ref=e43]:
+          - text: Una sola plataforma para
+          - emphasis [ref=e44]: tu taller completo.
+        - paragraph [ref=e45]: Diseñado con talleres mecánicos reales para resolver los problemas del día a día.
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - img [ref=e49]
+          - heading "Tablero Kanban en Vivo" [level=3] [ref=e51]
+          - paragraph [ref=e52]: Coordina equipos y órdenes en un flujo visual. Mueve trabajos entre etapas con un clic y ten siempre el control del piso del taller.
+          - generic [ref=e53]:
+            - generic [ref=e54]: Tiempo Real
+            - generic [ref=e55]: WebSockets
+        - generic [ref=e56]:
+          - img [ref=e58]
+          - heading "Inventario Inteligente" [level=3] [ref=e61]
+          - paragraph [ref=e62]: Stock al día con alertas de mínimos, control de proveedores y registro automático al cerrar cada orden.
+          - generic [ref=e63]:
+            - generic [ref=e64]: Stock Mínimo
+            - generic [ref=e65]: Alertas
+        - generic [ref=e66]:
+          - generic [ref=e67]: IA
+          - img [ref=e69]
+          - heading "Recepción con IA" [level=3] [ref=e74]
+          - paragraph [ref=e75]: Escanea patentes con la cámara de tu celular. Gemini AI lee la patente, cruza la agenda y muestra los datos del cliente en segundos.
+          - generic [ref=e76]:
+            - generic [ref=e77]: Gemini AI
+            - generic [ref=e78]: ALPR
+  - generic [ref=e81]:
+    - generic [ref=e82]:
+      - paragraph [ref=e83]: Beneficios
+      - heading "Menos papel, menos caos, más tiempo para trabajar." [level=2] [ref=e84]:
+        - text: Menos papel, menos caos,
+        - text: más tiempo para trabajar.
+      - paragraph [ref=e85]: Digitaliza tu taller en menos de un día. Sin instalaciones, sin servidores, sin dolores de cabeza. Accede desde cualquier computador o celular.
+      - list [ref=e86]:
+        - listitem [ref=e87]:
+          - img [ref=e89]
+          - generic [ref=e91]:
+            - paragraph [ref=e92]: Histórico completo de cada vehículo
+            - paragraph [ref=e93]: Accede al registro de todas las visitas y trabajos realizados a cada auto al instante.
+        - listitem [ref=e94]:
+          - img [ref=e96]
+          - generic [ref=e98]:
+            - paragraph [ref=e99]: Notificaciones en tiempo real
+            - paragraph [ref=e100]: Tu equipo se entera al instante cuando cambia el estado de una orden de trabajo.
+        - listitem [ref=e101]:
+          - img [ref=e103]
+          - generic [ref=e105]:
+            - paragraph [ref=e106]: Multi-sucursal desde el día uno
+            - paragraph [ref=e107]: Cada taller tiene su propio espacio aislado y seguro. Escala sin límites.
+    - generic [ref=e108]:
+      - generic [ref=e109]:
+        - paragraph [ref=e110]: 3×
+        - paragraph [ref=e111]: más rápido en recibir un vehículo
+      - generic [ref=e112]:
+        - paragraph [ref=e113]: "0"
+        - paragraph [ref=e114]: instalaciones requeridas
+      - generic [ref=e115]:
+        - paragraph [ref=e116]: "+200"
+        - paragraph [ref=e117]: talleres mecánicos ya confían en Feeto
+  - generic [ref=e119]:
+    - generic [ref=e120]:
+      - generic [ref=e121]:
+        - img [ref=e123]
+        - generic [ref=e125]:
+          - heading "Soporte Humano Real" [level=3] [ref=e126]
+          - paragraph [ref=e127]: Habla con personas reales en español. Sin bots, sin tickets que duermen meses.
+      - generic [ref=e128]:
+        - img [ref=e130]
+        - generic [ref=e132]:
+          - heading "Seguridad en la Nube" [level=3] [ref=e133]
+          - paragraph [ref=e134]: Tus datos siempre respaldados. Cumplimiento con estándares internacionales de privacidad.
+      - generic [ref=e135]:
+        - img [ref=e137]
+        - generic [ref=e139]:
+          - heading "Sin Instalaciones Complejas" [level=3] [ref=e140]
+          - paragraph [ref=e141]: Abre el navegador y empieza. Nada que instalar, configurar ni mantener.
+    - generic [ref=e142]:
+      - generic [ref=e143]:
+        - heading "¿Listo para digitalizar tu taller?" [level=3] [ref=e144]
+        - paragraph [ref=e145]: 14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
+      - link "Empezar Gratis Ahora" [ref=e146] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/register
+        - text: Empezar Gratis Ahora
+        - img [ref=e147]
+  - contentinfo [ref=e149]:
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - img [ref=e153]
+        - generic [ref=e155]: Feeto
+      - navigation [ref=e156]:
+        - link "Términos de Servicio" [ref=e157] [cursor=pointer]:
+          - /url: "#"
+        - link "Política de Privacidad" [ref=e158] [cursor=pointer]:
+          - /url: "#"
+        - link "Contacto" [ref=e159] [cursor=pointer]:
+          - /url: "#"
+      - paragraph [ref=e160]: © 2026 Feeto. Todos los derechos reservados.

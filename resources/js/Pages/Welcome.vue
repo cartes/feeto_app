@@ -12,8 +12,19 @@ const showLoginModal = ref(false);
 const navFixed = ref(false);
 const navStyle = ref({});
 const activeSection = ref('features');
+const isCompactViewport = ref(false);
+const mobileMenuOpen = ref(false);
 
 let scrollHandler = null;
+let resizeHandler = null;
+
+const closeMobileMenu = () => {
+    mobileMenuOpen.value = false;
+};
+
+const toggleMobileMenu = () => {
+    mobileMenuOpen.value = !mobileMenuOpen.value;
+};
 
 onMounted(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -21,6 +32,17 @@ onMounted(() => {
     if (urlParams.get('login')) {
         showLoginModal.value = true;
     }
+
+    const syncViewport = () => {
+        isCompactViewport.value = window.innerWidth <= 900;
+
+        if (isCompactViewport.value) {
+            navFixed.value = false;
+            navStyle.value = {};
+        } else {
+            closeMobileMenu();
+        }
+    };
 
     scrollHandler = () => {
         const benefits = document.getElementById('benefits');
@@ -41,6 +63,10 @@ onMounted(() => {
             activeSection.value = 'benefits';
         } else {
             activeSection.value = 'features';
+        }
+
+        if (isCompactViewport.value) {
+            return;
         }
 
         if (scrollY < 50) {
@@ -66,12 +92,25 @@ onMounted(() => {
         };
     };
 
+    resizeHandler = () => {
+        syncViewport();
+        scrollHandler?.();
+    };
+
+    syncViewport();
+    scrollHandler();
+
     window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.addEventListener('resize', resizeHandler, { passive: true });
 });
 
 onUnmounted(() => {
     if (scrollHandler) {
         window.removeEventListener('scroll', scrollHandler);
+    }
+
+    if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
     }
 });
 </script>
@@ -117,14 +156,71 @@ onUnmounted(() => {
                                     <polyline points="10 17 15 12 10 7" />
                                     <line x1="15" y1="12" x2="3" y2="12" />
                                 </svg>
-                                Iniciar Sesión
+                                 Iniciar Sesión
+                             </button>
+                            <Link v-if="canRegister" :href="route('register')" class="btn-accent">
+                                Probar gratis
+                            </Link>
+                            <button v-else class="btn-accent" type="button" @click="showLoginModal = true">
+                                Probar gratis
                             </button>
-                            <button class="btn-accent" type="button">
-                                Probar aquí
+                        </template>
+
+                        <button class="mobile-menu-toggle" type="button" :aria-expanded="mobileMenuOpen"
+                            aria-controls="mobile-menu" aria-label="Abrir menú" @click="toggleMobileMenu">
+                            <svg v-if="!mobileMenuOpen" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <line x1="4" y1="7" x2="20" y2="7" />
+                                <line x1="4" y1="12" x2="20" y2="12" />
+                                <line x1="4" y1="17" x2="20" y2="17" />
+                            </svg>
+                            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
+                </nav>
+
+                <div v-if="isCompactViewport && mobileMenuOpen" id="mobile-menu" class="mobile-menu">
+                    <div class="mobile-menu-links">
+                        <a href="#features" class="mobile-menu-link"
+                            :class="{ 'mobile-menu-link-active': activeSection === 'features' }"
+                            @click="closeMobileMenu">Características</a>
+                        <a href="#benefits" class="mobile-menu-link"
+                            :class="{ 'mobile-menu-link-active': activeSection === 'benefits' }"
+                            @click="closeMobileMenu">Beneficios</a>
+                        <a href="#pricing" class="mobile-menu-link"
+                            :class="{ 'mobile-menu-link-active': activeSection === 'pricing' }"
+                            @click="closeMobileMenu">Precios</a>
+                    </div>
+
+                    <div class="mobile-menu-actions">
+                        <template v-if="$page.props.auth?.user">
+                            <Link :href="route('dashboard')" class="mobile-menu-button mobile-menu-button-secondary"
+                                @click="closeMobileMenu">
+                                Ir al dashboard
+                            </Link>
+                        </template>
+                        <template v-else>
+                            <button v-if="canLogin" type="button"
+                                class="mobile-menu-button mobile-menu-button-secondary"
+                                @click="closeMobileMenu(); showLoginModal = true">
+                                Iniciar sesión
+                            </button>
+                            <Link v-if="canRegister" :href="route('register')" class="mobile-menu-button"
+                                @click="closeMobileMenu">
+                                Probar gratis
+                            </Link>
+                            <button v-else type="button" class="mobile-menu-button"
+                                @click="closeMobileMenu(); showLoginModal = true">
+                                Probar gratis
                             </button>
                         </template>
                     </div>
-                </nav>
+                </div>
             </div>
 
             <div class="hero-page">
@@ -165,10 +261,10 @@ onUnmounted(() => {
                     </div>
 
                     <div class="cta-strip">
-                        <a class="cta primary" href="#">
+                        <Link v-if="canRegister" :href="route('register')" class="cta primary">
                             <span>
                                 <span class="cta-title">Prueba gratis 14 días</span>
-                                <span class="cta-sub">Sin tarjeta · cancela cuando quieras</span>
+                                <span class="cta-sub">Crea tu cuenta y empieza hoy mismo</span>
                             </span>
                             <span class="cta-arrow">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -177,12 +273,25 @@ onUnmounted(() => {
                                     <polyline points="12 5 19 12 12 19" />
                                 </svg>
                             </span>
-                        </a>
-
-                        <a class="cta" href="#">
+                        </Link>
+                        <button v-else class="cta primary" type="button" @click="showLoginModal = true">
                             <span>
-                                <span class="cta-title">Agendar demo</span>
-                                <span class="cta-sub">15 minutos con un especialista en español</span>
+                                <span class="cta-title">Prueba gratis 14 días</span>
+                                <span class="cta-sub">Ingresa y empieza a probar Feeto</span>
+                            </span>
+                            <span class="cta-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                </svg>
+                            </span>
+                        </button>
+
+                        <a class="cta" href="#features">
+                            <span>
+                                <span class="cta-title">Ver funcionalidades</span>
+                                <span class="cta-sub">Explora agenda, órdenes, inventario y recepción con IA</span>
                             </span>
                             <span class="cta-arrow">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -422,14 +531,22 @@ onUnmounted(() => {
                             14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
                         </p>
                     </div>
-                    <a href="#"
+                    <Link v-if="canRegister" :href="route('register')"
                         class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#e8920d] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
                         Empezar Gratis Ahora
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
-                    </a>
+                    </Link>
+                    <button v-else type="button" @click="showLoginModal = true"
+                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#e8920d] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
+                        Empezar Gratis Ahora
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </section>
@@ -684,6 +801,88 @@ onUnmounted(() => {
 .btn-accent:hover {
     background: #ffc466;
     transform: translateY(-1px);
+}
+
+.mobile-menu-toggle,
+.mobile-menu {
+    display: none;
+}
+
+.mobile-menu-toggle {
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.mobile-menu {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(13, 15, 20, 0.96) 0%, rgba(9, 10, 13, 0.92) 100%);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.mobile-menu-links,
+.mobile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mobile-menu-actions {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobile-menu-link,
+.mobile-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.mobile-menu-link {
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.mobile-menu-link-active {
+    background: rgba(255, 181, 71, 0.18);
+    color: #ffffff;
+}
+
+.mobile-menu-button {
+    border: none;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.mobile-menu-button-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .meta-row {
@@ -1047,9 +1246,135 @@ onUnmounted(() => {
 
 @media (max-width: 900px) {
 
+    .hero-page,
+    .feat-section {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .nav-wrap,
+    .nav-wrap.nav-fixed {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        display: block;
+        padding: 0;
+    }
+
+    .nav {
+        justify-content: space-between;
+        padding: 10px 10px 10px 14px;
+        border-radius: 20px;
+    }
+
     .nav-links,
-    .btn-ghost {
+    .btn-ghost,
+    .btn-accent {
         display: none;
+    }
+
+    .brand {
+        font-size: 16px;
+    }
+
+    .brand-mark {
+        width: 30px;
+        height: 30px;
+    }
+
+    .nav-cta {
+        margin-left: auto;
+        justify-content: flex-end;
+    }
+
+    .mobile-menu-toggle,
+    .mobile-menu {
+        display: flex;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+
+    .hero-page {
+        padding-top: 86px;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 72px 20px 20px;
+    }
+
+    .hero-img {
+        background-position: center 20%;
+        background-size: 180%;
+    }
+
+    .hero-fade {
+        background: linear-gradient(180deg, rgba(6, 7, 10, 0.82) 0%, rgba(6, 7, 10, 0.46) 26%, rgba(6, 7, 10, 0.88) 70%, rgba(6, 7, 10, 0.98) 100%);
+    }
+
+    .headline-wrap {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .index-num {
+        padding-bottom: 0;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+    }
+
+    .headline {
+        max-width: 9ch;
+        font-size: clamp(42px, 15vw, 60px);
+        line-height: 0.98;
+    }
+
+    .cta-strip {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 28px;
+        border-top: 0;
+        background: none;
+    }
+
+    .cta {
+        gap: 16px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .cta.primary {
+        background: linear-gradient(135deg, rgba(255, 181, 71, 0.24), rgba(255, 122, 0, 0.18));
+    }
+
+    .cta-title {
+        font-size: 16px;
+    }
+
+    .cta-sub {
+        max-width: 28ch;
+        line-height: 1.5;
+    }
+
+    .cta-arrow {
+        width: 40px;
+        height: 40px;
     }
 
     .feat-grid {
@@ -1057,7 +1382,8 @@ onUnmounted(() => {
     }
 
     .feat-inner {
-        padding: 36px 24px;
+        padding: 32px 20px;
+        border-radius: 24px;
     }
 }
 </style>
