@@ -3,11 +3,16 @@
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\LandingPageSeoController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\TenantController;
+use App\Http\Controllers\Admin\TrialRequestController as AdminTrialRequestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\PublicPricingController;
+use App\Http\Controllers\TrialRequestController;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SmartReceptionController;
 use App\Http\Controllers\Api\WorkOrderItemController;
@@ -56,12 +61,13 @@ use Spatie\Permission\PermissionRegistrar;
 | Rutas Públicas — Visibles para cualquier visitante (clientes del taller)
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('home');
+Route::get('/', WelcomeController::class)->name('home');
+Route::get('/precios', PublicPricingController::class)->name('pricing');
+
+// Solicitud de prueba gratuita
+Route::get('/trial', [TrialRequestController::class, 'create'])->name('trial.create');
+Route::post('/trial', [TrialRequestController::class, 'store'])->middleware('throttle:5,1')->name('trial.store');
+Route::get('/trial/gracias', [TrialRequestController::class, 'success'])->name('trial.success');
 
 // Tracking de Orden de Trabajo (Público con rate limit)
 Route::get('/ot/{uuid}', [TrackingController::class, 'show'])
@@ -332,6 +338,15 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
 
         // Audit Log
         Route::get('/audit', [AuditLogController::class, 'index'])->name('audit.index');
+
+        // SEO páginas públicas
+        Route::get('/landing-seo', [LandingPageSeoController::class, 'index'])->name('landing-seo.index');
+        Route::put('/landing-seo', [LandingPageSeoController::class, 'update'])->name('landing-seo.update');
+
+        // Solicitudes de prueba gratuita
+        Route::get('/trial-requests', [AdminTrialRequestController::class, 'index'])->name('trial-requests.index');
+        Route::post('/trial-requests/{trialRequest}/approve', [AdminTrialRequestController::class, 'approve'])->name('trial-requests.approve');
+        Route::post('/trial-requests/{trialRequest}/reject', [AdminTrialRequestController::class, 'reject'])->name('trial-requests.reject');
 
         // Pagos
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');

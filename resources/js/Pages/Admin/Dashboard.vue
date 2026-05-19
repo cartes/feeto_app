@@ -9,6 +9,8 @@ const props = defineProps({
     ocr_usage: Array,
     visits_by_day: Array,
     expiring_tenants: Array,
+    pending_trial_requests: { type: Number, default: 0 },
+    recent_trial_requests: { type: Array, default: () => [] },
 });
 
 const formatCLP = (value) => {
@@ -211,6 +213,56 @@ const visitsAreaPoints = computed(() => {
                 </table>
             </div>
             <p v-else class="px-6 py-8 text-sm text-slate-400 text-center">No hay talleres próximos a vencer.</p>
+        </div>
+
+        <!-- Solicitudes de prueba pendientes -->
+        <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                        Solicitudes de Prueba Gratuita
+                        <span v-if="pending_trial_requests > 0" class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            {{ pending_trial_requests }} pendiente{{ pending_trial_requests !== 1 ? 's' : '' }}
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Últimas solicitudes sin revisar</p>
+                </div>
+                <Link :href="route('admin.trial-requests.index')" class="text-xs text-amber-600 hover:text-amber-800 font-semibold transition-colors">
+                    Ver todas →
+                </Link>
+            </div>
+            <div v-if="recent_trial_requests && recent_trial_requests.length">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="py-3 pl-6 pr-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Solicitante</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Negocio</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Ciudad</th>
+                            <th class="py-3 pl-3 pr-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        <tr v-for="req in recent_trial_requests" :key="req.id">
+                            <td class="py-3 pl-6 pr-3">
+                                <p class="text-sm font-medium text-slate-900">{{ req.name }}</p>
+                                <p class="text-xs text-slate-500">{{ req.email }}</p>
+                            </td>
+                            <td class="px-3 py-3">
+                                <p class="text-sm text-slate-700">{{ req.business_name }}</p>
+                                <p class="text-xs text-slate-400">{{ req.business_type }}</p>
+                            </td>
+                            <td class="px-3 py-3 text-sm text-slate-500">{{ req.city || '—' }}</td>
+                            <td class="py-3 pl-3 pr-6 text-right">
+                                <Link :href="route('admin.trial-requests.index')" class="text-xs text-amber-600 hover:text-amber-900 font-semibold">
+                                    Revisar
+                                </Link>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else class="px-6 py-8 text-sm text-slate-400 text-center">No hay solicitudes pendientes.</p>
         </div>
     </AdminLayout>
 </template>

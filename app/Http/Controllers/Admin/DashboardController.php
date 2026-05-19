@@ -10,6 +10,7 @@ use App\Models\LoginLog;
 use App\Models\PageVisit;
 use App\Models\Payment;
 use App\Models\Tenant;
+use App\Models\TrialRequest;
 use App\Models\User;
 use App\Models\WorkOrder;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +92,14 @@ class DashboardController extends Controller
             ->select('id', 'name', 'subscription_ends_at')
             ->get();
 
+        // Solicitudes de prueba gratuita
+        $pendingTrialRequests = TrialRequest::where('status', 'pending')->count();
+        $recentTrialRequests = TrialRequest::query()
+            ->where('status', 'pending')
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'name', 'email', 'business_name', 'business_type', 'city', 'created_at']);
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'total_tenants' => $totalTenants,
@@ -106,6 +115,8 @@ class DashboardController extends Controller
             'ocr_usage' => $ocrUsage,
             'visits_by_day' => $visitsByDay,
             'expiring_tenants' => $expiringTenants,
+            'pending_trial_requests' => $pendingTrialRequests,
+            'recent_trial_requests' => $recentTrialRequests,
         ]);
     }
 }

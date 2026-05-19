@@ -128,6 +128,20 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
               >
                 Auditoría
               </Link>
+              <Link
+                :href="route('admin.trial-requests.index')"
+                :class="route().current('admin.trial-requests.*') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
+                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+              >
+                Pruebas
+              </Link>
+              <Link
+                :href="route('admin.landing-seo.index')"
+                :class="route().current('admin.landing-seo.*') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
+                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+              >
+                SEO
+              </Link>
             </div>
           </div>
           <div class="hidden sm:ml-6 sm:flex sm:items-center">

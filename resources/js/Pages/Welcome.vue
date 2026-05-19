@@ -1,59 +1,33 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
+import PublicNav from '@/Components/PublicNav.vue';
 
-defineProps({
+const props = defineProps({
     canLogin: { type: Boolean },
     canRegister: { type: Boolean },
+    seo: { type: Object, default: () => ({}) },
+});
+
+const canonicalUrl = computed(() => {
+    if (typeof window !== 'undefined') return window.location.origin + '/';
+    return 'https://tallerflow.cl/';
 });
 
 const showLoginModal = ref(false);
-const navFixed = ref(false);
-const navStyle = ref({});
 const activeSection = ref('features');
-const isCompactViewport = ref(false);
-const mobileMenuOpen = ref(false);
 
 let scrollHandler = null;
-let resizeHandler = null;
-
-const closeMobileMenu = () => {
-    mobileMenuOpen.value = false;
-};
-
-const toggleMobileMenu = () => {
-    mobileMenuOpen.value = !mobileMenuOpen.value;
-};
 
 onMounted(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (urlParams.get('login')) {
-        showLoginModal.value = true;
-    }
-
-    const syncViewport = () => {
-        isCompactViewport.value = window.innerWidth <= 900;
-
-        if (isCompactViewport.value) {
-            navFixed.value = false;
-            navStyle.value = {};
-        } else {
-            closeMobileMenu();
-        }
-    };
-
     scrollHandler = () => {
         const benefits = document.getElementById('benefits');
         const pricing = document.getElementById('pricing');
 
-        if (!benefits) {
-            return;
-        }
+        if (!benefits) return;
 
         const scrollY = window.scrollY;
-        const stopAt = benefits.getBoundingClientRect().top + scrollY - 116;
         const benefitsTop = benefits.getBoundingClientRect().top + scrollY;
         const pricingTop = pricing ? pricing.getBoundingClientRect().top + scrollY : Number.POSITIVE_INFINITY;
 
@@ -64,165 +38,38 @@ onMounted(() => {
         } else {
             activeSection.value = 'features';
         }
-
-        if (isCompactViewport.value) {
-            return;
-        }
-
-        if (scrollY < 50) {
-            navFixed.value = false;
-            navStyle.value = {};
-
-            return;
-        }
-
-        if (scrollY < stopAt) {
-            navFixed.value = true;
-            navStyle.value = {};
-
-            return;
-        }
-
-        navFixed.value = false;
-        navStyle.value = {
-            position: 'absolute',
-            top: `${stopAt + 18}px`,
-            left: '18px',
-            right: '18px',
-        };
     };
 
-    resizeHandler = () => {
-        syncViewport();
-        scrollHandler?.();
-    };
-
-    syncViewport();
     scrollHandler();
-
     window.addEventListener('scroll', scrollHandler, { passive: true });
-    window.addEventListener('resize', resizeHandler, { passive: true });
 });
 
 onUnmounted(() => {
-    if (scrollHandler) {
-        window.removeEventListener('scroll', scrollHandler);
-    }
-
-    if (resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-    }
+    if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
 });
 </script>
 
 <template>
 
-    <Head title="Feeto · Software para Talleres Mecánicos" />
+    <Head>
+        <title>{{ seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile' }}</title>
+        <meta name="description" :content="seo.description ?? ''">
+        <meta name="robots" content="index, follow">
+        <link rel="canonical" :href="canonicalUrl">
+        <meta property="og:type" content="website">
+        <meta property="og:title" :content="seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile'">
+        <meta property="og:description" :content="seo.description ?? ''">
+        <meta property="og:url" :content="canonicalUrl">
+        <meta v-if="seo.og_image" property="og:image" :content="seo.og_image">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" :content="seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile'">
+        <meta name="twitter:description" :content="seo.description ?? ''">
+    </Head>
+
+    <PublicNav :can-login="canLogin" :active-section="activeSection" />
 
     <div class="min-h-screen bg-white font-sans antialiased">
         <div class="dark-wrapper">
-            <div class="nav-wrap" :class="{ 'nav-fixed': navFixed }" :style="navStyle">
-                <nav class="nav">
-                    <div class="brand text-white">
-                        <span class="brand-mark" aria-hidden="true">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                <path
-                                    d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.6-.6-2.5z" />
-                                <path d="M3 21l3-3" />
-                            </svg>
-                        </span>
-                        Taller<span>Flow</span>
-                    </div>
-
-                    <div class="nav-links">
-                        <a href="#features"
-                            :class="{ 'nav-link-active': activeSection === 'features' }">Características</a>
-                        <a href="#benefits" :class="{ 'nav-link-active': activeSection === 'benefits' }">Beneficios</a>
-                        <a href="#pricing" :class="{ 'nav-link-active': activeSection === 'pricing' }">Precios</a>
-                    </div>
-
-                    <div class="nav-cta">
-                        <template v-if="$page.props.auth?.user">
-                            <Link :href="route('dashboard')" class="btn-ghost">
-                                Dashboard
-                            </Link>
-                        </template>
-                        <template v-else>
-                            <button v-if="canLogin" class="btn-ghost" type="button" @click="showLoginModal = true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                                    <polyline points="10 17 15 12 10 7" />
-                                    <line x1="15" y1="12" x2="3" y2="12" />
-                                </svg>
-                                 Iniciar Sesión
-                             </button>
-                            <Link v-if="canRegister" :href="route('register')" class="btn-accent">
-                                Probar gratis
-                            </Link>
-                            <button v-else class="btn-accent" type="button" @click="showLoginModal = true">
-                                Probar gratis
-                            </button>
-                        </template>
-
-                        <button class="mobile-menu-toggle" type="button" :aria-expanded="mobileMenuOpen"
-                            aria-controls="mobile-menu" aria-label="Abrir menú" @click="toggleMobileMenu">
-                            <svg v-if="!mobileMenuOpen" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                stroke-linejoin="round" aria-hidden="true">
-                                <line x1="4" y1="7" x2="20" y2="7" />
-                                <line x1="4" y1="12" x2="20" y2="12" />
-                                <line x1="4" y1="17" x2="20" y2="17" />
-                            </svg>
-                            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <line x1="6" y1="6" x2="18" y2="18" />
-                                <line x1="18" y1="6" x2="6" y2="18" />
-                            </svg>
-                        </button>
-                    </div>
-                </nav>
-
-                <div v-if="isCompactViewport && mobileMenuOpen" id="mobile-menu" class="mobile-menu">
-                    <div class="mobile-menu-links">
-                        <a href="#features" class="mobile-menu-link"
-                            :class="{ 'mobile-menu-link-active': activeSection === 'features' }"
-                            @click="closeMobileMenu">Características</a>
-                        <a href="#benefits" class="mobile-menu-link"
-                            :class="{ 'mobile-menu-link-active': activeSection === 'benefits' }"
-                            @click="closeMobileMenu">Beneficios</a>
-                        <a href="#pricing" class="mobile-menu-link"
-                            :class="{ 'mobile-menu-link-active': activeSection === 'pricing' }"
-                            @click="closeMobileMenu">Precios</a>
-                    </div>
-
-                    <div class="mobile-menu-actions">
-                        <template v-if="$page.props.auth?.user">
-                            <Link :href="route('dashboard')" class="mobile-menu-button mobile-menu-button-secondary"
-                                @click="closeMobileMenu">
-                                Ir al dashboard
-                            </Link>
-                        </template>
-                        <template v-else>
-                            <button v-if="canLogin" type="button"
-                                class="mobile-menu-button mobile-menu-button-secondary"
-                                @click="closeMobileMenu(); showLoginModal = true">
-                                Iniciar sesión
-                            </button>
-                            <Link v-if="canRegister" :href="route('register')" class="mobile-menu-button"
-                                @click="closeMobileMenu">
-                                Probar gratis
-                            </Link>
-                            <button v-else type="button" class="mobile-menu-button"
-                                @click="closeMobileMenu(); showLoginModal = true">
-                                Probar gratis
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
             <div class="hero-page">
                 <section class="hero layout-car-left">
                     <div class="hero-img"></div>
@@ -261,7 +108,7 @@ onUnmounted(() => {
                     </div>
 
                     <div class="cta-strip">
-                        <Link v-if="canRegister" :href="route('register')" class="cta primary">
+                        <Link v-if="canRegister" :href="route('trial.create')" class="cta primary">
                             <span>
                                 <span class="cta-title">Prueba gratis 14 días</span>
                                 <span class="cta-sub">Crea tu cuenta y empieza hoy mismo</span>
@@ -531,7 +378,7 @@ onUnmounted(() => {
                             14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
                         </p>
                     </div>
-                    <Link v-if="canRegister" :href="route('register')"
+                    <Link v-if="canRegister" :href="route('trial.create')"
                         class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#e8920d] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
                         Empezar Gratis Ahora
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -663,226 +510,6 @@ onUnmounted(() => {
     --accent: #ffb547;
     --accent-ink: #1a0e00;
     --radius: 28px;
-}
-
-.nav-wrap {
-    position: absolute;
-    top: 40px;
-    right: 18px;
-    left: 18px;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-}
-
-.nav-wrap.nav-fixed {
-    position: fixed;
-    top: 18px;
-    right: 18px;
-    left: 18px;
-}
-
-.nav {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 8px 8px 18px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(26, 28, 34, 0.68) 0%, rgba(72, 77, 90, 0.56) 50%, rgba(26, 28, 34, 0.68) 100%);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        0 10px 30px rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ink);
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-}
-
-.brand-mark {
-    display: grid;
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    place-items: center;
-    border-radius: 10px;
-    color: #1a0e00;
-    background: linear-gradient(160deg, #ffb547, #ff7a00);
-}
-
-.nav-links {
-    display: flex;
-    gap: 6px;
-    margin: 0 auto;
-    padding: 0 12px;
-    white-space: nowrap;
-}
-
-.nav-links a {
-    padding: 10px 16px;
-    border-radius: 999px;
-    color: rgba(255, 255, 255, 0.76);
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.nav-links a:hover {
-    color: var(--ink);
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.nav-links a.nav-link-active {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.nav-cta {
-    display: flex;
-    margin-left: auto;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-.btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 18px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.9);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background 0.15s ease;
-}
-
-.btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.07);
-}
-
-.btn-accent {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
-    border: none;
-    border-radius: 999px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.btn-accent:hover {
-    background: #ffc466;
-    transform: translateY(-1px);
-}
-
-.mobile-menu-toggle,
-.mobile-menu {
-    display: none;
-}
-
-.mobile-menu-toggle {
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--ink);
-    cursor: pointer;
-}
-
-.mobile-menu {
-    width: 100%;
-    margin-top: 10px;
-    padding: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 24px;
-    background: linear-gradient(180deg, rgba(13, 15, 20, 0.96) 0%, rgba(9, 10, 13, 0.92) 100%);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-}
-
-.mobile-menu-links,
-.mobile-menu-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.mobile-menu-actions {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.mobile-menu-link,
-.mobile-menu-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-    padding: 12px 16px;
-    border-radius: 16px;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-}
-
-.mobile-menu-link {
-    justify-content: flex-start;
-    background: rgba(255, 255, 255, 0.04);
-}
-
-.mobile-menu-link-active {
-    background: rgba(255, 181, 71, 0.18);
-    color: #ffffff;
-}
-
-.mobile-menu-button {
-    border: none;
-    background: var(--accent);
-    color: var(--accent-ink);
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.mobile-menu-button-secondary {
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.92);
 }
 
 .meta-row {
@@ -1250,51 +877,6 @@ onUnmounted(() => {
     .feat-section {
         padding-right: 12px;
         padding-left: 12px;
-    }
-
-    .nav-wrap,
-    .nav-wrap.nav-fixed {
-        position: fixed;
-        top: 12px;
-        right: 12px;
-        left: 12px;
-        display: block;
-        padding: 0;
-    }
-
-    .nav {
-        justify-content: space-between;
-        padding: 10px 10px 10px 14px;
-        border-radius: 20px;
-    }
-
-    .nav-links,
-    .btn-ghost,
-    .btn-accent {
-        display: none;
-    }
-
-    .brand {
-        font-size: 16px;
-    }
-
-    .brand-mark {
-        width: 30px;
-        height: 30px;
-    }
-
-    .nav-cta {
-        margin-left: auto;
-        justify-content: flex-end;
-    }
-
-    .mobile-menu-toggle,
-    .mobile-menu {
-        display: flex;
-    }
-
-    .mobile-menu {
-        display: block;
     }
 
     .hero-page {

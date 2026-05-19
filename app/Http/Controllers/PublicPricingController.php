@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Models\Plan;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class PublicPricingController extends Controller
+{
+    public function __invoke(): Response
+    {
+        $plans = Plan::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (Plan $plan): array => [
+                'id' => $plan->id,
+                'name' => $plan->name,
+                'slug' => $plan->slug,
+                'description' => $plan->description,
+                'price_monthly' => $plan->price_monthly,
+                'price_annual' => $plan->price_annual,
+                'discounted_monthly_price' => $plan->discountedMonthlyPrice(),
+                'features' => $plan->features ?? [],
+                'max_users' => $plan->max_users,
+                'max_branches' => $plan->max_branches,
+                'is_popular' => (bool) $plan->is_popular,
+                'has_discount' => $plan->hasActiveDiscount(),
+                'discount_percent' => $plan->discount_percent,
+                'trial_days' => $plan->trial_days,
+            ]);
+
+        return Inertia::render('Pricing', [
+            'plans' => $plans,
+            'canLogin' => Route::has('login'),
+            'seo' => [
+                'title' => Setting::get('seo_pricing_title', 'Planes y Precios · TallerFlow — Software para Talleres'),
+                'description' => Setting::get('seo_pricing_description', 'Elige el plan TallerFlow ideal para tu taller mecánico. Desde $19.990/mes con 14 días de prueba gratis. Sin tarjeta de crédito requerida.'),
+                'og_image' => Setting::get('seo_pricing_og_image', ''),
+            ],
+        ]);
+    }
+}
