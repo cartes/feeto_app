@@ -1,15 +1,9 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 
 const props = defineProps({
     seo: { type: Object, default: () => ({}) },
-});
-
-const canonicalUrl = computed(() => {
-    if (typeof window !== 'undefined') return window.location.origin + '/trial';
-    return 'https://tallerflow.cl/trial';
 });
 
 const form = useForm({
@@ -51,14 +45,6 @@ const submit = () => {
 <template>
     <Head>
         <title>{{ seo.title ?? 'Solicitar prueba gratis · TallerFlow' }}</title>
-        <meta name="description" :content="seo.description ?? ''">
-        <meta name="robots" content="index, follow">
-        <link rel="canonical" :href="canonicalUrl">
-        <meta property="og:type" content="website">
-        <meta property="og:title" :content="seo.title ?? 'Solicitar prueba gratis · TallerFlow'">
-        <meta property="og:description" :content="seo.description ?? ''">
-        <meta property="og:url" :content="canonicalUrl">
-        <meta v-if="seo.og_image" property="og:image" :content="seo.og_image">
     </Head>
 
     <PublicNav :can-login="false" />

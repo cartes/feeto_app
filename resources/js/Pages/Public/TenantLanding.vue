@@ -1,7 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { ref, computed, watch } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import LoginModal from '@/Components/LoginModal.vue';
 import Toast from '@/Components/Toast.vue';
 
@@ -9,6 +9,10 @@ const props = defineProps({
     tenant: {
         type: Object,
         required: true,
+    },
+    seo: {
+        type: Object,
+        default: () => ({}),
     },
 });
 
@@ -76,11 +80,7 @@ const trackWhatsAppClick = () => {
 
 <template>
     <Head>
-        <title>Agendar Cita | {{ tenant.name }}</title>
-        <meta name="description" :content="tenant.seo_description || `Agenda tu cita en ${tenant.name}. Diagnóstico rápido, repuestos garantizados y transparencia total.`" />
-        <meta name="robots" content="index, follow" />
-        <meta property="og:title" :content="`Agendar Cita | ${tenant.name}`" />
-        <meta property="og:description" :content="tenant.seo_description || `Taller de confianza. Reserva tu cita en ${tenant.name} hoy.`" />
+        <title>{{ seo.title ?? `Agendar Cita | ${tenant.name}` }}</title>
     </Head>
 
     <div class="min-h-screen bg-gray-50 font-sans antialiased">

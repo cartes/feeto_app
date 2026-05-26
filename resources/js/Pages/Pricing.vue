@@ -33,13 +33,6 @@ const annualSavings = (plan) => {
     return Math.round((1 - annualCost / monthlyCost) * 100);
 };
 
-const canonicalUrl = computed(() => {
-    if (typeof window !== 'undefined') {
-        return window.location.origin + '/precios';
-    }
-    return 'https://tallerflow.cl/precios';
-});
-
 const jsonLd = computed(() => JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -68,22 +61,6 @@ const jsonLd = computed(() => JSON.stringify({
 <template>
     <Head>
         <title>{{ seo.title ?? 'Planes y Precios · TallerFlow' }}</title>
-        <meta name="description" :content="seo.description ?? ''">
-        <meta name="robots" content="index, follow">
-        <link rel="canonical" :href="canonicalUrl">
-
-        <!-- Open Graph -->
-        <meta property="og:type" content="website">
-        <meta property="og:title" :content="seo.title ?? 'Planes y Precios · TallerFlow'">
-        <meta property="og:description" :content="seo.description ?? ''">
-        <meta property="og:url" :href="canonicalUrl">
-        <meta v-if="seo.og_image" property="og:image" :content="seo.og_image">
-
-        <!-- Twitter Card -->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" :content="seo.title ?? 'Planes y Precios · TallerFlow'">
-        <meta name="twitter:description" :content="seo.description ?? ''">
-        <meta v-if="seo.og_image" name="twitter:image" :content="seo.og_image">
     </Head>
 
     <!-- JSON-LD structured data -->

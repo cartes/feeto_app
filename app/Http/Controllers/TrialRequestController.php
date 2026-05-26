@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
 use App\Models\TrialRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,11 +15,11 @@ class TrialRequestController extends Controller
     public function create(): Response
     {
         return Inertia::render('Trial/Create', [
-            'seo' => [
-                'title' => Setting::get('seo_trial_title', 'Prueba Gratis 14 días · TallerFlow — Software para Talleres'),
-                'description' => Setting::get('seo_trial_description', 'Solicita tu acceso gratuito de 14 días a TallerFlow. Sin tarjeta de crédito. Sin compromisos. Activa tu taller digital hoy.'),
-                'og_image' => Setting::get('seo_trial_og_image', ''),
-            ],
+            'seo' => $this->resolveMarketingSeo(
+                'trial',
+                'Prueba Gratis 14 días · TallerFlow — Software para Talleres',
+                'Solicita tu acceso gratuito de 14 días a TallerFlow. Sin tarjeta de crédito. Sin compromisos. Activa tu taller digital hoy.',
+            ),
         ]);
     }
 

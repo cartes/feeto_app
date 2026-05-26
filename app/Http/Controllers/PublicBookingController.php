@@ -14,8 +14,12 @@ use Inertia\Response;
 
 class PublicBookingController extends Controller
 {
-    public function show(Tenant $tenantBySlug): Response
+    public function show(Request $request, Tenant $tenantBySlug): Response
     {
+        $defaultDescription = $tenantBySlug->seo_description
+            ?: "Agenda tu cita en {$tenantBySlug->name}. Diagnóstico rápido, repuestos garantizados y transparencia total.";
+        $canonicalUrl = $request->url();
+
         return Inertia::render('Public/TenantLanding', [
             'tenant' => [
                 'id' => $tenantBySlug->id,
@@ -28,6 +32,13 @@ class PublicBookingController extends Controller
                 'seo_description' => $tenantBySlug->seo_description,
                 'seo_address' => $tenantBySlug->seo_address,
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
+            ],
+            'seo' => [
+                'title' => "Agendar Cita | {$tenantBySlug->name}",
+                'description' => $defaultDescription,
+                'canonical_url' => $canonicalUrl,
+                'og_image' => $this->resolveSocialImageUrl(),
+                'schema' => $this->resolveTenantLandingSchema($tenantBySlug, $canonicalUrl, $defaultDescription),
             ],
         ]);
     }
@@ -69,5 +80,62 @@ class PublicBookingController extends Controller
         ]);
 
         return back()->with('booking_success', true);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function resolveTenantLandingSchema(Tenant $tenant, string $canonicalUrl, string $description): array
+    {
+        $businessSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'AutoRepair',
+            '@id' => "{$canonicalUrl}#business",
+            'name' => $tenant->name,
+            'url' => $canonicalUrl,
+            'description' => $description,
+            'image' => $this->resolveSocialImageUrl(),
+            'areaServed' => [
+                '@type' => 'Country',
+                'name' => 'Chile',
+            ],
+        ];
+
+        if (filled($tenant->seo_address)) {
+            $businessSchema['address'] = [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $tenant->seo_address,
+                'addressCountry' => 'CL',
+            ];
+        }
+
+        if (filled($tenant->whatsapp_number)) {
+            $businessSchema['telephone'] = $tenant->whatsapp_number;
+        }
+
+        return [
+            $businessSchema,
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebPage',
+                '@id' => "{$canonicalUrl}#webpage",
+                'url' => $canonicalUrl,
+                'name' => "Agendar Cita | {$tenant->name}",
+                'description' => $description,
+                'about' => [
+                    '@id' => "{$canonicalUrl}#business",
+                ],
+                'primaryImageOfPage' => [
+                    '@type' => 'ImageObject',
+                    'url' => $this->resolveSocialImageUrl(),
+                ],
+                'isPartOf' => [
+                    '@type' => 'WebSite',
+                    '@id' => url('/').'#website',
+                    'url' => url('/'),
+                    'name' => config('app.name', 'TallerFlow'),
+                ],
+            ],
+        ];
     }
 }

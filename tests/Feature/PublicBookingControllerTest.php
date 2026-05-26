@@ -16,6 +16,7 @@ class PublicBookingControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutVite();
         $this->tenant = Tenant::factory()->create(['slug' => 'test-taller']);
     }
 
@@ -24,6 +25,18 @@ class PublicBookingControllerTest extends TestCase
         $response = $this->get("/taller/{$this->tenant->slug}/");
 
         $response->assertOk()->assertInertia(fn ($page) => $page->component('Public/TenantLanding'));
+    }
+
+    public function test_booking_page_renders_schema_with_tenant_slug_in_canonical_url(): void
+    {
+        $response = $this->get(route('taller.landing', ['tenantBySlug' => $this->tenant->slug]));
+
+        $response->assertOk();
+        $response->assertSee('<link rel="canonical" href="'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'">', false);
+        $response->assertSee('"@type":"AutoRepair"', false);
+        $response->assertSee('"@id":"'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'#business"', false);
+        $response->assertSee('"url":"'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'"', false);
+        $response->assertSee(url('/images/tallerflow-social-share.png'), false);
     }
 
     public function test_booking_can_be_created(): void

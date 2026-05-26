@@ -1,7 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
 import PublicNav from '@/Components/PublicNav.vue';
 
@@ -9,11 +9,6 @@ const props = defineProps({
     canLogin: { type: Boolean },
     canRegister: { type: Boolean },
     seo: { type: Object, default: () => ({}) },
-});
-
-const canonicalUrl = computed(() => {
-    if (typeof window !== 'undefined') return window.location.origin + '/';
-    return 'https://tallerflow.cl/';
 });
 
 const showLoginModal = ref(false);
@@ -96,17 +91,6 @@ onUnmounted(() => {
 
     <Head>
         <title>{{ seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile' }}</title>
-        <meta name="description" :content="seo.description ?? ''">
-        <meta name="robots" content="index, follow">
-        <link rel="canonical" :href="canonicalUrl">
-        <meta property="og:type" content="website">
-        <meta property="og:title" :content="seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile'">
-        <meta property="og:description" :content="seo.description ?? ''">
-        <meta property="og:url" :content="canonicalUrl">
-        <meta v-if="seo.og_image" property="og:image" :content="seo.og_image">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" :content="seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile'">
-        <meta name="twitter:description" :content="seo.description ?? ''">
     </Head>
 
     <PublicNav :can-login="canLogin" :active-section="activeSection" />
