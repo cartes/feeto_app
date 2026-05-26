@@ -17,11 +17,13 @@ const currentPath = computed(() => (page.url ?? '').split('?')[0]);
 const isHome = computed(() => currentPath.value === '/');
 const isPricing = computed(() => currentPath.value === '/precios');
 const isTrial = computed(() => currentPath.value === '/trial' || currentPath.value === '/trial/gracias');
+const isBlog = computed(() => currentPath.value.startsWith('/blog'));
 
 const isActive = (item) => {
     if (item === 'features') return isHome.value && props.activeSection === 'features';
     if (item === 'benefits') return isHome.value && (props.activeSection === 'benefits' || props.activeSection === 'pricing');
     if (item === 'planes') return isPricing.value;
+    if (item === 'blog') return isBlog.value;
     return false;
 };
 
@@ -46,6 +48,7 @@ onMounted(() => {
                 <a href="/#features" :class="['pub-link', { 'pub-link-active': isActive('features') }]">Características</a>
                 <a href="/#benefits" :class="['pub-link', { 'pub-link-active': isActive('benefits') }]">Beneficios</a>
                 <Link :href="route('pricing')" :class="['pub-link', { 'pub-link-active': isActive('planes') }]">Planes</Link>
+                <Link :href="route('blog.index')" :class="['pub-link', { 'pub-link-active': isActive('blog') }]">Blog</Link>
             </div>
 
             <!-- Desktop CTA -->
@@ -83,6 +86,7 @@ onMounted(() => {
                 <a href="/#features" class="pub-mobile-link" :class="{ 'pub-mobile-link-active': isActive('features') }" @click="mobileMenuOpen = false">Características</a>
                 <a href="/#benefits" class="pub-mobile-link" :class="{ 'pub-mobile-link-active': isActive('benefits') }" @click="mobileMenuOpen = false">Beneficios</a>
                 <Link :href="route('pricing')" class="pub-mobile-link" :class="{ 'pub-mobile-link-active': isActive('planes') }" @click="mobileMenuOpen = false">Planes y Precios</Link>
+                <Link :href="route('blog.index')" class="pub-mobile-link" :class="{ 'pub-mobile-link-active': isActive('blog') }" @click="mobileMenuOpen = false">Blog</Link>
             </div>
             <div class="pub-mobile-actions">
                 <template v-if="$page.props.auth?.user">

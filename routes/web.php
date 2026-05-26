@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LandingPageSeoController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\PublicPricingController;
@@ -29,6 +31,7 @@ use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Subscription\BillingController;
 use App\Http\Controllers\Subscription\TenantSubscriptionController;
@@ -60,8 +63,15 @@ use Spatie\Permission\PermissionRegistrar;
 | Rutas Públicas — Visibles para cualquier visitante (clientes del taller)
 |--------------------------------------------------------------------------
 */
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/precios', PublicPricingController::class)->name('pricing');
+
+// Blog Público
+Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 // Solicitud de prueba gratuita
 Route::get('/trial', [TrialRequestController::class, 'create'])->name('trial.create');
@@ -343,6 +353,9 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         // SEO páginas públicas
         Route::get('/landing-seo', [LandingPageSeoController::class, 'index'])->name('landing-seo.index');
         Route::put('/landing-seo', [LandingPageSeoController::class, 'update'])->name('landing-seo.update');
+
+        // Blog
+        Route::resource('/blog', BlogPostController::class)->except(['show']);
 
         // Solicitudes de prueba gratuita
         Route::get('/trial-requests', [AdminTrialRequestController::class, 'index'])->name('trial-requests.index');

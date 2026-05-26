@@ -147,6 +147,13 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
               >
                 SEO
               </Link>
+              <Link
+                :href="route('admin.blog.index')"
+                :class="route().current('admin.blog.*') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
+                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+              >
+                Blog
+              </Link>
             </div>
           </div>
           <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -292,6 +299,14 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
             @click="showingNavigationDropdown = false"
           >
             SEO
+          </Link>
+          <Link
+            :href="route('admin.blog.index')"
+            :class="route().current('admin.blog.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Blog
           </Link>
         </div>
 
