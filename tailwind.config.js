@@ -1,6 +1,21 @@
 import defaultTheme from "tailwindcss/defaultTheme";
 import forms from "@tailwindcss/forms";
 
+const brandOrange = {
+    50: "#FFF4EB",
+    100: "#FFE7D1",
+    200: "#FFC999",
+    300: "#FFAB61",
+    400: "#FF8D29",
+    500: "#FF7A00",
+    600: "#CC6200",
+    700: "#994900",
+    800: "#663100",
+    900: "#331800",
+    950: "#1A0C00",
+    DEFAULT: "#FF7A00",
+};
+
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
@@ -21,7 +36,10 @@ export default {
                 "panel-bg": "#1F2833", // Gris metálico oscuro
                 "tech-accent": "#66FCF1", // Un toque cian eléctrico para detalles
                 "tech-red": "#C3073F", // Rojo profundo industrial
-                "tech-orange": "#F9A826", // Naranja/Ambar vibrante de la referencia
+                "tech-orange": brandOrange.DEFAULT,
+                "brand-orange": brandOrange,
+                orange: brandOrange,
+                amber: brandOrange,
                 "text-main": "#F5F5F5", // Off-white premium
                 "text-muted": "#C5C6C7", // Gris plata suave
             },

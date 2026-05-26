@@ -234,9 +234,9 @@ onUnmounted(() => {
                     v-for="item in quickLinks"
                     :key="item.label"
                     :href="route(item.route, tenantRouteParams)"
-                    class="group rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#F9A826]/30 hover:shadow-[0_18px_36px_rgba(0,0,0,0.05)]"
+                    class="group rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#FF7A00]/30 hover:shadow-[0_18px_36px_rgba(0,0,0,0.05)]"
                 >
-                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F9A826]/10 text-[#F9A826]">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF7A00]/10 text-[#FF7A00]">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
                             <path stroke-linecap="round" stroke-linejoin="round" :d="item.iconPath" />
                         </svg>

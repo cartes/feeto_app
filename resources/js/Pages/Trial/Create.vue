@@ -235,7 +235,7 @@ const submit = () => {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="w-full inline-flex items-center justify-center gap-2 bg-[#ffb547] hover:bg-[#ffc466] text-[#1a0e00] font-bold px-6 py-4 rounded-xl shadow-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+                    class="w-full inline-flex items-center justify-center gap-2 bg-[#FF7A00] hover:bg-[#CC6200] text-[#1a0e00] font-bold px-6 py-4 rounded-xl shadow-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                     <span v-if="form.processing">Enviando solicitud…</span>
                     <span v-else>Solicitar mi prueba gratis</span>

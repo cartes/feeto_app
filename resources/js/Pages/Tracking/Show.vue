@@ -68,7 +68,7 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
         <header class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white shadow-sm">
             <div class="mx-auto flex max-w-md items-center justify-between px-6 py-4">
                 <div class="flex items-center gap-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F9A826] rotate-3">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FF7A00] rotate-3">
                         <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
                         </svg>
@@ -90,7 +90,7 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                     </div>
                     <div class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-center shadow-inner">
                         <p class="text-[8px] font-bold uppercase tracking-widest text-gray-400">Patente</p>
-                        <p class="mt-0.5 text-lg font-black leading-none tracking-widest text-[#F9A826]">{{ workOrder.vehicle?.plate }}</p>
+                        <p class="mt-0.5 text-lg font-black leading-none tracking-widest text-[#FF7A00]">{{ workOrder.vehicle?.plate }}</p>
                     </div>
                 </div>
 
@@ -175,8 +175,8 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                                     </div>
                                 </template>
                                 <template v-else-if="index === currentIndex">
-                                    <div class="flex h-6 w-6 items-center justify-center rounded-full border-4 border-[#F9A826] bg-white shadow ring-4 ring-[#F9A826]/20">
-                                        <div class="h-2 w-2 animate-pulse rounded-full bg-[#F9A826]"></div>
+                                    <div class="flex h-6 w-6 items-center justify-center rounded-full border-4 border-[#FF7A00] bg-white shadow ring-4 ring-[#FF7A00]/20">
+                                        <div class="h-2 w-2 animate-pulse rounded-full bg-[#FF7A00]"></div>
                                     </div>
                                 </template>
                                 <template v-else>
@@ -185,7 +185,7 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                             </div>
 
                             <div class="flex flex-col pb-2">
-                                <h4 class="text-sm font-black uppercase tracking-wide" :class="index === currentIndex ? 'text-[#F9A826]' : (index < currentIndex ? 'text-gray-900' : 'text-gray-400')">
+                                <h4 class="text-sm font-black uppercase tracking-wide" :class="index === currentIndex ? 'text-[#FF7A00]' : (index < currentIndex ? 'text-gray-900' : 'text-gray-400')">
                                     {{ step.title }}
                                 </h4>
                                 <p class="mt-1 text-[11px] font-medium leading-relaxed" :class="index === currentIndex ? 'text-gray-600' : 'text-gray-400'">

@@ -365,7 +365,7 @@ onUnmounted(() => {
             <button @mousedown="startScroll('left')" @mouseup="stopScroll" @mouseleave="stopScroll"
                 @touchstart.prevent="startScroll('left')" @touchend="stopScroll" :disabled="!canScrollLeft"
                 class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
-                :class="canScrollLeft ? 'text-slate-700 hover:bg-[#F9A826] hover:text-white hover:border-[#F9A826] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                :class="canScrollLeft ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
                 aria-label="Scroll izquierda">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2.5">
@@ -375,7 +375,7 @@ onUnmounted(() => {
             <button @mousedown="startScroll('right')" @mouseup="stopScroll" @mouseleave="stopScroll"
                 @touchstart.prevent="startScroll('right')" @touchend="stopScroll" :disabled="!canScrollRight"
                 class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
-                :class="canScrollRight ? 'text-slate-700 hover:bg-[#F9A826] hover:text-white hover:border-[#F9A826] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                :class="canScrollRight ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
                 aria-label="Scroll derecha">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2.5">
@@ -395,7 +395,7 @@ onUnmounted(() => {
                 <div v-for="col in columns" :key="col.id"
                     class="w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
                     :class="[
-                        currentHoverColumn === col.id ? 'border-[#F9A826] bg-[#F9A826]/5' : ''
+                        currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
                     ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
                     <!-- Header -->
                     <div class="px-5 py-4 mb-2 flex justify-between items-center">
@@ -414,7 +414,7 @@ onUnmounted(() => {
                             class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white cursor-pointer hover:shadow-lg transition-all duration-300 touch-none select-none relative"
                             :class="{
                                 'opacity-50 scale-95': draggedItem?.id === order.id,
-                                'ring-2 ring-[#F9A826] bg-orange-50/50': order.isNew
+                                'ring-2 ring-[#FF7A00] bg-orange-50/50': order.isNew
                             }">
                             <!-- Etiqueta Flotante Estado / OT -->
                             <div
@@ -470,7 +470,7 @@ onUnmounted(() => {
                                     {{ order.vehicle?.brand || 'Marca' }} {{ order.vehicle?.model || 'Modelo' }}
                                 </p>
                                 <p class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#F9A826]" fill="none"
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -520,7 +520,7 @@ onUnmounted(() => {
                                 :href="route('work-orders.show', { ...tenantRouteParams, workOrder: selectedWorkOrder.id })"
                                 class="group inline-block"
                             >
-                                <h2 class="text-2xl font-black text-slate-800 group-hover:text-[#F9A826] group-hover:underline transition-colors">
+                                <h2 class="text-2xl font-black text-slate-800 group-hover:text-[#FF7A00] group-hover:underline transition-colors">
                                     OT #{{ selectedWorkOrder.id }} — {{ selectedWorkOrder.vehicle?.plate }}
                                 </h2>
                             </Link>
@@ -534,7 +534,7 @@ onUnmounted(() => {
                         </span>
                         <button @click="previewQuote"
                             class="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#F9A826]"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -561,17 +561,17 @@ onUnmounted(() => {
                 <div class="flex border-b border-slate-100">
                     <button @click="activeTab = 'budget'"
                         class="flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all"
-                        :class="activeTab === 'budget' ? 'text-[#F9A826] border-b-2 border-[#F9A826] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
+                        :class="activeTab === 'budget' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
                         Presupuesto
                     </button>
                     <button @click="activeTab = 'evidence'"
                         class="flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all"
-                        :class="activeTab === 'evidence' ? 'text-[#F9A826] border-b-2 border-[#F9A826] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
+                        :class="activeTab === 'evidence' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
                         Evidencia Fotográfica
                     </button>
                     <button @click="activeTab = 'preview'"
                         class="flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all"
-                        :class="activeTab === 'preview' ? 'text-[#F9A826] border-b-2 border-[#F9A826] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
+                        :class="activeTab === 'preview' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
                         Vista Previa (Cliente)
                     </button>
                 </div>
@@ -580,7 +580,7 @@ onUnmounted(() => {
                 <div class="flex-1 overflow-y-auto p-8 no-scrollbar">
                     <div v-if="isLoadingModal" class="flex items-center justify-center h-64">
                         <div
-                            class="animate-spin rounded-full h-12 w-12 border-4 border-[#F9A826] border-t-transparent">
+                            class="animate-spin rounded-full h-12 w-12 border-4 border-[#FF7A00] border-t-transparent">
                         </div>
                     </div>
 
@@ -713,7 +713,7 @@ onUnmounted(() => {
                                             </p>
                                             <select v-if="itemMode === 'product'"
                                                 v-model="itemForm.product_id"
-                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#F9A826]">
+                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#FF7A00]">
                                                 <option value="" disabled>Seleccionar repuesto...
                                                 </option>
                                                 <option v-for="product in availableProducts"
@@ -724,7 +724,7 @@ onUnmounted(() => {
                                                 </option>
                                             </select>
                                             <select v-else v-model="itemForm.service_id"
-                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#F9A826]">
+                                                class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#FF7A00]">
                                                 <option value="" disabled>Seleccionar servicio...
                                                 </option>
                                                 <option v-for="service in availableServices"
@@ -757,7 +757,7 @@ onUnmounted(() => {
                                                 Cant.</p>
                                             <input v-model.number="itemForm.quantity" type="number"
                                                 min="1"
-                                                class="w-full rounded-xl border-none bg-slate-50 py-3.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#F9A826]" />
+                                                class="w-full rounded-xl border-none bg-slate-50 py-3.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#FF7A00]" />
                                             <p v-if="itemErrors.quantity"
                                                 class="ml-1 mt-2 text-[10px] font-semibold text-rose-500">
                                                 {{
@@ -765,7 +765,7 @@ onUnmounted(() => {
                                         </div>
 
                                         <button @click="addItem"
-                                            class="w-full whitespace-nowrap rounded-xl bg-slate-900 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-[#F9A826] active:scale-95 md:w-auto">
+                                            class="w-full whitespace-nowrap rounded-xl bg-slate-900 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-[#FF7A00] active:scale-95 md:w-auto">
                                             Agregar ítem
                                         </button>
                                     </div>
@@ -825,7 +825,7 @@ onUnmounted(() => {
                                 <label
                                     class="aspect-square rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-50/50 transition-colors group">
                                     <div
-                                        class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#F9A826] transition-colors">
+                                        class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#FF7A00] transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round"

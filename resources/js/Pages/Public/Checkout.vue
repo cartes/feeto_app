@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { computed, ref } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import PlanCard from '@/Components/PlanCard.vue';
@@ -29,11 +30,7 @@ const subscribe = (plan) => {
         <!-- Header -->
         <header class="bg-white/80 backdrop-blur border-b border-white/60 shadow-sm">
             <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
+                <ApplicationLogo class="h-9 w-9 rounded-xl flex-shrink-0 shadow-sm" />
                 <div>
                     <span class="text-lg font-extrabold text-slate-800 leading-none">Feeto</span>
                     <span class="text-slate-400 mx-2">·</span>

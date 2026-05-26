@@ -112,7 +112,7 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                 <div class="flex items-center gap-2">
                     <button
                         type="button"
-                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#F9A826] hover:text-[#F9A826]"
+                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#FF7A00] hover:text-[#FF7A00]"
                         @click="previousMonth"
                     >
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +121,7 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                     </button>
                     <button
                         type="button"
-                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#F9A826] hover:text-[#F9A826]"
+                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#FF7A00] hover:text-[#FF7A00]"
                         @click="nextMonth"
                     >
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,7 +149,7 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                     <button
                         v-else
                         type="button"
-                        :class="day.isSelected ? 'border-[#F9A826] bg-[#F9A826] text-white shadow-[0_12px_24px_rgba(249,168,38,0.22)]' : day.isToday ? 'border-[#F9A826]/30 bg-amber-50 text-gray-900' : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-[#F9A826]/30 hover:bg-amber-50/60'"
+                        :class="day.isSelected ? 'border-[#FF7A00] bg-[#FF7A00] text-white shadow-[0_12px_24px_rgba(249,168,38,0.22)]' : day.isToday ? 'border-[#FF7A00]/30 bg-amber-50 text-gray-900' : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-[#FF7A00]/30 hover:bg-amber-50/60'"
                         class="aspect-square rounded-2xl border p-2 text-left transition"
                         @click="selectDate(day.date)"
                     >
@@ -157,7 +157,7 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                             <span class="text-sm font-black">{{ day.day }}</span>
                             <span
                                 v-if="day.count"
-                                :class="day.isSelected ? 'bg-white/20 text-white' : 'bg-white text-[#F9A826]'"
+                                :class="day.isSelected ? 'bg-white/20 text-white' : 'bg-white text-[#FF7A00]'"
                                 class="inline-flex w-fit rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide shadow-sm"
                             >
                                 {{ day.count }} cita{{ day.count !== 1 ? 's' : '' }}

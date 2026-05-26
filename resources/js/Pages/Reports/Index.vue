@@ -140,7 +140,7 @@ const formatDate = (value) => {
                                 <tr v-for="quote in recentQuotes" :key="quote.id" class="transition-colors hover:bg-gray-50/40">
                                     <td class="px-8 py-4 text-sm font-black text-gray-900">#{{ quote.work_order_id }}</td>
                                     <td class="px-4 py-4 text-sm font-semibold text-gray-700">{{ quote.client_name || 'Sin cliente' }}</td>
-                                    <td class="px-4 py-4 font-mono text-sm font-bold tracking-widest text-[#F9A826]">{{ quote.plate || 'N/A' }}</td>
+                                    <td class="px-4 py-4 font-mono text-sm font-bold tracking-widest text-[#FF7A00]">{{ quote.plate || 'N/A' }}</td>
                                     <td class="px-4 py-4">
                                         <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-gray-600">
                                             {{ quoteStatusLabels[quote.status] || quote.status }}

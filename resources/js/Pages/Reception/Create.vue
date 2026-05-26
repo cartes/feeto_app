@@ -408,7 +408,7 @@ onUnmounted(() => {
         <div v-if="isSearching"
             class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div class="flex flex-col items-center gap-4 bg-white p-8 rounded-3xl shadow-2xl">
-                <div class="w-12 h-12 border-4 border-[#F9A826]/20 border-t-[#F9A826] rounded-full animate-spin"></div>
+                <div class="w-12 h-12 border-4 border-[#FF7A00]/20 border-t-[#FF7A00] rounded-full animate-spin"></div>
                 <p class="text-slate-800 font-bold uppercase tracking-widest text-sm">Buscando en base de datos...</p>
             </div>
         </div>
@@ -429,8 +429,8 @@ onUnmounted(() => {
 
                 <div
                     class="w-full bg-white/80 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center text-center">
-                    <div class="w-20 h-20 bg-[#F9A826]/10 rounded-3xl flex items-center justify-center mb-8 rotate-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#F9A826]" fill="none"
+                    <div class="w-20 h-20 bg-[#FF7A00]/10 rounded-3xl flex items-center justify-center mb-8 rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#FF7A00]" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -445,7 +445,7 @@ onUnmounted(() => {
                     </p>
 
                     <button @click="handleManualEntry"
-                        class="group w-full py-6 bg-[#F9A826] text-white rounded-3xl text-lg font-black uppercase shadow-[0_15px_30px_rgba(249,168,38,0.3)] hover:bg-[#E59A22] transition-all active:scale-95 flex items-center justify-center gap-3">
+                        class="group w-full py-6 bg-[#FF7A00] text-white rounded-3xl text-lg font-black uppercase shadow-[0_15px_30px_rgba(249,168,38,0.3)] hover:bg-[#CC6200] transition-all active:scale-95 flex items-center justify-center gap-3">
                         <span>Nueva Recepción</span>
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" fill="none"
@@ -455,7 +455,7 @@ onUnmounted(() => {
                     </button>
 
                     <div class="mt-8 pt-6 border-t border-slate-50 w-full flex items-center justify-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#FF7A00]"></span>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ingreso Manual Obligatorio</p>
                     </div>
                 </div>
@@ -479,7 +479,7 @@ onUnmounted(() => {
                             Vehículo Registrado
                         </span>
                         <span v-else
-                            class="w-fit bg-[#F9A826]/10 text-[#F9A826] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#F9A826]/20">
+                            class="w-fit bg-[#FF7A00]/10 text-[#FF7A00] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#FF7A00]/20">
                             Vehículo Nuevo
                         </span>
                         <span
@@ -517,7 +517,7 @@ onUnmounted(() => {
 
                     <!-- Patente (Editable) -->
                     <div
-                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner group transition-all focus-within:ring-2 focus-within:ring-[#F9A826]/20">
+                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner group transition-all focus-within:ring-2 focus-within:ring-[#FF7A00]/20">
                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Placa de
                             Identificación</p>
                         <input v-model="form.plate" type="text"
@@ -528,7 +528,7 @@ onUnmounted(() => {
                     <!-- Datos del Vehículo -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#F9A826]"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#FF7A00]"></span>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Información
                                 Técnica</p>
                         </div>
@@ -537,7 +537,7 @@ onUnmounted(() => {
                                 <label
                                     class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Marca</label>
                                 <input v-model="form.brand" type="text"
-                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
                                     placeholder="Ej: TOYOTA" />
                                 <p v-if="form.errors.brand" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.brand }}</p>
@@ -546,7 +546,7 @@ onUnmounted(() => {
                                 <label
                                     class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Modelo</label>
                                 <input v-model="form.model" type="text"
-                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
                                     placeholder="Ej: HILUX" />
                                 <p v-if="form.errors.model" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.model }}</p>
@@ -579,7 +579,7 @@ onUnmounted(() => {
 
                                 <label class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 border border-emerald-200 shadow-sm">
                                     <input v-model="form.reassign_vehicle_owner" type="checkbox"
-                                        class="rounded border-gray-300 text-[#F9A826] focus:ring-[#F9A826]" />
+                                        class="rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]" />
                                     <span class="text-[10px] font-black uppercase tracking-widest text-slate-700">
                                         Reasignar dueño
                                     </span>
@@ -606,12 +606,12 @@ onUnmounted(() => {
                                 cliente existente</label>
                             <div class="relative">
                                 <input v-model="clientSearch" type="text"
-                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-semibold rounded-2xl px-5 py-4 pr-12 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-semibold rounded-2xl px-5 py-4 pr-12 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
                                     placeholder="Buscar por nombre o RUT" />
                                 <div v-if="isSearchingClients"
                                     class="absolute inset-y-0 right-4 flex items-center text-gray-300">
                                     <div
-                                        class="h-5 w-5 rounded-full border-2 border-gray-200 border-t-[#F9A826] animate-spin">
+                                        class="h-5 w-5 rounded-full border-2 border-gray-200 border-t-[#FF7A00] animate-spin">
                                     </div>
                                 </div>
                             </div>
@@ -678,10 +678,10 @@ onUnmounted(() => {
                                         class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">RUT</label>
                                     <div class="relative">
                                         <input v-model="form.client_rut" type="text"
-                                            class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                            class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
                                             placeholder="12.345.678-9" />
                                         <div v-if="isLookingUpRut" class="absolute inset-y-0 right-4 flex items-center">
-                                            <div class="h-4 w-4 rounded-full border-2 border-gray-200 border-t-[#F9A826] animate-spin"></div>
+                                            <div class="h-4 w-4 rounded-full border-2 border-gray-200 border-t-[#FF7A00] animate-spin"></div>
                                         </div>
                                     </div>
                                     <p v-if="rutLookupResult === 'found'" class="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">
@@ -695,7 +695,7 @@ onUnmounted(() => {
                                         class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre
                                         Completo</label>
                                     <input v-model="form.client_name" type="text"
-                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent uppercase transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
                                         placeholder="JUAN PÉREZ" />
                                     <p v-if="form.errors.client_name" class="text-red-500 text-[10px] font-medium ml-1">
                                         {{ form.errors.client_name }}</p>
@@ -706,14 +706,14 @@ onUnmounted(() => {
                                     <label
                                         class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
                                     <input v-model="form.client_email" type="email"
-                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
                                         placeholder="correo@ejemplo.cl" />
                                 </div>
                                 <div class="space-y-1.5">
                                     <label
                                         class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Celular</label>
                                     <input v-model="form.client_phone" type="tel"
-                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#F9A826] focus:border-transparent transition-all shadow-sm"
+                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
                                         placeholder="+56 9 1234 5678" />
                                 </div>
                             </div>
@@ -727,7 +727,7 @@ onUnmounted(() => {
                             CANCELAR
                         </button>
                         <button type="submit" :disabled="form.processing"
-                            class="order-1 sm:order-2 flex-[2] py-4 bg-[#F9A826] hover:bg-[#E59A22] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-lg">
+                            class="order-1 sm:order-2 flex-[2] py-4 bg-[#FF7A00] hover:bg-[#CC6200] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-lg">
                             <div v-if="form.processing"
                                 class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                             {{ form.processing ? 'Procesando...' : 'GENERAR ORDEN' }}

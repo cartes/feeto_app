@@ -89,7 +89,7 @@ const formatDate = (value) => {
                         <tbody class="divide-y divide-gray-50">
                             <tr v-for="invoice in invoices.data" :key="invoice.id" class="transition-colors hover:bg-gray-50/40">
                                 <td class="px-8 py-4 text-sm font-black text-gray-900">
-                                    <Link :href="route('invoices.show', { ...tenantRouteParams, clientInvoice: invoice.id })" class="hover:text-[#F9A826]">
+                                    <Link :href="route('invoices.show', { ...tenantRouteParams, clientInvoice: invoice.id })" class="hover:text-[#FF7A00]">
                                         {{ invoice.invoice_number || `Factura #${invoice.id}` }}
                                     </Link>
                                 </td>

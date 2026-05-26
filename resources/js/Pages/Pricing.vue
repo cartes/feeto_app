@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
@@ -256,9 +257,7 @@ const jsonLd = computed(() => JSON.stringify({
         <footer class="pricing-footer">
             <div class="pricing-footer-inner">
                 <div class="flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-[#ffb547] flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#1a0e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
-                    </span>
+                    <ApplicationLogo class="h-7 w-7 rounded-lg" />
                     <span class="font-black text-gray-900 text-base">Feeto</span>
                 </div>
                 <nav class="flex items-center gap-6 flex-wrap justify-center">
@@ -278,7 +277,7 @@ const jsonLd = computed(() => JSON.stringify({
 <style scoped>
 /* ── Variables ───────────────────────────── */
 :root {
-    --accent: #ffb547;
+    --accent: #FF7A00;
     --accent-ink: #1a0e00;
     --dark: #0a0a0b;
 }
@@ -307,7 +306,7 @@ const jsonLd = computed(() => JSON.stringify({
     border: 1px solid rgba(255,181,71,0.28);
     border-radius: 999px;
     background: rgba(255,181,71,0.10);
-    color: #ffb547;
+    color: #FF7A00;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     font-weight: 500;
@@ -318,8 +317,8 @@ const jsonLd = computed(() => JSON.stringify({
 .pricing-eyebrow .dot {
     width: 6px; height: 6px;
     border-radius: 999px;
-    background: #ffb547;
-    box-shadow: 0 0 10px #ffb547;
+    background: #FF7A00;
+    box-shadow: 0 0 10px #FF7A00;
 }
 
 .pricing-headline {
@@ -330,7 +329,7 @@ const jsonLd = computed(() => JSON.stringify({
     line-height: 1.05;
     letter-spacing: -0.03em;
 }
-.pricing-headline em { color: #ffb547; font-style: normal; }
+.pricing-headline em { color: #FF7A00; font-style: normal; }
 
 .pricing-sub {
     color: rgba(255,255,255,0.56);
@@ -378,7 +377,7 @@ const jsonLd = computed(() => JSON.stringify({
     display: inline-block;
     padding: 2px 8px;
     border-radius: 999px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     font-size: 10px;
     font-weight: 800;
@@ -386,7 +385,7 @@ const jsonLd = computed(() => JSON.stringify({
     text-transform: uppercase;
 }
 .billing-btn-active .billing-save-badge {
-    background: #ff7a00;
+    background: #FF7A00;
     color: #fff;
 }
 
@@ -426,7 +425,7 @@ const jsonLd = computed(() => JSON.stringify({
 }
 
 .plan-card-popular {
-    border-color: #ffb547;
+    border-color: #FF7A00;
     border-width: 2px;
     background: #fff;
     box-shadow: 0 8px 32px rgba(255,181,71,0.18), 0 2px 8px rgba(0,0,0,0.06);
@@ -443,7 +442,7 @@ const jsonLd = computed(() => JSON.stringify({
     white-space: nowrap;
     padding: 5px 16px;
     border-radius: 999px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     font-size: 12px;
     font-weight: 800;
@@ -529,12 +528,12 @@ const jsonLd = computed(() => JSON.stringify({
     margin-bottom: 8px;
 }
 .plan-cta-popular {
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     box-shadow: 0 4px 16px rgba(255,181,71,0.35);
 }
 .plan-cta-popular:hover {
-    background: #ffc466;
+    background: #CC6200;
     box-shadow: 0 6px 20px rgba(255,181,71,0.45);
     transform: translateY(-1px);
 }
@@ -590,7 +589,7 @@ const jsonLd = computed(() => JSON.stringify({
 }
 .plan-feature-ico-popular {
     background: #fffbeb;
-    color: #d97706;
+    color: #CC6200;
 }
 
 .plan-meta {
@@ -691,7 +690,7 @@ const jsonLd = computed(() => JSON.stringify({
     flex-shrink: 0;
     padding: 16px 28px;
     border-radius: 16px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     font-size: 15px;
     font-weight: 800;
@@ -701,7 +700,7 @@ const jsonLd = computed(() => JSON.stringify({
     white-space: nowrap;
 }
 .bottom-cta-btn:hover {
-    background: #ffc466;
+    background: #CC6200;
     box-shadow: 0 6px 24px rgba(255,181,71,0.45);
     transform: translateY(-1px);
 }

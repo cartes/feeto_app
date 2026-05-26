@@ -136,7 +136,7 @@ const submitNote = () => {
         <div class="space-y-8">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <Link :href="route('clients.index', tenantRouteParams)"
-                    class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-[#F9A826]">
+                    class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-[#FF7A00]">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -154,7 +154,7 @@ const submitNote = () => {
                 <aside class="space-y-6 rounded-[2.5rem] border border-gray-100 bg-white p-8 shadow-sm lg:col-span-1">
                     <div class="flex flex-col items-center text-center">
                         <div
-                            class="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-[#F9A826]/10 text-3xl font-black uppercase tracking-widest text-[#F9A826]">
+                            class="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-[#FF7A00]/10 text-3xl font-black uppercase tracking-widest text-[#FF7A00]">
                             {{ clientInitial }}
                         </div>
                         <h1 class="text-2xl font-black uppercase tracking-tight text-gray-900">{{ client.name }}</h1>
@@ -265,35 +265,35 @@ const submitNote = () => {
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Número factura</label>
                                     <input v-model="invoiceForm.invoice_number" type="text"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]"
                                         placeholder="FAC-001" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Monto total</label>
                                     <input v-model="invoiceForm.amount_total" type="number" min="1"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                                     <p v-if="invoiceForm.errors.amount_total" class="text-xs text-rose-500">{{ invoiceForm.errors.amount_total }}</p>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Saldo pendiente</label>
                                     <input v-model="invoiceForm.amount_due" type="number" min="0"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Emisión</label>
                                     <input v-model="invoiceForm.issued_at" type="date"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vencimiento</label>
                                     <input v-model="invoiceForm.due_at" type="date"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                                     <p v-if="invoiceForm.errors.due_at" class="text-xs text-rose-500">{{ invoiceForm.errors.due_at }}</p>
                                 </div>
                                 <div class="space-y-1 xl:col-span-2">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Notas</label>
                                     <textarea v-model="invoiceForm.notes" rows="3"
-                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                        class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]"
                                         placeholder="Detalle del trabajo, condiciones o seguimiento..." />
                                 </div>
                                 <div class="flex justify-end xl:col-span-2">
@@ -343,22 +343,22 @@ const submitNote = () => {
                     <section class="space-y-6">
                         <div class="flex flex-wrap gap-6 border-b border-gray-200">
                             <button @click="activeTab = 'historial'"
-                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#FF7A00] text-[#FF7A00]' : 'text-gray-400 hover:text-gray-600']">
                                 Timeline CRM
                             </button>
                             <button @click="activeTab = 'vehiculos'"
-                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'vehiculos' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'vehiculos' ? 'border-b-2 border-[#FF7A00] text-[#FF7A00]' : 'text-gray-400 hover:text-gray-600']">
                                 Vehículos
                             </button>
                             <button @click="activeTab = 'notas'"
-                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'notas' ? 'border-b-2 border-[#F9A826] text-[#F9A826]' : 'text-gray-400 hover:text-gray-600']">
+                                :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'notas' ? 'border-b-2 border-[#FF7A00] text-[#FF7A00]' : 'text-gray-400 hover:text-gray-600']">
                                 Notas internas
                             </button>
                         </div>
 
                         <div v-show="activeTab === 'historial'" class="rounded-[2.5rem] border border-gray-200 bg-white p-8 shadow-sm">
                             <div class="mb-6 flex items-center gap-3 border-b border-gray-100 pb-6">
-                                <span class="h-2.5 w-2.5 rounded-full bg-[#F9A826]"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-[#FF7A00]"></span>
                                 <h3 class="text-xl font-black uppercase tracking-tight text-gray-900">Historial unificado</h3>
                             </div>
 
@@ -428,7 +428,7 @@ const submitNote = () => {
                                                 {{ vehicle.brand || 'Vehículo' }}
                                                 <span class="text-gray-500">{{ vehicle.model || 'Sin modelo' }}</span>
                                             </h4>
-                                            <p class="mt-1 font-mono text-sm font-bold tracking-widest text-[#F9A826]">{{ vehicle.plate }}</p>
+                                            <p class="mt-1 font-mono text-sm font-bold tracking-widest text-[#FF7A00]">{{ vehicle.plate }}</p>
                                         </div>
                                         <span
                                             class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
@@ -461,7 +461,7 @@ const submitNote = () => {
                             <form @submit.prevent="submitNote" class="mb-8 rounded-2xl border border-gray-100 bg-gray-50 p-5">
                                 <textarea v-model="noteForm.content" rows="3"
                                     placeholder="Escribe una nota interna sobre el cliente..."
-                                    class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#F9A826]"></textarea>
+                                    class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#FF7A00]"></textarea>
                                 <p v-if="noteForm.errors.content" class="mt-2 text-xs text-rose-500">{{ noteForm.errors.content }}</p>
                                 <div class="mt-3 flex justify-end">
                                     <button type="submit" :disabled="noteForm.processing"

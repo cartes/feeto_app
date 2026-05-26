@@ -111,7 +111,7 @@ const notificationStatusClass = (status) => ({
                     </span>
                     <Link
                         :href="route('receptions.create', tenantRouteParams)"
-                        class="rounded-full bg-[#F9A826] px-5 py-3 text-sm font-black uppercase tracking-wide text-white shadow-[0_12px_24px_rgba(249,168,38,0.25)] transition hover:bg-[#E59A22]"
+                        class="rounded-full bg-[#FF7A00] px-5 py-3 text-sm font-black uppercase tracking-wide text-white shadow-[0_12px_24px_rgba(249,168,38,0.25)] transition hover:bg-[#CC6200]"
                     >
                         Ir a Recepción
                     </Link>
@@ -262,10 +262,10 @@ const notificationStatusClass = (status) => ({
 
                         <button
                             :disabled="isScanning"
-                            class="relative flex w-full flex-col items-center justify-center gap-4 rounded-[2rem] bg-gradient-to-br from-[#F9A826] to-[#E8920D] px-6 py-14 text-white shadow-[0_18px_36px_rgba(249,168,38,0.28)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+                            class="relative flex w-full flex-col items-center justify-center gap-4 rounded-[2rem] bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-6 py-14 text-white shadow-[0_18px_36px_rgba(249,168,38,0.28)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                             @click="openCamera"
                         >
-                            <span class="absolute inset-0 rounded-[2rem] ring-4 ring-[#F9A826]/20"></span>
+                            <span class="absolute inset-0 rounded-[2rem] ring-4 ring-[#FF7A00]/20"></span>
                             <svg v-if="!isScanning" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />

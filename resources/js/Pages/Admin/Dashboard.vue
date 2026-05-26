@@ -166,8 +166,8 @@ const visitsAreaPoints = computed(() => {
             <h2 class="text-sm font-semibold text-slate-900 mb-4">Visitas Diarias</h2>
             <div v-if="visits_by_day && visits_by_day.length >= 2">
                 <svg viewBox="0 0 600 150" class="w-full" preserveAspectRatio="none" style="height: 160px;">
-                    <polygon :points="visitsAreaPoints" fill="#f59e0b" fill-opacity="0.12" />
-                    <polyline :points="visitsLinePoints" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round" />
+                    <polygon :points="visitsAreaPoints" fill="#FF7A00" fill-opacity="0.12" />
+                    <polyline :points="visitsLinePoints" fill="none" stroke="#FF7A00" stroke-width="2" stroke-linejoin="round" />
                 </svg>
                 <div class="mt-2 flex justify-between text-xs text-slate-400">
                     <span>{{ visits_by_day[0]?.date }}</span>

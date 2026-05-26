@@ -81,7 +81,7 @@ const close = () => {
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <InputLabel for="modal_password" value="Contraseña" class="text-gray-700 font-semibold" />
-                        <a href="#" class="text-xs font-semibold text-tech-orange hover:text-[#e8920d] transition-colors">
+                        <a href="#" class="text-xs font-semibold text-tech-orange hover:text-[#CC6200] transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
@@ -106,7 +106,7 @@ const close = () => {
 
                 <div class="pt-2">
                     <PrimaryButton
-                        class="w-full h-12 justify-center bg-tech-orange hover:bg-[#e8920d] text-white font-bold rounded-xl shadow-lg shadow-tech-orange/20 transition-all active:scale-[0.98] text-base"
+                        class="w-full h-12 justify-center bg-tech-orange hover:bg-[#CC6200] text-white font-bold rounded-xl shadow-lg shadow-tech-orange/20 transition-all active:scale-[0.98] text-base"
                         :class="{ 'opacity-25 pointer-events-none': form.processing }"
                         :disabled="form.processing"
                     >

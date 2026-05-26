@@ -97,7 +97,7 @@ const submit = () => {
                         v-model="form.name"
                         type="text"
                         placeholder="Ej: Auditor, Jefe de Taller, Vendedor..."
-                        class="mt-2 w-full rounded-[1rem] border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#F9A826] focus:ring-2 focus:ring-[#F9A826]/20"
+                        class="mt-2 w-full rounded-[1rem] border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20"
                         :class="{ 'border-red-300': form.errors.name }"
                     />
                     <p v-if="form.errors.name" class="mt-1.5 text-xs text-red-600">{{ form.errors.name }}</p>
@@ -119,7 +119,7 @@ const submit = () => {
                                 <input
                                     :id="`group-${groupKey}`"
                                     type="checkbox"
-                                    class="h-4 w-4 rounded border-gray-300 text-[#F9A826] focus:ring-[#F9A826]"
+                                    class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]"
                                     :checked="isGroupFullySelected(group.permissions)"
                                     :indeterminate="isGroupPartiallySelected(group.permissions)"
                                     @change="toggleGroup(group.permissions)"
@@ -138,7 +138,7 @@ const submit = () => {
                                 >
                                     <input
                                         type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-[#F9A826] focus:ring-[#F9A826]"
+                                        class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]"
                                         :checked="isPermissionSelected(permission)"
                                         @change="togglePermission(permission)"
                                     />
@@ -159,7 +159,7 @@ const submit = () => {
                     </Link>
                     <button
                         type="submit"
-                        class="inline-flex items-center gap-2 rounded-[1.25rem] bg-[#F9A826] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#e8971f] disabled:opacity-60"
+                        class="inline-flex items-center gap-2 rounded-[1.25rem] bg-[#FF7A00] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#CC6200] disabled:opacity-60"
                         :disabled="form.processing"
                     >
                         <svg v-if="form.processing" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">

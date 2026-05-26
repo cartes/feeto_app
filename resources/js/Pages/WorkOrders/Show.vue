@@ -386,7 +386,7 @@ const notifyReady = () => {
                                 <button
                                     type="button"
                                     class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                                    :class="sendChannel === 'both' ? 'bg-[#F9A826] text-white' : 'bg-gray-50 text-gray-500'"
+                                    :class="sendChannel === 'both' ? 'bg-[#FF7A00] text-white' : 'bg-gray-50 text-gray-500'"
                                     :disabled="!hasClientPhone || !hasClientEmail"
                                     @click="sendChannel = 'both'"
                                 >
@@ -401,7 +401,7 @@ const notifyReady = () => {
                         <button
                             v-if="commercialQuotesEnabled && canDeliverQuote"
                             type="button"
-                            class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#F9A826] disabled:cursor-not-allowed disabled:opacity-50"
+                            class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#FF7A00] disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="sendQuoteForm.processing || items.length === 0 || quote.status === 'accepted'"
                             @click="sendQuote"
                         >
@@ -459,7 +459,7 @@ const notifyReady = () => {
                         <button
                             v-if="commercialQuotesEnabled && canShareQuote && hasClientPhone && hasClientEmail"
                             type="button"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#F9A826] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#dd9219]"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#CC6200]"
                             @click="shareQuoteByBoth"
                         >
                             Compartir por Ambos
@@ -567,7 +567,7 @@ const notifyReady = () => {
                     <div class="rounded-[2rem] border border-gray-100 bg-white p-8 shadow-sm">
                         <div class="mb-6 flex items-center justify-between">
                             <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Agregar Ítem</h2>
-                            <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#F9A826] hover:text-[#dd9219]">
+                            <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]">
                                 Gestionar Servicios
                             </Link>
                         </div>

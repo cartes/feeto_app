@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
@@ -272,9 +273,9 @@ onUnmounted(() => {
         <section id="preview-slider" class="py-24 bg-[#f8fafc] border-b border-slate-100 font-sans antialiased">
             <div class="max-w-6xl mx-auto px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#ffb547] mb-3 block">Vista en Vivo</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Vista en Vivo</span>
                     <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                        Una interfaz potente y <em class="text-[#ffb547] not-italic">sorprendentemente simple.</em>
+                        Una interfaz potente y <em class="text-[#FF7A00] not-italic">sorprendentemente simple.</em>
                     </h2>
                     <p class="text-slate-500 mt-4 text-base leading-relaxed">
                         Explora cómo funciona TallerFlow desde adentro. Diseñado para verse increíble en cualquier pantalla y funcionar a la velocidad de tu taller.
@@ -297,9 +298,9 @@ onUnmounted(() => {
                     <div class="lg:col-span-4 flex flex-col gap-4">
                         <button v-for="(slide, index) in slides" :key="index" @click="currentSlide = index; stopAutoPlay()"
                             class="text-left p-6 rounded-2xl border transition-all duration-300 flex flex-col gap-2 relative overflow-hidden focus:outline-none"
-                            :class="currentSlide === index ? 'bg-white border-[#ffb547] shadow-[0_10px_30px_rgba(255,181,71,0.1)] translate-x-2' : 'bg-transparent border-slate-100 hover:bg-white hover:border-slate-200 hover:shadow-sm'">
+                            :class="currentSlide === index ? 'bg-white border-[#FF7A00] shadow-[0_10px_30px_rgba(255,181,71,0.1)] translate-x-2' : 'bg-transparent border-slate-100 hover:bg-white hover:border-slate-200 hover:shadow-sm'">
                             
-                            <div v-if="currentSlide === index" class="absolute left-0 top-0 bottom-0 w-1 bg-[#ffb547]"></div>
+                            <div v-if="currentSlide === index" class="absolute left-0 top-0 bottom-0 w-1 bg-[#FF7A00]"></div>
                             
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
@@ -468,7 +469,7 @@ onUnmounted(() => {
                         </p>
                     </div>
                     <Link v-if="canRegister" :href="route('trial.create')"
-                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#e8920d] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
+                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#CC6200] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
                         Empezar Gratis Ahora
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -476,7 +477,7 @@ onUnmounted(() => {
                         </svg>
                     </Link>
                     <button v-else type="button" @click="showLoginModal = true"
-                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#e8920d] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
+                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#CC6200] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
                         Empezar Gratis Ahora
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -490,13 +491,7 @@ onUnmounted(() => {
         <footer class="bg-white border-t border-gray-100 py-10">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-tech-orange flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
-                        </svg>
-                    </span>
+                    <ApplicationLogo class="h-7 w-7 rounded-lg" />
                     <span class="text-base font-black text-gray-900">Feeto</span>
                 </div>
 
@@ -596,7 +591,7 @@ onUnmounted(() => {
     --ink-dim: rgba(255, 255, 255, 0.62);
     --line: rgba(255, 255, 255, 0.12);
     --line-strong: rgba(255, 255, 255, 0.22);
-    --accent: #ffb547;
+    --accent: #FF7A00;
     --accent-ink: #1a0e00;
     --radius: 28px;
 }
@@ -803,7 +798,7 @@ onUnmounted(() => {
     border: 1px solid rgba(255, 181, 71, 0.28);
     border-radius: 999px;
     background: rgba(255, 181, 71, 0.10);
-    color: #ffb547;
+    color: #FF7A00;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     font-weight: 500;
@@ -815,8 +810,8 @@ onUnmounted(() => {
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    background: #ffb547;
-    box-shadow: 0 0 10px #ffb547;
+    background: #FF7A00;
+    box-shadow: 0 0 10px #FF7A00;
 }
 
 .feat-title {
@@ -829,7 +824,7 @@ onUnmounted(() => {
 }
 
 .feat-title em {
-    color: #ffb547;
+    color: #FF7A00;
     font-style: normal;
 }
 
@@ -874,7 +869,7 @@ onUnmounted(() => {
     border: 1px solid rgba(255, 181, 71, 0.25);
     border-radius: 12px;
     background: rgba(255, 181, 71, 0.12);
-    color: #ffb547;
+    color: #FF7A00;
 }
 
 .feat-card h3 {
@@ -902,7 +897,7 @@ onUnmounted(() => {
     right: 16px;
     padding: 3px 8px;
     border-radius: 999px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;

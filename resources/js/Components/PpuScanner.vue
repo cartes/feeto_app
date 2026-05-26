@@ -46,7 +46,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
 
             <!-- Etiqueta superior flotante -->
             <div
-                class="absolute top-6 left-6 bg-[#F9A826] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md z-10">
+                class="absolute top-6 left-6 bg-[#FF7A00] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md z-10">
                 Escáner Inteligente
             </div>
 
@@ -62,7 +62,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
             <!-- Sección de Visor de Cámara (Menos alto: aspect-video) -->
             <button @click="!isProcessing && handleRetry()" :class="[
                 'w-full aspect-video lg:aspect-[21/9] bg-gradient-to-br from-slate-100 to-slate-200 rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden border border-slate-50 shadow-inner group transition-all',
-                isProcessing ? 'cursor-wait' : 'cursor-pointer hover:shadow-md hover:border-[#F9A826]/30 active:scale-[0.98]'
+                isProcessing ? 'cursor-wait' : 'cursor-pointer hover:shadow-md hover:border-[#FF7A00]/30 active:scale-[0.98]'
             ]">
                 <img v-if="hasPreviewImage" :src="previewImageUrl" alt="Vista previa del vehículo"
                     class="absolute inset-0 h-full w-full object-cover" />
@@ -72,7 +72,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
                     class="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-md z-10">
                     <div class="flex flex-col items-center gap-3">
                         <div
-                            class="w-12 h-12 border-4 border-[#F9A826]/30 border-t-[#F9A826] rounded-full animate-spin">
+                            class="w-12 h-12 border-4 border-[#FF7A00]/30 border-t-[#FF7A00] rounded-full animate-spin">
                         </div>
                         <p class="text-slate-800 text-sm font-bold tracking-widest uppercase">Escaneando...</p>
                     </div>
@@ -80,7 +80,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
 
                 <svg v-if="!hasPreviewImage" xmlns="http://www.w3.org/2000/svg"
                     class="h-12 w-12 text-slate-300 mx-auto transition-colors duration-300"
-                    :class="{ 'group-hover:text-[#F9A826]': !isProcessing }" fill="none" viewBox="0 0 24 24"
+                    :class="{ 'group-hover:text-[#FF7A00]': !isProcessing }" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -93,7 +93,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
                     </span>
                 </div>
                 <span v-if="!hasPreviewImage && !isProcessing && !hasValidPlate"
-                    class="text-slate-400 font-semibold text-[11px] mt-2 transition-colors duration-300 group-hover:text-[#F9A826]">
+                    class="text-slate-400 font-semibold text-[11px] mt-2 transition-colors duration-300 group-hover:text-[#FF7A00]">
                     Capturar Imagen
                 </span>
             </button>
@@ -111,7 +111,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
                 <div v-if="hasValidPlate && vehicleInfo"
                     class="mt-3 flex items-center justify-center bg-slate-50 border border-slate-100 px-4 py-2 rounded-full text-xs w-full transition-all">
                     <p class="font-bold text-slate-700 truncate min-w-0 flex items-center gap-1.5 uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#F9A826]" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#FF7A00]" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -125,14 +125,14 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
             <div class="w-full flex flex-col gap-3 mt-2">
                 <!-- CASO 1: Aún no se captura patente -->
                 <button v-if="!hasValidPlate" @click="handleRetry" :disabled="isProcessing"
-                    class="w-full py-3.5 bg-[#F9A826] text-white rounded-full text-sm font-bold shadow-[0_8px_20px_rgba(249,168,38,0.2)] hover:bg-[#E59A22] transition-colors active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2">
+                    class="w-full py-3.5 bg-[#FF7A00] text-white rounded-full text-sm font-bold shadow-[0_8px_20px_rgba(249,168,38,0.2)] hover:bg-[#CC6200] transition-colors active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2">
                     Comenzar Escaneo
                 </button>
 
                 <!-- CASO 2: Patente detectada, se puede confirmar o re-escanear -->
                 <template v-else>
                     <button @click="handleConfirm" :disabled="isProcessing"
-                        class="w-full py-3.5 bg-[#F9A826] text-white rounded-full text-sm font-bold shadow-[0_8px_20px_rgba(249,168,38,0.2)] hover:bg-[#E59A22] transition-colors active:scale-95 disabled:opacity-50 flex justify-center items-center gap-2 uppercase tracking-wide">
+                        class="w-full py-3.5 bg-[#FF7A00] text-white rounded-full text-sm font-bold shadow-[0_8px_20px_rgba(249,168,38,0.2)] hover:bg-[#CC6200] transition-colors active:scale-95 disabled:opacity-50 flex justify-center items-center gap-2 uppercase tracking-wide">
                         Confirmar Ingreso
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -147,7 +147,7 @@ const hasPreviewImage = computed(() => Boolean(props.previewImageUrl));
 
                 <!-- Opción de ingreso manual (Siempre visible como secundario) -->
                 <button @click="$emit('manual')" :disabled="isProcessing"
-                    class="w-full mt-2 py-2 text-slate-400 hover:text-[#F9A826] text-[11px] font-bold uppercase transition-colors tracking-widest border-t border-slate-50 pt-4">
+                    class="w-full mt-2 py-2 text-slate-400 hover:text-[#FF7A00] text-[11px] font-bold uppercase transition-colors tracking-widest border-t border-slate-50 pt-4">
                     ¿No puedes escanear? Ingresar manualmente
                 </button>
             </div>

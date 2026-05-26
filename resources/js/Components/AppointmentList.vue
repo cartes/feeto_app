@@ -53,7 +53,7 @@ const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es
             <li
                 v-for="appointment in normalizedAppointments"
                 :key="appointment.id"
-                class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-[#F9A826]/30"
+                class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-[#FF7A00]/30"
             >
                 <div class="flex items-start gap-4">
                     <div class="w-16 flex-shrink-0 text-center">

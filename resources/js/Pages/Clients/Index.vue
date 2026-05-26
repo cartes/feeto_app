@@ -85,7 +85,7 @@ const submit = () => {
                             </svg>
                         </div>
                         <input v-model="search" type="text" placeholder="Buscar por nombre o RUT..."
-                            class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#F9A826] focus:outline-none focus:ring-2 focus:ring-[#F9A826]/50" />
+                            class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50" />
                     </div>
 
                     <button @click="isCreateModalOpen = true"
@@ -161,7 +161,7 @@ const submit = () => {
                                 </td>
                                 <td class="px-6 py-4 text-right align-top">
                                     <Link :href="route('clients.show', { ...tenantRouteParams, client: client.id })"
-                                        class="inline-flex items-center justify-center rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-gray-600 transition-colors hover:bg-[#F9A826] hover:text-white">
+                                        class="inline-flex items-center justify-center rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-gray-600 transition-colors hover:bg-[#FF7A00] hover:text-white">
                                         Ver Perfil
                                     </Link>
                                 </td>
@@ -175,7 +175,7 @@ const submit = () => {
                     <template v-for="(link, i) in clients.links" :key="i">
                         <Link v-if="link.url" :href="link.url" v-html="link.label"
                             class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
-                            :class="link.active ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'" />
+                            :class="link.active ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'" />
                         <span v-else v-html="link.label" class="px-3 py-1.5 text-sm font-medium text-gray-400"></span>
                     </template>
                 </div>
@@ -194,7 +194,7 @@ const submit = () => {
 
                     <div class="mb-6">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F9A826]/10 text-[#F9A826]">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4" />
@@ -209,7 +209,7 @@ const submit = () => {
                             <div class="space-y-1 sm:col-span-2">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Nombre completo</label>
                                 <input v-model="form.name" type="text"
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#F9A826] focus:bg-white focus:ring-2 focus:ring-[#F9A826]/20"
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                     placeholder="Ej. Juan Pérez" required />
                                 <p v-if="form.errors.name" class="mt-1 text-xs text-rose-500">{{ form.errors.name }}</p>
                             </div>
@@ -217,7 +217,7 @@ const submit = () => {
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">RUT</label>
                                 <input v-model="form.rut" type="text"
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#F9A826] focus:bg-white focus:ring-2 focus:ring-[#F9A826]/20"
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                     placeholder="Ej. 12.345.678-9" required />
                                 <p v-if="form.errors.rut" class="mt-1 text-xs text-rose-500">{{ form.errors.rut }}</p>
                             </div>
@@ -225,7 +225,7 @@ const submit = () => {
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Teléfono</label>
                                 <input v-model="form.phone" type="text"
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#F9A826] focus:bg-white focus:ring-2 focus:ring-[#F9A826]/20"
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                     placeholder="Ej. +56912345678" />
                                 <p v-if="form.errors.phone" class="mt-1 text-xs text-rose-500">{{ form.errors.phone }}</p>
                             </div>
@@ -233,7 +233,7 @@ const submit = () => {
                             <div class="space-y-1 sm:col-span-2">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</label>
                                 <input v-model="form.email" type="email"
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#F9A826] focus:bg-white focus:ring-2 focus:ring-[#F9A826]/20"
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                     placeholder="correo@ejemplo.com" />
                                 <p v-if="form.errors.email" class="mt-1 text-xs text-rose-500">{{ form.errors.email }}</p>
                             </div>
@@ -245,7 +245,7 @@ const submit = () => {
                                         <span class="text-sm font-bold text-gray-400">$</span>
                                     </div>
                                     <input v-model="form.max_credit_limit" type="number" min="0"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-8 pr-4 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#F9A826] focus:bg-white focus:ring-2 focus:ring-[#F9A826]/20"
+                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-8 pr-4 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                         placeholder="0" />
                                 </div>
                                 <p v-if="form.errors.max_credit_limit" class="mt-1 text-xs text-rose-500">{{ form.errors.max_credit_limit }}</p>
@@ -258,7 +258,7 @@ const submit = () => {
                                 Cancelar
                             </button>
                             <button type="submit" :disabled="form.processing"
-                                class="inline-flex items-center justify-center rounded-2xl bg-[#F9A826] px-6 py-3 text-sm font-black text-white transition-all hover:bg-[#e69822] disabled:opacity-50">
+                                class="inline-flex items-center justify-center rounded-2xl bg-[#FF7A00] px-6 py-3 text-sm font-black text-white transition-all hover:bg-[#CC6200] disabled:opacity-50">
                                 <svg v-if="form.processing" class="mr-2 h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor"

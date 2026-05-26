@@ -110,13 +110,13 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
                         v-model="search"
                         type="text"
                         placeholder="Buscar por nombre o código..."
-                        class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-[#F9A826] focus:ring-2 focus:ring-[#F9A826]/50"
+                        class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/50"
                     />
                 </div>
 
                 <button
                     type="button"
-                    class="flex shrink-0 items-center gap-2 rounded-2xl bg-[#F9A826] px-5 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-all active:scale-95 hover:bg-[#E59A22]"
+                    class="flex shrink-0 items-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-all active:scale-95 hover:bg-[#CC6200]"
                     @click="openCreateModal"
                 >
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +212,7 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
                         :href="link.url"
                         v-html="link.label"
                         class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
-                        :class="link.active ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'"
+                        :class="link.active ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'"
                         @click.prevent="router.get(link.url, {}, { preserveState: true })"
                     />
                     <span v-else v-html="link.label" class="px-3 py-1.5 text-sm font-medium text-gray-400"></span>
@@ -243,48 +243,48 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
                 <form class="space-y-6 p-6 lg:p-8" @submit.prevent="handleSubmit">
                     <div class="space-y-1.5">
                         <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Nombre del Servicio</label>
-                        <input v-model="form.name" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" placeholder="Ej: Diagnóstico computarizado" />
+                        <input v-model="form.name" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="Ej: Diagnóstico computarizado" />
                         <p v-if="form.errors.name" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.name }}</p>
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="space-y-1.5">
                             <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Código</label>
-                            <input v-model="form.code" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" placeholder="SERV-001" />
+                            <input v-model="form.code" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="SERV-001" />
                             <p v-if="form.errors.code" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.code }}</p>
                         </div>
                         <div class="space-y-1.5">
                             <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Duración Estimada</label>
-                            <input v-model.number="form.estimated_minutes" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" placeholder="60" />
+                            <input v-model.number="form.estimated_minutes" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="60" />
                             <p v-if="form.errors.estimated_minutes" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.estimated_minutes }}</p>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
                         <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Descripción</label>
-                        <textarea v-model="form.description" rows="3" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" placeholder="Detalle opcional del servicio"></textarea>
+                        <textarea v-model="form.description" rows="3" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="Detalle opcional del servicio"></textarea>
                         <p v-if="form.errors.description" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.description }}</p>
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="space-y-1.5">
                             <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Costo</label>
-                            <input v-model.number="form.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" />
+                            <input v-model.number="form.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="form.errors.cost_price" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.cost_price }}</p>
                         </div>
                         <div class="space-y-1.5">
                             <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Precio Venta</label>
-                            <input v-model.number="form.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#F9A826]" />
+                            <input v-model.number="form.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="form.errors.selling_price" class="ml-1 text-[10px] font-medium text-red-500">{{ form.errors.selling_price }}</p>
                         </div>
                     </div>
 
                     <label class="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
                         <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Servicio activo</span>
-                        <input v-model="form.is_active" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#F9A826] focus:ring-[#F9A826]" />
+                        <input v-model="form.is_active" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]" />
                     </label>
 
-                    <button type="submit" class="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-black uppercase tracking-wide text-white transition-colors hover:bg-[#F9A826]" :disabled="form.processing">
+                    <button type="submit" class="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-black uppercase tracking-wide text-white transition-colors hover:bg-[#FF7A00]" :disabled="form.processing">
                         {{ form.processing ? 'Guardando...' : 'Guardar Servicio' }}
                     </button>
                 </form>

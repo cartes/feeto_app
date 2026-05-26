@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
@@ -36,13 +37,8 @@ onMounted(() => {
         <nav class="pub-nav">
             <!-- Logo -->
             <Link :href="route('home')" class="pub-brand">
-                <span class="pub-brand-mark" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.6-.6-2.5z"/>
-                        <path d="M3 21l3-3"/>
-                    </svg>
-                </span>
-                Taller<span>Flow</span>
+                <ApplicationLogo class="pub-brand-mark" alt="Taller Flow" />
+                Taller<span class="pub-brand-flow">Flow</span>
             </Link>
 
             <!-- Desktop links -->
@@ -138,17 +134,15 @@ onMounted(() => {
     text-decoration: none;
     white-space: nowrap;
 }
-.pub-brand span { color: #ffb547; }
+.pub-brand-flow { color: #FF7A00; }
 
 .pub-brand-mark {
-    display: grid;
+    display: block;
     width: 34px;
     height: 34px;
     flex-shrink: 0;
-    place-items: center;
     border-radius: 10px;
-    color: #1a0e00;
-    background: linear-gradient(160deg, #ffb547, #ff7a00);
+    object-fit: cover;
 }
 
 /* Desktop links */
@@ -214,7 +208,7 @@ onMounted(() => {
     padding: 11px 20px;
     border: none;
     border-radius: 999px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     cursor: pointer;
     font-family: inherit;
@@ -223,7 +217,7 @@ onMounted(() => {
     text-decoration: none;
     transition: background 0.15s ease, transform 0.15s ease;
 }
-.pub-btn-accent:hover { background: #ffc466; transform: translateY(-1px); }
+.pub-btn-accent:hover { background: #CC6200; transform: translateY(-1px); }
 
 /* Mobile toggle */
 .pub-mobile-toggle {
@@ -293,7 +287,7 @@ onMounted(() => {
     padding: 12px 16px;
     border: none;
     border-radius: 16px;
-    background: #ffb547;
+    background: #FF7A00;
     color: #1a0e00;
     cursor: pointer;
     font-family: inherit;
@@ -303,7 +297,7 @@ onMounted(() => {
     text-decoration: none;
     transition: background 0.15s;
 }
-.pub-mobile-btn:hover { background: #ffc466; }
+.pub-mobile-btn:hover { background: #CC6200; }
 .pub-mobile-btn-ghost {
     background: rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.9);

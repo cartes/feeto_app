@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { ref, computed, watch } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import LoginModal from '@/Components/LoginModal.vue';
@@ -90,11 +91,7 @@ const trackWhatsAppClick = () => {
         <header class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="h-9 w-9 rounded-xl bg-orange-500 flex items-center justify-center shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
+                    <ApplicationLogo class="h-9 w-9 rounded-xl shadow-md" />
                     <span class="text-lg font-bold text-gray-900 tracking-tight">{{ tenant.name }}</span>
                 </div>
                 <div class="flex items-center gap-3">

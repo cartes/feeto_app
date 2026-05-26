@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import Toast from '@/Components/Toast.vue';
@@ -83,8 +84,11 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <Link :href="route('admin.dashboard')" class="flex items-center gap-3">
-              <div class="h-8 w-8 bg-amber-500 rounded-lg flex items-center justify-center font-bold text-white shadow-sm ring-1 ring-white/10">S</div>
-              <span class="text-xl font-bold tracking-tight text-white">SuperAdmin Panel</span>
+              <ApplicationLogo class="h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" />
+              <div class="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                <span class="text-white">Taller</span>
+                <span class="text-amber-400">Flow</span>
+              </div>
             </Link>
             <div class="hidden sm:-my-px sm:ml-8 sm:flex sm:gap-x-6">
               <Link

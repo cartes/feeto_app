@@ -40,21 +40,21 @@ const isActive = (section) => props.currentSection === section;
         <Link
             :href="route('taller.settings', { ...tenantRouteParams, tab: 'users' })"
             class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-            :class="isActive('users') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+            :class="isActive('users') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             Usuarios<span v-if="currentUserCount !== null && planMaxUsers !== null"> ({{ currentUserCount }}/{{ planMaxUsers }})</span>
         </Link>
         <Link
             :href="route('taller.settings', { ...tenantRouteParams, tab: 'branches' })"
             class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-            :class="isActive('branches') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+            :class="isActive('branches') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             Sucursales<span v-if="branchesCount !== null"> ({{ branchesCount }})</span>
         </Link>
         <Link
             :href="route('taller.settings', { ...tenantRouteParams, tab: 'commercial' })"
             class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-            :class="isActive('commercial') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+            :class="isActive('commercial') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             Comercial
         </Link>
@@ -62,7 +62,7 @@ const isActive = (section) => props.currentSection === section;
             v-if="canAccessSeo"
             :href="route('taller.settings', { ...tenantRouteParams, tab: 'seo' })"
             class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-            :class="isActive('seo') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+            :class="isActive('seo') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             SEO &amp; WhatsApp
         </Link>
@@ -70,7 +70,7 @@ const isActive = (section) => props.currentSection === section;
             v-if="canAccessRoles"
             :href="route('taller.roles.index', tenantRouteParams)"
             class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
-            :class="isActive('roles') ? 'bg-[#F9A826] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+            :class="isActive('roles') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             Roles y Permisos
         </Link>

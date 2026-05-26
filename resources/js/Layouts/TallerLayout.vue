@@ -1,4 +1,5 @@
 <script setup>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import NotificationBell from '@/Components/NotificationBell.vue';
@@ -37,20 +38,16 @@ const navItems = computed(() => ([
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-[#E2EAF4] via-[#F0F4F8] to-[#E2EAF4] text-slate-800 font-sans selection:bg-[#F9A826]/30 overflow-x-hidden flex">
+    <div class="min-h-screen bg-gradient-to-br from-[#E2EAF4] via-[#F0F4F8] to-[#E2EAF4] text-slate-800 font-sans selection:bg-[#FF7A00]/30 overflow-x-hidden flex">
         
         <!-- SIDEBAR - Desktop Only -->
         <aside class="hidden lg:flex lg:flex-col lg:w-72 fixed inset-y-0 left-0 bg-white/60 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-50">
             <!-- Branding -->
             <div class="px-8 py-8 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-[12px] bg-[#F9A826] flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight text-slate-800 leading-none">Feeto</h1>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Gestión de Taller</p>
+                <ApplicationLogo class="h-12 w-12 rounded-[14px] flex-shrink-0 shadow-sm" />
+                <div class="flex items-center gap-2 text-[2rem] font-bold tracking-tight leading-none">
+                    <span class="text-slate-900">Taller</span>
+                    <span class="text-[#FF7A00]">Flow</span>
                 </div>
             </div>
 
@@ -61,7 +58,7 @@ const navItems = computed(() => ([
                     :key="index"
                     :href="route(item.route, tenantRouteParams)"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="route().current(item.route) ? 'bg-[#F9A826] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                    :class="route().current(item.route) ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
@@ -73,7 +70,7 @@ const navItems = computed(() => ([
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#F9A826] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -137,7 +134,7 @@ const navItems = computed(() => ([
                         <input 
                             type="text" 
                             placeholder="Buscar patentes, órdenes, reportes..." 
-                            class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-gray-200 focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-gray-400 transition-all"
+                            class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-gray-200 focus:ring-2 focus:ring-[#FF7A00] outline-none font-medium placeholder:text-gray-400 transition-all"
                         />
                     </div>
                 </div>
@@ -171,7 +168,7 @@ const navItems = computed(() => ([
                     <input 
                         type="text" 
                         placeholder="Buscar patentes, órdenes..." 
-                        class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-sm border border-gray-100 focus:ring-2 focus:ring-[#F9A826] outline-none font-medium placeholder:text-gray-400"
+                        class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-sm border border-gray-100 focus:ring-2 focus:ring-[#FF7A00] outline-none font-medium placeholder:text-gray-400"
                     />
                 </div>
 
@@ -185,7 +182,7 @@ const navItems = computed(() => ([
                     :key="index"
                     :href="route(item.route, tenantRouteParams)"
                     class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="route().current(item.route) ? 'bg-[#F9A826] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
+                    :class="route().current(item.route) ? 'bg-[#FF7A00] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
@@ -197,7 +194,7 @@ const navItems = computed(() => ([
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
                     class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#F9A826] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
+                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

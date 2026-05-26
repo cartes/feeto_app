@@ -195,7 +195,7 @@ const roleColor = (role) => {
                     <p class="text-sm text-gray-500 mt-1 font-medium">Administra usuarios, sucursales y ajustes del taller</p>
                 </div>
                 <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-2xl px-4 py-2 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-[#F9A826]"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#FF7A00]"></span>
                     <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ tenant?.name }}</span>
                 </div>
             </div>
@@ -225,7 +225,7 @@ const roleColor = (role) => {
                         id="btn-add-user"
                         @click="showUserForm = !showUserForm"
                         :disabled="hasReachedUserLimit"
-                        class="flex items-center gap-2 px-5 py-3 bg-[#F9A826] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#E59A22] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         Nuevo Usuario
@@ -239,31 +239,31 @@ const roleColor = (role) => {
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nombre</label>
                             <input v-model="userForm.name" type="text" required placeholder="Juan Pérez"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.name" class="text-red-500 text-xs">{{ userForm.errors.name }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</label>
                             <input v-model="userForm.email" type="email" required placeholder="correo@taller.cl"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.email" class="text-red-500 text-xs">{{ userForm.errors.email }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contraseña</label>
                             <input v-model="userForm.password" type="password" required placeholder="Mínimo 8 caracteres"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.password" class="text-red-500 text-xs">{{ userForm.errors.password }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Confirmar Contraseña</label>
                             <input v-model="userForm.password_confirmation" type="password" required placeholder="Repite la contraseña"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.password_confirmation" class="text-red-500 text-xs">{{ userForm.errors.password_confirmation }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rol</label>
                             <select v-model="userForm.role"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]">
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]">
                                 <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
                             </select>
                             <p v-if="userForm.errors.role" class="text-red-500 text-xs">{{ userForm.errors.role }}</p>
@@ -272,7 +272,7 @@ const roleColor = (role) => {
                             <button type="button" @click="showUserForm = false"
                                 class="px-5 py-2.5 bg-gray-100 text-gray-500 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Cancelar</button>
                             <button type="submit" :disabled="userForm.processing"
-                                class="px-6 py-2.5 bg-[#F9A826] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#E59A22] transition-all disabled:opacity-50">
+                                class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50">
                                 {{ userForm.processing ? 'Guardando...' : 'Crear Usuario' }}
                             </button>
                         </div>
@@ -294,7 +294,7 @@ const roleColor = (role) => {
                             <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50/50 transition-colors">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-full bg-[#F9A826]/10 flex items-center justify-center font-black text-[#F9A826] text-sm flex-shrink-0">
+                                        <div class="w-9 h-9 rounded-full bg-[#FF7A00]/10 flex items-center justify-center font-black text-[#FF7A00] text-sm flex-shrink-0">
                                             {{ user.name.charAt(0).toUpperCase() }}
                                         </div>
                                         <span class="font-semibold text-sm text-gray-800">{{ user.name }}</span>
@@ -335,7 +335,7 @@ const roleColor = (role) => {
                         id="btn-add-branch"
                         @click="openNewBranch"
                         :disabled="!canCreateBranch"
-                        class="flex items-center gap-2 px-5 py-3 bg-[#F9A826] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#E59A22] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         Nueva Sucursal
@@ -351,39 +351,39 @@ const roleColor = (role) => {
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nombre *</label>
                             <input v-model="branchForm.name" type="text" required placeholder="Casa Matriz"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="branchForm.errors.name" class="text-red-500 text-xs">{{ branchForm.errors.name }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Código</label>
                             <input v-model="branchForm.code" type="text" placeholder="CM-01"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dirección</label>
                             <input v-model="branchForm.address" type="text" placeholder="Av. Principal 1234"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teléfono</label>
                             <input v-model="branchForm.phone" type="text" placeholder="+56 9 1234 5678"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</label>
                             <input v-model="branchForm.email" type="email" placeholder="sucursal@taller.cl"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]" />
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                         </div>
                         <div class="flex items-center gap-3 pt-5">
                             <input id="is_main" v-model="branchForm.is_main" type="checkbox"
-                                class="w-4 h-4 rounded text-[#F9A826] focus:ring-[#F9A826]" />
+                                class="w-4 h-4 rounded text-[#FF7A00] focus:ring-[#FF7A00]" />
                             <label for="is_main" class="text-sm font-semibold text-gray-600">Marcar como Sucursal Principal</label>
                         </div>
                         <div class="sm:col-span-2 flex gap-3 justify-end pt-2">
                             <button type="button" @click="showBranchForm = false"
                                 class="px-5 py-2.5 bg-gray-100 text-gray-500 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Cancelar</button>
                             <button type="submit" :disabled="branchForm.processing"
-                                class="px-6 py-2.5 bg-[#F9A826] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#E59A22] transition-all disabled:opacity-50">
+                                class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50">
                                 {{ branchForm.processing ? 'Guardando...' : (editingBranch ? 'Actualizar' : 'Crear Sucursal') }}
                             </button>
                         </div>
@@ -396,15 +396,15 @@ const roleColor = (role) => {
                         class="bg-white/80 border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-3">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-9 h-9 bg-[#F9A826]/10 rounded-xl flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-[#F9A826]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                <div class="w-9 h-9 bg-[#FF7A00]/10 rounded-xl flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 </div>
                                 <div>
                                     <p class="font-black text-gray-800 text-sm leading-tight">{{ branch.name }}</p>
                                     <p v-if="branch.code" class="text-[10px] text-gray-400 font-mono">{{ branch.code }}</p>
                                 </div>
                             </div>
-                            <span v-if="branch.is_main" class="text-[9px] font-black uppercase tracking-wider bg-[#F9A826]/10 text-[#F9A826] px-2 py-1 rounded-full border border-[#F9A826]/20">Principal</span>
+                            <span v-if="branch.is_main" class="text-[9px] font-black uppercase tracking-wider bg-[#FF7A00]/10 text-[#FF7A00] px-2 py-1 rounded-full border border-[#FF7A00]/20">Principal</span>
                         </div>
                         <div class="space-y-1 text-xs text-gray-500 font-medium">
                             <p v-if="branch.address" class="flex items-center gap-1.5">
@@ -455,7 +455,7 @@ const roleColor = (role) => {
                                     min="0"
                                     max="100"
                                     step="0.01"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                                 />
                                 <p v-if="commercialForm.errors.max_discount_without_approval" class="text-red-500 text-xs">
                                     {{ commercialForm.errors.max_discount_without_approval }}
@@ -474,7 +474,7 @@ const roleColor = (role) => {
                             <button
                                 type="submit"
                                 :disabled="commercialForm.processing"
-                                class="px-6 py-2.5 bg-[#F9A826] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#E59A22] transition-all disabled:opacity-50"
+                                class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50"
                             >
                                 {{ commercialForm.processing ? 'Guardando...' : 'Guardar Política Comercial' }}
                             </button>
@@ -582,7 +582,7 @@ const roleColor = (role) => {
                             v-model="seoForm.seo_description"
                             rows="3"
                             placeholder="Taller especializado en mantenciones, mecánica general y diagnóstico computarizado. Servicio rápido con garantía."
-                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826] resize-none"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00] resize-none"
                         ></textarea>
                         <p class="text-[10px] text-gray-400 font-medium">{{ seoForm.seo_description?.length ?? 0 }}/500 caracteres. Ideal: 100–160 para Google.</p>
                         <p v-if="seoForm.errors.seo_description" class="text-red-500 text-xs">{{ seoForm.errors.seo_description }}</p>
@@ -595,7 +595,7 @@ const roleColor = (role) => {
                             v-model="seoForm.seo_address"
                             type="text"
                             placeholder="Av. Apoquindo 4501, Las Condes, Santiago"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                         />
                         <p v-if="seoForm.errors.seo_address" class="text-red-500 text-xs">{{ seoForm.errors.seo_address }}</p>
                     </div>
@@ -613,7 +613,7 @@ const roleColor = (role) => {
                                 v-model="seoForm.whatsapp_number"
                                 type="text"
                                 placeholder="+56 9 1234 5678"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#F9A826]"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                             />
                         </div>
                         <p class="text-[10px] text-gray-400 font-medium">Formato internacional: +56 9 XXXX XXXX. Aparecerá como botón flotante en tu página pública.</p>
@@ -622,7 +622,7 @@ const roleColor = (role) => {
 
                     <div class="flex justify-end">
                         <button type="submit" :disabled="seoForm.processing"
-                            class="px-6 py-2.5 bg-[#F9A826] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#E59A22] transition-all disabled:opacity-50">
+                            class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50">
                             {{ seoForm.processing ? 'Guardando...' : 'Guardar Perfil SEO' }}
                         </button>
                     </div>
