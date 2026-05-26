@@ -108,7 +108,7 @@ const formatDate = (date) => {
 
         <!-- Tabla -->
         <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-            <div v-if="requests?.data?.length">
+            <div v-if="requests?.data?.length" class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100">
                     <thead class="bg-slate-50">
                         <tr>

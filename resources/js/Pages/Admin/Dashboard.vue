@@ -190,7 +190,7 @@ const visitsAreaPoints = computed(() => {
                 <h2 class="text-sm font-semibold text-slate-900">Próximas a Vencer</h2>
                 <p class="text-xs text-slate-500 mt-0.5">Suscripciones con vencimiento próximo</p>
             </div>
-            <div v-if="expiring_tenants && expiring_tenants.length">
+            <div v-if="expiring_tenants && expiring_tenants.length" class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100">
                     <thead class="bg-slate-50">
                         <tr>
@@ -232,7 +232,7 @@ const visitsAreaPoints = computed(() => {
                     Ver todas →
                 </Link>
             </div>
-            <div v-if="recent_trial_requests && recent_trial_requests.length">
+            <div v-if="recent_trial_requests && recent_trial_requests.length" class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100">
                     <thead class="bg-slate-50">
                         <tr>

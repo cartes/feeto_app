@@ -42,14 +42,14 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-           $response = $this->post('/login', [
+        $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
         $response->assertSessionHasErrors([
-            'email' => 'El correo o la clave no coinciden. Revisa tus datos e intentalo de nuevo.',
+            'email' => 'No pudimos iniciar sesion con ese correo y esa clave. Revisa los datos y prueba de nuevo.',
         ]);
     }
 

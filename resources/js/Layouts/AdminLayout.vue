@@ -9,6 +9,7 @@ const user = computed(() => page.props.auth.user);
 const flash = computed(() => page.props.flash ?? {});
 
 const userMenuOpen = ref(false);
+const showingNavigationDropdown = ref(false);
 const userMenuRef = ref(null);
 const toast = ref({ message: '', type: 'success' });
 
@@ -184,6 +185,141 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
                 </Link>
               </div>
             </div>
+          </div>
+
+          <!-- Hamburger -->
+          <div class="-mr-2 flex items-center sm:hidden">
+            <button
+              @click="showingNavigationDropdown = !showingNavigationDropdown"
+              class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 transition-colors"
+            >
+              <span class="sr-only">Abrir menú principal</span>
+              <svg
+                :class="{'hidden': showingNavigationDropdown, 'block': !showingNavigationDropdown}"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+              <svg
+                :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsive Navigation Menu -->
+      <div
+        :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}"
+        class="sm:hidden bg-slate-900 border-t border-slate-800"
+      >
+        <div class="space-y-1 pb-3 pt-2 px-2">
+          <Link
+            :href="route('admin.dashboard')"
+            :class="route().current('admin.dashboard') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Panel
+          </Link>
+          <Link
+            :href="route('admin.tenants.index')"
+            :class="route().current('admin.tenants.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Talleres
+          </Link>
+          <Link
+            :href="route('admin.users.index')"
+            :class="route().current('admin.users.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Usuarios
+          </Link>
+          <Link
+            :href="route('admin.plans.index')"
+            :class="route().current('admin.plans.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Planes
+          </Link>
+          <Link
+            :href="route('admin.payments.index')"
+            :class="route().current('admin.payments.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Pagos
+          </Link>
+          <Link
+            :href="route('admin.audit.index')"
+            :class="route().current('admin.audit.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Auditoría
+          </Link>
+          <Link
+            :href="route('admin.trial-requests.index')"
+            :class="route().current('admin.trial-requests.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            Pruebas
+          </Link>
+          <Link
+            :href="route('admin.landing-seo.index')"
+            :class="route().current('admin.landing-seo.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            class="block rounded-md px-3 py-2 text-base font-medium transition-colors"
+            @click="showingNavigationDropdown = false"
+          >
+            SEO
+          </Link>
+        </div>
+
+        <!-- Responsive Settings Options -->
+        <div class="border-t border-slate-800 pb-3 pt-4 px-4">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-semibold ring-1 ring-white/10">
+              {{ user?.name?.charAt(0).toUpperCase() }}
+            </div>
+            <div>
+              <div class="text-base font-medium text-white">{{ user?.name }}</div>
+              <div class="text-sm font-medium text-slate-400">{{ user?.email }}</div>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-1">
+            <Link
+              :href="route('admin.profile')"
+              class="block rounded-md px-3 py-2 text-base font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+              @click="showingNavigationDropdown = false"
+            >
+              Mi Perfil
+            </Link>
+            <Link
+              :href="route('logout')"
+              method="post"
+              as="button"
+              class="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-rose-400 hover:bg-slate-800 hover:text-white transition-colors"
+              @click="showingNavigationDropdown = false"
+            >
+              Salir
+            </Link>
           </div>
         </div>
       </div>
