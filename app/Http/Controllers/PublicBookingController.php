@@ -113,6 +113,23 @@ class PublicBookingController extends Controller
             $businessSchema['telephone'] = $tenant->whatsapp_number;
         }
 
+        $businessSchema['potentialAction'] = [
+            '@type' => 'ReserveAction',
+            'target' => [
+                '@type' => 'EntryPoint',
+                'urlTemplate' => $canonicalUrl,
+                'inLanguage' => 'es-CL',
+                'actionPlatform' => [
+                    'https://schema.org/DesktopWebPlatform',
+                    'https://schema.org/MobileWebPlatform',
+                ],
+            ],
+            'result' => [
+                '@type' => 'Reservation',
+                'name' => 'Reserva de Cita en Taller',
+            ],
+        ];
+
         return [
             $businessSchema,
             [
