@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
     pages: { type: Array, default: () => [] },
+    analytics_settings: Object,
 });
 
 const form = useForm({
@@ -14,6 +15,8 @@ const form = useForm({
         description: p.description ?? '',
         og_image: p.og_image ?? '',
     })),
+    analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
+    analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
 });
 
 const titleLen = (i) => form.pages[i]?.title?.length ?? 0;
@@ -203,6 +206,48 @@ const resetPage = (i) => {
                                 <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">{{ previewDesc(i) || 'Sin descripción.' }}</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Analytics Card -->
+            <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">Seguimiento &amp; Analytics</p>
+                            <p class="text-xs text-slate-500">Configura las herramientas globales de medición y verificación del sitio.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div>
+                        <label for="analytics_google_analytics_code" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Código de Google Analytics (Script)</label>
+                        <textarea
+                            id="analytics_google_analytics_code"
+                            v-model="form.analytics_google_analytics_code"
+                            rows="6"
+                            placeholder="Pega aquí el código HTML completo proporcionado por Google Analytics (ej. &lt;script async src='https://www.googletagmanager.com/gtag/js...'&gt;&lt;/script&gt;)"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition font-mono resize-y"
+                        ></textarea>
+                        <div v-if="form.errors.analytics_google_analytics_code" class="mt-1 text-sm text-red-600">{{ form.errors.analytics_google_analytics_code }}</div>
+                    </div>
+
+                    <div>
+                        <label for="analytics_google_search_console_code" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Código de Verificación de Google Search Console (Meta Tag)</label>
+                        <textarea
+                            id="analytics_google_search_console_code"
+                            v-model="form.analytics_google_search_console_code"
+                            rows="3"
+                            placeholder="Pega aquí el tag meta de verificación completo (ej. &lt;meta name='google-site-verification' content='...' /&gt;)"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition font-mono resize-y"
+                        ></textarea>
+                        <div v-if="form.errors.analytics_google_search_console_code" class="mt-1 text-sm text-red-600">{{ form.errors.analytics_google_search_console_code }}</div>
                     </div>
                 </div>
             </div>

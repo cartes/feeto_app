@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateAdminPasswordRequest;
 use App\Http\Requests\Admin\UpdateAdminProfileRequest;
-use App\Http\Requests\Admin\UpdateAnalyticsRequest;
 use App\Http\Requests\Admin\UpdateApiKeysRequest;
 use App\Models\AuditLog;
 use App\Models\Setting;
@@ -40,18 +39,10 @@ class AdminProfileController extends Controller
             'has_value' => ! empty($s->value),
         ]);
 
-        $analyticsSettings = Setting::getGroup('analytics')->keyBy('key')->map(fn ($s) => [
-            'value' => $s->value,
-            'description' => $s->description,
-            'is_secret' => $s->is_secret,
-            'has_value' => ! empty($s->value),
-        ]);
-
         return Inertia::render('Admin/Profile', [
             'ai_settings' => $aiSettings,
             'integration_settings' => $integrationSettings,
             'payment_settings' => $paymentSettings,
-            'analytics_settings' => $analyticsSettings,
         ]);
     }
 
@@ -92,18 +83,5 @@ class AdminProfileController extends Controller
         AuditLog::record('api_keys.updated', 'Super-admin actualizó las API keys del sistema');
 
         return back()->with('success', 'Configuración guardada correctamente.');
-    }
-
-    public function updateAnalytics(UpdateAnalyticsRequest $request): RedirectResponse
-    {
-        $data = $request->validated();
-
-        foreach ($data as $key => $value) {
-            Setting::set($key, $value);
-        }
-
-        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración de Analytics y Search Console');
-
-        return back()->with('success', 'Configuración de Analytics guardada correctamente.');
     }
 }

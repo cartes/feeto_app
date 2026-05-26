@@ -23,7 +23,7 @@ class AnalyticsSettingsTest extends TestCase
 
     public function test_analytics_settings_page_returns_props_to_super_admin(): void
     {
-        $response = $this->actingAs($this->superAdmin)->get(route('admin.profile'));
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.landing-seo.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -39,7 +39,15 @@ class AnalyticsSettingsTest extends TestCase
         $gscCode = '<meta name="google-site-verification" content="test-gsc-1234" />';
 
         $response = $this->actingAs($this->superAdmin)
-            ->put(route('admin.profile.analytics'), [
+            ->put(route('admin.landing-seo.update'), [
+                'pages' => [
+                    [
+                        'key' => 'home',
+                        'title' => 'TallerFlow Home Test',
+                        'description' => 'Home test description',
+                        'og_image' => 'https://example.com/image.png',
+                    ],
+                ],
                 'analytics_google_analytics_code' => $gaCode,
                 'analytics_google_search_console_code' => $gscCode,
             ]);
@@ -54,7 +62,13 @@ class AnalyticsSettingsTest extends TestCase
         $user = User::factory()->create(['is_super_admin' => false]);
 
         $response = $this->actingAs($user)
-            ->put(route('admin.profile.analytics'), [
+            ->put(route('admin.landing-seo.update'), [
+                'pages' => [
+                    [
+                        'key' => 'home',
+                        'title' => 'Forbidden Test',
+                    ],
+                ],
                 'analytics_google_analytics_code' => 'test',
                 'analytics_google_search_console_code' => 'test',
             ]);

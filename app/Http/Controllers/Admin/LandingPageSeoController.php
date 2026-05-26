@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,8 +50,16 @@ class LandingPageSeoController extends Controller
             ];
         })->values();
 
+        $analyticsSettings = Setting::getGroup('analytics')->keyBy('key')->map(fn ($s) => [
+            'value' => $s->value,
+            'description' => $s->description,
+            'is_secret' => $s->is_secret,
+            'has_value' => ! empty($s->value),
+        ]);
+
         return Inertia::render('Admin/LandingPageSeo/Index', [
             'pages' => $pages,
+            'analytics_settings' => $analyticsSettings,
         ]);
     }
 
@@ -59,10 +67,12 @@ class LandingPageSeoController extends Controller
     {
         $validated = $request->validate([
             'pages' => 'required|array',
-            'pages.*.key' => ['required', 'string', 'in:' . implode(',', array_keys(self::PAGES))],
+            'pages.*.key' => ['required', 'string', 'in:'.implode(',', array_keys(self::PAGES))],
             'pages.*.title' => 'nullable|string|max:160',
             'pages.*.description' => 'nullable|string|max:320',
             'pages.*.og_image' => 'nullable|url|max:500',
+            'analytics_google_analytics_code' => ['nullable', 'string', 'max:10000'],
+            'analytics_google_search_console_code' => ['nullable', 'string', 'max:10000'],
         ], [
             'pages.*.title.max' => 'El título SEO no debe superar los 160 caracteres.',
             'pages.*.description.max' => 'La descripción SEO no debe superar los 320 caracteres.',
@@ -76,6 +86,11 @@ class LandingPageSeoController extends Controller
             Setting::set("seo_{$key}_og_image", $page['og_image'] ?? '');
         }
 
-        return back()->with('success', 'Configuración SEO guardada correctamente.');
+        Setting::set('analytics_google_analytics_code', $validated['analytics_google_analytics_code'] ?? null);
+        Setting::set('analytics_google_search_console_code', $validated['analytics_google_search_console_code'] ?? null);
+
+        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración de Analytics y Search Console en Landing SEO');
+
+        return back()->with('success', 'Configuración SEO y Analytics guardada correctamente.');
     }
 }
