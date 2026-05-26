@@ -42,12 +42,15 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+        $response->assertSessionHasErrors([
+            'email' => 'El correo o la clave no coinciden. Revisa tus datos e intentalo de nuevo.',
+        ]);
     }
 
     public function test_users_can_logout(): void
