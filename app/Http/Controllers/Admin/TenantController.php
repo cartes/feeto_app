@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreTenantRequest;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantSetupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -28,6 +30,60 @@ class TenantController extends Controller
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,
         ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Tenants/Create');
+    }
+
+    public function store(StoreTenantRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $tenant = DB::transaction(function () use ($validated) {
+            $slug = Tenant::generateUniqueSlug($validated['name']);
+            $domain = $validated['domain'] ?? $this->generateUniqueDomain($slug);
+
+            $tenant = Tenant::create([
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'domain' => $domain,
+                'rut_taller' => $validated['rut_taller'],
+                'plan' => $validated['plan'],
+                'is_active' => $validated['status'] === 'active',
+                'status' => $validated['status'],
+                'subscription_ends_at' => $validated['subscription_ends_at'] ? now()->parse($validated['subscription_ends_at']) : null,
+            ]);
+
+            $admin = new User;
+            $admin->name = $validated['admin_name'];
+            $admin->email = $validated['admin_email'];
+            $admin->password = Hash::make($validated['admin_password']);
+            $admin->tenant_id = $tenant->id;
+            $admin->save();
+
+            $this->tenantSetupService->provisionTenant($tenant, $admin);
+
+            return $tenant;
+        });
+
+        return redirect()->route('admin.tenants.index')
+            ->with('success', "Taller \"{$tenant->name}\" creado correctamente.");
+    }
+
+    private function generateUniqueDomain(string $slug): string
+    {
+        $base = $slug.'.tallerflow.cl';
+        $domain = $base;
+        $counter = 2;
+
+        while (Tenant::where('domain', $domain)->exists()) {
+            $domain = $slug.'-'.$counter.'.tallerflow.cl';
+            $counter++;
+        }
+
+        return $domain;
     }
 
     public function edit(Tenant $tenant): Response
