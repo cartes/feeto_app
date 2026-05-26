@@ -7,6 +7,7 @@ const props = defineProps({
     ai_settings: Object,
     integration_settings: Object,
     payment_settings: Object,
+    analytics_settings: Object,
 });
 
 const user = computed(() => usePage().props.auth.user);
@@ -55,7 +56,17 @@ const apiForm = useForm({
 });
 
 const submitApiKeys = () => {
-    apiForm.put(route('admin.profile.api_keys'), { preserveScroll: true });
+    apiForm.put(route('admin.profile.api-keys'), { preserveScroll: true });
+};
+
+// --- Analytics & Search Console form ---
+const analyticsForm = useForm({
+    analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
+    analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
+});
+
+const submitAnalytics = () => {
+    analyticsForm.put(route('admin.profile.analytics'), { preserveScroll: true });
 };
 
 const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
@@ -94,6 +105,13 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                         class="whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"
                     >
                         API Keys &amp; Credenciales
+                    </button>
+                    <button
+                        @click="activeTab = 'analytics'"
+                        :class="activeTab === 'analytics' ? 'border-orange-500 text-orange-600 font-semibold' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-medium'"
+                        class="whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"
+                    >
+                        Seguimiento &amp; Analytics
                     </button>
                 </nav>
             </div>
@@ -386,6 +404,50 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                 class="inline-flex justify-center rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
                             >
                                 Guardar Credenciales
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab: Seguimiento & Analytics -->
+                <div v-show="activeTab === 'analytics'">
+                    <form @submit.prevent="submitAnalytics" class="space-y-6 max-w-2xl">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-1">Google Analytics y Search Console</h3>
+                            <p class="text-xs text-slate-500 mb-4">Configura los códigos globales de seguimiento y verificación de la plataforma.</p>
+                        </div>
+                        
+                        <div>
+                            <label for="analytics_google_analytics_code" class="block text-sm font-medium text-gray-700">Código de Google Analytics (Script)</label>
+                            <textarea
+                                id="analytics_google_analytics_code"
+                                v-model="analyticsForm.analytics_google_analytics_code"
+                                rows="6"
+                                placeholder="Pega aquí el código HTML completo proporcionado por Google Analytics (ej. &lt;script async src='https://www.googletagmanager.com/gtag/js...'&gt;&lt;/script&gt;)"
+                                class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm font-mono"
+                            ></textarea>
+                            <div v-if="analyticsForm.errors.analytics_google_analytics_code" class="mt-1 text-sm text-red-600">{{ analyticsForm.errors.analytics_google_analytics_code }}</div>
+                        </div>
+
+                        <div>
+                            <label for="analytics_google_search_console_code" class="block text-sm font-medium text-gray-700">Código de Verificación de Google Search Console (Meta Tag)</label>
+                            <textarea
+                                id="analytics_google_search_console_code"
+                                v-model="analyticsForm.analytics_google_search_console_code"
+                                rows="3"
+                                placeholder="Pega aquí el tag meta de verificación completo (ej. &lt;meta name='google-site-verification' content='...' /&gt;)"
+                                class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm font-mono"
+                            ></textarea>
+                            <div v-if="analyticsForm.errors.analytics_google_search_console_code" class="mt-1 text-sm text-red-600">{{ analyticsForm.errors.analytics_google_search_console_code }}</div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 flex justify-end">
+                            <button
+                                type="submit"
+                                :disabled="analyticsForm.processing"
+                                class="inline-flex justify-center rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+                            >
+                                Guardar Configuración
                             </button>
                         </div>
                     </form>

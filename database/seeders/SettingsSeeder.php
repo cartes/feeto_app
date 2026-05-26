@@ -28,6 +28,10 @@ class SettingsSeeder extends Seeder
             ['key' => 'mp_public_key', 'group' => 'payments', 'description' => 'Mercado Pago Public Key', 'is_secret' => true, 'value' => null],
             ['key' => 'mp_webhook_secret', 'group' => 'payments', 'description' => 'Mercado Pago Webhook Secret', 'is_secret' => true, 'value' => null],
             ['key' => 'mp_sandbox', 'group' => 'payments', 'description' => 'Modo sandbox de Mercado Pago', 'is_secret' => false, 'value' => 'true'],
+
+            // Analytics
+            ['key' => 'analytics_google_analytics_code', 'group' => 'analytics', 'description' => 'Código de Google Analytics (Script de seguimiento)', 'is_secret' => false, 'value' => null],
+            ['key' => 'analytics_google_search_console_code', 'group' => 'analytics', 'description' => 'Código de Verificación de Google Search Console (Meta Tag o HTML)', 'is_secret' => false, 'value' => null],
         ];
 
         foreach ($settings as $setting) {

@@ -321,6 +321,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::put('/profile', [AdminProfileController::class, 'updateProfile'])->name('profile.update');
         Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
         Route::put('/profile/api-keys', [AdminProfileController::class, 'updateApiKeys'])->name('profile.api-keys');
+        Route::put('/profile/analytics', [AdminProfileController::class, 'updateAnalytics'])->name('profile.analytics');
 
         // Planes
         Route::resource('/plans', PlanController::class)->except(['show']);
