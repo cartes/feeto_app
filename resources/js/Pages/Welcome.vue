@@ -18,6 +18,46 @@ const canonicalUrl = computed(() => {
 const showLoginModal = ref(false);
 const activeSection = ref('features');
 
+// Slider interactivo de funcionalidades
+const currentSlide = ref(0);
+const slides = [
+    {
+        title: 'Agenda Semanal del Taller',
+        description: 'Controla citas, asigna mecánicos y programa servicios con un calendario interactivo en tiempo real.',
+        tag: 'Calendario',
+        tagClass: 'bg-blue-50 text-blue-600 border border-blue-100',
+        image: '/images/dashboard_agenda.png'
+    },
+    {
+        title: 'Tablero Kanban de Órdenes',
+        description: 'Mueve órdenes de trabajo entre etapas (Recepción, Diagnóstico, Listo) arrastrándolas con un clic en tiempo real.',
+        tag: 'Tablero Kanban',
+        tagClass: 'bg-orange-50 text-orange-600 border border-orange-100',
+        image: '/images/dashboard_kanban.png'
+    },
+    {
+        title: 'Recepción con IA móvil',
+        description: 'Escanea la patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.',
+        tag: 'Recepción IA',
+        tagClass: 'bg-purple-50 text-purple-600 border border-purple-100',
+        image: '/images/recepcion_ia.png'
+    }
+];
+
+let autoplayTimer = null;
+const startAutoPlay = () => {
+    autoplayTimer = setInterval(() => {
+        currentSlide.value = (currentSlide.value + 1) % slides.length;
+    }, 7000);
+};
+
+const stopAutoPlay = () => {
+    if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+    }
+};
+
 let scrollHandler = null;
 
 onMounted(() => {
@@ -42,10 +82,12 @@ onMounted(() => {
 
     scrollHandler();
     window.addEventListener('scroll', scrollHandler, { passive: true });
+    startAutoPlay();
 });
 
 onUnmounted(() => {
     if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
+    stopAutoPlay();
 });
 </script>
 
@@ -226,6 +268,53 @@ onUnmounted(() => {
                 </div>
             </section>
         </div>
+
+        <section id="preview-slider" class="py-24 bg-[#f8fafc] border-b border-slate-100 font-sans antialiased">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#ffb547] mb-3 block">Vista en Vivo</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                        Una interfaz potente y <em class="text-[#ffb547] not-italic">sorprendentemente simple.</em>
+                    </h2>
+                    <p class="text-slate-500 mt-4 text-base leading-relaxed">
+                        Explora cómo funciona TallerFlow desde adentro. Diseñado para verse increíble en cualquier pantalla y funcionar a la velocidad de tu taller.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Main Image Display -->
+                    <div class="lg:col-span-8 bg-white rounded-3xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden relative group">
+                        <div class="aspect-[16/10] overflow-hidden rounded-2xl bg-slate-50 relative">
+                            <div v-for="(slide, index) in slides" :key="slide.image" 
+                                 class="absolute inset-0 transition-all duration-500 ease-in-out"
+                                 :class="currentSlide === index ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'">
+                                <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover object-top" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Thumbnails -->
+                    <div class="lg:col-span-4 flex flex-col gap-4">
+                        <button v-for="(slide, index) in slides" :key="index" @click="currentSlide = index; stopAutoPlay()"
+                            class="text-left p-6 rounded-2xl border transition-all duration-300 flex flex-col gap-2 relative overflow-hidden focus:outline-none"
+                            :class="currentSlide === index ? 'bg-white border-[#ffb547] shadow-[0_10px_30px_rgba(255,181,71,0.1)] translate-x-2' : 'bg-transparent border-slate-100 hover:bg-white hover:border-slate-200 hover:shadow-sm'">
+                            
+                            <div v-if="currentSlide === index" class="absolute left-0 top-0 bottom-0 w-1 bg-[#ffb547]"></div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
+                                    :class="slide.tagClass">
+                                    {{ slide.tag }}
+                                </span>
+                                <span class="text-xs text-slate-400 font-mono">0{{ index + 1 }}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 leading-snug">{{ slide.title }}</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">{{ slide.description }}</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section id="benefits" class="py-24 bg-white">
             <div class="max-w-6xl mx-auto px-6 lg:px-8">
