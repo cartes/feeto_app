@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('settings')->insert([
+        $settings = [
             [
                 'key' => 'analytics_google_analytics_code',
                 'group' => 'analytics',
@@ -29,7 +29,13 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($settings as $setting) {
+            if (! DB::table('settings')->where('key', $setting['key'])->exists()) {
+                DB::table('settings')->insert($setting);
+            }
+        }
     }
 
     /**
