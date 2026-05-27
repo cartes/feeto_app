@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
@@ -18,6 +18,8 @@ const form = useForm({
     analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
     analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
 });
+
+const isEditingGa = ref(false);
 
 const titleLen = (i) => form.pages[i]?.title?.length ?? 0;
 const descLen = (i) => form.pages[i]?.description?.length ?? 0;
@@ -227,13 +229,34 @@ const resetPage = (i) => {
 
                 <div class="p-6 space-y-6">
                     <div>
-                        <label for="analytics_google_analytics_code" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Código de Google Analytics (Script)</label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="analytics_google_analytics_code" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Código de Google Analytics (Script)</label>
+                            <button
+                                type="button"
+                                @click="isEditingGa = !isEditingGa"
+                                class="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 transition"
+                            >
+                                <svg v-if="!isEditingGa" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                                <svg v-else class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                </svg>
+                                {{ isEditingGa ? 'Bloquear' : 'Editar' }}
+                            </button>
+                        </div>
                         <textarea
                             id="analytics_google_analytics_code"
                             v-model="form.analytics_google_analytics_code"
                             rows="6"
+                            :readonly="!isEditingGa"
                             placeholder="Pega aquí el código HTML completo proporcionado por Google Analytics (ej. &lt;script async src='https://www.googletagmanager.com/gtag/js...'&gt;&lt;/script&gt;)"
-                            class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition font-mono resize-y"
+                            :class="[
+                                'w-full rounded-lg border px-3 py-2.5 text-sm font-mono resize-y transition',
+                                !isEditingGa
+                                    ? 'bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed'
+                                    : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent'
+                            ]"
                         ></textarea>
                         <div v-if="form.errors.analytics_google_analytics_code" class="mt-1 text-sm text-red-600">{{ form.errors.analytics_google_analytics_code }}</div>
                     </div>

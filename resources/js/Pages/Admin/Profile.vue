@@ -65,6 +65,8 @@ const analyticsForm = useForm({
     analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
 });
 
+const isEditingGa = ref(false);
+
 const submitAnalytics = () => {
     analyticsForm.put(route('admin.profile.analytics'), { preserveScroll: true });
 };
@@ -418,13 +420,34 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                         </div>
                         
                         <div>
-                            <label for="analytics_google_analytics_code" class="block text-sm font-medium text-gray-700">Código de Google Analytics (Script)</label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="analytics_google_analytics_code" class="block text-sm font-medium text-gray-700">Código de Google Analytics (Script)</label>
+                                <button
+                                    type="button"
+                                    @click="isEditingGa = !isEditingGa"
+                                    class="inline-flex items-center gap-1 text-xs font-medium text-orange-600 hover:text-orange-700 transition"
+                                >
+                                    <svg v-if="!isEditingGa" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                    </svg>
+                                    <svg v-else class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                    {{ isEditingGa ? 'Bloquear' : 'Editar' }}
+                                </button>
+                            </div>
                             <textarea
                                 id="analytics_google_analytics_code"
                                 v-model="analyticsForm.analytics_google_analytics_code"
                                 rows="6"
+                                :readonly="!isEditingGa"
                                 placeholder="Pega aquí el código HTML completo proporcionado por Google Analytics (ej. &lt;script async src='https://www.googletagmanager.com/gtag/js...'&gt;&lt;/script&gt;)"
-                                class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm font-mono"
+                                :class="[
+                                    'mt-2 block w-full rounded-md border text-sm font-mono resize-y transition',
+                                    !isEditingGa
+                                        ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed shadow-none'
+                                        : 'bg-white border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500'
+                                ]"
                             ></textarea>
                             <div v-if="analyticsForm.errors.analytics_google_analytics_code" class="mt-1 text-sm text-red-600">{{ analyticsForm.errors.analytics_google_analytics_code }}</div>
                         </div>

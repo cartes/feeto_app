@@ -76,4 +76,32 @@ class AdminProfileControllerTest extends TestCase
         $response->assertRedirect();
         $this->assertEquals('test-gemini-key-12345', Setting::get('gemini_api_key'));
     }
+
+    public function test_profile_page_returns_analytics_settings_props_to_super_admin(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.profile'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->has('analytics_settings')
+            ->has('analytics_settings.analytics_google_analytics_code')
+            ->has('analytics_settings.analytics_google_search_console_code')
+        );
+    }
+
+    public function test_analytics_settings_can_be_updated_from_profile(): void
+    {
+        $gaCode = "<!-- Google tag (gtag.js) -->\n<script>console.log('profile-test-ga');</script>";
+        $gscCode = '<meta name="google-site-verification" content="profile-test-gsc-1234" />';
+
+        $response = $this->actingAs($this->superAdmin)
+            ->put(route('admin.profile.analytics'), [
+                'analytics_google_analytics_code' => $gaCode,
+                'analytics_google_search_console_code' => $gscCode,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertEquals($gaCode, Setting::get('analytics_google_analytics_code'));
+        $this->assertEquals($gscCode, Setting::get('analytics_google_search_console_code'));
+    }
 }
