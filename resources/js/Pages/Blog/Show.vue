@@ -76,7 +76,7 @@ const formatDate = (dateStr) => {
 
     <div class="min-h-screen bg-slate-50 font-sans antialiased flex flex-col justify-between">
         <main class="flex-grow pt-28 pb-20">
-            <article class="max-w-3xl mx-auto px-6 lg:px-8">
+            <article class="max-w-4xl mx-auto px-6 lg:px-8">
                 <!-- Back Link -->
                 <div class="mb-8">
                     <Link
