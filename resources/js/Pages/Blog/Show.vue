@@ -79,6 +79,14 @@ const formatDate = (dateStr) => {
                         </p>
                     </div>
                     <Link
+                        v-if="$page.props.auth?.user"
+                        :href="route('dashboard')"
+                        class="flex-shrink-0 inline-flex items-center gap-2 bg-[#FF7A00] hover:bg-[#CC6200] text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/20 transition-all active:scale-[0.98] text-sm whitespace-nowrap"
+                    >
+                        Ir al Dashboard
+                    </Link>
+                    <Link
+                        v-else
                         :href="route('trial.create')"
                         class="flex-shrink-0 inline-flex items-center gap-2 bg-[#FF7A00] hover:bg-[#CC6200] text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/20 transition-all active:scale-[0.98] text-sm whitespace-nowrap"
                     >

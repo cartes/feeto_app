@@ -64,7 +64,7 @@ class PublicCheckoutController extends Controller
             : $plan->discountedMonthlyPrice();
 
         $accessToken = Setting::get('mp_access_token');
-        $isSandbox = (bool) Setting::get('mp_sandbox', '1');
+        $isSandbox = Setting::get('mp_sandbox', 'true') === 'true';
 
         if (! $accessToken) {
             return back()->with('error', 'No hay credenciales de Mercado Pago configuradas. Contacta al administrador.');

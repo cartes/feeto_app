@@ -99,6 +99,7 @@ class MercadoPagoWebhookController extends Controller
                     Tenant::where('id', $tenantId)->update([
                         'subscription_ends_at' => $ends,
                         'is_active' => true,
+                        'plan_id' => $payment->plan_id,
                     ]);
 
                     AuditLog::record(
@@ -120,11 +121,20 @@ class MercadoPagoWebhookController extends Controller
             return false;
         }
 
+        $parts = [];
+        foreach (explode(',', $signature) as $part) {
+            [$k, $v] = array_pad(explode('=', $part, 2), 2, '');
+            $parts[$k] = $v;
+        }
+
+        $ts = $parts['ts'] ?? '';
+        $v1 = $parts['v1'] ?? '';
+
         $dataId = $request->input('data.id', '');
-        $manifest = "id:{$dataId};request-id:{$requestId};ts:".explode(',', $signature)[0] ?? '';
+        $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts}";
 
         $hash = hash_hmac('sha256', $manifest, $secret);
 
-        return hash_equals($hash, explode('=', $signature, 2)[1] ?? '');
+        return hash_equals($hash, $v1);
     }
 }

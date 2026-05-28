@@ -85,7 +85,7 @@ class PaymentController extends Controller
         $plan = Plan::findOrFail($request->plan_id);
 
         $accessToken = Setting::get('mp_access_token');
-        $isSandbox = (bool) Setting::get('mp_sandbox', '1');
+        $isSandbox = Setting::get('mp_sandbox', 'true') === 'true';
 
         if (! $accessToken) {
             return back()->withErrors(['mp' => 'No hay Access Token de Mercado Pago configurado.']);

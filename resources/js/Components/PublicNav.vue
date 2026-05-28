@@ -90,7 +90,7 @@ onMounted(() => {
             </div>
             <div class="pub-mobile-actions">
                 <template v-if="$page.props.auth?.user">
-                    <Link :href="route('dashboard')" class="pub-mobile-btn pub-mobile-btn-ghost" @click="mobileMenuOpen = false">Ir al dashboard</Link>
+                    <Link :href="route('dashboard')" class="pub-mobile-btn pub-mobile-btn-ghost" @click="mobileMenuOpen = false">Dashboard</Link>
                 </template>
                 <template v-else>
                     <button v-if="canLogin" type="button" class="pub-mobile-btn pub-mobile-btn-ghost" @click="mobileMenuOpen = false; showLoginModal = true">Iniciar sesión</button>

@@ -135,7 +135,20 @@ onUnmounted(() => {
                     </div>
 
                     <div class="cta-strip">
-                        <Link v-if="canRegister" :href="route('trial.create')" class="cta primary">
+                        <Link v-if="$page.props.auth?.user" :href="route('dashboard')" class="cta primary">
+                            <span>
+                                <span class="cta-title">Ir al Dashboard</span>
+                                <span class="cta-sub">Accede a la administración de tu taller</span>
+                            </span>
+                            <span class="cta-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                </svg>
+                            </span>
+                        </Link>
+                        <Link v-else-if="canRegister" :href="route('trial.create')" class="cta primary">
                             <span>
                                 <span class="cta-title">Prueba gratis 14 días</span>
                                 <span class="cta-sub">Crea tu cuenta y empieza hoy mismo</span>
@@ -452,7 +465,15 @@ onUnmounted(() => {
                             14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
                         </p>
                     </div>
-                    <Link v-if="canRegister" :href="route('trial.create')"
+                    <Link v-if="$page.props.auth?.user" :href="route('dashboard')"
+                        class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#CC6200] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
+                        Ir al Dashboard
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                    </Link>
+                    <Link v-else-if="canRegister" :href="route('trial.create')"
                         class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#CC6200] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap">
                         Empezar Gratis Ahora
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
