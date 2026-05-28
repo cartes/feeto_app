@@ -13,3 +13,4 @@ bootstrap/cache/*.php
 .env.*
 tests
 docker-compose*.yml
+public/storage

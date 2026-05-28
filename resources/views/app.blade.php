@@ -65,6 +65,14 @@
 
         <!-- Scripts -->
         @routes
+        <script>
+            window.laravelReverbConfig = {
+                key: "{{ config('broadcasting.connections.reverb.key') }}",
+                host: "{{ config('broadcasting.connections.reverb.options.host') }}",
+                port: "{{ config('broadcasting.connections.reverb.options.port') }}",
+                scheme: "{{ config('broadcasting.connections.reverb.options.scheme') }}"
+            };
+        </script>
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>

@@ -8,16 +8,22 @@ import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
-if (import.meta.env.VITE_REVERB_APP_KEY) {
+const reverbKey = import.meta.env.VITE_REVERB_APP_KEY || (window.laravelReverbConfig && window.laravelReverbConfig.key);
+const reverbHost = import.meta.env.VITE_REVERB_HOST || (window.laravelReverbConfig && window.laravelReverbConfig.host);
+const reverbPort = import.meta.env.VITE_REVERB_PORT || (window.laravelReverbConfig && window.laravelReverbConfig.port);
+const reverbScheme = import.meta.env.VITE_REVERB_SCHEME || (window.laravelReverbConfig && window.laravelReverbConfig.scheme);
+
+if (reverbKey) {
     window.Echo = new Echo({
         broadcaster: "reverb",
-        key: import.meta.env.VITE_REVERB_APP_KEY,
-        wsHost: import.meta.env.VITE_REVERB_HOST,
-        wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-        wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-        forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
+        key: reverbKey,
+        wsHost: reverbHost,
+        wsPort: reverbPort ?? 80,
+        wssPort: reverbPort ?? 443,
+        forceTLS: (reverbScheme ?? "https") === "https",
         enabledTransports: ["ws", "wss"],
     });
 } else {
     console.warn("Reverb key not found. Real-time features will be disabled.");
 }
+
