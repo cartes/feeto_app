@@ -18,7 +18,9 @@ class UpdateBlogPostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
             'summary' => ['nullable', 'string', 'max:500'],
+            'meta_description' => ['nullable', 'string', 'max:160'],
             'content' => ['required', 'string'],
             'featured_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'is_published' => ['required', 'boolean'],

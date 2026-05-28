@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
@@ -15,12 +15,19 @@ const isEditing = computed(() => !!props.post);
 
 const form = useForm({
     title: props.post?.title || '',
+    meta_title: props.post?.meta_title || '',
     summary: props.post?.summary || '',
+    meta_description: props.post?.meta_description || '',
     content: props.post?.content || '',
     featured_media_id: props.post?.featured_media_id || null,
     is_published: props.post?.is_published ?? false,
     category_ids: props.post?.categories?.map(c => c.id) || [],
 });
+
+const page = usePage();
+const appUrl = computed(() => page.props.ziggy?.url || 'https://tallerflow.cl');
+const seoTitleLength = computed(() => form.meta_title.length);
+const seoDescLength = computed(() => form.meta_description.length);
 
 const mediaFiles = ref([]);
 const showMediaPicker = ref(false);
@@ -257,6 +264,80 @@ const submit = () => {
                     </div>
                     <div v-if="form.errors.category_ids" class="mt-2 text-sm text-red-600">{{ form.errors.category_ids }}</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- SEO Block (full width below columns) -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mt-0">
+            <div class="flex items-center gap-2 mb-5">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z"/>
+                </svg>
+                <h3 class="text-sm font-semibold text-slate-800">SEO</h3>
+                <span class="text-xs text-slate-400 ml-1">Personaliza cómo aparece este artículo en Google y redes sociales</span>
+            </div>
+
+            <!-- Google Preview -->
+            <div class="mb-5 p-4 rounded-lg bg-slate-50 border border-slate-200">
+                <p class="text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Vista previa en Google</p>
+                <p class="text-[#1a0dab] text-base font-medium truncate">
+                    {{ form.meta_title || form.title || 'Título del artículo' }}
+                </p>
+                <p class="text-[#006621] text-xs truncate">
+                    {{ appUrl }}/blog/{{ post?.slug || 'slug-del-articulo' }}
+                </p>
+                <p class="text-[#545454] text-sm line-clamp-2 mt-0.5">
+                    {{ form.meta_description || form.summary || 'Descripción que aparecerá en los resultados de búsqueda de Google...' }}
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-sm font-medium text-gray-700">Título SEO</label>
+                        <span :class="seoTitleLength > 60 ? 'text-red-500' : seoTitleLength > 50 ? 'text-amber-500' : 'text-slate-400'" class="text-xs font-mono">
+                            {{ seoTitleLength }}/70
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        v-model="form.meta_title"
+                        maxlength="70"
+                        placeholder="Ej: 5 Consejos para Digitalizar tu Taller · TallerFlow"
+                        class="block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                    />
+                    <p class="mt-1 text-xs text-slate-400">Si lo dejas vacío se usa el título del artículo. Ideal: 50-60 caracteres.</p>
+                    <div v-if="form.errors.meta_title" class="mt-1 text-sm text-red-600">{{ form.errors.meta_title }}</div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-sm font-medium text-gray-700">Meta descripción</label>
+                        <span :class="seoDescLength > 155 ? 'text-red-500' : seoDescLength > 140 ? 'text-amber-500' : 'text-slate-400'" class="text-xs font-mono">
+                            {{ seoDescLength }}/160
+                        </span>
+                    </div>
+                    <textarea
+                        v-model="form.meta_description"
+                        rows="3"
+                        maxlength="160"
+                        placeholder="Descripción concisa del artículo para Google y redes sociales..."
+                        class="block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                    ></textarea>
+                    <p class="mt-1 text-xs text-slate-400">Si lo dejas vacío se usa el resumen. Ideal: 140-155 caracteres.</p>
+                    <div v-if="form.errors.meta_description" class="mt-1 text-sm text-red-600">{{ form.errors.meta_description }}</div>
+                </div>
+            </div>
+
+            <!-- OG image info -->
+            <div class="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-start gap-2">
+                <svg class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+                </svg>
+                <p class="text-xs text-blue-600">
+                    La <strong>imagen destacada</strong> se usará como imagen para Open Graph (Facebook, LinkedIn) y Twitter Card.
+                    Recomendada: 1200×630 px.
+                </p>
             </div>
         </div>
 

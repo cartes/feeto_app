@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['title', 'slug', 'summary', 'content', 'featured_image', 'featured_media_id', 'is_published', 'published_at'])]
+#[Fillable(['title', 'slug', 'meta_title', 'summary', 'meta_description', 'content', 'featured_image', 'featured_media_id', 'is_published', 'published_at'])]
 class BlogPost extends Model
 {
     /** @var array<string, string> */
