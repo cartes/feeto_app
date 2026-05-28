@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\Setting;
 use App\Models\Tenant;
+use App\Services\PlanFeatureService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,7 +20,7 @@ use MercadoPago\MercadoPagoConfig;
 
 class TenantSubscriptionController extends Controller
 {
-    public function plans(): Response
+    public function plans(PlanFeatureService $planFeatureService): Response
     {
         $tenant = Tenant::current();
         abort_if(! $tenant, 404);
@@ -35,7 +36,12 @@ class TenantSubscriptionController extends Controller
                 'price_monthly' => $plan->price_monthly,
                 'price_annual' => $plan->price_annual,
                 'discounted_monthly_price' => $plan->discountedMonthlyPrice(),
-                'features' => $plan->features ?? [],
+                'features' => array_values(array_unique(array_merge(
+                    $plan->features ?? [],
+                    collect($plan->feature_keys ?? [])
+                        ->map(fn (string $key): string => $planFeatureService->definition($key)['label'])
+                        ->all(),
+                ))),
                 'feature_keys' => $plan->feature_keys ?? [],
                 'max_users' => $plan->max_users,
                 'is_popular' => (bool) $plan->is_popular,
