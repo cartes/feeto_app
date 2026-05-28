@@ -137,7 +137,7 @@ const emit = defineEmits(['update:modelValue', 'open-media-picker'])
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
-    StarterKit,
+    StarterKit.configure({ link: false, underline: false }),
     Underline,
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     Link.configure({ openOnClick: false, HTMLAttributes: { class: 'tiptap-link' } }),

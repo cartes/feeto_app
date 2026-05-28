@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
 import MediaPickerModal from '@/Components/MediaPickerModal.vue';
@@ -64,6 +65,14 @@ function onMediaUploaded(file) {
 function removeFeaturedImage() {
     featuredMedia.value = null;
     form.featured_media_id = null;
+}
+
+function onMediaDeleted(deletedId) {
+    mediaFiles.value = mediaFiles.value.filter(f => f.id !== deletedId);
+    if (form.featured_media_id === deletedId) {
+        featuredMedia.value = null;
+        form.featured_media_id = null;
+    }
 }
 
 function toggleCategory(id) {
@@ -260,6 +269,7 @@ const submit = () => {
             @close="showMediaPicker = false"
             @select="onMediaSelect"
             @uploaded="onMediaUploaded"
+            @deleted="onMediaDeleted"
         />
     </AdminLayout>
 </template>

@@ -7,7 +7,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['filename', 'original_name', 'path', 'mime_type', 'size', 'width', 'height', 'alt_text', 'description'])]
 class MediaFile extends Model
@@ -16,7 +15,7 @@ class MediaFile extends Model
 
     public function getUrlAttribute(): string
     {
-        return Storage::disk('public')->url($this->path);
+        return '/storage/' . $this->path;
     }
 
     public function blogPosts(): HasMany

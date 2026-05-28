@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -41,7 +42,7 @@ class MediaFileController extends Controller
         $filename = Str::uuid()->toString().'.webp';
         $path = 'blog/media/'.$filename;
 
-        $image = Image::read($uploaded->getRealPath());
+        $image = Image::decode($uploaded->getRealPath());
 
         if ($image->width() > 2000) {
             $image->scaleDown(width: 2000);
@@ -50,7 +51,7 @@ class MediaFileController extends Controller
         $width = $image->width();
         $height = $image->height();
 
-        Storage::disk('public')->put($path, $image->toWebp(quality: 80)->toString());
+        Storage::disk('public')->put($path, $image->encode(new WebpEncoder(quality: 80))->toString());
 
         $media = MediaFile::create([
             'filename' => $filename,
@@ -78,12 +79,16 @@ class MediaFileController extends Controller
         return redirect()->route('admin.media-library.index')->with('success', 'Imagen actualizada correctamente.');
     }
 
-    public function destroy(MediaFile $mediaFile): RedirectResponse
+    public function destroy(MediaFile $mediaFile): RedirectResponse|JsonResponse
     {
         Storage::disk('public')->delete($mediaFile->path);
         $mediaFile->delete();
 
         AuditLog::record('media_file.deleted', "Super-admin eliminó imagen: {$mediaFile->original_name}");
+
+        if (request()->expectsJson() && !request()->header('X-Inertia')) {
+            return response()->json(['ok' => true]);
+        }
 
         return redirect()->route('admin.media-library.index')->with('success', 'Imagen eliminada correctamente.');
     }
