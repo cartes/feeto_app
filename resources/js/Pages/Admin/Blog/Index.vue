@@ -68,6 +68,14 @@ const deletePost = (post) => {
                                     <td class="py-4 pl-4 pr-3 text-sm sm:pl-6 max-w-sm">
                                         <div class="font-medium text-slate-900 truncate">{{ post.title }}</div>
                                         <div v-if="post.summary" class="text-xs text-slate-400 mt-0.5 truncate">{{ post.summary }}</div>
+                                        <div v-if="post.categories?.length" class="flex flex-wrap gap-1 mt-1.5">
+                                            <span
+                                                v-for="cat in post.categories"
+                                                :key="cat.id"
+                                                class="px-1.5 py-0.5 rounded text-white text-xs font-medium"
+                                                :style="`background-color: ${cat.color}`"
+                                            >{{ cat.name }}</span>
+                                        </div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
                                         /blog/{{ post.slug }}

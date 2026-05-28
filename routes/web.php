@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LandingPageSeoController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
@@ -357,6 +359,8 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
 
         // Blog
         Route::resource('/blog', BlogPostController::class)->except(['show']);
+        Route::resource('/blog-categories', BlogCategoryController::class)->except(['show']);
+        Route::resource('/media-library', MediaFileController::class)->except(['show', 'create', 'edit'])->parameters(['media-library' => 'mediaFile']);
 
         // Solicitudes de prueba gratuita
         Route::get('/trial-requests', [AdminTrialRequestController::class, 'index'])->name('trial-requests.index');

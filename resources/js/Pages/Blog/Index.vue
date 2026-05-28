@@ -54,9 +54,9 @@ const formatDate = (dateStr) => {
                             <!-- Post Image -->
                             <div class="aspect-[16/9] overflow-hidden bg-slate-100 relative">
                                 <img
-                                    v-if="post.featured_image"
-                                    :src="post.featured_image"
-                                    :alt="post.title"
+                                    v-if="post.featured_image_url"
+                                    :src="post.featured_image_url"
+                                    :alt="post.featured_media?.alt_text || post.title"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                 />
                                 <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
@@ -67,10 +67,19 @@ const formatDate = (dateStr) => {
                             </div>
                             <!-- Post Details -->
                             <div class="p-6">
-                                <div class="flex items-center gap-3 text-xs text-slate-400 mb-3">
+                                <div class="flex items-center gap-3 text-xs text-slate-400 mb-3 flex-wrap">
                                     <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
                                     <span>•</span>
                                     <span>Por TallerFlow</span>
+                                    <template v-if="post.categories?.length">
+                                        <span>•</span>
+                                        <span
+                                            v-for="cat in post.categories"
+                                            :key="cat.id"
+                                            class="px-2 py-0.5 rounded-full text-white text-xs font-medium"
+                                            :style="`background-color: ${cat.color}`"
+                                        >{{ cat.name }}</span>
+                                    </template>
                                 </div>
                                 <h2 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-[#FF7A00] transition duration-200">
                                     <Link :href="route('blog.show', post.slug)">

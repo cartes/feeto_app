@@ -47,22 +47,35 @@ const formatDate = (dateStr) => {
 
                 <!-- Header -->
                 <header class="mb-10">
-                    <div class="flex items-center gap-3 text-xs text-slate-400 mb-4">
+                    <div class="flex items-center gap-3 text-xs text-slate-400 mb-4 flex-wrap">
                         <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
                         <span>•</span>
                         <span>Por TallerFlow</span>
+                        <template v-if="post.categories?.length">
+                            <span>•</span>
+                            <span
+                                v-for="cat in post.categories"
+                                :key="cat.id"
+                                class="px-2.5 py-0.5 rounded-full text-white text-xs font-medium"
+                                :style="`background-color: ${cat.color}`"
+                            >{{ cat.name }}</span>
+                        </template>
                     </div>
                     <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">
                         {{ post.title }}
                     </h1>
-                    <p class="text-lg text-slate-500 leading-relaxed font-medium">
+                    <p v-if="post.summary" class="text-lg text-slate-500 leading-relaxed font-medium">
                         {{ post.summary }}
                     </p>
                 </header>
 
                 <!-- Featured Image -->
-                <div v-if="post.featured_image" class="aspect-[21/9] rounded-3xl overflow-hidden shadow-sm border border-slate-100 mb-12">
-                    <img :src="post.featured_image" :alt="post.title" class="w-full h-full object-cover" />
+                <div v-if="post.featured_image_url" class="aspect-[21/9] rounded-3xl overflow-hidden shadow-sm border border-slate-100 mb-12">
+                    <img
+                        :src="post.featured_image_url"
+                        :alt="post.featured_media?.alt_text || post.title"
+                        class="w-full h-full object-cover"
+                    />
                 </div>
 
                 <!-- Content -->
