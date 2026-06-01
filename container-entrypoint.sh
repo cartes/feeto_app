@@ -14,7 +14,7 @@ mkdir -p \
 chown -R www-data:www-data storage bootstrap/cache || true
 
 rm -rf public/storage
-php artisan storage:link || true
+php artisan storage:link --relative || php artisan storage:link || true
 php artisan optimize
 
 exec "$@"
