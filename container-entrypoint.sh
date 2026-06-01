@@ -12,6 +12,7 @@ mkdir -p \
     bootstrap/cache
 
 chown -R www-data:www-data storage bootstrap/cache || true
+chmod -R 777 storage bootstrap/cache || true
 
 rm -rf public/storage
 php artisan storage:link --relative || php artisan storage:link || true

@@ -60,7 +60,8 @@ COPY container-entrypoint.sh /usr/local/bin/container-entrypoint.sh
 RUN chmod +x /usr/local/bin/container-entrypoint.sh \
     && rm -f /etc/nginx/sites-enabled/default \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
 
 EXPOSE 80 8080
 ENTRYPOINT ["/usr/local/bin/container-entrypoint.sh"]
