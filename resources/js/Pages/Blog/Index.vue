@@ -98,6 +98,10 @@ const formatDate = (dateStr) => {
                             <!-- Post Details -->
                             <div class="p-6">
                                 <div class="flex items-center gap-3 text-xs text-slate-400 mb-3 flex-wrap">
+                                    <span v-if="!post.is_published" class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
+                                        Borrador
+                                    </span>
+                                    <span v-if="!post.is_published">•</span>
                                     <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
                                     <span>•</span>
                                     <span>Por TallerFlow</span>

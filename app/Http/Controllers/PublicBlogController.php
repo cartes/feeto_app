@@ -14,8 +14,11 @@ class PublicBlogController extends Controller
     public function index(): Response
     {
         $posts = BlogPost::with(['categories', 'featuredMedia'])
-            ->where('is_published', true)
+            ->when(! auth()->check() || ! auth()->user()->is_super_admin, function ($query) {
+                $query->where('is_published', true);
+            })
             ->orderBy('published_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn ($post) => array_merge($post->toArray(), [
                 'featured_image_url' => $post->featured_image_url,
@@ -72,7 +75,9 @@ class PublicBlogController extends Controller
     {
         $post = BlogPost::with(['categories', 'featuredMedia'])
             ->where('slug', $slug)
-            ->where('is_published', true)
+            ->when(! auth()->check() || ! auth()->user()->is_super_admin, function ($query) {
+                $query->where('is_published', true);
+            })
             ->firstOrFail();
 
         $canonicalUrl = request()->url();

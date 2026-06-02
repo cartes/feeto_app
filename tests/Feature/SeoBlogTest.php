@@ -165,4 +165,35 @@ class SeoBlogTest extends TestCase
         $response->assertSee('Post Publico Test');
         $response->assertSee('Contenido del articulo publico');
     }
+
+    public function test_super_admin_can_see_drafts_on_public_blog_pages(): void
+    {
+        $draftPost = BlogPost::create([
+            'title' => 'Post Borrador Interno',
+            'slug' => 'post-borrador-interno',
+            'summary' => 'Resumen borrador',
+            'content' => '<p>Contenido borrador</p>',
+            'is_published' => false,
+        ]);
+
+        $this->withoutVite();
+
+        // Guest user should not see draft post
+        $response = $this->get(route('blog.index'));
+        $response->assertOk();
+        $response->assertDontSee('Post Borrador Interno');
+
+        $response = $this->get(route('blog.show', $draftPost->slug));
+        $response->assertNotFound();
+
+        // Super-admin user should see draft post
+        $response = $this->actingAs($this->superAdmin)->get(route('blog.index'));
+        $response->assertOk();
+        $response->assertSee('Post Borrador Interno');
+
+        $response = $this->actingAs($this->superAdmin)->get(route('blog.show', $draftPost->slug));
+        $response->assertOk();
+        $response->assertSee('Post Borrador Interno');
+        $response->assertSee('Contenido borrador');
+    }
 }

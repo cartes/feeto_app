@@ -45,4 +45,21 @@ class ExampleTest extends TestCase
                 ->has('canRegister')
                 ->where('auth.user.id', $user->id));
     }
+
+    public function test_super_admin_can_visit_homepage_without_redirection(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Welcome')
+                ->has('canLogin')
+                ->has('canRegister')
+                ->where('auth.user.id', $user->id));
+    }
 }
