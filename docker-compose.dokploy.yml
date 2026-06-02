@@ -40,7 +40,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../files/storage:/var/www/html/storage
+      - app_storage:/var/www/html/storage
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/up || exit 1"]
       interval: 30s
@@ -83,7 +83,7 @@ services:
     command: ["php", "artisan", "queue:work", "redis", "--sleep=1", "--tries=3", "--timeout=120", "--max-time=3600"]
     restart: unless-stopped
     volumes:
-      - ../files/storage:/var/www/html/storage
+      - app_storage:/var/www/html/storage
 
   scheduler:
     build:
@@ -116,7 +116,7 @@ services:
     command: ["php", "artisan", "schedule:work"]
     restart: unless-stopped
     volumes:
-      - ../files/storage:/var/www/html/storage
+      - app_storage:/var/www/html/storage
 
   reverb:
     build:
@@ -156,7 +156,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ../files/storage:/var/www/html/storage
+      - app_storage:/var/www/html/storage
 
   redis:
     image: redis:7-alpine
@@ -189,5 +189,6 @@ services:
       start_period: 30s
 
 volumes:
+  app_storage:
   mysql_data:
   redis_data:
