@@ -4,9 +4,9 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
-use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LandingPageSeoController;
+use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PlanController;
@@ -310,7 +310,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
                 abort(400, 'Ruta inválida.');
             }
 
-            $fullPath = storage_path('app/public/'.$path);
+            $fullPath = storage_path('app/private/'.$path);
 
             if (! file_exists($fullPath)) {
                 abort(404);

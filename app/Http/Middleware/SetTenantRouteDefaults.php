@@ -27,6 +27,11 @@ class SetTenantRouteDefaults
         $tenant = Tenant::current();
 
         if ($tenant && $tenant->slug) {
+            $user = $request->user();
+            if ($user && ! $user->is_super_admin && $user->tenant_id !== $tenant->id) {
+                abort(403, 'No tienes acceso a este taller.');
+            }
+
             app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
             URL::defaults(['tenantBySlug' => $tenant->slug]);
         }

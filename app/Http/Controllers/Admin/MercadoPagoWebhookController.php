@@ -20,13 +20,20 @@ class MercadoPagoWebhookController extends Controller
     public function __invoke(Request $request): Response
     {
         $secret = Setting::get('mp_webhook_secret');
+        $isProduction = app()->environment('production');
 
-        if ($secret) {
+        if ($isProduction && ! $secret) {
+            Log::error('Falta la configuración de mp_webhook_secret en producción');
+
+            return response('Configuration Error', 500);
+        }
+
+        if ($secret || $isProduction) {
             $signature = $request->header('x-signature');
             $requestId = $request->header('x-request-id');
 
-            if (! $this->isValidSignature($request, $signature, $requestId, $secret)) {
-                Log::warning('MP webhook signature mismatch', ['headers' => $request->headers->all()]);
+            if (! $this->isValidSignature($request, $signature, $requestId, $secret ?: '')) {
+                Log::warning('MP webhook signature mismatch or missing', ['headers' => $request->headers->all()]);
 
                 return response('Unauthorized', 401);
             }

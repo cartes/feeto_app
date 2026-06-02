@@ -64,7 +64,13 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
         <!-- Scripts -->
-        @routes
+        @if (request()->routeIs('admin.*'))
+            @routes('admin')
+        @elseif (request()->routeIs('home') || request()->routeIs('pricing') || request()->routeIs('blog.*') || request()->routeIs('trial.*') || request()->routeIs('tracking.*') || request()->routeIs('taller.landing') || request()->routeIs('taller.booking.store') || request()->routeIs('taller.whatsapp.inquiry') || request()->routeIs('checkout.*') || request()->routeIs('login') || request()->routeIs('logout') || request()->routeIs('register') || request()->routeIs('password.*') || request()->routeIs('verification.*'))
+            @routes('public')
+        @else
+            @routes('tenant')
+        @endif
         <script>
             window.laravelReverbConfig = {
                 key: "{{ config('broadcasting.connections.reverb.key') }}",
