@@ -53,12 +53,13 @@ use App\Http\Middleware\SetTenantRouteDefaults;
 use App\Models\Tenant;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Symfony\Component\HttpFoundation\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,10 +103,14 @@ Route::post('/taller/{tenantBySlug}/whatsapp-inquiry', [PublicWhatsAppInquiryCon
 | Rutas Privadas — Administración del taller (requieren autenticación)
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function (Request $request): RedirectResponse {
+Route::get('/dashboard', function (Request $request): Response {
     $user = $request->user();
 
     if ($user->is_super_admin) {
+        if ($request->header('X-Inertia')) {
+            return Inertia::location(route('admin.dashboard'));
+        }
+
         return redirect()->route('admin.dashboard');
     }
 
