@@ -62,4 +62,10 @@ class ExampleTest extends TestCase
                 ->has('canRegister')
                 ->where('auth.user.id', $user->id));
     }
+
+    public function test_ziggy_public_group_includes_dashboard(): void
+    {
+        $publicGroup = config('ziggy.groups.public', []);
+        $this->assertContains('dashboard', $publicGroup);
+    }
 }

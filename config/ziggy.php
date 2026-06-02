@@ -25,6 +25,7 @@ return [
             'register',
             'password.*',
             'verification.*',
+            'dashboard',
         ],
         'tenant' => [
             'home',
