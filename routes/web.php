@@ -354,6 +354,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
 
         // Usuarios
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::put('/users/{user}/password', [UserController::class, 'changePassword'])->name('users.change-password');
 
         // Audit Log
         Route::get('/audit', [AuditLogController::class, 'index'])->name('audit.index');

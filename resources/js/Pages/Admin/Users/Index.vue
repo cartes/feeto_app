@@ -1,10 +1,39 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     users: Object,
 });
+
+const selectedUser = ref(null);
+const showPasswordModal = ref(false);
+
+const passwordForm = useForm({
+    password: '',
+    password_confirmation: '',
+});
+
+const openPasswordModal = (user) => {
+    selectedUser.value = user;
+    passwordForm.reset();
+    passwordForm.clearErrors();
+    showPasswordModal.value = true;
+};
+
+const closePasswordModal = () => {
+    showPasswordModal.value = false;
+    selectedUser.value = null;
+    passwordForm.reset();
+    passwordForm.clearErrors();
+};
+
+const submitPassword = () => {
+    passwordForm.put(route('admin.users.change-password', selectedUser.value.id), {
+        onSuccess: () => closePasswordModal(),
+    });
+};
 </script>
 
 <template>
@@ -64,7 +93,12 @@ const props = defineProps({
                                         </span>
                                     </td>
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                        <button class="text-amber-600 hover:text-amber-900 mr-4 font-semibold" v-if="!user.is_super_admin">Reset Password</button>
+                                        <button
+                                            class="text-amber-600 hover:text-amber-900 mr-4 font-semibold"
+                                            @click="openPasswordModal(user)"
+                                        >
+                                            Cambiar contraseña
+                                        </button>
                                         <button class="text-rose-600 hover:text-rose-900 font-semibold" v-if="!user.is_super_admin">Eliminar</button>
                                     </td>
                                 </tr>
@@ -78,7 +112,78 @@ const props = defineProps({
                     </div>
                 </div>
             </div>
-            <!-- Pagination could go here -->
         </div>
+
+        <!-- Modal Cambiar Contraseña -->
+        <Teleport to="body">
+            <div v-if="showPasswordModal" class="fixed inset-0 z-50 flex items-center justify-center">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/50" @click="closePasswordModal"></div>
+
+                <!-- Modal -->
+                <div class="relative z-10 w-full max-w-md mx-4 bg-white rounded-xl shadow-xl">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900">Cambiar contraseña</h2>
+                                <p class="text-sm text-slate-500 mt-0.5">{{ selectedUser?.name }}</p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="closePasswordModal"
+                                class="text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form @submit.prevent="submitPassword" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">Nueva contraseña</label>
+                                <input
+                                    type="password"
+                                    v-model="passwordForm.password"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                                    placeholder="Mínimo 8 caracteres"
+                                    autocomplete="new-password"
+                                />
+                                <p v-if="passwordForm.errors.password" class="mt-1 text-xs text-rose-600">{{ passwordForm.errors.password }}</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirmar contraseña</label>
+                                <input
+                                    type="password"
+                                    v-model="passwordForm.password_confirmation"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                                    placeholder="Repetir contraseña"
+                                    autocomplete="new-password"
+                                />
+                                <p v-if="passwordForm.errors.password_confirmation" class="mt-1 text-xs text-rose-600">{{ passwordForm.errors.password_confirmation }}</p>
+                            </div>
+
+                            <div class="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    @click="closePasswordModal"
+                                    class="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    :disabled="passwordForm.processing"
+                                    class="flex-1 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 transition-colors disabled:opacity-50"
+                                >
+                                    {{ passwordForm.processing ? 'Guardando...' : 'Guardar contraseña' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
     </AdminLayout>
 </template>
