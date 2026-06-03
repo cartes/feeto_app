@@ -62,6 +62,11 @@ class TenantSettingsController extends Controller
                 'max_discount_without_approval' => $tenant->maxDiscountWithoutApproval(),
                 'logo_url' => $tenant->logoUrl(),
             ],
+            'brandingRoutes' => [
+                'color' => route('taller.settings.branding.color', ['tenantBySlug' => $tenant->slug]),
+                'logo' => route('taller.settings.branding.logo', ['tenantBySlug' => $tenant->slug]),
+                'deleteLogo' => route('taller.settings.branding.logo.delete', ['tenantBySlug' => $tenant->slug]),
+            ],
             'canAccessSeo' => $tenant->hasFeature('seo_manager'),
             'canAccessBranding' => true,
         ]);

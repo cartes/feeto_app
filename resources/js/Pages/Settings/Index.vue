@@ -19,6 +19,7 @@ const props = defineProps({
     canCreateBranch: Boolean,
     branchLimitInfo: String,
     tenant: Object,
+    brandingRoutes: Object,
     canAccessSeo: Boolean,
     canAccessBranding: Boolean,
 });
@@ -200,11 +201,11 @@ const onLogoSelected = (e) => {
 };
 
 const submitColor = () => {
-    colorForm.patch(route('taller.settings.branding.color', tenantRouteParams.value), { preserveScroll: true });
+    colorForm.patch(props.brandingRoutes.color, { preserveScroll: true });
 };
 
 const submitLogo = () => {
-    logoForm.post(route('taller.settings.branding.logo', tenantRouteParams.value), {
+    logoForm.post(props.brandingRoutes.logo, {
         preserveScroll: true,
         onSuccess: () => { logoFile.value = null; },
     });
@@ -212,7 +213,7 @@ const submitLogo = () => {
 
 const deleteLogo = () => {
     if (!confirm('¿Eliminar el logo del taller?')) return;
-    router.delete(route('taller.settings.branding.logo.delete', tenantRouteParams.value), { preserveScroll: true, onSuccess: () => { logoPreview.value = null; } });
+    router.delete(props.brandingRoutes.deleteLogo, { preserveScroll: true, onSuccess: () => { logoPreview.value = null; } });
 };
 
 // Watch for changes in props.tenant to update color form and logo preview reactively

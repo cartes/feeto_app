@@ -64,6 +64,9 @@ class TenantSettingsTest extends TestCase
             ->has('planMaxUsers')
             ->has('currentUserCount')
             ->has('canCreateBranch')
+            ->where('brandingRoutes.color', route('taller.settings.branding.color', ['tenantBySlug' => $tenant->slug]))
+            ->where('brandingRoutes.logo', route('taller.settings.branding.logo', ['tenantBySlug' => $tenant->slug]))
+            ->where('brandingRoutes.deleteLogo', route('taller.settings.branding.logo.delete', ['tenantBySlug' => $tenant->slug]))
         );
 
         Tenant::forgetCurrent();

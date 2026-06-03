@@ -21,21 +21,7 @@ class TenantBrandingController extends Controller
         ]);
 
         $tenant = Tenant::current();
-
-        Log::info('updateColor: Debugging connection info', [
-            'tenant_id' => $tenant?->id,
-            'connection_name' => $tenant?->getConnectionName(),
-            'database_name' => $tenant?->getConnection()?->getDatabaseName(),
-            'table_name' => $tenant?->getTable(),
-            'primary_color_input' => $request->primary_color,
-        ]);
-
-        $updated = $tenant->update(['primary_color' => $request->primary_color]);
-
-        Log::info('updateColor: Save result', [
-            'updated' => $updated,
-            'fresh_color' => $tenant->fresh()?->primary_color,
-        ]);
+        $tenant->update(['primary_color' => $request->primary_color]);
 
         return back()->with('success', 'Color del taller actualizado correctamente.');
     }
