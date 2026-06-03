@@ -46,8 +46,19 @@ class ReceptionController extends Controller
             'image' => 'required|image|max:10240', // Max 10MB
         ]);
 
-        $imagePath = $request->file('image')->store('reception/temp', 'public');
+        $uploadedImage = $request->file('image');
+        $imagePath = $uploadedImage->store('reception/temp', 'public');
         $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
+        $tenant = Tenant::current();
+
+        Log::info('Reception OCR request received.', [
+            'tenant_id' => $tenant?->id,
+            'user_id' => $request->user()?->id,
+            'provider' => $provider,
+            'image_path' => $imagePath,
+            'image_size' => $uploadedImage->getSize(),
+            'image_mime' => $uploadedImage->getMimeType(),
+        ]);
 
         try {
             $response = $agent->prompt(
@@ -60,6 +71,17 @@ class ReceptionController extends Controller
             $patenteLimpia = str_replace(['O', 'I'], ['0', '1'], $patenteLimpia);
 
             if (! preg_match('/^[BCDFGHJKLPRSTVWXYZ]{4}\d{2}$|^[A-Z]{2}\d{4}$/', $patenteLimpia)) {
+                Log::warning('Reception OCR returned an invalid plate.', [
+                    'tenant_id' => $tenant?->id,
+                    'user_id' => $request->user()?->id,
+                    'provider' => $provider,
+                    'image_path' => $imagePath,
+                    'raw_plate' => $response['patente'] ?? null,
+                    'normalized_plate' => $patenteLimpia,
+                    'brand' => $response['marca'] ?? null,
+                    'model' => $response['modelo'] ?? null,
+                ]);
+
                 return response()->json([
                     'valid' => false,
                     'error' => 'FALLÓ ESCANEO',
@@ -69,6 +91,13 @@ class ReceptionController extends Controller
             $vehicleData = $boostr->getVehicleData($patenteLimpia);
 
             if (! $vehicleData) {
+                Log::info('Reception OCR falling back to AI vehicle data because Boostr returned no data.', [
+                    'tenant_id' => $tenant?->id,
+                    'user_id' => $request->user()?->id,
+                    'provider' => $provider,
+                    'plate' => $patenteLimpia,
+                ]);
+
                 $vehicleData = [
                     'rut_dueno' => 'PROVISORIO',
                     'nombre_dueno' => 'CLIENTE NUEVO (SIN API)',
@@ -90,7 +119,14 @@ class ReceptionController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
-            Log::error('Fallo en OCR: '.$e->getMessage());
+            Log::error('Reception OCR failed.', [
+                'tenant_id' => $tenant?->id,
+                'user_id' => $request->user()?->id,
+                'provider' => $provider,
+                'image_path' => $imagePath,
+                'exception_message' => $e->getMessage(),
+                'exception_class' => $e::class,
+            ]);
 
             return response()->json([
                 'valid' => false,

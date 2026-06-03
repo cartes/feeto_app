@@ -15,6 +15,7 @@ use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Laravel\Ai\Providers\AnthropicProvider;
 use Mockery\MockInterface;
@@ -235,6 +236,47 @@ class ReceptionControllerTest extends TestCase
             return $prompt->prompt === 'Extrae la patente chilena'
                 && $prompt->provider() instanceof AnthropicProvider;
         });
+    }
+
+    public function test_store_logs_invalid_scans_with_context(): void
+    {
+        $tenant = $this->setUpTenant();
+        $tenant->forceFill([
+            'plan' => 'profesional',
+            'plan_type' => 'profesional',
+        ])->save();
+        $admin = $this->createAdmin($tenant);
+
+        Log::spy();
+
+        PatentReaderAgent::fake([
+            [
+                'patente' => 'INVALIDA',
+                'marca' => 'Toyota',
+                'modelo' => 'Hilux',
+            ],
+        ])->preventStrayPrompts();
+
+        $response = $this->actingAs($admin)->post(route('receptions.store', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'image' => UploadedFile::fake()->image('vehicle.jpg'),
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'valid' => false,
+                'error' => 'FALLÓ ESCANEO',
+            ]);
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context) use ($tenant, $admin): bool {
+                return $message === 'Reception OCR returned an invalid plate.'
+                    && $context['tenant_id'] === $tenant->id
+                    && $context['user_id'] === $admin->id
+                    && $context['normalized_plate'] === '1NVAL1DA';
+            });
     }
 
     public function test_store_order_can_reassign_vehicle_to_selected_existing_client(): void
