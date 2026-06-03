@@ -8,6 +8,7 @@ use App\Enums\TenantPlan;
 use App\Services\PlanFeatureService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 
@@ -151,6 +152,13 @@ class Tenant extends SpatieTenant
                 return [$normalizedFeature => $this->resolvedFeatureAvailability[$normalizedFeature] ?? false];
             })
             ->all();
+    }
+
+    public function logoUrl(): ?string
+    {
+        $path = $this->getAttribute('logo_path');
+
+        return $path ? Storage::disk('public')->url($path) : null;
     }
 
     public function maxDiscountWithoutApproval(): float

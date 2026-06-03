@@ -120,7 +120,10 @@ class TallerDashboardController extends Controller
             'appointmentNotifications' => $appointmentNotifications,
             'overdueInvoices' => $overdueInvoices,
             'today' => now()->toDateString(),
-            'tenant' => $tenant->only('id', 'name', 'slug'),
+            'tenant' => [
+                ...$tenant->only('id', 'name', 'slug'),
+                'public_url' => route('taller.landing', ['tenantBySlug' => $tenant->slug]),
+            ],
             'calendarRange' => [
                 'start' => $calendarStart->toDateString(),
                 'end' => $calendarEnd->toDateString(),

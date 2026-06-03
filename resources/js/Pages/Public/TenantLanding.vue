@@ -68,6 +68,8 @@ const minDate = computed(() => {
     return d.toISOString().slice(0, 16);
 });
 
+const primaryColor = computed(() => props.tenant?.primary_color ?? '#FF7A00');
+
 const trackWhatsAppClick = () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
     fetch(route('taller.whatsapp.inquiry', props.tenant.slug), {
@@ -83,7 +85,7 @@ const trackWhatsAppClick = () => {
         <title>{{ seo.title ?? `Agendar Cita | ${tenant.name}` }}</title>
     </Head>
 
-    <div class="min-h-screen bg-gray-50 font-sans antialiased">
+    <div class="min-h-screen bg-gray-50 font-sans antialiased" :style="{ '--brand': primaryColor, '--brand-hover': primaryColor + 'dd' }">
 
         <!-- ====================================================
              HEADER
@@ -91,7 +93,13 @@ const trackWhatsAppClick = () => {
         <header class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <ApplicationLogo class="h-9 w-9 rounded-xl shadow-md" />
+                    <img
+                        v-if="tenant.logo_url"
+                        :src="tenant.logo_url"
+                        :alt="tenant.name"
+                        class="h-9 w-9 rounded-xl shadow-md object-contain bg-white"
+                    />
+                    <ApplicationLogo v-else class="h-9 w-9 rounded-xl shadow-md" />
                     <span class="text-lg font-bold text-gray-900 tracking-tight">{{ tenant.name }}</span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -115,7 +123,7 @@ const trackWhatsAppClick = () => {
                         </svg>
                         Iniciar Sesión
                     </button>
-                    <button @click="scrollToForm" class="hidden sm:inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-orange-200">
+                    <button @click="scrollToForm" class="hidden sm:inline-flex items-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md" :style="{ backgroundColor: primaryColor }">
                         Agendar Cita
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -135,8 +143,8 @@ const trackWhatsAppClick = () => {
                 <div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-orange-100/60 blur-3xl pointer-events-none" aria-hidden="true"></div>
 
                 <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-24 text-center">
-                    <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-600 text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wider uppercase">
-                        <span class="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                    <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wider uppercase" :style="{ color: primaryColor }">
+                        <span class="h-2 w-2 rounded-full animate-pulse" :style="{ backgroundColor: primaryColor }"></span>
                         Turnos Disponibles Hoy
                     </div>
 
@@ -150,7 +158,7 @@ const trackWhatsAppClick = () => {
                     </p>
 
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                        <button @click="scrollToForm" class="inline-flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-orange-200 transition-all active:scale-95">
+                        <button @click="scrollToForm" class="inline-flex items-center justify-center gap-3 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg transition-all active:scale-95" :style="{ backgroundColor: primaryColor }">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -240,8 +248,8 @@ const trackWhatsAppClick = () => {
 
                         <!-- Step 1: Basic Data -->
                         <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest mb-5">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-black">1</span>
+                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">1</span>
                                 Datos Básicos
                             </legend>
                             <div class="space-y-4">
@@ -295,8 +303,8 @@ const trackWhatsAppClick = () => {
 
                         <!-- Step 2: Date & Time -->
                         <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest mb-5">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-black">2</span>
+                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">2</span>
                                 Fecha y Hora Deseada
                             </legend>
                             <div>
@@ -316,8 +324,8 @@ const trackWhatsAppClick = () => {
 
                         <!-- Step 3: Pre-Check Digital -->
                         <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest mb-5">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-black">3</span>
+                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">3</span>
                                 Pre-Check Digital
                             </legend>
                             <div>
@@ -339,7 +347,8 @@ const trackWhatsAppClick = () => {
                             <button
                                 type="submit"
                                 :disabled="form.processing"
-                                class="w-full inline-flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-black text-base py-4 px-6 rounded-2xl shadow-lg hover:shadow-orange-200 transition-all active:scale-[0.98]"
+                                class="w-full inline-flex items-center justify-center gap-3 text-white font-black text-base py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-[0.98]"
+                                :style="{ backgroundColor: form.processing ? primaryColor + '99' : primaryColor }"
                             >
                                 <svg v-if="form.processing" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

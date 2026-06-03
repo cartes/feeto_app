@@ -46,6 +46,7 @@ const dismissedKey = 'dismissed_activities';
 
 const tenantId = computed(() => page.props.tenant?.id ?? page.props.auth?.user?.tenant_id ?? null);
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const tenantPublicUrl = computed(() => page.props.tenant?.public_url ?? null);
 const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
 const hasPermission = (permission) => permissions.value.includes(permission);
@@ -211,6 +212,30 @@ onUnmounted(() => {
 
     <TallerLayout>
         <div class="space-y-8">
+            <!-- Banner espacio público -->
+            <a
+                v-if="tenantPublicUrl"
+                :href="tenantPublicUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center justify-between gap-3 rounded-2xl border border-[#FF7A00]/20 bg-orange-50 px-5 py-3.5 transition hover:bg-orange-100 group"
+            >
+                <div class="flex items-center gap-3">
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-widest text-[#FF7A00]">Tu espacio público</p>
+                        <p class="text-sm font-semibold text-gray-700 group-hover:text-gray-900">{{ tenantPublicUrl }}</p>
+                    </div>
+                </div>
+                <svg class="h-4 w-4 shrink-0 text-[#FF7A00] transition group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Dashboard operativo</p>

@@ -32,6 +32,8 @@ class PublicBookingController extends Controller
                 'seo_description' => $tenantBySlug->seo_description,
                 'seo_address' => $tenantBySlug->seo_address,
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
+                'primary_color' => $tenantBySlug->primary_color,
+                'logo_url' => $tenantBySlug->logoUrl(),
             ],
             'seo' => [
                 'title' => "Agendar Cita | {$tenantBySlug->name}",

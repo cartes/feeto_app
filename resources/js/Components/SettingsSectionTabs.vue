@@ -18,6 +18,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    canAccessBranding: {
+        type: Boolean,
+        default: false,
+    },
     currentUserCount: {
         type: Number,
         default: null,
@@ -65,6 +69,14 @@ const isActive = (section) => props.currentSection === section;
             :class="isActive('seo') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
         >
             SEO &amp; WhatsApp
+        </Link>
+        <Link
+            v-if="canAccessBranding"
+            :href="route('taller.settings', { ...tenantRouteParams, tab: 'branding' })"
+            class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200"
+            :class="isActive('branding') ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-400 hover:text-gray-700'"
+        >
+            Apariencia
         </Link>
         <Link
             v-if="canAccessRoles"

@@ -56,12 +56,14 @@ class TenantSettingsController extends Controller
             'canCreateBranch' => $this->branchLimitService->canCreateBranch($tenant),
             'branchLimitInfo' => $this->branchLimitService->getLimitMessage($tenant),
             'tenant' => [
-                ...$tenant->only('id', 'name', 'slug', 'seo_description', 'seo_address', 'whatsapp_number'),
+                ...$tenant->only('id', 'name', 'slug', 'seo_description', 'seo_address', 'whatsapp_number', 'primary_color', 'logo_path'),
                 'plan' => $tenant->currentPlan()->value,
                 'plan_label' => $tenant->currentPlan()->label(),
                 'max_discount_without_approval' => $tenant->maxDiscountWithoutApproval(),
+                'logo_url' => $tenant->logoUrl(),
             ],
             'canAccessSeo' => $tenant->hasFeature('seo_manager'),
+            'canAccessBranding' => true,
         ]);
     }
 

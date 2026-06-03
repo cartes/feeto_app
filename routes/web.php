@@ -42,6 +42,7 @@ use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantNotificationController;
 use App\Http\Controllers\TenantRoleController;
 use App\Http\Controllers\TenantSeoController;
+use App\Http\Controllers\TenantBrandingController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
@@ -239,6 +240,17 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/settings/seo/generate-description', [TenantSeoController::class, 'generateDescription'])
             ->middleware(['permission:users.manage', 'throttle:10,1'])
             ->name('taller.settings.seo.generate');
+
+        // Branding del taller — color y logo (solo Admin)
+        Route::patch('/settings/branding/color', [TenantBrandingController::class, 'updateColor'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.branding.color');
+        Route::post('/settings/branding/logo', [TenantBrandingController::class, 'uploadLogo'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.branding.logo');
+        Route::delete('/settings/branding/logo', [TenantBrandingController::class, 'deleteLogo'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.branding.logo.delete');
 
         // Notificaciones CRM
         Route::prefix('/notifications')->name('notifications.')->group(function (): void {
