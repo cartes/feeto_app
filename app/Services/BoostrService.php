@@ -20,9 +20,11 @@ class BoostrService
     public function getVehicleData(string $patente): ?array
     {
         try {
-            // Se asume que la URL base o endpoint y API Key están en config/services.php
-            $apiUrl = config('services.boostr.url', 'https://api.boostr.cl/vehiculo/'.$patente);
+            $baseUrl = rtrim((string) config('services.boostr.base_url', 'https://api.boostr.cl'), '/');
             $apiKey = config('services.boostr.key');
+            $apiUrl = str_contains($baseUrl, '{patente}')
+                ? str_replace('{patente}', urlencode($patente), $baseUrl)
+                : $baseUrl.'/vehiculo/'.urlencode($patente);
 
             $response = Http::withToken($apiKey ?? '')
                 ->timeout(10)

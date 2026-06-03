@@ -19,10 +19,12 @@ class OcrService
     {
         try {
             $absolutePath = Storage::disk('public')->path($imagePath);
+            $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
 
             $response = $this->agent->prompt(
                 'Identifica la patente y los datos del vehículo en esta imagen.',
-                attachments: [Image::fromPath($absolutePath)]
+                attachments: [Image::fromPath($absolutePath)],
+                provider: $provider,
             );
 
             $rawPlate = $response['plate'] ?? null;

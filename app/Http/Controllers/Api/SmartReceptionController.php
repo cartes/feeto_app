@@ -19,12 +19,13 @@ class SmartReceptionController extends Controller
         ]);
 
         $imageFile = $request->file('image');
+        $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
 
         // Prompt Gemini with the uploaded image directly from PHP's temp buffer.
         // The file is NEVER written to a permanent disk (cumplimiento Ley 19.628).
         $aiResult = (new PatentRecognitionAgent)->prompt(
             'Lee la patente de este vehículo chileno. Devuelve ÚNICAMENTE los 6 caracteres alfanuméricos, sin guiones, sin espacios, sin texto adicional.',
-            provider: 'gemini',
+            provider: $provider,
             attachments: [$imageFile],
         );
 

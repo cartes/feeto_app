@@ -47,11 +47,13 @@ class ReceptionController extends Controller
         ]);
 
         $imagePath = $request->file('image')->store('reception/temp', 'public');
+        $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
 
         try {
             $response = $agent->prompt(
                 'Extrae la patente chilena',
-                attachments: [Image::fromPath(storage_path('app/public/'.$imagePath))]
+                attachments: [Image::fromPath(storage_path('app/public/'.$imagePath))],
+                provider: $provider,
             );
 
             $patenteLimpia = $this->normalizePlate((string) ($response['patente'] ?? ''));
