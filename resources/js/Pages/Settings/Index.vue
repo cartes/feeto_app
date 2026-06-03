@@ -1,8 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
-import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
-import TallerLayout from '@/Layouts/TallerLayout.vue';
+import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -215,35 +214,26 @@ const deleteLogo = () => {
     if (!confirm('¿Eliminar el logo del taller?')) return;
     router.delete(route('taller.settings.branding.logo.delete', tenantRouteParams.value), { preserveScroll: true, onSuccess: () => { logoPreview.value = null; } });
 };
+
+// Watch for changes in props.tenant to update color form and logo preview reactively
+watch(() => props.tenant, (newTenant) => {
+    if (newTenant) {
+        colorForm.primary_color = newTenant.primary_color ?? '#FF7A00';
+        if (!logoFile.value) {
+            logoPreview.value = newTenant.logo_url ?? null;
+        }
+    }
+}, { deep: true });
 </script>
 
 <template>
     <Head title="Configuración del Taller" />
-    <TallerLayout>
-        <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-            <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 px-1">
-                <div>
-                    <h1 class="text-3xl font-black tracking-tight text-gray-900 uppercase">Configuración</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Administra usuarios, sucursales y ajustes del taller</p>
-                </div>
-                <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-2xl px-4 py-2 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-[#FF7A00]"></span>
-                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ tenant?.name }}</span>
-                </div>
-            </div>
-
-            <SettingsSectionTabs
-                :tenant-route-params="tenantRouteParams"
-                :current-section="activeTab"
-                :can-access-roles="canAccessRoles"
-                :can-access-seo="canAccessSeo"
-                :can-access-branding="canAccessBranding"
-                :current-user-count="currentUserCount"
-                :plan-max-users="planMaxUsers"
-                :branches-count="branches.length"
-            />
+    <SettingsLayout
+        :current-section="activeTab"
+        :current-user-count="currentUserCount"
+        :plan-max-users="planMaxUsers"
+        :branches-count="branches.length"
+    >
 
             <!-- ── TAB USUARIOS ── -->
             <div v-if="activeTab === 'users'" class="space-y-5 animate-in fade-in duration-300">
@@ -787,8 +777,5 @@ const deleteLogo = () => {
                         </form>
                     </div>
                 </div>
-            </div>
-
-        </div>
-    </TallerLayout>
+            </div>    </SettingsLayout>
 </template>

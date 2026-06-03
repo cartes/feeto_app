@@ -1,8 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
-import TallerLayout from '@/Layouts/TallerLayout.vue';
+import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 
 const props = defineProps({
@@ -68,22 +67,19 @@ const deleteRole = (roleId, roleName) => {
 </script>
 
 <template>
-    <TallerLayout>
-        <Head title="Gestión de Roles" />
-
-        <div class="space-y-6">
-            <!-- Header -->
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-800">Roles y Permisos</h1>
-                    <p class="mt-1 text-sm text-slate-500">
-                        Gestiona los roles disponibles y los permisos asignados a cada uno.
-                    </p>
-                </div>
+    <Head title="Gestión de Roles" />
+    <SettingsLayout
+        current-section="roles"
+        :current-user-count="currentUserCount"
+        :plan-max-users="planMaxUsers"
+        :branches-count="branchesCount"
+    >
+        <div class="space-y-5 animate-in fade-in duration-300">
+            <!-- Botón agregar rol -->
+            <div class="flex justify-end" v-if="canManageRoles">
                 <Link
-                    v-if="canManageRoles"
                     :href="route('taller.roles.create', tenantRouteParams)"
-                    class="inline-flex items-center gap-2 rounded-[1.25rem] bg-[#FF7A00] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#CC6200]"
+                    class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -91,15 +87,6 @@ const deleteRole = (roleId, roleName) => {
                     Nuevo Rol
                 </Link>
             </div>
-
-            <SettingsSectionTabs
-                :tenant-route-params="tenantRouteParams"
-                current-section="roles"
-                :can-access-roles="true"
-                :current-user-count="currentUserCount"
-                :plan-max-users="planMaxUsers"
-                :branches-count="branchesCount"
-            />
 
             <!-- Plan Upgrade Banner -->
             <PlanUpgradeBanner
@@ -196,5 +183,5 @@ const deleteRole = (roleId, roleName) => {
                 </div>
             </div>
         </div>
-    </TallerLayout>
+    </SettingsLayout>
 </template>

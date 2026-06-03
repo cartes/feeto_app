@@ -45,6 +45,10 @@ class AuthenticatedSessionController extends Controller
             $user->load('tenant');
 
             if ($user->tenant && $user->tenant->slug) {
+                if ($request->header('X-Inertia')) {
+                    return Inertia::location(route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]));
+                }
+
                 return redirect()->route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]);
             }
         }

@@ -1,8 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
-import TallerLayout from '@/Layouts/TallerLayout.vue';
+import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 
 const props = defineProps({
     role: {
@@ -70,10 +69,14 @@ const submit = () => {
 </script>
 
 <template>
-    <TallerLayout>
-        <Head :title="`Editar Rol: ${role.name}`" />
-
-        <div class="mx-auto max-w-2xl space-y-6">
+    <Head :title="`Editar Rol: ${role.name}`" />
+    <SettingsLayout
+        current-section="roles"
+        :current-user-count="currentUserCount"
+        :plan-max-users="planMaxUsers"
+        :branches-count="branchesCount"
+    >
+        <div class="mx-auto max-w-2xl space-y-6 animate-in fade-in duration-300">
             <!-- Header -->
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Editar Rol: {{ role.name }}</h1>
@@ -83,15 +86,6 @@ const submit = () => {
                         : 'Modifica el nombre y los permisos asignados a este rol personalizado.' }}
                 </p>
             </div>
-
-            <SettingsSectionTabs
-                :tenant-route-params="tenantRouteParams"
-                current-section="roles"
-                :can-access-roles="true"
-                :current-user-count="currentUserCount"
-                :plan-max-users="planMaxUsers"
-                :branches-count="branchesCount"
-            />
 
             <form class="space-y-6" @submit.prevent="submit">
                 <!-- Nombre del Rol -->
@@ -181,5 +175,5 @@ const submit = () => {
                 </div>
             </form>
         </div>
-    </TallerLayout>
+    </SettingsLayout>
 </template>

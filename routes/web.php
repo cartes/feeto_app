@@ -39,10 +39,10 @@ use App\Http\Controllers\Subscription\BillingController;
 use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\SupervisorReportController;
 use App\Http\Controllers\TallerDashboardController;
+use App\Http\Controllers\TenantBrandingController;
 use App\Http\Controllers\TenantNotificationController;
 use App\Http\Controllers\TenantRoleController;
 use App\Http\Controllers\TenantSeoController;
-use App\Http\Controllers\TenantBrandingController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
@@ -116,6 +116,10 @@ Route::get('/dashboard', function (Request $request): Response {
     }
 
     if ($user->tenant) {
+        if ($request->header('X-Inertia')) {
+            return Inertia::location(route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]));
+        }
+
         return redirect()->route('taller.dashboard', ['tenantBySlug' => $user->tenant->slug]);
     }
 
