@@ -11,7 +11,7 @@ class StoreTenantUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->checkPermissionTo('users.manage') ?? false;
+        return $this->user()?->can('users.manage') ?? false;
     }
 
     /**

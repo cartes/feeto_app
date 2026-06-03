@@ -8,12 +8,14 @@ import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
-const reverbKey = import.meta.env.VITE_REVERB_APP_KEY || (window.laravelReverbConfig && window.laravelReverbConfig.key);
-const reverbHost = import.meta.env.VITE_REVERB_HOST || (window.laravelReverbConfig && window.laravelReverbConfig.host);
-const reverbPort = import.meta.env.VITE_REVERB_PORT || (window.laravelReverbConfig && window.laravelReverbConfig.port);
-const reverbScheme = import.meta.env.VITE_REVERB_SCHEME || (window.laravelReverbConfig && window.laravelReverbConfig.scheme);
+const runtimeReverbConfig = window.laravelReverbConfig || {};
+const reverbEnabled = runtimeReverbConfig.enabled ?? Boolean(import.meta.env.VITE_REVERB_APP_KEY && import.meta.env.VITE_REVERB_HOST);
+const reverbKey = runtimeReverbConfig.key || import.meta.env.VITE_REVERB_APP_KEY;
+const reverbHost = runtimeReverbConfig.host || import.meta.env.VITE_REVERB_HOST;
+const reverbPort = runtimeReverbConfig.port || import.meta.env.VITE_REVERB_PORT;
+const reverbScheme = runtimeReverbConfig.scheme || import.meta.env.VITE_REVERB_SCHEME;
 
-if (reverbKey) {
+if (reverbEnabled && reverbKey && reverbHost) {
     window.Echo = new Echo({
         broadcaster: "reverb",
         key: reverbKey,
@@ -23,7 +25,6 @@ if (reverbKey) {
         forceTLS: (reverbScheme ?? "https") === "https",
         enabledTransports: ["ws", "wss"],
     });
-} else {
+} else if (reverbEnabled) {
     console.warn("Reverb key not found. Real-time features will be disabled.");
 }
-

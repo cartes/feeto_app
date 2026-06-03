@@ -71,12 +71,16 @@
         @else
             @routes('tenant')
         @endif
+        @php
+            $reverbEnabled = config('broadcasting.default') === 'reverb' && filled(config('broadcasting.connections.reverb.key'));
+        @endphp
         <script>
             window.laravelReverbConfig = {
-                key: "{{ config('broadcasting.connections.reverb.key') }}",
-                host: "{{ request()->getHost() }}",
-                port: {{ request()->isSecure() ? 443 : 80 }},
-                scheme: "{{ request()->isSecure() ? 'https' : 'http' }}"
+                enabled: @json($reverbEnabled),
+                key: @json($reverbEnabled ? config('broadcasting.connections.reverb.key') : null),
+                host: @json($reverbEnabled ? request()->getHost() : null),
+                port: @json($reverbEnabled ? (request()->isSecure() ? 443 : 80) : null),
+                scheme: @json($reverbEnabled ? (request()->isSecure() ? 'https' : 'http') : null)
             };
         </script>
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])

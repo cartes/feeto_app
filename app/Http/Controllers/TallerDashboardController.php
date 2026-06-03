@@ -89,7 +89,7 @@ class TallerDashboardController extends Controller
             ->map(fn (Appointment $appointment): array => $this->serializeNotification($appointment))
             ->values();
 
-        $overdueInvoices = $user->checkPermissionTo('financials.view') && $tenant->hasFeature(PlanFeatureService::FEATURE_SALES_MANAGEMENT)
+        $overdueInvoices = $user->can('financials.view') && $tenant->hasFeature(PlanFeatureService::FEATURE_SALES_MANAGEMENT)
             ? ClientInvoice::query()
                 ->with('client')
                 ->whereIn('status', [
