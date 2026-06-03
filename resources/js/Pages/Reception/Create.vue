@@ -8,6 +8,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
 const tenantId = page.props.tenantId;
+const maxImageUploadBytes = computed(() => Number(page.props.maxImageUploadBytes ?? 5 * 1024 * 1024));
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const planAccess = computed(() => page.props.planAccess ?? {});
 const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
@@ -42,6 +43,14 @@ const createEmptyClient = () => ({
 });
 
 const defaultClient = ref(createEmptyClient());
+
+const formatFileSize = (bytes) => {
+    if (!Number.isFinite(bytes) || bytes <= 0) {
+        return '0 MB';
+    }
+
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
 
 const revokePreviewImage = () => {
     if (previewImageUrl.value) {
@@ -329,6 +338,14 @@ const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    event.target.value = '';
+
+    if (file.size > maxImageUploadBytes.value) {
+        resetReceptionState();
+        errorMsg.value = `LA IMAGEN SUPERA EL MÁXIMO DE ${formatFileSize(maxImageUploadBytes.value)}. REDUCE EL TAMAÑO Y REINTENTA.`;
+        return;
+    }
+
     isUploading.value = true;
     isAnalyzing.value = false;
     errorMsg.value = null;
@@ -336,7 +353,6 @@ const handleImageUpload = async (event) => {
     vehicleInfo.value = null;
     revokePreviewImage();
     previewImageUrl.value = URL.createObjectURL(file);
-    event.target.value = '';
 
     const formData = new FormData();
     formData.append('image', file);
@@ -368,7 +384,11 @@ const handleImageUpload = async (event) => {
             color: response.data.vehicle?.color || 'SIN DATO',
         };
     } catch (error) {
-        errorMsg.value = error.response?.data?.error || "ERROR DE CONEXIÓN.";
+        if (error.response?.status === 413) {
+            errorMsg.value = `LA IMAGEN ES DEMASIADO PESADA PARA EL SERVIDOR. USA UNA FOTO MENOR A ${formatFileSize(maxImageUploadBytes.value)}.`;
+        } else {
+            errorMsg.value = error.response?.data?.error || "ERROR DE CONEXIÓN.";
+        }
     } finally {
         isUploading.value = false;
     }

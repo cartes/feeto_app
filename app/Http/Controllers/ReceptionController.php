@@ -30,10 +30,12 @@ class ReceptionController extends Controller
     public function create(): Response
     {
         $tenant = Tenant::current();
+        $maxImageUploadKb = (int) config('reception.image_upload_max_kb', 5120);
 
         return inertia('Reception/Create', [
             'tenantId' => $tenant?->id,
             'planType' => $tenant?->currentPlan()->value ?? 'gratuito',
+            'maxImageUploadBytes' => $maxImageUploadKb * 1024,
         ]);
     }
 
@@ -43,7 +45,7 @@ class ReceptionController extends Controller
     public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr): JsonResponse
     {
         $request->validate([
-            'image' => 'required|image|max:10240', // Max 10MB
+            'image' => ['required', 'image', 'max:'.config('reception.image_upload_max_kb', 5120)],
         ]);
 
         $uploadedImage = $request->file('image');

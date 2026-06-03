@@ -17,6 +17,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Ai\Providers\AnthropicProvider;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -277,6 +278,44 @@ class ReceptionControllerTest extends TestCase
                     && $context['user_id'] === $admin->id
                     && $context['normalized_plate'] === '1NVAL1DA';
             });
+    }
+
+    public function test_create_exposes_the_max_image_upload_bytes_prop(): void
+    {
+        Config::set('reception.image_upload_max_kb', 4096);
+
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $this->actingAs($admin)
+            ->get(route('receptions.create', [
+                'tenantBySlug' => $tenant->slug,
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reception/Create')
+                ->where('maxImageUploadBytes', 4096 * 1024)
+            );
+    }
+
+    public function test_store_validates_the_configured_max_image_size(): void
+    {
+        Config::set('reception.image_upload_max_kb', 1024);
+
+        $tenant = $this->setUpTenant();
+        $tenant->forceFill([
+            'plan' => 'profesional',
+            'plan_type' => 'profesional',
+        ])->save();
+        $admin = $this->createAdmin($tenant);
+
+        $response = $this->actingAs($admin)->post(route('receptions.store', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'image' => UploadedFile::fake()->create('vehicle.jpg', 1100, 'image/jpeg'),
+        ]);
+
+        $response->assertSessionHasErrors('image');
     }
 
     public function test_store_order_can_reassign_vehicle_to_selected_existing_client(): void
