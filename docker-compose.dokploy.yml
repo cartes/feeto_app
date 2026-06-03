@@ -37,6 +37,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      reverb:
+        condition: service_started
     ports:
       - "80:80"
     volumes:
