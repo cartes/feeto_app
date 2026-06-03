@@ -74,9 +74,9 @@
         <script>
             window.laravelReverbConfig = {
                 key: "{{ config('broadcasting.connections.reverb.key') }}",
-                host: "{{ config('broadcasting.connections.reverb.options.host') }}",
-                port: "{{ config('broadcasting.connections.reverb.options.port') }}",
-                scheme: "{{ config('broadcasting.connections.reverb.options.scheme') }}"
+                host: "{{ request()->getHost() }}",
+                port: {{ request()->isSecure() ? 443 : 80 }},
+                scheme: "{{ request()->isSecure() ? 'https' : 'http' }}"
             };
         </script>
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
