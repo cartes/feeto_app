@@ -9,6 +9,7 @@ const props = defineProps({
     canLogin: { type: Boolean },
     canRegister: { type: Boolean },
     seo: { type: Object, default: () => ({}) },
+    posts: { type: Array, default: () => [] },
 });
 
 const showLoginModal = ref(false);
@@ -399,6 +400,62 @@ onUnmounted(() => {
             </div>
         </section>
 
+        <!-- Sección de Últimos Posts del Blog -->
+        <section v-if="posts && posts.length > 0" id="latest-posts" class="py-24 bg-white border-t border-gray-100 font-sans antialiased">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Recursos y Aprendizaje</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                        Consejos y guías para <em class="text-[#FF7A00] not-italic">potenciar tu taller.</em>
+                    </h2>
+                    <p class="text-slate-500 mt-4 text-base leading-relaxed">
+                        Aprende prácticas de optimización de procesos, marketing para talleres y fidelización de clientes con nuestro blog oficial.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div v-for="post in posts" :key="post.id" class="group bg-white rounded-3xl border border-slate-100 hover:border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                        <!-- Imagen destacada -->
+                        <div class="aspect-[16/10] overflow-hidden bg-slate-50 relative">
+                            <img v-if="post.featured_image_url" :src="post.featured_image_url" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div v-else class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
+                                <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <span class="absolute top-4 left-4 bg-[#FF7A00] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">Artículo</span>
+                        </div>
+
+                        <!-- Información -->
+                        <div class="p-6 flex flex-col flex-grow">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{{ post.published_at }}</p>
+                            <h3 class="text-lg font-black text-slate-900 leading-snug group-hover:text-[#FF7A00] transition-colors line-clamp-2">
+                                <Link :href="route('blog.show', { slug: post.slug })">
+                                    {{ post.title }}
+                                </Link>
+                            </h3>
+                            <p class="text-slate-500 text-sm mt-3 leading-relaxed line-clamp-3 mb-6">
+                                {{ post.summary }}
+                            </p>
+                            <!-- Enlace de lectura -->
+                            <div class="mt-auto pt-4 border-t border-slate-50">
+                                <Link :href="route('blog.show', { slug: post.slug })" class="text-xs font-bold text-[#FF7A00] hover:text-[#CC6200] flex items-center gap-1 group/btn transition-colors">
+                                    Leer artículo
+                                    <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de explorar todo -->
+                <div class="flex justify-center mt-12">
+                    <Link :href="route('blog.index')" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-md hover:bg-slate-800 active:scale-[0.98] transition-all">
+                        Explorar todo el blog
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </Link>
+                </div>
+            </div>
+        </section>
+
         <section id="pricing" class="py-20 bg-gray-50 border-y border-gray-100">
             <div class="max-w-5xl mx-auto px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -509,6 +566,15 @@ onUnmounted(() => {
                         Privacidad</a>
                     <a href="#"
                         class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Contacto</a>
+                    <a v-if="$page.props.marketing_whatsapp?.is_ready"
+                       :href="$page.props.marketing_whatsapp.href"
+                       target="_blank"
+                       class="text-xs text-[#25D366] hover:text-[#128C7E] transition-colors font-bold flex items-center gap-1.5">
+                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.249 8.477 3.518 2.266 2.27 3.51 5.278 3.509 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.075-3.522c1.636.971 3.238 1.483 4.88 1.484 5.542 0 10.051-4.475 10.054-9.982.002-2.667-1.033-5.176-2.915-7.06C16.27 3.036 13.784 2 11.996 2 6.471 2 1.961 6.475 1.958 11.983c-.001 1.767.465 3.493 1.349 5.022l-.995 3.637 3.775-.984zm11.022-7.463c-.3-.149-1.772-.875-2.046-.975-.274-.1-.474-.15-.674.15-.2.3-.773.975-.948 1.175-.175.2-.35.225-.65.075-.3-.15-1.266-.467-2.41-1.485-.89-.794-1.49-1.775-1.665-2.075-.175-.3-.019-.463.13-.61.135-.133.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.589-.491-.51-.674-.52-.175-.008-.375-.01-.575-.01-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.11 3.224 5.116 4.525.715.31 1.273.499 1.71.638.717.228 1.37.196 1.885.12.573-.085 1.772-.725 2.022-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35z"/>
+                        </svg>
+                        WhatsApp: {{ $page.props.marketing_whatsapp.number }}
+                    </a>
                 </nav>
 
                 <p class="text-xs text-gray-400 font-medium">
