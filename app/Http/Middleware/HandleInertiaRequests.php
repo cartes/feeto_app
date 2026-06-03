@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\MarketingWhatsAppService;
 use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -57,6 +58,7 @@ class HandleInertiaRequests extends Middleware
             'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,
             'tenantContext' => $this->resolveTenantContext($tenant),
             'planAccess' => $this->resolvePlanAccess($tenant),
+            'marketing_whatsapp' => fn (): array => app(MarketingWhatsAppService::class)->settings(),
         ];
     }
 

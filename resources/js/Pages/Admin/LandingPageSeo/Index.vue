@@ -6,6 +6,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 const props = defineProps({
     pages: { type: Array, default: () => [] },
     analytics_settings: Object,
+    marketing_whatsapp: { type: Object, default: () => ({}) },
 });
 
 const form = useForm({
@@ -17,6 +18,9 @@ const form = useForm({
     })),
     analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
     analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
+    marketing_whatsapp_enabled: Boolean(props.marketing_whatsapp?.is_enabled),
+    marketing_whatsapp_number: props.marketing_whatsapp?.number || '',
+    marketing_whatsapp_message: props.marketing_whatsapp?.message || 'Hola, vi TallerFlow y quiero más información.',
 });
 
 const isEditingGa = ref(false);
@@ -45,6 +49,14 @@ const descProgress = (i) => Math.min(descLen(i) / 220, 1);
 
 const previewTitle = (i) => form.pages[i]?.title || props.pages[i]?.default_title || '';
 const previewDesc = (i) => form.pages[i]?.description || props.pages[i]?.default_description || '';
+const whatsappPreviewNumber = computed(() => (form.marketing_whatsapp_number || '').replace(/\D/g, ''));
+const whatsappPreviewHref = computed(() => {
+    if (!form.marketing_whatsapp_enabled || !whatsappPreviewNumber.value) {
+        return '';
+    }
+
+    return `https://wa.me/${whatsappPreviewNumber.value}?text=${encodeURIComponent(form.marketing_whatsapp_message || '')}`;
+});
 
 const submit = () => {
     form.put(route('admin.landing-seo.update'));
@@ -212,6 +224,99 @@ const resetPage = (i) => {
                 </div>
             </div>
             <!-- Analytics Card -->
+            <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.05 4.94A9.94 9.94 0 0 0 12.03 2C6.56 2 2.11 6.45 2.1 11.91c0 1.75.46 3.47 1.32 4.99L2 22l5.24-1.37a9.9 9.9 0 0 0 4.76 1.21h.01c5.47 0 9.92-4.45 9.93-9.91A9.86 9.86 0 0 0 19.05 4.94Zm-7.04 15.23h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.11.81.83-3.03-.2-.31a8.18 8.18 0 0 1-1.26-4.38c.01-4.52 3.7-8.2 8.24-8.2 2.2 0 4.26.85 5.82 2.41a8.17 8.17 0 0 1 2.4 5.82c-.02 4.52-3.7 8.21-8.22 8.21Zm4.51-6.16c-.25-.13-1.47-.72-1.7-.8-.23-.08-.4-.13-.57.12-.17.25-.65.8-.8.97-.15.17-.3.19-.56.06-.25-.13-1.08-.4-2.05-1.28-.76-.68-1.27-1.52-1.42-1.77-.15-.25-.02-.39.11-.52.12-.12.25-.3.38-.45.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.57-1.37-.78-1.87-.21-.5-.42-.43-.57-.43h-.49c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.09 0 1.22.9 2.41 1.02 2.57.13.17 1.77 2.71 4.28 3.79.6.26 1.07.41 1.43.52.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.17.21-.57.21-1.06.15-1.17-.06-.1-.23-.17-.48-.3Z" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">Botón flotante de WhatsApp</p>
+                            <p class="text-xs text-slate-500">Canal directo para leads orgánicos desde Inicio, Precios, Trial y Blog.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-5">
+                        <div class="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900">Activar botón fijo</p>
+                                <p class="mt-1 text-xs text-slate-500">Se mostrará en la esquina inferior derecha del sitio público.</p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="form.marketing_whatsapp_enabled = !form.marketing_whatsapp_enabled"
+                                :class="form.marketing_whatsapp_enabled ? 'bg-emerald-500' : 'bg-slate-300'"
+                                class="relative inline-flex h-7 w-12 shrink-0 rounded-full transition-colors"
+                            >
+                                <span
+                                    :class="form.marketing_whatsapp_enabled ? 'translate-x-5' : 'translate-x-0.5'"
+                                    class="inline-block h-6 w-6 transform rounded-full bg-white shadow transition"
+                                ></span>
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Número de WhatsApp</label>
+                            <input
+                                v-model="form.marketing_whatsapp_number"
+                                type="text"
+                                inputmode="tel"
+                                placeholder="+56 9 1234 5678"
+                                class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+                            />
+                            <p class="mt-1 text-xs text-slate-400">Usa código de país. Ejemplo: Chile `+56 9 ...`.</p>
+                            <p v-if="form.errors.marketing_whatsapp_number" class="mt-1 text-sm text-red-600">{{ form.errors.marketing_whatsapp_number }}</p>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Mensaje inicial</label>
+                                <span class="text-xs font-mono text-slate-400">{{ form.marketing_whatsapp_message.length }}/300</span>
+                            </div>
+                            <textarea
+                                v-model="form.marketing_whatsapp_message"
+                                rows="4"
+                                maxlength="300"
+                                placeholder="Hola, vi TallerFlow y quiero más información."
+                                class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition resize-none"
+                            ></textarea>
+                            <p v-if="form.errors.marketing_whatsapp_message" class="mt-1 text-sm text-red-600">{{ form.errors.marketing_whatsapp_message }}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Vista previa del botón</p>
+                        <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-5 min-h-[16rem] flex items-end justify-end">
+                            <div
+                                :class="form.marketing_whatsapp_enabled && whatsappPreviewNumber ? 'opacity-100' : 'opacity-50'"
+                                class="inline-flex items-center gap-3 rounded-full bg-[#25D366] p-3 text-white shadow-[0_20px_45px_rgba(11,56,31,0.32)]"
+                            >
+                                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white/14 ring-1 ring-white/20">
+                                    <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.05 4.94A9.94 9.94 0 0 0 12.03 2C6.56 2 2.11 6.45 2.1 11.91c0 1.75.46 3.47 1.32 4.99L2 22l5.24-1.37a9.9 9.9 0 0 0 4.76 1.21h.01c5.47 0 9.92-4.45 9.93-9.91A9.86 9.86 0 0 0 19.05 4.94Zm-7.04 15.23h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.11.81.83-3.03-.2-.31a8.18 8.18 0 0 1-1.26-4.38c.01-4.52 3.7-8.2 8.24-8.2 2.2 0 4.26.85 5.82 2.41a8.17 8.17 0 0 1 2.4 5.82c-.02 4.52-3.7 8.21-8.22 8.21Zm4.51-6.16c-.25-.13-1.47-.72-1.7-.8-.23-.08-.4-.13-.57.12-.17.25-.65.8-.8.97-.15.17-.3.19-.56.06-.25-.13-1.08-.4-2.05-1.28-.76-.68-1.27-1.52-1.42-1.77-.15-.25-.02-.39.11-.52.12-.12.25-.3.38-.45.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.57-1.37-.78-1.87-.21-.5-.42-.43-.57-.43h-.49c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.09 0 1.22.9 2.41 1.02 2.57.13.17 1.77 2.71 4.28 3.79.6.26 1.07.41 1.43.52.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.17.21-.57.21-1.06.15-1.17-.06-.1-.23-.17-.48-.3Z" />
+                                    </svg>
+                                </span>
+                                <div class="hidden sm:block">
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">WhatsApp</p>
+                                    <p class="text-sm font-semibold">Habla con TallerFlow</p>
+                                    <p class="text-xs text-white/80">{{ form.marketing_whatsapp_number || 'Número pendiente' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 space-y-2">
+                            <p><span class="font-semibold text-slate-900">Estado:</span> {{ form.marketing_whatsapp_enabled ? 'Activo' : 'Desactivado' }}</p>
+                            <p><span class="font-semibold text-slate-900">Enlace:</span> <span class="font-mono text-xs break-all">{{ whatsappPreviewHref || 'Se generará al ingresar un número válido.' }}</span></p>
+                            <p>Este botón ayuda a capturar consultas rápidas de usuarios que llegan por búsqueda orgánica o contenido del blog.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <div class="flex items-center gap-3">

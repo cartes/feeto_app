@@ -38,6 +38,25 @@ class MarketingSeoTest extends TestCase
         $response->assertSee('https://cdn.example.com/tallerflow-social-share.png', false);
     }
 
+    public function test_home_page_receives_configured_marketing_whatsapp_settings(): void
+    {
+        Setting::set('marketing_whatsapp_enabled', true);
+        Setting::set('marketing_whatsapp_number', '+56 9 1234 5678');
+        Setting::set('marketing_whatsapp_message', 'Hola, vi TallerFlow y quiero una demo.');
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('marketing_whatsapp.is_enabled', true)
+            ->where('marketing_whatsapp.is_ready', true)
+            ->where('marketing_whatsapp.number', '+56 9 1234 5678')
+            ->where('marketing_whatsapp.sanitized_number', '56912345678')
+            ->where('marketing_whatsapp.message', 'Hola, vi TallerFlow y quiero una demo.')
+            ->where('marketing_whatsapp.href', 'https://wa.me/56912345678?text=Hola%2C%20vi%20TallerFlow%20y%20quiero%20una%20demo.')
+        );
+    }
+
     public function test_public_tenant_landing_renders_server_side_social_meta_tags(): void
     {
         $tenant = Tenant::factory()->create([

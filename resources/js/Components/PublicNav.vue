@@ -1,5 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import FloatingWhatsAppButton from '@/Components/FloatingWhatsAppButton.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
@@ -101,6 +102,7 @@ onMounted(() => {
     </div>
 
     <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
+    <FloatingWhatsAppButton />
 </template>
 
 <style scoped>

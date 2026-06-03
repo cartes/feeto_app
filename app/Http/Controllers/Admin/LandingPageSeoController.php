@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateLandingPageSeoRequest;
 use App\Models\AuditLog;
 use App\Models\Setting;
+use App\Services\MarketingWhatsAppService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -35,7 +36,7 @@ class LandingPageSeoController extends Controller
         ],
     ];
 
-    public function index(): Response
+    public function index(MarketingWhatsAppService $marketingWhatsAppService): Response
     {
         $pages = collect(self::PAGES)->map(function (array $page, string $key): array {
             return [
@@ -60,24 +61,13 @@ class LandingPageSeoController extends Controller
         return Inertia::render('Admin/LandingPageSeo/Index', [
             'pages' => $pages,
             'analytics_settings' => $analyticsSettings,
+            'marketing_whatsapp' => $marketingWhatsAppService->settings(),
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateLandingPageSeoRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'pages' => 'required|array',
-            'pages.*.key' => ['required', 'string', 'in:'.implode(',', array_keys(self::PAGES))],
-            'pages.*.title' => 'nullable|string|max:160',
-            'pages.*.description' => 'nullable|string|max:320',
-            'pages.*.og_image' => 'nullable|url|max:500',
-            'analytics_google_analytics_code' => ['nullable', 'string', 'max:10000'],
-            'analytics_google_search_console_code' => ['nullable', 'string', 'max:10000'],
-        ], [
-            'pages.*.title.max' => 'El título SEO no debe superar los 160 caracteres.',
-            'pages.*.description.max' => 'La descripción SEO no debe superar los 320 caracteres.',
-            'pages.*.og_image.url' => 'La imagen OG debe ser una URL válida.',
-        ]);
+        $validated = $request->validated();
 
         foreach ($validated['pages'] as $page) {
             $key = $page['key'];
@@ -88,9 +78,12 @@ class LandingPageSeoController extends Controller
 
         Setting::set('analytics_google_analytics_code', $validated['analytics_google_analytics_code'] ?? null);
         Setting::set('analytics_google_search_console_code', $validated['analytics_google_search_console_code'] ?? null);
+        Setting::set('marketing_whatsapp_enabled', $validated['marketing_whatsapp_enabled']);
+        Setting::set('marketing_whatsapp_number', $validated['marketing_whatsapp_number'] ?? null);
+        Setting::set('marketing_whatsapp_message', $validated['marketing_whatsapp_message'] ?? null);
 
-        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración de Analytics y Search Console en Landing SEO');
+        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración SEO, analytics y WhatsApp del sitio público');
 
-        return back()->with('success', 'Configuración SEO y Analytics guardada correctamente.');
+        return back()->with('success', 'Configuración SEO, analytics y WhatsApp guardada correctamente.');
     }
 }

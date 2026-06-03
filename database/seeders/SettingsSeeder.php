@@ -32,6 +32,11 @@ class SettingsSeeder extends Seeder
             // Analytics
             ['key' => 'analytics_google_analytics_code', 'group' => 'analytics', 'description' => 'Código de Google Analytics (Script de seguimiento)', 'is_secret' => false, 'value' => null],
             ['key' => 'analytics_google_search_console_code', 'group' => 'analytics', 'description' => 'Código de Verificación de Google Search Console (Meta Tag o HTML)', 'is_secret' => false, 'value' => null],
+
+            // Marketing
+            ['key' => 'marketing_whatsapp_enabled', 'group' => 'marketing', 'description' => 'Activa el botón flotante global de WhatsApp en las páginas públicas', 'is_secret' => false, 'value' => null],
+            ['key' => 'marketing_whatsapp_number', 'group' => 'marketing', 'description' => 'Número de WhatsApp del super-admin para leads orgánicos', 'is_secret' => false, 'value' => null],
+            ['key' => 'marketing_whatsapp_message', 'group' => 'marketing', 'description' => 'Mensaje inicial del botón flotante global de WhatsApp', 'is_secret' => false, 'value' => null],
         ];
 
         foreach ($settings as $setting) {

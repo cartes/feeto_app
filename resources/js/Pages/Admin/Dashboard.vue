@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
@@ -12,6 +12,7 @@ const props = defineProps({
     pending_trial_requests: { type: Number, default: 0 },
     recent_trial_requests: { type: Array, default: () => [] },
 });
+const page = usePage();
 
 const formatCLP = (value) => {
     if (!value && value !== 0) return '$0';
@@ -76,6 +77,19 @@ const visitsAreaPoints = computed(() => {
     const bottom = H;
     return `${firstX},${bottom} ${pts.join(' ')} ${lastX},${bottom}`;
 });
+
+const marketingWhatsApp = computed(() => page.props.marketing_whatsapp ?? {});
+const marketingWhatsAppStatus = computed(() => {
+    if (marketingWhatsApp.value?.is_ready) {
+        return 'Activo y visible';
+    }
+
+    if (marketingWhatsApp.value?.is_enabled) {
+        return 'Falta número válido';
+    }
+
+    return 'Desactivado';
+});
 </script>
 
 <template>
@@ -121,6 +135,31 @@ const visitsAreaPoints = computed(() => {
                 </dd>
             </div>
         </dl>
+
+        <div class="mt-6 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-sm ring-1 ring-slate-900/10">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                <div class="max-w-2xl">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">Marketing Directo</p>
+                    <h2 class="mt-2 text-2xl font-bold tracking-tight">Canal orgánico por WhatsApp del super-admin</h2>
+                    <p class="mt-2 text-sm text-slate-300">
+                        El botón flotante global {{ marketingWhatsAppStatus.toLowerCase() }}. Úsalo para capturar consultas de visitantes en la home, planes, blog y trial.
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 min-w-[18rem]">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="text-sm text-slate-300">Estado</span>
+                        <span :class="marketingWhatsApp.is_ready ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-100'" class="rounded-full px-3 py-1 text-xs font-semibold">
+                            {{ marketingWhatsAppStatus }}
+                        </span>
+                    </div>
+                    <p class="text-sm font-semibold">{{ marketingWhatsApp.number || 'Sin número configurado' }}</p>
+                    <Link :href="route('admin.landing-seo.index')" class="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400">
+                        Configurar marketing
+                    </Link>
+                </div>
+            </div>
+        </div>
 
         <!-- Row 2: Work Orders + OCR Usage -->
         <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
