@@ -204,6 +204,7 @@ class ReceptionController extends Controller
             'pre_check_notes' => $appointment->pre_check_notes,
             'customer_name' => $appointment->customer_name,
             'phone' => $appointment->phone,
+            'alert' => $this->computeAppointmentAlert($appointment),
         ] : null;
 
         $vehicle = Vehicle::where('plate', $patente)->with('client')->first();
@@ -294,6 +295,24 @@ class ReceptionController extends Controller
         return response()->json([
             'clients' => $clients,
         ]);
+    }
+
+    private function computeAppointmentAlert(Appointment $appointment): ?string
+    {
+        $now = now();
+        $appointmentDate = $appointment->appointment_date;
+
+        if (! $now->isSameDay($appointmentDate)) {
+            return 'wrong_day';
+        }
+
+        $minutesDiff = $now->diffInMinutes($appointmentDate, false);
+
+        if ($minutesDiff >= -30 && $minutesDiff <= 60) {
+            return null;
+        }
+
+        return 'same_day';
     }
 
     private function normalizePlate(string $plate): string

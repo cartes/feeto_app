@@ -108,6 +108,14 @@ const formatAppointmentDate = (date) => {
     return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 };
 
+const formatAppointmentTime = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+};
+
+const appointmentAlertLevel = computed(() => appointmentData.value?.alert ?? null);
+
 const applyClientData = (client) => {
     form.client_name = client?.name || '';
     form.client_rut = client?.rut || '';
@@ -506,13 +514,29 @@ onUnmounted(() => {
                             class="w-fit bg-slate-100 text-slate-500 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-slate-200">
                             {{ ownerSourceLabel }}
                         </span>
-                        <!-- Badge de cita agendada -->
-                        <span v-if="appointmentData"
+                        <!-- Badge de cita: a tiempo -->
+                        <span v-if="appointmentData && !appointmentAlertLevel"
                             class="w-fit bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-blue-200 flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             Cita Agendada · {{ formatAppointmentDate(appointmentData.date) }}
+                        </span>
+                        <!-- Badge de cita: mismo día fuera de horario -->
+                        <span v-else-if="appointmentData && appointmentAlertLevel === 'same_day'"
+                            class="w-fit bg-amber-100 text-amber-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-amber-300 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Fuera de Horario · {{ formatAppointmentTime(appointmentData.date) }}
+                        </span>
+                        <!-- Badge de cita: día incorrecto -->
+                        <span v-else-if="appointmentData && appointmentAlertLevel === 'wrong_day'"
+                            class="w-fit bg-red-100 text-red-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-red-300 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Cita en Otro Día · {{ formatAppointmentDate(appointmentData.date) }}
                         </span>
                     </div>
                     <button @click="closeModal"
@@ -524,9 +548,38 @@ onUnmounted(() => {
                     </button>
                 </div>
 
-                <!-- Info de cita agendada (si existe) -->
+                <!-- Alerta: vehículo llegó en día incorrecto -->
+                <div v-if="appointmentAlertLevel === 'wrong_day'"
+                    class="mx-6 lg:mx-8 mt-6 rounded-2xl bg-red-50 border-2 border-red-300 px-5 py-4 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-red-700">Cita Agendada para Otro Día</p>
+                    </div>
+                    <p class="text-sm font-bold text-red-900">
+                        Esta patente tiene una cita para el <span class="underline">{{ formatAppointmentDate(appointmentData.date) }}</span>.
+                    </p>
+                    <p class="text-xs text-red-700">Verifique si el cliente llegó en la fecha incorrecta o si el agendamiento debe actualizarse.</p>
+                </div>
+
+                <!-- Alerta: vehículo llegó mismo día pero fuera de horario -->
+                <div v-else-if="appointmentAlertLevel === 'same_day'"
+                    class="mx-6 lg:mx-8 mt-6 rounded-2xl bg-amber-50 border border-amber-300 px-5 py-4 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-amber-700">Fuera del Horario Agendado</p>
+                    </div>
+                    <p class="text-sm font-semibold text-amber-900">
+                        La cita estaba programada para las <span class="font-black">{{ formatAppointmentTime(appointmentData.date) }}</span>.
+                    </p>
+                </div>
+
+                <!-- Info de cita agendada (si existe y tiene notas) -->
                 <div v-if="appointmentData && appointmentData.notes"
-                    class="mx-6 lg:mx-8 mt-6 rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 space-y-1">
+                    class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 space-y-1">
                     <p class="text-[9px] font-black uppercase tracking-widest text-blue-600">Notas del agendamiento</p>
                     <p class="text-sm font-semibold text-slate-700">{{ appointmentData.notes }}</p>
                     <p v-if="appointmentData.pre_check_notes" class="text-xs text-slate-500 mt-1">{{ appointmentData.pre_check_notes }}</p>
