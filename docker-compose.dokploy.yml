@@ -28,6 +28,7 @@ services:
       REVERB_HOST: localhost
       REVERB_PORT: 8080
       REVERB_SCHEME: http
+      RECEPTION_IMAGE_UPLOAD_MAX_KB: ${RECEPTION_IMAGE_UPLOAD_MAX_KB:-8192}
     depends_on:
       mysql:
         condition: service_healthy
@@ -71,6 +72,7 @@ services:
       REVERB_HOST: web
       REVERB_PORT: 8080
       REVERB_SCHEME: http
+      RECEPTION_IMAGE_UPLOAD_MAX_KB: ${RECEPTION_IMAGE_UPLOAD_MAX_KB:-8192}
     depends_on:
       mysql:
         condition: service_healthy
@@ -104,6 +106,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+      RECEPTION_IMAGE_UPLOAD_MAX_KB: ${RECEPTION_IMAGE_UPLOAD_MAX_KB:-8192}
     depends_on:
       mysql:
         condition: service_healthy

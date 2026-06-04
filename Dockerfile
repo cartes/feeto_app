@@ -49,6 +49,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
+RUN { \
+        echo 'upload_max_filesize=8M'; \
+        echo 'post_max_size=8M'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 # Copiamos archivos desde las etapas anteriores
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app /var/www/html
