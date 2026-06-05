@@ -53,7 +53,7 @@ class ServiceController extends Controller
 
         $service->update($request->validated());
 
-        return redirect()->route('services.index')->with('success', 'Servicio actualizado.');
+        return redirect()->back()->with('success', 'Servicio actualizado.');
     }
 
     public function destroy(Service $service): RedirectResponse

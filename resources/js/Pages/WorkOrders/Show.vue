@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const page = usePage();
@@ -19,7 +19,16 @@ const props = defineProps({
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
+const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
 const isSuperAdmin = computed(() => Boolean(page.props.auth?.user?.is_super_admin));
+
+const canManageItems = computed(() => (
+    isSuperAdmin.value || permissions.value.includes('work-orders.manage-items')
+));
+
+const canManageInventory = computed(() => (
+    isSuperAdmin.value || permissions.value.includes('inventory.manage')
+));
 
 const quote = computed(() => props.workOrder.quote ?? {
     status: 'draft',
@@ -130,6 +139,101 @@ const productSearch = ref('');
 const serviceSearch = ref('');
 const showProductDropdown = ref(false);
 const showServiceDropdown = ref(false);
+
+const hasSelectedProduct = computed(() => selectedProduct.value !== null);
+const hasSelectedService = computed(() => selectedService.value !== null);
+const hasManualInput = computed(() => selectedMode.value === 'manual' && (addForm.description !== '' || addForm.unit_price !== ''));
+
+const clearProduct = () => {
+    selectedProduct.value = null;
+    productSearch.value = '';
+    addForm.product_id = null;
+    addForm.description = '';
+    addForm.unit_price = '';
+};
+
+const clearService = () => {
+    selectedService.value = null;
+    serviceSearch.value = '';
+    addForm.service_id = null;
+    addForm.description = '';
+    addForm.unit_price = '';
+};
+
+watch(productSearch, (newVal) => {
+    if (!newVal && selectedProduct.value) {
+        clearProduct();
+    }
+});
+
+watch(serviceSearch, (newVal) => {
+    if (!newVal && selectedService.value) {
+        clearService();
+    }
+});
+
+const editingCatalogType = ref(null); // 'product' | 'service'
+const editingCatalogItem = ref(null); // Product | Service object
+const showCatalogEditModal = ref(false);
+const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+
+const catalogForm = useForm({
+    name: '',
+    sku: '',
+    type: 'repuesto_nacional',
+    description: '',
+    cost_price: 0,
+    selling_price: 0,
+    physical_stock: 0,
+    min_stock: 0,
+    code: '',
+    estimated_minutes: 0,
+    is_active: true,
+});
+
+const openEditCatalogItemModal = (item) => {
+    editingCatalogType.value = item.item_type;
+    if (item.item_type === 'product') {
+        editingCatalogItem.value = item.product;
+        catalogForm.name = item.product.name;
+        catalogForm.sku = item.product.sku;
+        catalogForm.type = item.product.type || 'repuesto_nacional';
+        catalogForm.description = item.product.description || '';
+        catalogForm.cost_price = Number(item.product.cost_price || 0);
+        catalogForm.selling_price = Number(item.product.selling_price || 0);
+        catalogForm.physical_stock = Number(item.product.physical_stock || 0);
+        catalogForm.min_stock = Number(item.product.min_stock || 0);
+    } else if (item.item_type === 'service') {
+        editingCatalogItem.value = item.service;
+        catalogForm.name = item.service.name;
+        catalogForm.code = item.service.code || '';
+        catalogForm.description = item.service.description || '';
+        catalogForm.cost_price = Number(item.service.cost_price || 0);
+        catalogForm.selling_price = Number(item.service.selling_price || 0);
+        catalogForm.estimated_minutes = Number(item.service.estimated_minutes || 0);
+        catalogForm.is_active = Boolean(item.service.is_active);
+    }
+    catalogForm.clearErrors();
+    showCatalogEditModal.value = true;
+};
+
+const submitCatalogEdit = () => {
+    if (editingCatalogType.value === 'product') {
+        catalogForm.put(route('inventory.update', { ...tenantRouteParams.value, product: editingCatalogItem.value.id }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                showCatalogEditModal.value = false;
+            },
+        });
+    } else if (editingCatalogType.value === 'service') {
+        catalogForm.put(route('services.update', { ...tenantRouteParams.value, service: editingCatalogItem.value.id }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                showCatalogEditModal.value = false;
+            },
+        });
+    }
+};
 
 const addForm = useForm({
     product_id: null,
@@ -467,7 +571,20 @@ const notifyReady = () => {
                                 <tbody class="divide-y divide-gray-50">
                                     <tr v-for="item in items" :key="item.id" class="transition-colors hover:bg-gray-50/50">
                                         <td class="px-6 py-4">
-                                            <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
+                                                <button
+                                                    v-if="canManageInventory && (item.item_type === 'product' || item.item_type === 'service')"
+                                                    type="button"
+                                                    class="text-gray-400 hover:text-[#FF7A00] transition-colors"
+                                                    title="Editar en catálogo"
+                                                    @click="openEditCatalogItemModal(item)"
+                                                >
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                             <p v-if="item.product?.sku" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
                                             <p v-if="item.service?.code" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
                                             <p v-if="Number(item.discount_percent) > 0" class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-rose-500">
@@ -489,7 +606,7 @@ const notifyReady = () => {
                                             <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium tabular-nums text-gray-400">UF {{ formatUf(item.total_price) }}</span>
                                         </td>
                                         <td class="px-4 py-4 text-right">
-                                            <button type="button" class="text-gray-300 transition-colors hover:text-rose-500" @click="removeItem(item.id)">
+                                            <button v-if="canManageItems" type="button" class="text-gray-300 transition-colors hover:text-rose-500" @click="removeItem(item.id)">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
@@ -512,7 +629,7 @@ const notifyReady = () => {
                     </div>
 
                     <!-- Formulario agregar ítem -->
-                    <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <div v-if="canManageItems" class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Agregar Ítem</h2>
                             <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]">Gestionar Servicios</Link>
@@ -526,16 +643,50 @@ const notifyReady = () => {
                         </div>
 
                         <div class="grid grid-cols-3 gap-2">
-                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('manual')">Manual</button>
-                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'product' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('product')">Repuesto</button>
-                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'service' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('service')">Servicio</button>
+                            <button
+                                type="button"
+                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                :class="selectedMode === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
+                                :disabled="hasSelectedProduct || hasSelectedService"
+                                @click="selectMode('manual')"
+                            >
+                                Manual
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                :class="selectedMode === 'product' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
+                                :disabled="hasManualInput || hasSelectedService"
+                                @click="selectMode('product')"
+                            >
+                                Repuesto
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                :class="selectedMode === 'service' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
+                                :disabled="hasManualInput || hasSelectedProduct"
+                                @click="selectMode('service')"
+                            >
+                                Servicio
+                            </button>
                         </div>
 
                         <form class="mt-5 space-y-4" @submit.prevent="submitItem">
                             <div v-if="selectedMode === 'product'" class="space-y-1.5">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Repuesto</label>
                                 <div class="relative">
-                                    <input v-model="productSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Nombre o SKU" @focus="showProductDropdown = true" @blur="setTimeout(() => { showProductDropdown = false; }, 200)" />
+                                    <input v-model="productSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300 pr-10" placeholder="Nombre o SKU" @focus="showProductDropdown = true" @blur="setTimeout(() => { showProductDropdown = false; }, 200)" />
+                                    <button
+                                        v-if="hasSelectedProduct"
+                                        type="button"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        @click="clearProduct"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                     <div v-if="showProductDropdown && filteredProducts.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
                                         <button v-for="product in filteredProducts.slice(0, 8)" :key="product.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectProduct(product)">
                                             <div>
@@ -551,7 +702,17 @@ const notifyReady = () => {
                             <div v-if="selectedMode === 'service'" class="space-y-1.5">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Servicio</label>
                                 <div class="relative">
-                                    <input v-model="serviceSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Nombre o código" @focus="showServiceDropdown = true" @blur="setTimeout(() => { showServiceDropdown = false; }, 200)" />
+                                    <input v-model="serviceSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300 pr-10" placeholder="Nombre o código" @focus="showServiceDropdown = true" @blur="setTimeout(() => { showServiceDropdown = false; }, 200)" />
+                                    <button
+                                        v-if="hasSelectedService"
+                                        type="button"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        @click="clearService"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                     <div v-if="showServiceDropdown && filteredServices.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
                                         <button v-for="service in filteredServices.slice(0, 8)" :key="service.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectService(service)">
                                             <div>
@@ -647,6 +808,114 @@ const notifyReady = () => {
                         <p class="mt-2 text-lg font-black text-gray-900">{{ planAccess?.plan_name || 'Sin plan' }}</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- EditCatalogItemModal -->
+        <div v-if="showCatalogEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showCatalogEditModal = false"></div>
+
+            <div class="relative w-full max-w-lg overflow-y-auto rounded-[2.5rem] border border-gray-100 bg-white shadow-[0_32px_64px_rgba(0,0,0,0.1)] max-h-[90vh] animate-in zoom-in-95 duration-300">
+                <div class="flex items-center justify-between border-b border-gray-50 bg-gray-50/50 p-6 lg:p-8">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-gray-900">
+                            {{ editingCatalogType === 'product' ? 'Editar Repuesto' : 'Editar Servicio' }}
+                        </h2>
+                        <p class="mt-1 text-xs font-medium text-gray-400">Edita la información del catálogo general.</p>
+                    </div>
+                    <button
+                        type="button"
+                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-sm transition-all hover:bg-gray-100 hover:text-gray-600"
+                        @click="showCatalogEditModal = false"
+                    >
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form class="space-y-6 p-6 lg:p-8" @submit.prevent="submitCatalogEdit">
+                    <div class="space-y-1.5">
+                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Nombre</label>
+                        <input v-model="catalogForm.name" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                        <p v-if="catalogForm.errors.name" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.name }}</p>
+                    </div>
+
+                    <template v-if="editingCatalogType === 'product'">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">SKU</label>
+                                <input v-model="catalogForm.sku" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                                <p v-if="catalogForm.errors.sku" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.sku }}</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Tipo de Repuesto</label>
+                                <select v-model="catalogForm.type" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]">
+                                    <option value="repuesto_nacional">Repuesto Nacional</option>
+                                    <option value="repuesto_internacional">Repuesto Internacional</option>
+                                    <option value="insumo">Insumo</option>
+                                </select>
+                                <p v-if="catalogForm.errors.type" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.type }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Stock Físico</label>
+                                <input v-model.number="catalogForm.physical_stock" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                                <p v-if="catalogForm.errors.physical_stock" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.physical_stock }}</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Stock Mínimo</label>
+                                <input v-model.number="catalogForm.min_stock" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                                <p v-if="catalogForm.errors.min_stock" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.min_stock }}</p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template v-if="editingCatalogType === 'service'">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Código</label>
+                                <input v-model="catalogForm.code" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                                <p v-if="catalogForm.errors.code" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.code }}</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Duración Estimada (min)</label>
+                                <input v-model.number="catalogForm.estimated_minutes" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                                <p v-if="catalogForm.errors.estimated_minutes" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.estimated_minutes }}</p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="space-y-1.5">
+                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Costo</label>
+                            <input v-model.number="catalogForm.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                            <p v-if="catalogForm.errors.cost_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.cost_price }}</p>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Precio Venta</label>
+                            <input v-model.number="catalogForm.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                            <p v-if="catalogForm.errors.selling_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.selling_price }}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Descripción</label>
+                        <textarea v-model="catalogForm.description" rows="3" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="Detalle opcional"></textarea>
+                        <p v-if="catalogForm.errors.description" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.description }}</p>
+                    </div>
+
+                    <label v-if="editingCatalogType === 'service'" class="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+                        <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Servicio activo</span>
+                        <input v-model="catalogForm.is_active" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]" />
+                    </label>
+
+                    <button type="submit" class="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-black uppercase tracking-wide text-white transition-colors hover:bg-[#FF7A00]" :disabled="catalogForm.processing">
+                        {{ catalogForm.processing ? 'Guardando...' : 'Guardar Cambios' }}
+                    </button>
+                </form>
             </div>
         </div>
     </TallerLayout>

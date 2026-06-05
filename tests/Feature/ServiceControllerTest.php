@@ -68,6 +68,7 @@ class ServiceControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->admin)
+            ->from(route('services.index'))
             ->put(route('services.update', ['service' => $service->id]), [
                 'name' => 'Alineación y balanceo',
                 'code' => 'SERV-200',

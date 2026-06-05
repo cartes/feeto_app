@@ -75,7 +75,7 @@ class InventoryController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('inventory.index')->with('success', 'Repuesto actualizado.');
+        return redirect()->back()->with('success', 'Repuesto actualizado.');
     }
 
     /**
