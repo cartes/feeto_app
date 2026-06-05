@@ -20,11 +20,10 @@ const page = usePage();
 const isSuccess = computed(() => page.props.flash?.booking_success === true);
 const showLoginModal = ref(false);
 
-// Toast state
 const toast = ref({ message: '', type: 'success' });
 
 function showToast(message, type = 'success') {
-    toast.value = { message: '', type }; // reset para re-trigger el watcher
+    toast.value = { message: '', type };
     setTimeout(() => { toast.value = { message, type }; }, 10);
 }
 
@@ -61,7 +60,6 @@ const submitBooking = () => {
     });
 };
 
-// Min date for the datetime-local input (now + 1 hour)
 const minDate = computed(() => {
     const d = new Date();
     d.setHours(d.getHours() + 1);
@@ -69,6 +67,13 @@ const minDate = computed(() => {
 });
 
 const primaryColor = computed(() => props.tenant?.primary_color ?? '#FF7A00');
+
+const phoneNumber = computed(() => {
+    const mainBranch = props.tenant.branches?.find(b => b.is_main);
+    return mainBranch?.phone || props.tenant.whatsapp_number || null;
+});
+
+const hasBranches = computed(() => Array.isArray(props.tenant.branches) && props.tenant.branches.length > 0);
 
 const trackWhatsAppClick = () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -123,7 +128,11 @@ const trackWhatsAppClick = () => {
                         </svg>
                         Iniciar Sesión
                     </button>
-                    <button @click="scrollToForm" class="hidden sm:inline-flex items-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md" :style="{ backgroundColor: primaryColor }">
+                    <button
+                        @click="scrollToForm"
+                        class="hidden sm:inline-flex items-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md"
+                        :style="{ backgroundColor: primaryColor }"
+                    >
                         Agendar Cita
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -138,38 +147,129 @@ const trackWhatsAppClick = () => {
                  HERO SECTION
             ===================================================== -->
             <section class="relative overflow-hidden bg-white">
-                <!-- Decorative background -->
-                <div class="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-gray-50 pointer-events-none" aria-hidden="true"></div>
-                <div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-orange-100/60 blur-3xl pointer-events-none" aria-hidden="true"></div>
+                <!-- Dynamic brand decorative blobs -->
+                <div
+                    class="absolute inset-0 pointer-events-none"
+                    aria-hidden="true"
+                    :style="{ background: `linear-gradient(135deg, ${primaryColor}0d 0%, #ffffff 55%, #f9fafb 100%)` }"
+                ></div>
+                <div
+                    class="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full blur-3xl pointer-events-none"
+                    aria-hidden="true"
+                    :style="{ backgroundColor: primaryColor + '20' }"
+                ></div>
+                <div
+                    class="absolute top-1/2 -left-40 h-72 w-72 rounded-full blur-3xl pointer-events-none"
+                    aria-hidden="true"
+                    :style="{ backgroundColor: primaryColor + '0e' }"
+                ></div>
 
-                <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-24 text-center">
-                    <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wider uppercase" :style="{ color: primaryColor }">
+                <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16 text-center">
+
+                    <!-- Availability badge -->
+                    <div
+                        class="inline-flex items-center gap-2 border text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wider uppercase"
+                        :style="{ color: primaryColor, backgroundColor: primaryColor + '12', borderColor: primaryColor + '35' }"
+                    >
                         <span class="h-2 w-2 rounded-full animate-pulse" :style="{ backgroundColor: primaryColor }"></span>
                         Turnos Disponibles Hoy
                     </div>
 
+                    <!-- Headline -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight max-w-3xl mx-auto">
-                        Tu vehículo en manos expertas.
-                        <span class="text-orange-500"> Rápido, transparente y garantizado.</span>
+                        Agenda tu cita en
+                        <span :style="{ color: primaryColor }">{{ tenant.name }}</span>
+                        rápido y sin complicaciones.
                     </h1>
 
+                    <!-- Subheadline -->
                     <p class="mt-6 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-                        Agenda en menos de 2 minutos. Cuando llegues al taller, leeremos tu patente automáticamente para atenderte sin filas ni demoras.
+                        {{ tenant.seo_description || 'Diagnóstico rápido, repuestos garantizados y transparencia total. Cuando llegues, leeremos tu patente automáticamente para atenderte sin esperas.' }}
                     </p>
 
+                    <!-- CTAs -->
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                        <button @click="scrollToForm" class="inline-flex items-center justify-center gap-3 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg transition-all active:scale-95" :style="{ backgroundColor: primaryColor }">
+                        <button
+                            @click="scrollToForm"
+                            class="group inline-flex items-center justify-center gap-3 text-white font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-200 active:scale-[0.97]"
+                            :style="{ backgroundColor: primaryColor, boxShadow: `0 8px 28px ${primaryColor}45` }"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             Agendar mi Cita Ahora
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
-                        <a href="tel:" class="inline-flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold text-lg px-8 py-4 rounded-2xl shadow-sm hover:border-gray-300 transition-all">
+                        <a
+                            v-if="phoneNumber"
+                            :href="`tel:${phoneNumber.replace(/\D/g, '')}`"
+                            class="inline-flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold text-lg px-8 py-4 rounded-2xl shadow-sm hover:border-gray-300 hover:shadow-md transition-all"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
                             Llamar al Taller
                         </a>
+                    </div>
+
+                    <!-- ── Sucursales / Ubicaciones ── -->
+                    <div v-if="hasBranches" class="mt-14 pt-10 border-t border-gray-100">
+                        <p class="flex items-center justify-center gap-2 text-xs uppercase tracking-widest font-semibold text-gray-400 mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Encuéntranos
+                        </p>
+
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <address
+                                v-for="branch in tenant.branches"
+                                :key="branch.id"
+                                class="not-italic flex flex-col items-start bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 text-left min-w-[180px] max-w-[280px] transition-all duration-200 hover:shadow-md"
+                                :style="branch.is_main ? { boxShadow: `0 0 0 2px ${primaryColor}` } : {}"
+                                :itemscope="true"
+                                itemtype="https://schema.org/AutoRepair"
+                            >
+                                <div class="flex items-center gap-2 flex-wrap mb-2">
+                                    <span
+                                        class="h-2 w-2 rounded-full shrink-0"
+                                        :style="{ backgroundColor: primaryColor }"
+                                    ></span>
+                                    <span class="text-sm font-bold text-gray-900" itemprop="name">{{ branch.name }}</span>
+                                    <span
+                                        v-if="branch.is_main"
+                                        class="text-[10px] font-bold px-2 py-0.5 rounded-full text-white shrink-0"
+                                        :style="{ backgroundColor: primaryColor }"
+                                    >
+                                        Principal
+                                    </span>
+                                </div>
+
+                                <div v-if="branch.address" class="flex items-start gap-1.5 text-xs text-gray-500 leading-snug" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mt-0.5 shrink-0 text-gray-350" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span itemprop="streetAddress">{{ branch.address }}</span>
+                                </div>
+
+                                <a
+                                    v-if="branch.phone"
+                                    :href="`tel:${branch.phone.replace(/\D/g, '')}`"
+                                    class="flex items-center gap-1.5 text-xs mt-2 font-medium transition-opacity hover:opacity-75"
+                                    :style="{ color: primaryColor }"
+                                    itemprop="telephone"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    {{ branch.phone }}
+                                </a>
+                            </address>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -379,32 +479,57 @@ const trackWhatsAppClick = () => {
 
         <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
 
-        <!-- Toast global -->
         <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
 
-        <!-- Botón flotante WhatsApp -->
+        <!-- ====================================================
+             BOTÓN FLOTANTE WHATSAPP — Diseño moderno
+        ===================================================== -->
         <a
             v-if="tenant.whatsapp_number"
-            :href="`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola, vi tu taller en Feeto y tengo una consulta sobre ${tenant.name}`)}`"
+            :href="`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${tenant.name}, vi tu página en Feeto y tengo una consulta.`)}`"
             target="_blank"
             rel="noopener noreferrer"
             @click="trackWhatsAppClick"
-            class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 group"
-            title="Consultar por WhatsApp"
+            class="whatsapp-fab fixed bottom-6 right-6 z-50 flex items-center overflow-hidden rounded-2xl bg-white border border-white/20 transition-all duration-300 group hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
+            style="box-shadow: 0 8px 32px rgba(37,211,102,0.25), 0 2px 8px rgba(0,0,0,0.10);"
+            aria-label="Consultar por WhatsApp"
         >
-            <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            <span class="absolute right-16 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow">
-                Consultar por WhatsApp
-            </span>
+            <!-- Icon section -->
+            <div class="relative w-14 h-14 flex items-center justify-center shrink-0 bg-[#25D366]">
+                <span class="absolute inset-0 bg-[#25D366] animate-ping opacity-20"></span>
+                <svg class="w-7 h-7 text-white relative z-10 drop-shadow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+            </div>
+
+            <!-- Text section (visible en sm+) -->
+            <div class="hidden sm:flex flex-col justify-center px-4 pr-5 py-3 bg-white">
+                <span class="text-[11px] font-semibold text-gray-400 leading-tight tracking-wide">¿Tienes dudas?</span>
+                <span class="text-sm font-bold text-gray-900 leading-tight">Escríbenos ahora</span>
+            </div>
         </a>
     </div>
 </template>
 
 <style scoped>
-/* Smooth scroll nativo */
 html {
     scroll-behavior: smooth;
+}
+
+.whatsapp-fab {
+    animation: fab-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: 1s;
+    opacity: 0;
+}
+
+@keyframes fab-enter {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 </style>

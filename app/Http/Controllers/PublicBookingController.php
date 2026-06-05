@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Branch;
 use App\Models\Tenant;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,6 +21,13 @@ class PublicBookingController extends Controller
         $defaultDescription = $tenantBySlug->seo_description
             ?: "Agenda tu cita en {$tenantBySlug->name}. Diagnóstico rápido, repuestos garantizados y transparencia total.";
         $canonicalUrl = $request->url();
+
+        $branches = $tenantBySlug->branches()
+            ->where('is_active', true)
+            ->select(['id', 'name', 'address', 'phone', 'is_main'])
+            ->orderByDesc('is_main')
+            ->orderBy('name')
+            ->get();
 
         return Inertia::render('Public/TenantLanding', [
             'tenant' => [
@@ -34,13 +43,20 @@ class PublicBookingController extends Controller
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
                 'primary_color' => $tenantBySlug->primary_color,
                 'logo_url' => $tenantBySlug->logoUrl(),
+                'branches' => $branches->map(fn ($b) => [
+                    'id' => $b->id,
+                    'name' => $b->name,
+                    'address' => $b->address,
+                    'phone' => $b->phone,
+                    'is_main' => $b->is_main,
+                ])->values(),
             ],
             'seo' => [
                 'title' => "Agendar Cita | {$tenantBySlug->name}",
                 'description' => $defaultDescription,
                 'canonical_url' => $canonicalUrl,
                 'og_image' => $this->resolveSocialImageUrl(),
-                'schema' => $this->resolveTenantLandingSchema($tenantBySlug, $canonicalUrl, $defaultDescription),
+                'schema' => $this->resolveTenantLandingSchema($tenantBySlug, $branches, $canonicalUrl, $defaultDescription),
             ],
         ]);
     }
@@ -85,9 +101,10 @@ class PublicBookingController extends Controller
     }
 
     /**
+     * @param  Collection<int, Branch>  $branches
      * @return array<int, array<string, mixed>>
      */
-    private function resolveTenantLandingSchema(Tenant $tenant, string $canonicalUrl, string $description): array
+    private function resolveTenantLandingSchema(Tenant $tenant, Collection $branches, string $canonicalUrl, string $description): array
     {
         $businessSchema = [
             '@context' => 'https://schema.org',
@@ -113,6 +130,36 @@ class PublicBookingController extends Controller
 
         if (filled($tenant->whatsapp_number)) {
             $businessSchema['telephone'] = $tenant->whatsapp_number;
+        }
+
+        if ($branches->isNotEmpty()) {
+            $locations = $branches
+                ->filter(fn (Branch $b): bool => filled($b->address) || filled($b->phone))
+                ->map(function (Branch $b) use ($canonicalUrl): array {
+                    $loc = [
+                        '@type' => 'AutoRepair',
+                        'name' => $b->name,
+                        'url' => $canonicalUrl,
+                    ];
+                    if (filled($b->address)) {
+                        $loc['address'] = [
+                            '@type' => 'PostalAddress',
+                            'streetAddress' => $b->address,
+                            'addressCountry' => 'CL',
+                        ];
+                    }
+                    if (filled($b->phone)) {
+                        $loc['telephone'] = $b->phone;
+                    }
+
+                    return $loc;
+                })
+                ->values()
+                ->all();
+
+            if (! empty($locations)) {
+                $businessSchema['location'] = count($locations) === 1 ? $locations[0] : $locations;
+            }
         }
 
         $businessSchema['potentialAction'] = [
@@ -157,4 +204,5 @@ class PublicBookingController extends Controller
             ],
         ];
     }
+
 }
