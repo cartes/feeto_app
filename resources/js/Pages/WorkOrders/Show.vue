@@ -296,337 +296,248 @@ const notifyReady = () => {
     <Head :title="`OT #${workOrder.id} — ${workOrder.vehicle?.plate ?? ''}`" />
 
     <TallerLayout>
-        <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div class="px-1">
+        <div class="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-6">
+
+            <!-- Header compacto sin card -->
+            <div class="space-y-3">
                 <Link
                     :href="route('work-orders.index')"
-                    class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-700"
+                    class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-700"
                 >
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                     </svg>
                     Tablero Kanban
                 </Link>
-            </div>
 
-            <div class="rounded-[2rem] border border-gray-100 bg-white p-8 shadow-sm">
-                <div class="flex flex-col justify-between gap-6 xl:flex-row xl:items-start">
-                    <div class="space-y-4">
-                        <div class="flex flex-wrap gap-3">
-                            <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', workOrderStatus.classes]">
-                                {{ workOrderStatus.label }}
-                            </span>
-                            <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', quoteStatus.classes]">
-                                Cotización {{ quoteStatus.label }}
-                            </span>
-                        </div>
+                <div class="flex flex-wrap gap-2">
+                    <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', workOrderStatus.classes]">
+                        {{ workOrderStatus.label }}
+                    </span>
+                    <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', quoteStatus.classes]">
+                        Cotización {{ quoteStatus.label }}
+                    </span>
+                </div>
 
-                        <div>
-                            <h1 class="text-3xl font-black tracking-tight text-gray-900">
-                                {{ workOrder.vehicle?.brand }} {{ workOrder.vehicle?.model }}
-                            </h1>
-                            <div class="mt-2 flex flex-wrap items-center gap-3 text-sm font-semibold text-gray-500">
-                                <span class="font-mono text-lg tracking-widest">{{ workOrder.vehicle?.plate }}</span>
-                                <span class="text-gray-200">|</span>
-                                <span>{{ workOrder.vehicle?.client?.name ?? 'Cliente no asignado' }}</span>
-                                <span v-if="workOrder.vehicle?.client?.phone" class="text-gray-200">|</span>
-                                <span v-if="workOrder.vehicle?.client?.phone">{{ workOrder.vehicle.client.phone }}</span>
-                            </div>
-                        </div>
-
-                        <p v-if="workOrder.observations" class="max-w-2xl text-sm italic text-gray-400">
-                            {{ workOrder.observations }}
-                        </p>
-
-                        <div v-if="quote.customer_response_notes" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-500">Respuesta Cliente</p>
-                            <p class="mt-2 text-sm font-medium text-amber-900">{{ quote.customer_response_notes }}</p>
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-gray-900">
+                            {{ workOrder.vehicle?.brand }} {{ workOrder.vehicle?.model }}
+                        </h1>
+                        <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                            <span class="font-mono text-base font-bold tracking-widest text-gray-700">{{ workOrder.vehicle?.plate }}</span>
+                            <span class="text-gray-300">·</span>
+                            <span>{{ workOrder.vehicle?.client?.name ?? 'Cliente no asignado' }}</span>
+                            <template v-if="workOrder.vehicle?.client?.phone">
+                                <span class="text-gray-300">·</span>
+                                <span>{{ workOrder.vehicle.client.phone }}</span>
+                            </template>
                         </div>
                     </div>
+                    <span class="shrink-0 text-xs font-black uppercase tracking-widest text-gray-300">OT #{{ workOrder.id }}</span>
+                </div>
 
-                    <div class="flex flex-col gap-3 xl:min-w-[280px]">
-                        <div class="rounded-[1.75rem] border border-gray-100 bg-gray-50 p-5">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
-                            <p class="mt-2 text-3xl font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</p>
-                            <p v-if="formatUf(quote.subtotal_amount)" class="mt-1 text-xs font-semibold text-gray-400">
-                                ≈ UF {{ formatUf(quote.subtotal_amount) }}
-                            </p>
-                            <p class="mt-2 text-xs font-medium text-gray-500">{{ items.length }} ítems cargados</p>
-                        </div>
+                <p v-if="workOrder.observations" class="text-sm italic text-gray-400">
+                    {{ workOrder.observations }}
+                </p>
 
-                        <div v-if="commercialQuotesEnabled && canDeliverQuote" class="rounded-[1.75rem] border border-gray-100 bg-white p-4 shadow-sm">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Canal de envío</p>
-                            <div class="mt-3 grid grid-cols-2 gap-2">
-                                <button
-                                    type="button"
-                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
-                                    :class="sendChannel === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                    @click="sendChannel = 'manual'"
-                                >
-                                    Solo marcar
-                                </button>
-                                <button
-                                    type="button"
-                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                                    :class="sendChannel === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-50 text-gray-500'"
-                                    :disabled="!hasClientPhone"
-                                    @click="sendChannel = 'whatsapp'"
-                                >
-                                    WhatsApp
-                                </button>
-                                <button
-                                    type="button"
-                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                                    :class="sendChannel === 'email' ? 'bg-sky-600 text-white' : 'bg-gray-50 text-gray-500'"
-                                    :disabled="!hasClientEmail"
-                                    @click="sendChannel = 'email'"
-                                >
-                                    Email
-                                </button>
-                                <button
-                                    type="button"
-                                    class="rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                                    :class="sendChannel === 'both' ? 'bg-[#FF7A00] text-white' : 'bg-gray-50 text-gray-500'"
-                                    :disabled="!hasClientPhone || !hasClientEmail"
-                                    @click="sendChannel = 'both'"
-                                >
-                                    Ambos
-                                </button>
+                <div v-if="quote.customer_response_notes" class="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-amber-500">Respuesta Cliente</p>
+                    <p class="mt-1.5 text-sm font-medium text-amber-900">{{ quote.customer_response_notes }}</p>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div v-if="commercialQuotesEnabled" class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px] xl:items-start">
+
+                <!-- SIDEBAR: primero en DOM → aparece arriba en mobile, columna derecha en desktop -->
+                <div class="space-y-4 xl:order-last xl:sticky xl:top-6">
+
+                    <!-- Total -->
+                    <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
+                        <p class="mt-1.5 text-3xl font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</p>
+                        <p v-if="formatUf(quote.subtotal_amount)" class="mt-0.5 text-xs font-semibold text-gray-400">≈ UF {{ formatUf(quote.subtotal_amount) }}</p>
+                        <p class="mt-1.5 text-xs font-medium text-gray-400">{{ items.length }} ítems cargados</p>
+                    </div>
+
+                    <!-- Canal de envío + botón (admin/supervisor) -->
+                    <template v-if="canDeliverQuote">
+                        <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                            <p class="mb-3 text-[10px] font-black uppercase tracking-widest text-gray-400">Canal de envío</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors" :class="sendChannel === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="sendChannel = 'manual'">Solo marcar</button>
+                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientPhone" @click="sendChannel = 'whatsapp'">WhatsApp</button>
+                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'email' ? 'bg-sky-600 text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientEmail" @click="sendChannel = 'email'">Email</button>
+                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'both' ? 'bg-[#FF7A00] text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientPhone || !hasClientEmail" @click="sendChannel = 'both'">Ambos</button>
                             </div>
-                            <p class="mt-3 text-xs font-medium text-gray-500">
-                                Activa el tracking del cliente y deja registrada la entrega comercial de la cotización.
-                            </p>
                         </div>
-
                         <button
-                            v-if="commercialQuotesEnabled && canDeliverQuote"
                             type="button"
-                            class="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#FF7A00] disabled:cursor-not-allowed disabled:opacity-50"
+                            class="w-full rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#FF7A00] disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="sendQuoteForm.processing || items.length === 0 || quote.status === 'accepted'"
                             @click="sendQuote"
                         >
-                            {{
-                                sendQuoteForm.processing
-                                    ? 'Enviando...'
-                                    : sendChannel === 'whatsapp'
-                                        ? 'Enviar al Cliente por WhatsApp'
-                                        : sendChannel === 'email'
-                                            ? 'Enviar al Cliente por Email'
-                                            : sendChannel === 'both'
-                                                ? 'Enviar al Cliente por Ambos'
-                                                : 'Marcar como Enviada al Cliente'
-                            }}
+                            {{ sendQuoteForm.processing ? 'Enviando...' : sendChannel === 'whatsapp' ? 'Enviar por WhatsApp' : sendChannel === 'email' ? 'Enviar por Email' : sendChannel === 'both' ? 'Enviar por Ambos' : 'Marcar como Enviada' }}
                         </button>
+                    </template>
 
-                        <div
-                            v-if="commercialQuotesEnabled && !canDeliverQuote"
-                            class="rounded-[1.75rem] border border-amber-100 bg-amber-50 px-4 py-4"
-                        >
+                    <!-- Aviso + botón (mecánico) -->
+                    <template v-if="!canDeliverQuote">
+                        <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4">
                             <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Revisión administrativa</p>
-                            <p class="mt-2 text-sm font-medium text-amber-900">
-                                Cuando termines la cotización, avisa al equipo administrador para que la envíe al cliente.
-                            </p>
+                            <p class="mt-2 text-sm font-medium text-amber-900">Cuando termines la cotización, avisa al equipo administrador para que la envíe al cliente.</p>
                         </div>
-
                         <button
-                            v-if="commercialQuotesEnabled && !canDeliverQuote"
                             type="button"
-                            class="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="w-full rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="notifyReadyForm.processing || !canNotifyAdmin"
                             @click="notifyReady"
                         >
-                            {{ notifyReadyForm.processing ? 'Avisando...' : 'Avisar al Administrador que Está Lista' }}
+                            {{ notifyReadyForm.processing ? 'Avisando...' : 'Avisar al Administrador' }}
                         </button>
+                    </template>
 
-                        <a
-                            v-if="commercialQuotesEnabled && canShareQuote && hasClientPhone"
-                            :href="whatsAppLink"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-green-600"
-                        >
-                            Compartir por WhatsApp
-                        </a>
+                    <!-- Compartir (pending_customer) -->
+                    <template v-if="canShareQuote">
+                        <a v-if="hasClientPhone" :href="whatsAppLink" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-green-600">Compartir por WhatsApp</a>
+                        <a v-if="hasClientEmail" :href="mailToLink" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-sky-700">Compartir por Email</a>
+                        <button v-if="hasClientPhone && hasClientEmail" type="button" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#CC6200]" @click="shareQuoteByBoth">Compartir por Ambos</button>
+                    </template>
 
-                        <a
-                            v-if="commercialQuotesEnabled && canShareQuote && hasClientEmail"
-                            :href="mailToLink"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-sky-700"
-                        >
-                            Compartir por Email
-                        </a>
+                    <!-- Tracking -->
+                    <a :href="trackingUrl" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50">
+                        Ver Tracking del Cliente
+                    </a>
 
-                        <button
-                            v-if="commercialQuotesEnabled && canShareQuote && hasClientPhone && hasClientEmail"
-                            type="button"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#CC6200]"
-                            @click="shareQuoteByBoth"
-                        >
-                            Compartir por Ambos
-                        </button>
-
-                        <a
-                            v-if="commercialQuotesEnabled"
-                            :href="trackingUrl"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50"
-                        >
-                            Abrir Tracking del Cliente
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div v-if="commercialQuotesEnabled" class="grid grid-cols-1 gap-8 xl:grid-cols-5">
-                <div class="xl:col-span-3 overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm">
-                    <div class="flex items-center justify-between border-b border-gray-50 px-8 py-6">
-                        <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Detalle Cotización</h2>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">{{ items.length }} registros</span>
-                    </div>
-
-                    <div v-if="items.length === 0" class="flex flex-col items-center justify-center px-8 py-16 text-center">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50">
-                            <svg class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
+                    <!-- Historial (solo desktop; en mobile va al final del contenido principal) -->
+                    <div class="hidden xl:block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                        <div class="flex items-center justify-between border-b border-gray-50 px-5 py-4">
+                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Historial Comercial</h2>
+                            <span class="text-[10px] font-bold text-gray-400">{{ quote.events?.length ?? 0 }} eventos</span>
                         </div>
-                        <p class="text-xs font-semibold uppercase tracking-tight text-gray-400">Aún no hay ítems en la cotización</p>
-                    </div>
-
-                    <div v-else class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-gray-50">
-                                    <th class="px-8 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Descripción</th>
-                                    <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Tipo</th>
-                                    <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Cant.</th>
-                                    <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">P. Unit.</th>
-                                    <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
-                                    <th class="px-4 py-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                <tr v-for="item in items" :key="item.id" class="transition-colors hover:bg-gray-50/50">
-                                    <td class="px-8 py-4">
-                                        <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
-                                        <p v-if="item.product?.sku" class="mt-1 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
-                                        <p v-if="item.service?.code" class="mt-1 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
-                                        <p v-if="Number(item.discount_percent) > 0" class="mt-1 text-[10px] font-black uppercase tracking-widest text-rose-500">
-                                            Desc. {{ item.discount_percent }}% · ahorro {{ formatCurrency(item.discount_amount) }}
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                            {{ quoteItemTypeLabels[item.item_type] ?? item.item_type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>
-                                    <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">
-                                        <span v-if="Number(item.discount_percent) > 0" class="block text-[10px] text-gray-400 line-through">
-                                            {{ formatCurrency(item.original_unit_price) }}
-                                        </span>
-                                        <span>{{ formatCurrency(item.unit_price) }}</span>
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <span class="text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</span>
-                                        <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium tabular-nums text-gray-400">
-                                            UF {{ formatUf(item.total_price) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            type="button"
-                                            class="text-gray-300 transition-colors hover:text-rose-500"
-                                            @click="removeItem(item.id)"
-                                        >
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr class="border-t-2 border-gray-100 bg-gray-50/50">
-                                    <td colspan="4" class="px-8 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-600">Total Cotización</td>
-                                    <td class="px-4 py-4 text-right">
-                                        <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</span>
-                                        <span v-if="formatUf(quote.subtotal_amount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">
-                                            UF {{ formatUf(quote.subtotal_amount) }}
-                                        </span>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        <div class="p-5">
+                            <div v-if="!(quote.events?.length)" class="rounded-xl border border-dashed border-gray-200 px-4 py-6 text-center text-xs font-semibold uppercase tracking-widest text-gray-400">Sin historial todavía</div>
+                            <div v-else class="space-y-3">
+                                <div v-for="event in quote.events" :key="event.id" class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-800">{{ event.description }}</p>
+                                            <p class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-gray-400">{{ event.actor_type }} · {{ event.event_type }}</p>
+                                        </div>
+                                        <span class="shrink-0 text-[10px] font-semibold text-gray-400">{{ formatDateTime(event.created_at) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="space-y-6 xl:col-span-2">
-                    <div class="rounded-[2rem] border border-gray-100 bg-white p-8 shadow-sm">
-                        <div class="mb-6 flex items-center justify-between">
+                <!-- CONTENIDO PRINCIPAL: tabla + formulario -->
+                <div class="space-y-6 xl:order-first">
+
+                    <!-- Tabla de ítems -->
+                    <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                        <div class="flex items-center justify-between border-b border-gray-50 px-6 py-4">
+                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Detalle Cotización</h2>
+                            <span class="text-[10px] font-bold text-gray-400">{{ items.length }} registros</span>
+                        </div>
+
+                        <div v-if="items.length === 0" class="flex flex-col items-center justify-center px-6 py-14 text-center">
+                            <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50">
+                                <svg class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-semibold uppercase tracking-tight text-gray-400">Aún no hay ítems en la cotización</p>
+                        </div>
+
+                        <div v-else class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-50">
+                                        <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Descripción</th>
+                                        <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Tipo</th>
+                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Cant.</th>
+                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">P. Unit.</th>
+                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
+                                        <th class="px-4 py-3"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50">
+                                    <tr v-for="item in items" :key="item.id" class="transition-colors hover:bg-gray-50/50">
+                                        <td class="px-6 py-4">
+                                            <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
+                                            <p v-if="item.product?.sku" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
+                                            <p v-if="item.service?.code" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
+                                            <p v-if="Number(item.discount_percent) > 0" class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-rose-500">
+                                                Desc. {{ item.discount_percent }}% · ahorro {{ formatCurrency(item.discount_amount) }}
+                                            </p>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                {{ quoteItemTypeLabels[item.item_type] ?? item.item_type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>
+                                        <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">
+                                            <span v-if="Number(item.discount_percent) > 0" class="block text-[10px] text-gray-400 line-through">{{ formatCurrency(item.original_unit_price) }}</span>
+                                            <span>{{ formatCurrency(item.unit_price) }}</span>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <span class="text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</span>
+                                            <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium tabular-nums text-gray-400">UF {{ formatUf(item.total_price) }}</span>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <button type="button" class="text-gray-300 transition-colors hover:text-rose-500" @click="removeItem(item.id)">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t-2 border-gray-100 bg-gray-50/50">
+                                        <td colspan="4" class="px-6 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-600">Total Cotización</td>
+                                        <td class="px-4 py-4 text-right">
+                                            <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</span>
+                                            <span v-if="formatUf(quote.subtotal_amount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">UF {{ formatUf(quote.subtotal_amount) }}</span>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Formulario agregar ítem -->
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                        <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Agregar Ítem</h2>
-                            <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]">
-                                Gestionar Servicios
-                            </Link>
+                            <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]">Gestionar Servicios</Link>
                         </div>
 
-                        <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4">
+                        <div class="mb-4 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
                             <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Política de descuentos</p>
-                            <p class="mt-2 text-sm font-medium text-amber-900">
-                                Hasta {{ props.discountPolicy?.threshold ?? 0 }}% se puede aplicar sin aprobación. Sobre ese umbral se requiere rol
-                                {{ (props.discountPolicy?.approver_roles || []).join(' o ') }}.
+                            <p class="mt-1.5 text-sm font-medium text-amber-900">
+                                Hasta {{ props.discountPolicy?.threshold ?? 0 }}% sin aprobación. Sobre ese umbral requiere rol {{ (props.discountPolicy?.approver_roles || []).join(' o ') }}.
                             </p>
                         </div>
 
                         <div class="grid grid-cols-3 gap-2">
-                            <button
-                                type="button"
-                                class="rounded-2xl px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-colors"
-                                :class="selectedMode === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                @click="selectMode('manual')"
-                            >
-                                Manual
-                            </button>
-                            <button
-                                type="button"
-                                class="rounded-2xl px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-colors"
-                                :class="selectedMode === 'product' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                @click="selectMode('product')"
-                            >
-                                Repuesto
-                            </button>
-                            <button
-                                type="button"
-                                class="rounded-2xl px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-colors"
-                                :class="selectedMode === 'service' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                @click="selectMode('service')"
-                            >
-                                Servicio
-                            </button>
+                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('manual')">Manual</button>
+                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'product' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('product')">Repuesto</button>
+                            <button type="button" class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors" :class="selectedMode === 'service' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="selectMode('service')">Servicio</button>
                         </div>
 
-                        <form class="mt-6 space-y-5" @submit.prevent="submitItem">
-                            <div v-if="selectedMode === 'product'" class="space-y-2">
+                        <form class="mt-5 space-y-4" @submit.prevent="submitItem">
+                            <div v-if="selectedMode === 'product'" class="space-y-1.5">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Repuesto</label>
                                 <div class="relative">
-                                    <input
-                                        v-model="productSearch"
-                                        type="text"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                        placeholder="Nombre o SKU"
-                                        @focus="showProductDropdown = true"
-                                        @blur="setTimeout(() => { showProductDropdown = false; }, 200)"
-                                    />
-                                    <div v-if="showProductDropdown && filteredProducts.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-lg">
-                                        <button
-                                            v-for="product in filteredProducts.slice(0, 8)"
-                                            :key="product.id"
-                                            type="button"
-                                            class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50"
-                                            @click="selectProduct(product)"
-                                        >
+                                    <input v-model="productSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Nombre o SKU" @focus="showProductDropdown = true" @blur="setTimeout(() => { showProductDropdown = false; }, 200)" />
+                                    <div v-if="showProductDropdown && filteredProducts.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
+                                        <button v-for="product in filteredProducts.slice(0, 8)" :key="product.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectProduct(product)">
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-800">{{ product.name }}</p>
                                                 <p class="text-[10px] font-mono text-gray-400">{{ product.sku }} · Stock {{ product.physical_stock }}</p>
@@ -637,25 +548,12 @@ const notifyReady = () => {
                                 </div>
                             </div>
 
-                            <div v-if="selectedMode === 'service'" class="space-y-2">
+                            <div v-if="selectedMode === 'service'" class="space-y-1.5">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Servicio</label>
                                 <div class="relative">
-                                    <input
-                                        v-model="serviceSearch"
-                                        type="text"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                        placeholder="Nombre o código"
-                                        @focus="showServiceDropdown = true"
-                                        @blur="setTimeout(() => { showServiceDropdown = false; }, 200)"
-                                    />
-                                    <div v-if="showServiceDropdown && filteredServices.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-lg">
-                                        <button
-                                            v-for="service in filteredServices.slice(0, 8)"
-                                            :key="service.id"
-                                            type="button"
-                                            class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50"
-                                            @click="selectService(service)"
-                                        >
+                                    <input v-model="serviceSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Nombre o código" @focus="showServiceDropdown = true" @blur="setTimeout(() => { showServiceDropdown = false; }, 200)" />
+                                    <div v-if="showServiceDropdown && filteredServices.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
+                                        <button v-for="service in filteredServices.slice(0, 8)" :key="service.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectService(service)">
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-800">{{ service.name }}</p>
                                                 <p class="text-[10px] font-mono text-gray-400">{{ service.code || 'Sin código' }} · {{ service.estimated_minutes }} min</p>
@@ -666,103 +564,66 @@ const notifyReady = () => {
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
+                            <div class="space-y-1.5">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Descripción</label>
-                                <input
-                                    v-model="addForm.description"
-                                    type="text"
-                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                    placeholder="Ej: Cambio de aceite, diagnóstico eléctrico"
-                                />
+                                <input v-model="addForm.description" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Ej: Cambio de aceite, diagnóstico eléctrico" />
                                 <p v-if="addForm.errors.description" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.description }}</p>
                             </div>
 
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="space-y-2">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="space-y-1.5">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cantidad</label>
-                                    <input
-                                        v-model.number="addForm.quantity"
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                    />
+                                    <input v-model.number="addForm.quantity" type="number" min="0.01" step="0.01" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
                                     <p v-if="addForm.errors.quantity" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.quantity }}</p>
                                 </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Precio Unitario</label>
-                                    <input
-                                        v-model.number="addForm.unit_price"
-                                        type="number"
-                                        min="0"
-                                        step="1"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                    />
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">P. Unitario</label>
+                                    <input v-model.number="addForm.unit_price" type="number" min="0" step="1" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
                                     <p v-if="addForm.errors.unit_price" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.unit_price }}</p>
                                 </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Descuento (%)</label>
-                                    <input
-                                        v-model.number="addForm.discount_percent"
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        step="0.01"
-                                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                                    />
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Desc. (%)</label>
+                                    <input v-model.number="addForm.discount_percent" type="number" min="0" max="100" step="0.01" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
                                     <p v-if="addForm.errors.discount_percent" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.discount_percent }}</p>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3">
+                            <div class="flex items-center justify-between rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
                                 <div>
                                     <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Subtotal</span>
-                                    <p v-if="Number(addForm.discount_percent) > 0" class="mt-1 text-[10px] font-bold uppercase tracking-widest text-rose-500">
-                                        Descuento {{ addForm.discount_percent }}% · ahorro {{ formatCurrency(previewDiscountAmount) }}
+                                    <p v-if="Number(addForm.discount_percent) > 0" class="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-rose-500">
+                                        Desc. {{ addForm.discount_percent }}% · ahorro {{ formatCurrency(previewDiscountAmount) }}
                                     </p>
                                 </div>
                                 <div class="text-right">
-                                    <span v-if="Number(addForm.discount_percent) > 0" class="block text-xs font-semibold text-gray-400 line-through">
-                                        {{ formatCurrency(previewSubtotal) }}
-                                    </span>
+                                    <span v-if="Number(addForm.discount_percent) > 0" class="block text-xs font-semibold text-gray-400 line-through">{{ formatCurrency(previewSubtotal) }}</span>
                                     <span class="text-base font-black text-orange-600">{{ formatCurrency(previewTotal) }}</span>
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                class="w-full rounded-2xl bg-gray-900 py-3 text-sm font-black text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
-                                :disabled="addForm.processing"
-                            >
+                            <button type="submit" class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-700 disabled:opacity-50" :disabled="addForm.processing">
                                 {{ addForm.processing ? 'Agregando...' : 'Agregar a Cotización' }}
                             </button>
                         </form>
                     </div>
 
-                    <div class="rounded-[2rem] border border-gray-100 bg-white p-8 shadow-sm">
-                        <div class="mb-6 flex items-center justify-between">
+                    <!-- Historial (solo mobile; en desktop va en el sidebar) -->
+                    <div class="xl:hidden overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                        <div class="flex items-center justify-between border-b border-gray-50 px-6 py-4">
                             <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Historial Comercial</h2>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">{{ quote.events?.length ?? 0 }} eventos</span>
+                            <span class="text-[10px] font-bold text-gray-400">{{ quote.events?.length ?? 0 }} eventos</span>
                         </div>
-
-                        <div v-if="!(quote.events?.length)" class="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-xs font-semibold uppercase tracking-widest text-gray-400">
-                            Sin historial todavía
-                        </div>
-
-                        <div v-else class="space-y-4">
-                            <div
-                                v-for="event in quote.events"
-                                :key="event.id"
-                                class="rounded-2xl border border-gray-100 bg-gray-50/70 px-4 py-4"
-                            >
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <p class="text-sm font-bold text-gray-800">{{ event.description }}</p>
-                                        <p class="mt-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                            {{ event.actor_type }} · {{ event.event_type }}
-                                        </p>
+                        <div class="p-6">
+                            <div v-if="!(quote.events?.length)" class="rounded-xl border border-dashed border-gray-200 px-4 py-8 text-center text-xs font-semibold uppercase tracking-widest text-gray-400">Sin historial todavía</div>
+                            <div v-else class="space-y-3">
+                                <div v-for="event in quote.events" :key="event.id" class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-800">{{ event.description }}</p>
+                                            <p class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-gray-400">{{ event.actor_type }} · {{ event.event_type }}</p>
+                                        </div>
+                                        <span class="shrink-0 text-[10px] font-semibold text-gray-400">{{ formatDateTime(event.created_at) }}</span>
                                     </div>
-                                    <span class="shrink-0 text-[10px] font-semibold text-gray-400">{{ formatDateTime(event.created_at) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -770,20 +631,18 @@ const notifyReady = () => {
                 </div>
             </div>
 
-            <div v-else class="rounded-[2rem] border border-dashed border-orange-200 bg-orange-50/70 p-8 shadow-sm">
+            <!-- Banner upgrade -->
+            <div v-else class="rounded-2xl border border-dashed border-orange-200 bg-orange-50/70 p-8">
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div class="max-w-2xl">
                         <span class="inline-flex rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-600">Upgrade</span>
                         <h2 class="mt-4 text-2xl font-black tracking-tight text-gray-900">Cotizaciones comerciales bloqueadas para este plan</h2>
                         <p class="mt-2 text-sm font-medium text-gray-600">
-                            Este taller puede seguir operando con órdenes de trabajo, pero el flujo comercial avanzado
-                            de servicios, cotización formal y aprobación del cliente está reservado para planes superiores.
+                            Este taller puede seguir operando con órdenes de trabajo, pero el flujo comercial avanzado de servicios, cotización formal y aprobación del cliente está reservado para planes superiores.
                         </p>
-                        <p class="mt-3 text-sm font-semibold text-orange-700">
-                            {{ planAccess?.upgrade_messages?.commercial_quotes_enabled }}
-                        </p>
+                        <p class="mt-3 text-sm font-semibold text-orange-700">{{ planAccess?.upgrade_messages?.commercial_quotes_enabled }}</p>
                     </div>
-                    <div class="rounded-3xl border border-orange-100 bg-white px-5 py-4">
+                    <div class="rounded-2xl border border-orange-100 bg-white px-5 py-4">
                         <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Plan actual</p>
                         <p class="mt-2 text-lg font-black text-gray-900">{{ planAccess?.plan_name || 'Sin plan' }}</p>
                     </div>
