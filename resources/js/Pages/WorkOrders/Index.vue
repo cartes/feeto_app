@@ -634,6 +634,7 @@ onUnmounted(() => {
 
             </div>
         </div>
+        </div> <!-- closes v-if="viewMode === 'kanban'" -->
 
         <!-- List View -->
         <div v-else class="space-y-6">
@@ -756,7 +757,6 @@ onUnmounted(() => {
                     </template>
                 </div>
             </div>
-        </div>
         </div>
         <!-- Modal OT -->
         <div v-if="isModalOpen"
