@@ -32,32 +32,79 @@ class WorkOrderController extends Controller
     ) {}
 
     /**
-     * Muestra el Tablero Kanban con todas las órdenes de trabajo del taller.
+     * Muestra el Tablero Kanban o el Listado con todas las órdenes de trabajo del taller.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $statuses = WorkOrder::statuses();
         $tenantId = Tenant::current()?->id;
 
-        $orders = WorkOrder::query()
-            ->select(['id', 'uuid', 'vehicle_id', 'status', 'created_at', 'tenant_id'])
+        $viewMode = $request->input('view', 'kanban');
+        if (! in_array($viewMode, ['kanban', 'list'], true)) {
+            $viewMode = 'kanban';
+        }
+
+        $month = $request->input('month');
+        $search = $request->input('search');
+        $perPage = (int) $request->input('per_page', 15);
+        if (! in_array($perPage, [10, 15, 20, 50, 100], true)) {
+            $perPage = 15;
+        }
+
+        $query = WorkOrder::query()
+            ->select(['id', 'uuid', 'vehicle_id', 'status', 'created_at', 'tenant_id', 'total_amount'])
             ->with([
                 'vehicle' => fn ($query) => $query->select(['id', 'client_id', 'plate', 'brand', 'model', 'tenant_id']),
                 'vehicle.client' => fn ($query) => $query->select(['id', 'name', 'tenant_id']),
                 'quote' => fn ($query) => $query->select(['id', 'work_order_id', 'status', 'tenant_id']),
             ])
-            ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->whereIn('status', $statuses)
-            ->get()
-            ->groupBy('status');
+            ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId));
 
-        $kanban = collect($statuses)
-            ->mapWithKeys(fn (string $status): array => [$status => $orders->get($status, [])])
-            ->all();
+        // Month filter (YYYY-MM)
+        if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
+            [$year, $m] = explode('-', $month);
+            $query->whereYear('created_at', (int) $year)
+                ->whereMonth('created_at', (int) $m);
+        }
+
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                if (is_numeric($search)) {
+                    $q->where('id', (int) $search);
+                }
+                $q->orWhereHas('vehicle', function ($q2) use ($search) {
+                    $q2->where('plate', 'like', "%{$search}%")
+                        ->orWhere('brand', 'like', "%{$search}%")
+                        ->orWhere('model', 'like', "%{$search}%")
+                        ->orWhereHas('client', function ($q3) use ($search) {
+                            $q3->where('name', 'like', "%{$search}%");
+                        });
+                });
+            });
+        }
+
+        if ($viewMode === 'list') {
+            $orders = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+            $kanban = [];
+        } else {
+            $orders = [];
+            $kanbanOrders = $query->whereIn('status', $statuses)->get()->groupBy('status');
+            $kanban = collect($statuses)
+                ->mapWithKeys(fn (string $status): array => [$status => $kanbanOrders->get($status, [])])
+                ->all();
+        }
 
         return Inertia::render('WorkOrders/Index', [
             'kanban' => $kanban,
+            'orders' => $orders,
             'tenantId' => $tenantId ?? 0,
+            'filters' => [
+                'view' => $viewMode,
+                'month' => $month,
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
         ]);
     }
 

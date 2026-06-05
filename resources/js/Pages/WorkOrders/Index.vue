@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { router, usePage, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
@@ -8,6 +8,8 @@ import Dropdown from '@/Components/Dropdown.vue';
 
 const props = defineProps({
     kanban: Object,
+    orders: Object,
+    filters: Object,
     tenantId: Number
 });
 
@@ -16,6 +18,71 @@ const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlu
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
+
+// Column identifiers and headers (moved to top for early reference)
+const columns = [
+    { id: 'recepcion', title: 'Recepción', color: 'bg-orange-100/50' },
+    { id: 'diagnostico', title: 'En Diagnóstico', color: 'bg-blue-100/50' },
+    { id: 'esperando_repuestos', title: 'Esp. Repuestos', color: 'bg-yellow-100/50' },
+    { id: 'control_calidad', title: 'Control de Calidad', color: 'bg-cyan-100/50' },
+    { id: 'listo', title: 'Listo para Entrega', color: 'bg-green-100/50' },
+];
+
+// Filter & View State
+const search = ref(props.filters?.search || '');
+const month = ref(props.filters?.month || '');
+const viewMode = ref(props.filters?.view || 'kanban');
+const perPage = ref(props.filters?.per_page || 15);
+
+const updateFilters = () => {
+    router.get(
+        route('work-orders.index', tenantRouteParams.value),
+        {
+            view: viewMode.value,
+            month: month.value,
+            search: search.value,
+            per_page: perPage.value,
+        },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+};
+
+const debounce = (fn, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+const triggerSearch = debounce(() => {
+    updateFilters();
+}, 300);
+
+watch(search, () => {
+    triggerSearch();
+});
+
+watch(month, () => {
+    updateFilters();
+});
+
+watch(perPage, () => {
+    updateFilters();
+});
+
+const setViewMode = (mode) => {
+    viewMode.value = mode;
+    updateFilters();
+};
+
+const getStatusLabel = (statusId) => {
+    const col = columns.find(c => c.id === statusId);
+    return col ? col.title : statusId;
+};
 
 // Modal state
 const isModalOpen = ref(false);
@@ -193,14 +260,7 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
 };
 
-// Column identifiers and headers
-const columns = [
-    { id: 'recepcion', title: 'Recepción', color: 'bg-orange-100/50' },
-    { id: 'diagnostico', title: 'En Diagnóstico', color: 'bg-blue-100/50' },
-    { id: 'esperando_repuestos', title: 'Esp. Repuestos', color: 'bg-yellow-100/50' },
-    { id: 'control_calidad', title: 'Control de Calidad', color: 'bg-cyan-100/50' },
-    { id: 'listo', title: 'Listo para Entrega', color: 'bg-green-100/50' },
-];
+// Columns already defined at the top
 
 const draggedItem = ref(null);
 const currentHoverColumn = ref(null);
@@ -353,12 +413,81 @@ onUnmounted(() => {
 <template>
     <TallerLayout>
 
-        <div class="mb-4">
-            <h2 class="text-3xl font-bold leading-tight text-slate-800 tracking-tight">
-                Tablero de Órdenes
-            </h2>
-            <p class="text-sm text-slate-500 font-medium">Gestión del flujo de trabajo</p>
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+                <h2 class="text-3xl font-black uppercase tracking-tight text-slate-900">
+                    {{ viewMode === 'list' ? 'Listado de Órdenes' : 'Tablero de Órdenes' }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500">
+                    {{ viewMode === 'list' ? 'Búsqueda e historial de órdenes de trabajo' : 'Gestión del flujo de trabajo en tiempo real' }}
+                </p>
+            </div>
+
+            <!-- View Switcher (Tabs / Icons) -->
+            <div class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm shrink-0 self-start md:self-auto">
+                <button type="button" @click="setViewMode('kanban')"
+                    :class="viewMode === 'kanban' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                    class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Tablero
+                </button>
+                <button type="button" @click="setViewMode('list')"
+                    :class="viewMode === 'list' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                    class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    Listado
+                </button>
+            </div>
         </div>
+
+        <!-- Filters Bar -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white/80 backdrop-blur-md p-4 rounded-[2rem] border border-white shadow-sm mb-6">
+            <!-- Search Filter -->
+            <div class="relative flex-1 max-w-md">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input v-model="search" type="text" placeholder="Buscar por Patente, OT, Cliente, Marca..."
+                    class="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50" />
+            </div>
+
+            <!-- Month & Pagination Limit Filters -->
+            <div class="flex items-center gap-4 flex-wrap">
+                <!-- Month selector -->
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mes:</label>
+                    <input v-model="month" type="month"
+                        class="rounded-xl border border-slate-200 bg-white py-2 px-3 text-sm font-bold text-slate-700 outline-none focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20" />
+                </div>
+
+                <!-- Per page selector (only show in list view) -->
+                <div v-if="viewMode === 'list'" class="flex items-center gap-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Ver:</label>
+                    <select v-model="perPage"
+                        class="rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm font-bold text-slate-700 outline-none focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20">
+                        <option :value="10">10 por pág</option>
+                        <option :value="15">15 por pág</option>
+                        <option :value="20">20 por pág</option>
+                        <option :value="50">50 por pág</option>
+                        <option :value="100">100 por pág</option>
+                    </select>
+                </div>
+
+                <!-- Clear filters button -->
+                <button v-if="search || month" @click="search = ''; month = ''"
+                    class="rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 py-2 px-3 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                    Limpiar Filtros
+                </button>
+            </div>
+        </div>
+
+        <div v-if="viewMode === 'kanban'">
 
         <!-- Scroll arrows -->
         <div class="flex items-center gap-2 mb-3">
@@ -504,6 +633,130 @@ onUnmounted(() => {
                 </div>
 
             </div>
+        </div>
+
+        <!-- List View -->
+        <div v-else class="space-y-6">
+            <div class="overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div v-if="!orders?.data || orders.data.length === 0" class="p-12 text-center">
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50">
+                        <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800">No se encontraron órdenes</h3>
+                    <p class="mt-1 text-sm text-slate-500 font-medium">Prueba limpiando o cambiando los filtros de búsqueda.</p>
+                </div>
+
+                <div v-else class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="border-b border-slate-100 bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <th class="px-6 py-4">OT</th>
+                                <th class="px-6 py-4">Patente</th>
+                                <th class="px-6 py-4">Vehículo</th>
+                                <th class="px-6 py-4">Cliente</th>
+                                <th class="px-6 py-4">Fecha de Ingreso</th>
+                                <th class="px-6 py-4">Estado Taller</th>
+                                <th class="px-6 py-4">Cotización</th>
+                                <th class="px-6 py-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100/50">
+                            <tr v-for="order in orders.data" :key="order.id" class="group transition-colors hover:bg-slate-50/50 cursor-pointer" @click="openModal(order.id)">
+                                <!-- OT Number -->
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#E2EAF4] text-slate-600">
+                                        #OT-{{ order.id }}
+                                    </span>
+                                </td>
+
+                                <!-- Plate -->
+                                <td class="px-6 py-4">
+                                    <span class="text-lg font-black font-mono text-slate-800 tracking-wider">
+                                        {{ order.vehicle?.plate || 'S/P' }}
+                                    </span>
+                                </td>
+
+                                <!-- Vehicle details -->
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-semibold text-slate-700">
+                                        {{ order.vehicle?.brand || 'Marca' }}
+                                    </div>
+                                    <div class="text-xs text-slate-400 font-medium">
+                                        {{ order.vehicle?.model || 'Modelo' }}
+                                    </div>
+                                </td>
+
+                                <!-- Client -->
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        {{ order.vehicle?.client?.name || 'Cliente' }}
+                                    </div>
+                                </td>
+
+                                <!-- Date -->
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-500">
+                                    {{ new Date(order.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }) }}
+                                </td>
+
+                                <!-- Workshop Status -->
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
+                                        {{ getStatusLabel(order.status) }}
+                                    </span>
+                                </td>
+
+                                <!-- Quote Status -->
+                                <td class="px-6 py-4">
+                                    <span v-if="commercialQuotesEnabled && order.quote?.status"
+                                        :class="['rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-widest', formatQuoteStatusClasses(order.quote.status)]">
+                                        {{ formatQuoteStatusLabel(order.quote.status) }}
+                                    </span>
+                                    <span v-else class="text-xs text-slate-400 font-medium">Sin cotización</span>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="px-6 py-4 text-right" @click.stop>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button @click="openModal(order.id)"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                                            title="Ver resumen">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </button>
+                                        <Link :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 hover:bg-[#FF7A00] text-white transition-colors"
+                                            title="Ir al detalle">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination links -->
+                <div v-if="orders?.links && orders.links.length > 3"
+                    class="flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-6 py-4">
+                    <template v-for="(link, i) in orders.links" :key="i">
+                        <Link v-if="link.url" :href="link.url" v-html="link.label"
+                            class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+                            :class="link.active ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'" />
+                        <span v-else v-html="link.label" class="px-3 py-1.5 text-sm font-medium text-slate-400"></span>
+                    </template>
+                </div>
+            </div>
+        </div>
         </div>
         <!-- Modal OT -->
         <div v-if="isModalOpen"
