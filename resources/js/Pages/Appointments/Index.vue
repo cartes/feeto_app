@@ -33,6 +33,27 @@ const props = defineProps({
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const planAccess = computed(() => page.props.planAccess ?? {});
+const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
+const canManageAppointments = computed(() => permissions.value.includes('appointments.manage'));
+
+const appointmentToDelete = ref(null);
+const showDeleteAppointmentModal = ref(false);
+
+const confirmDeleteAppointment = (appointment) => {
+    appointmentToDelete.value = appointment;
+    showDeleteAppointmentModal.value = true;
+};
+
+const submitDeleteAppointment = () => {
+    if (!appointmentToDelete.value) return;
+    router.delete(route('appointments.destroy', { ...tenantRouteParams.value, appointment: appointmentToDelete.value.id }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteAppointmentModal.value = false;
+            appointmentToDelete.value = null;
+        },
+    });
+};
 const calendarSchedulingEnabled = computed(() => planAccess.value?.calendar_scheduling ?? false);
 const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
 const calendarUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.calendar_scheduling ?? 'Mejora tu plan para acceder a esta función');
@@ -128,6 +149,8 @@ const notificationStatusClass = (status) => ({
                 <AppointmentCalendar
                     :appointments="appointments"
                     :today="today"
+                    :can-delete="canManageAppointments"
+                    @delete="confirmDeleteAppointment"
                 />
 
                 <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
@@ -147,6 +170,8 @@ const notificationStatusClass = (status) => ({
                             empty-title="Sin citas para hoy"
                             empty-description="No hay ingresos programados para la jornada actual."
                             :show-date="false"
+                            :can-delete="canManageAppointments"
+                            @delete="confirmDeleteAppointment"
                         />
                     </div>
 
@@ -204,6 +229,8 @@ const notificationStatusClass = (status) => ({
                         :appointments="appointments"
                         empty-title="Sin citas en el mes actual"
                         empty-description="Aún no hay citas registradas en este periodo."
+                        :can-delete="canManageAppointments"
+                        @delete="confirmDeleteAppointment"
                     />
                 </div>
 
@@ -344,7 +371,46 @@ const notificationStatusClass = (status) => ({
                         empty-title="Jornada sin citas"
                         empty-description="No hay recepciones agendadas para el día de hoy."
                         :show-date="false"
+                        :can-delete="canManageAppointments"
+                        @delete="confirmDeleteAppointment"
                     />
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Appointment Confirmation Modal -->
+        <div v-if="showDeleteAppointmentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteAppointmentModal = false"></div>
+
+            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+                <div class="text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-black uppercase tracking-tight text-gray-900">¿Eliminar cita?</h3>
+                    <p class="mt-2 text-sm font-medium text-gray-500">Esta acción no se puede deshacer. Se eliminará la cita del sistema.</p>
+                </div>
+
+                <div v-if="appointmentToDelete" class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs font-medium border border-gray-100">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
+                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ appointmentToDelete.plate }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
+                        <span class="font-bold text-gray-900">{{ appointmentToDelete.client?.name || 'Sin registrar' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha y hora:</span>
+                        <span class="font-bold text-gray-900">{{ appointmentToDelete.date }} {{ appointmentToDelete.time }} hrs</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteAppointmentModal = false">Cancelar</button>
+                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteAppointment">Eliminar cita</button>
                 </div>
             </div>
         </div>

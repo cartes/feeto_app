@@ -346,6 +346,8 @@ onUnmounted(() => {
                     <AppointmentCalendar
                         :appointments="appointments"
                         :today="today"
+                        :can-delete="canManageAppointments"
+                        @delete="confirmDeleteAppointment"
                     />
 
                     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
