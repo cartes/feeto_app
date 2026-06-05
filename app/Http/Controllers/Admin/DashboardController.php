@@ -13,17 +13,31 @@ use App\Models\Tenant;
 use App\Models\TrialRequest;
 use App\Models\User;
 use App\Models\WorkOrder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         $now = now();
         $thirtyDaysAgo = $now->copy()->subDays(30);
         $sevenDaysAgo = $now->copy()->subDays(7);
+
+        $period = $request->query('period', '30d');
+        if (! in_array($period, ['7d', '30d', '90d'], true)) {
+            $period = '30d';
+        }
+
+        $days = match ($period) {
+            '7d' => 7,
+            '30d' => 30,
+            '90d' => 90,
+        };
+
+        $visitsStartDate = $now->copy()->subDays($days);
 
         $totalTenants = Tenant::count();
         $activeTenants = Tenant::where('is_active', true)->count();
@@ -68,9 +82,9 @@ class DashboardController extends Controller
                 'total' => (int) $row->total,
             ]);
 
-        // Visitas diarias últimos 30 días
+        // Visitas diarias últimos N días
         $visitsByDay = PageVisit::query()
-            ->where('date', '>=', $thirtyDaysAgo->toDateString())
+            ->where('date', '>=', $visitsStartDate->toDateString())
             ->select('date', DB::raw('sum(visits) as total'), DB::raw('sum(unique_visits) as unique_total'))
             ->groupBy('date')
             ->orderBy('date')
@@ -115,6 +129,7 @@ class DashboardController extends Controller
             'work_orders_by_tenant' => $workOrdersByTenant,
             'ocr_usage' => $ocrUsage,
             'visits_by_day' => $visitsByDay,
+            'current_period' => $period,
             'expiring_tenants' => $expiringTenants,
             'pending_trial_requests' => $pendingTrialRequests,
             'recent_trial_requests' => $recentTrialRequests,
