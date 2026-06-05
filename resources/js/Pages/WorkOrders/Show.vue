@@ -30,6 +30,10 @@ const canManageInventory = computed(() => (
     isSuperAdmin.value || permissions.value.includes('inventory.manage')
 ));
 
+const canDeleteWorkOrder = computed(() => (
+    isSuperAdmin.value || permissions.value.includes('work-orders.delete')
+));
+
 const quote = computed(() => props.workOrder.quote ?? {
     status: 'draft',
     subtotal_amount: props.workOrder.total_amount ?? 0,
@@ -394,6 +398,20 @@ const notifyReady = () => {
         preserveScroll: true,
     });
 };
+
+const showDeleteModal = ref(false);
+
+const confirmDeleteWorkOrder = () => {
+    showDeleteModal.value = true;
+};
+
+const submitDeleteWorkOrder = () => {
+    router.delete(route('work-orders.destroy', { ...tenantRouteParams.value, workOrder: props.workOrder.id }), {
+        onSuccess: () => {
+            showDeleteModal.value = false;
+        }
+    });
+};
 </script>
 
 <template>
@@ -414,13 +432,27 @@ const notifyReady = () => {
                     Tablero Kanban
                 </Link>
 
-                <div class="flex flex-wrap gap-2">
-                    <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', workOrderStatus.classes]">
-                        {{ workOrderStatus.label }}
-                    </span>
-                    <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', quoteStatus.classes]">
-                        Cotización {{ quoteStatus.label }}
-                    </span>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap gap-2">
+                        <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', workOrderStatus.classes]">
+                            {{ workOrderStatus.label }}
+                        </span>
+                        <span :class="['inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest', quoteStatus.classes]">
+                            Cotización {{ quoteStatus.label }}
+                        </span>
+                    </div>
+
+                    <button
+                        v-if="canDeleteWorkOrder"
+                        type="button"
+                        class="rounded-xl bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                        @click="confirmDeleteWorkOrder"
+                    >
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar OT
+                    </button>
                 </div>
 
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
@@ -916,6 +948,46 @@ const notifyReady = () => {
                         {{ catalogForm.processing ? 'Guardando...' : 'Guardar Cambios' }}
                     </button>
                 </form>
+            </div>
+        </div>
+        <!-- Delete Work Order Confirmation Modal -->
+        <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+
+            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+                <div class="text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">¿Eliminar Orden de Trabajo?</h3>
+                    <p class="mt-2 text-sm text-gray-500 font-medium">Esta acción no se puede deshacer de forma sencilla. Por favor confirma los datos de la OT a eliminar:</p>
+                </div>
+
+                <div class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Número de OT:</span>
+                        <span class="font-bold text-gray-900">#OT-{{ props.workOrder.id }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha de Ingreso:</span>
+                        <span class="font-bold text-gray-900">{{ new Date(props.workOrder.created_at).toLocaleDateString('es-CL') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
+                        <span class="font-bold text-gray-900">{{ props.workOrder.vehicle?.client?.name || 'No registrado' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
+                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ props.workOrder.vehicle?.plate || 'S/P' }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteModal = false">Cancelar</button>
+                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteWorkOrder">Eliminar OT</button>
+                </div>
             </div>
         </div>
     </TallerLayout>

@@ -249,4 +249,33 @@ class WorkOrderStatusTest extends TestCase
                 ->has('orders.data', 10)
             );
     }
+
+    public function test_admin_can_delete_work_order(): void
+    {
+        $this->actingAs($this->user)
+            ->delete(route('work-orders.destroy', ['workOrder' => $this->workOrder->id]))
+            ->assertRedirect(route('work-orders.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSoftDeleted('work_orders', [
+            'id' => $this->workOrder->id,
+        ]);
+    }
+
+    public function test_user_without_permission_cannot_delete_work_order(): void
+    {
+        $recepcionista = User::factory()->create([
+            'tenant_id' => $this->user->tenant_id,
+        ]);
+        $recepcionista->assignRole('Recepcionista');
+
+        $this->actingAs($recepcionista)
+            ->delete(route('work-orders.destroy', ['workOrder' => $this->workOrder->id]))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('work_orders', [
+            'id' => $this->workOrder->id,
+            'deleted_at' => null,
+        ]);
+    }
 }

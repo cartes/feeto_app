@@ -159,6 +159,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])
             ->middleware('permission:work-orders.update-status')
             ->name('work-orders.status.update');
+        Route::delete('/work-orders/{workOrder}', [WorkOrderController::class, 'destroy'])
+            ->middleware('permission:work-orders.delete')
+            ->name('work-orders.destroy');
         Route::post('/work-orders/{workOrder}/items', [WorkOrderController::class, 'addItem'])
             ->middleware('permission:work-orders.manage-items')
             ->name('work-orders.items.store');

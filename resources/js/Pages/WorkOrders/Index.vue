@@ -19,6 +19,13 @@ const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 
+const roles = computed(() => page.props.auth?.user?.roles ?? []);
+const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
+const isSuperAdmin = computed(() => Boolean(page.props.auth?.user?.is_super_admin));
+const canDeleteWorkOrder = computed(() => (
+    isSuperAdmin.value || permissions.value.includes('work-orders.delete')
+));
+
 // Column identifiers and headers (moved to top for early reference)
 const columns = [
     { id: 'recepcion', title: 'Recepción', color: 'bg-orange-100/50' },
@@ -408,6 +415,25 @@ onUnmounted(() => {
     stopScroll();
     kanbanRef.value?.removeEventListener('scroll', updateScrollState);
 });
+
+const showDeleteModal = ref(false);
+const workOrderToDelete = ref(null);
+
+const confirmDeleteWorkOrder = (order) => {
+    workOrderToDelete.value = order;
+    showDeleteModal.value = true;
+};
+
+const submitDeleteWorkOrder = () => {
+    if (!workOrderToDelete.value) return;
+    router.delete(route('work-orders.destroy', { ...tenantRouteParams.value, workOrder: workOrderToDelete.value.id }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteModal.value = false;
+            workOrderToDelete.value = null;
+        }
+    });
+};
 </script>
 
 <template>
@@ -577,6 +603,14 @@ onUnmounted(() => {
                                                 class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
                                                 Ver reporte cliente
                                             </Link>
+                                            <button
+                                                v-if="canDeleteWorkOrder"
+                                                type="button"
+                                                class="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 border-t border-slate-50 mt-1 pt-2"
+                                                @click="confirmDeleteWorkOrder(order)"
+                                            >
+                                                Eliminar OT
+                                            </button>
                                         </div>
                                     </template>
                                 </Dropdown>
@@ -739,6 +773,17 @@ onUnmounted(() => {
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                             </svg>
                                         </Link>
+                                        <button
+                                            v-if="canDeleteWorkOrder"
+                                            type="button"
+                                            @click="confirmDeleteWorkOrder(order)"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+                                            title="Eliminar OT"
+                                        >
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -1128,6 +1173,47 @@ onUnmounted(() => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Work Order Confirmation Modal -->
+        <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+
+            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+                <div class="text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">¿Eliminar Orden de Trabajo?</h3>
+                    <p class="mt-2 text-sm text-gray-500 font-medium">Esta acción no se puede deshacer de forma sencilla. Por favor confirma los datos de la OT a eliminar:</p>
+                </div>
+
+                <div class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Número de OT:</span>
+                        <span class="font-bold text-gray-900">#OT-{{ workOrderToDelete?.id }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha de Ingreso:</span>
+                        <span class="font-bold text-gray-900">{{ workOrderToDelete ? new Date(workOrderToDelete.created_at).toLocaleDateString('es-CL') : '' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
+                        <span class="font-bold text-gray-900">{{ workOrderToDelete?.vehicle?.client?.name || 'No registrado' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
+                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ workOrderToDelete?.vehicle?.plate || 'S/P' }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteModal = false">Cancelar</button>
+                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteWorkOrder">Eliminar OT</button>
                 </div>
             </div>
         </div>

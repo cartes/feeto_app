@@ -210,6 +210,18 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Elimina lógicamente (soft delete) la Orden de Trabajo.
+     */
+    public function destroy(WorkOrder $workOrder): RedirectResponse
+    {
+        $this->authorizeWorkOrderAccess($workOrder);
+
+        $workOrder->delete();
+
+        return redirect()->route('work-orders.index')->with('success', 'Orden de trabajo eliminada exitosamente.');
+    }
+
+    /**
      * Verifica que el usuario autenticado tenga acceso a la work order.
      */
     private function authorizeWorkOrderAccess(WorkOrder $workOrder): void
