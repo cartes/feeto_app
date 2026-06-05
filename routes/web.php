@@ -174,6 +174,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/work-orders/{workOrder}/quote/notify-ready', [QuoteController::class, 'notifyReady'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('work-orders.quote.notify-ready');
+        Route::post('/work-orders/{workOrder}/quote/approve-manually', [QuoteController::class, 'approveManually'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('work-orders.quote.approve-manually');
 
         // API Modals
         Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');

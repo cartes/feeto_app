@@ -120,6 +120,41 @@ class QuoteController extends Controller
         return back()->with('success', 'Avisamos al administrador para que envíe la cotización al cliente.');
     }
 
+    public function approveManually(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $this->authorizeWorkOrderAccess($request, $workOrder);
+        $this->ensureCommercialQuotesEnabled(Tenant::current());
+        $this->ensureUserCanDeliverQuote($request->user());
+
+        $validated = $request->validate([
+            'channel' => ['required', 'string', 'in:phone,whatsapp,email,other'],
+        ]);
+
+        $quote = $this->quoteFor($workOrder);
+
+        if ($quote->status === Quote::STATUS_ACCEPTED) {
+            return back()->withErrors(['quote' => 'La cotización ya fue aceptada.']);
+        }
+
+        $quote->update([
+            'status' => Quote::STATUS_ACCEPTED,
+            'responded_at' => now(),
+        ]);
+
+        $description = match ($validated['channel']) {
+            'phone' => 'Cotización aprobada manualmente. El cliente confirmó por llamada telefónica.',
+            'whatsapp' => 'Cotización aprobada manualmente. El cliente confirmó por WhatsApp.',
+            'email' => 'Cotización aprobada manualmente. El cliente confirmó por correo electrónico.',
+            default => 'Cotización aprobada manualmente por el equipo.',
+        };
+
+        $this->recordEvent($quote, 'staff', 'staff_approved_manually', $description, [
+            'channel' => $validated['channel'],
+        ]);
+
+        return back()->with('success', 'Cotización aprobada exitosamente.');
+    }
+
     public function respond(RespondToQuoteRequest $request, string $uuid): RedirectResponse
     {
         $workOrder = WorkOrder::withoutGlobalScope('tenant')
