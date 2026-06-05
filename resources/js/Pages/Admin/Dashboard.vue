@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
@@ -40,43 +40,58 @@ const maxOcrUsage = computed(() => {
     return Math.max(...props.ocr_usage.map((i) => i.total), 1);
 });
 
-const visitsLinePoints = computed(() => {
+const activePoint = ref(null);
+
+const visitsPoints = computed(() => {
     const data = props.visits_by_day;
-    if (!data || data.length < 2) return '';
-    const maxV = Math.max(...data.map((d) => d.visits));
-    const minV = Math.min(...data.map((d) => d.visits));
+    if (!data || !data.length) return [];
+    const maxV = Math.max(...data.map((d) => d.visits), 1);
+    const minV = Math.min(...data.map((d) => d.visits), 0);
     const range = maxV - minV || 1;
     const W = 580;
     const H = 130;
     const PAD = 10;
-    return data
-        .map((d, i) => {
-            const x = PAD + (i / (data.length - 1)) * (W - 2 * PAD);
-            const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
-            return `${x.toFixed(1)},${y.toFixed(1)}`;
-        })
-        .join(' ');
+
+    return data.map((d, i) => {
+        const x = PAD + (i / (data.length - 1 || 1)) * (W - 2 * PAD);
+        const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
+        return {
+            x,
+            y,
+            date: d.date,
+            visits: d.visits,
+            unique_visits: d.unique_visits ?? 0,
+        };
+    });
+});
+
+const visitsLinePoints = computed(() => {
+    const pts = visitsPoints.value;
+    if (!pts || pts.length < 2) return '';
+    return pts.map((pt) => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
 });
 
 const visitsAreaPoints = computed(() => {
-    const data = props.visits_by_day;
-    if (!data || data.length < 2) return '';
-    const maxV = Math.max(...data.map((d) => d.visits));
-    const minV = Math.min(...data.map((d) => d.visits));
-    const range = maxV - minV || 1;
-    const W = 580;
-    const H = 130;
-    const PAD = 10;
-    const pts = data.map((d, i) => {
-        const x = PAD + (i / (data.length - 1)) * (W - 2 * PAD);
-        const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-    const firstX = PAD;
-    const lastX = (PAD + (580 - 2 * PAD)).toFixed(1);
-    const bottom = H;
-    return `${firstX},${bottom} ${pts.join(' ')} ${lastX},${bottom}`;
+    const pts = visitsPoints.value;
+    if (!pts || pts.length < 2) return '';
+    const firstX = 10;
+    const lastX = (10 + (580 - 20)).toFixed(1);
+    const bottom = 130;
+    const coords = pts.map((pt) => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
+    return `${firstX},${bottom} ${coords} ${lastX},${bottom}`;
 });
+
+const formatDateLabel = (dateStr) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return date.toLocaleDateString('es-CL', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+    });
+};
 
 const marketingWhatsApp = computed(() => page.props.marketing_whatsapp ?? {});
 const marketingWhatsAppStatus = computed(() => {
@@ -203,21 +218,94 @@ const marketingWhatsAppStatus = computed(() => {
         <!-- Row 3: Visits daily chart -->
         <div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
             <h2 class="text-sm font-semibold text-slate-900 mb-4">Visitas Diarias</h2>
-            <div v-if="visits_by_day && visits_by_day.length >= 2">
-                <svg viewBox="0 0 600 150" class="w-full" preserveAspectRatio="none" style="height: 160px;">
+            <div v-if="visits_by_day && visits_by_day.length >= 2" class="relative">
+                <svg
+                    viewBox="0 0 600 150"
+                    class="w-full overflow-visible"
+                    preserveAspectRatio="none"
+                    style="height: 160px;"
+                    @mouseleave="activePoint = null"
+                >
                     <polygon :points="visitsAreaPoints" fill="#FF7A00" fill-opacity="0.12" />
                     <polyline :points="visitsLinePoints" fill="none" stroke="#FF7A00" stroke-width="2" stroke-linejoin="round" />
+
+                    <!-- Hover indicator line -->
+                    <line
+                        v-if="activePoint"
+                        :x1="activePoint.x"
+                        y1="10"
+                        :x2="activePoint.x"
+                        y2="130"
+                        stroke="#FF7A00"
+                        stroke-width="1.5"
+                        stroke-dasharray="4 4"
+                    />
+
+                    <!-- Hover indicator circle -->
+                    <circle
+                        v-if="activePoint"
+                        :cx="activePoint.x"
+                        :cy="activePoint.y"
+                        r="6"
+                        fill="#FF7A00"
+                        stroke="#FFFFFF"
+                        stroke-width="2"
+                    />
+
+                    <!-- Interactive overlay rects for hover detection -->
+                    <rect
+                        v-for="(pt, idx) in visitsPoints"
+                        :key="idx"
+                        :x="pt.x - (600 / (visitsPoints.length || 1)) / 2"
+                        y="0"
+                        :width="600 / (visitsPoints.length || 1)"
+                        height="150"
+                        fill="transparent"
+                        class="cursor-pointer"
+                        @mouseenter="activePoint = pt"
+                        @mousemove="activePoint = pt"
+                    />
                 </svg>
                 <div class="mt-2 flex justify-between text-xs text-slate-400">
-                    <span>{{ visits_by_day[0]?.date }}</span>
-                    <span>{{ visits_by_day[Math.floor(visits_by_day.length / 2)]?.date }}</span>
-                    <span>{{ visits_by_day[visits_by_day.length - 1]?.date }}</span>
+                    <span>{{ visits_by_day[0] ? formatDateLabel(visits_by_day[0].date) : '' }}</span>
+                    <span>{{ visits_by_day[Math.floor(visits_by_day.length / 2)] ? formatDateLabel(visits_by_day[Math.floor(visits_by_day.length / 2)].date) : '' }}</span>
+                    <span>{{ visits_by_day[visits_by_day.length - 1] ? formatDateLabel(visits_by_day[visits_by_day.length - 1].date) : '' }}</span>
+                </div>
+
+                <!-- Custom Tooltip -->
+                <div
+                    v-if="activePoint"
+                    class="absolute z-10 pointer-events-none bg-slate-900/95 backdrop-blur-sm text-white px-3.5 py-2.5 rounded-xl text-xs shadow-xl ring-1 ring-white/10 flex flex-col gap-1.5 min-w-[150px] transition-all duration-75"
+                    :style="{
+                        left: `${(activePoint.x / 600) * 100}%`,
+                        top: `${(activePoint.y / 150) * 100 - 10}%`,
+                        transform: 'translate(-50%, -100%)'
+                    }"
+                >
+                    <div class="font-bold text-slate-200 border-b border-white/10 pb-1 mb-0.5">
+                        {{ formatDateLabel(activePoint.date) }}
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-1.5 text-slate-300">
+                            <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                            <span>Visitas:</span>
+                        </div>
+                        <span class="font-black text-white">{{ activePoint.visits }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-1.5 text-slate-300">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                            <span>Únicos:</span>
+                        </div>
+                        <span class="font-black text-white">{{ activePoint.unique_visits }}</span>
+                    </div>
                 </div>
             </div>
             <div v-else-if="visits_by_day && visits_by_day.length === 1" class="py-4">
                 <div class="flex items-center gap-3">
-                    <span class="text-xs text-slate-500">{{ visits_by_day[0].date }}</span>
+                    <span class="text-xs text-slate-500">{{ formatDateLabel(visits_by_day[0].date) }}</span>
                     <span class="text-lg font-semibold text-slate-900">{{ visits_by_day[0].visits }} visitas</span>
+                    <span class="text-sm text-slate-500">({{ visits_by_day[0].unique_visits ?? 0 }} únicos)</span>
                 </div>
             </div>
             <p v-else class="text-sm text-slate-400 text-center py-6">Sin datos de visitas disponibles</p>

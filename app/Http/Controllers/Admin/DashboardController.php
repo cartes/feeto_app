@@ -71,13 +71,14 @@ class DashboardController extends Controller
         // Visitas diarias últimos 30 días
         $visitsByDay = PageVisit::query()
             ->where('date', '>=', $thirtyDaysAgo->toDateString())
-            ->select('date', DB::raw('sum(visits) as total'))
+            ->select('date', DB::raw('sum(visits) as total'), DB::raw('sum(unique_visits) as unique_total'))
             ->groupBy('date')
             ->orderBy('date')
             ->get()
             ->map(fn ($row) => [
                 'date' => $row->date->toDateString(),
                 'visits' => (int) $row->total,
+                'unique_visits' => (int) $row->unique_total,
             ]);
 
         // Ingresos aprobados (MRR aproximado)

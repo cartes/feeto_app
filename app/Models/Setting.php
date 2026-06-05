@@ -36,6 +36,20 @@ class Setting extends Model
 
         try {
             Cache::forget("setting:{$key}");
+
+            // Clear setting cache across all tenant prefixes
+            $currentTenant = Tenant::current();
+
+            Tenant::all()->each(function (Tenant $tenant) use ($key): void {
+                $tenant->makeCurrent();
+                Cache::forget("setting:{$key}");
+            });
+
+            if ($currentTenant) {
+                $currentTenant->makeCurrent();
+            } else {
+                Tenant::forgetCurrent();
+            }
         } catch (Throwable) {
         }
     }

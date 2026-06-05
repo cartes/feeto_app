@@ -75,7 +75,16 @@ const routeWithTenantDefaults = (routeName, params, absolute, config) => ziggyRo
 
 window.route = routeWithTenantDefaults;
 router.on('beforeUpdate', rememberTenantSlug);
-router.on('navigate', rememberTenantSlug);
+router.on('navigate', (event) => {
+    rememberTenantSlug(event);
+    if (window.gtag) {
+        window.gtag('event', 'page_view', {
+            page_location: window.location.href,
+            page_path: event.detail.page.url,
+            page_title: document.title,
+        });
+    }
+});
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

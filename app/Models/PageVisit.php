@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['tenant_id', 'path', 'date', 'visits'])]
+#[Fillable(['tenant_id', 'path', 'date', 'visits', 'unique_visits'])]
 class PageVisit extends Model
 {
     public $timestamps = false;
@@ -23,12 +23,26 @@ class PageVisit extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public static function record(string $path, ?int $tenantId = null): void
+    public static function record(string $path, ?int $tenantId = null, bool $isUnique = false): void
     {
-        static::upsert(
-            [['tenant_id' => $tenantId, 'path' => $path, 'date' => now()->toDateString(), 'visits' => 1]],
-            uniqueBy: ['tenant_id', 'path', 'date'],
-            update: ['visits' => \DB::raw('page_visits.visits + 1')],
-        );
+        try {
+            $visit = static::firstOrCreate(
+                ['tenant_id' => $tenantId, 'path' => $path, 'date' => today()],
+                ['visits' => 0, 'unique_visits' => 0]
+            );
+        } catch (\Throwable) {
+            $visit = static::where([
+                'tenant_id' => $tenantId,
+                'path' => $path,
+                'date' => today(),
+            ])->first();
+        }
+
+        if ($visit) {
+            $visit->increment('visits');
+            if ($isUnique) {
+                $visit->increment('unique_visits');
+            }
+        }
     }
 }
