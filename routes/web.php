@@ -222,6 +222,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/appointments', [AppointmentController::class, 'index'])
             ->middleware('permission:appointments.manage')
             ->name('appointments.index');
+        Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])
+            ->middleware('permission:appointments.manage')
+            ->name('appointments.destroy');
         Route::post('/api/appointments/scan-plate', [SmartReceptionController::class, 'scanPlate'])
             ->middleware(['permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('api.appointments.scan-plate');

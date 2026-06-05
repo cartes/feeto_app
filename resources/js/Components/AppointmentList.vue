@@ -18,7 +18,13 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    canDelete: {
+        type: Boolean,
+        default: false,
+    },
 });
+
+const emit = defineEmits(['delete']);
 
 const statusLabels = {
     pending: 'Pendiente',
@@ -70,12 +76,25 @@ const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es
                             <p class="truncate text-sm font-black uppercase tracking-wide text-gray-900">
                                 {{ appointment.plate }}
                             </p>
-                            <span
-                                :class="statusColor(appointment.status)"
-                                class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
-                            >
-                                {{ statusLabel(appointment.status) }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span
+                                    :class="statusColor(appointment.status)"
+                                    class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
+                                >
+                                    {{ statusLabel(appointment.status) }}
+                                </span>
+                                <button
+                                    v-if="canDelete"
+                                    type="button"
+                                    class="text-gray-300 transition-colors hover:text-red-500"
+                                    title="Eliminar cita"
+                                    @click.stop="emit('delete', appointment)"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <p class="mt-1 truncate text-sm font-medium text-gray-700">

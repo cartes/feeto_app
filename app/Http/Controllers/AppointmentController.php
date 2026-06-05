@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Carbon\CarbonInterface;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,6 +48,13 @@ class AppointmentController extends Controller
                 'end' => $calendarEnd->toDateString(),
             ],
         ]);
+    }
+
+    public function destroy(Appointment $appointment): RedirectResponse
+    {
+        $appointment->delete();
+
+        return back()->with('success', 'Cita eliminada exitosamente.');
     }
 
     /**
