@@ -191,6 +191,7 @@ class Tenant extends SpatieTenant
                 'sunday' => $closedDay,
             ],
             'blocked_slots' => [],
+            'blocked_dates' => [],
         ];
     }
 

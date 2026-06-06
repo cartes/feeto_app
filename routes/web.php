@@ -269,6 +269,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::patch('/settings/scheduling', [TenantSchedulingController::class, 'update'])
             ->middleware('permission:users.manage')
             ->name('taller.settings.scheduling.update');
+        Route::get('/settings/scheduling/feriados', [TenantSchedulingController::class, 'feriados'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.scheduling.feriados');
 
         // Notificaciones CRM
         Route::prefix('/notifications')->name('notifications.')->group(function (): void {
