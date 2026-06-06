@@ -61,6 +61,7 @@ class TenantSettingsController extends Controller
                 'plan_label' => $tenant->currentPlan()->label(),
                 'max_discount_without_approval' => $tenant->maxDiscountWithoutApproval(),
                 'logo_url' => $tenant->logoUrl(),
+                'scheduling_config' => $tenant->schedulingConfig(),
             ],
             'brandingRoutes' => [
                 'color' => route('taller.settings.branding.color', ['tenantBySlug' => $tenant->slug]),

@@ -40,6 +40,7 @@ class Tenant extends SpatieTenant
         'subscription_ends_at' => 'datetime',
         'kanban_columns' => 'array',
         'max_discount_without_approval' => 'decimal:2',
+        'scheduling_config' => 'array',
     ];
 
     protected static function boot(): void
@@ -164,6 +165,33 @@ class Tenant extends SpatieTenant
     public function maxDiscountWithoutApproval(): float
     {
         return (float) ($this->getAttribute('max_discount_without_approval') ?? 10);
+    }
+
+    /** @return array<string, mixed> */
+    public function schedulingConfig(): array
+    {
+        return $this->getAttribute('scheduling_config') ?? self::defaultSchedulingConfig();
+    }
+
+    /** @return array<string, mixed> */
+    public static function defaultSchedulingConfig(): array
+    {
+        $defaultDay = ['enabled' => true, 'open' => '09:00', 'close' => '18:00'];
+        $closedDay = ['enabled' => false, 'open' => '09:00', 'close' => '14:00'];
+
+        return [
+            'slot_duration' => 60,
+            'days' => [
+                'monday' => $defaultDay,
+                'tuesday' => $defaultDay,
+                'wednesday' => $defaultDay,
+                'thursday' => $defaultDay,
+                'friday' => $defaultDay,
+                'saturday' => $closedDay,
+                'sunday' => $closedDay,
+            ],
+            'blocked_slots' => [],
+        ];
     }
 
     private function resolveTenantPlan(): ?TenantPlan

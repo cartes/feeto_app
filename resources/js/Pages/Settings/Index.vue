@@ -225,6 +225,78 @@ watch(() => props.tenant, (newTenant) => {
         }
     }
 }, { deep: true });
+
+// ── HORARIOS ──────────────────────────────────────────────
+const DAY_LABELS = {
+    monday: 'Lunes',
+    tuesday: 'Martes',
+    wednesday: 'Miércoles',
+    thursday: 'Jueves',
+    friday: 'Viernes',
+    saturday: 'Sábado',
+    sunday: 'Domingo',
+};
+const DAY_KEYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const SLOT_DURATIONS = [
+    { value: 15, label: '15 minutos' },
+    { value: 30, label: '30 minutos' },
+    { value: 45, label: '45 minutos' },
+    { value: 60, label: '1 hora' },
+    { value: 90, label: '1 hora 30 min' },
+    { value: 120, label: '2 horas' },
+];
+const BLOCK_DAY_OPTIONS = [
+    { value: 'all', label: 'Todos los días' },
+    { value: 'monday', label: 'Lunes' },
+    { value: 'tuesday', label: 'Martes' },
+    { value: 'wednesday', label: 'Miércoles' },
+    { value: 'thursday', label: 'Jueves' },
+    { value: 'friday', label: 'Viernes' },
+    { value: 'saturday', label: 'Sábado' },
+    { value: 'sunday', label: 'Domingo' },
+];
+
+const defaultSchedulingConfig = () => ({
+    slot_duration: 60,
+    days: {
+        monday:    { enabled: true,  open: '09:00', close: '18:00' },
+        tuesday:   { enabled: true,  open: '09:00', close: '18:00' },
+        wednesday: { enabled: true,  open: '09:00', close: '18:00' },
+        thursday:  { enabled: true,  open: '09:00', close: '18:00' },
+        friday:    { enabled: true,  open: '09:00', close: '18:00' },
+        saturday:  { enabled: false, open: '09:00', close: '14:00' },
+        sunday:    { enabled: false, open: '09:00', close: '14:00' },
+    },
+    blocked_slots: [],
+});
+
+const rawConfig = props.tenant?.scheduling_config ?? defaultSchedulingConfig();
+
+const schedulingForm = useForm({
+    slot_duration: rawConfig.slot_duration ?? 60,
+    days: { ...rawConfig.days },
+    blocked_slots: (rawConfig.blocked_slots ?? []).map(s => ({ ...s })),
+});
+
+const addBlockedSlot = () => {
+    schedulingForm.blocked_slots.push({
+        id: `slot_${Date.now()}`,
+        day: 'monday',
+        start: '12:00',
+        end: '14:00',
+        reason: '',
+    });
+};
+
+const removeBlockedSlot = (index) => {
+    schedulingForm.blocked_slots.splice(index, 1);
+};
+
+const submitScheduling = () => {
+    schedulingForm.patch(route('taller.settings.scheduling.update', tenantRouteParams.value), {
+        preserveScroll: true,
+    });
+};
 </script>
 
 <template>
@@ -686,6 +758,214 @@ watch(() => props.tenant, (newTenant) => {
                 </div>
             </div>
         </div>
+
+            <!-- ── TAB HORARIOS ── -->
+            <div v-if="activeTab === 'scheduling'" class="space-y-6 animate-in fade-in duration-300">
+
+                <div class="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+
+                    <!-- Formulario principal -->
+                    <form @submit.prevent="submitScheduling" class="space-y-6">
+
+                        <!-- Horario por día -->
+                        <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-5">
+                            <div>
+                                <p class="text-sm font-black uppercase tracking-widest text-gray-500">Días de atención</p>
+                                <p class="text-xs text-gray-400 mt-1 font-medium">Define qué días y en qué horario recibe el taller.</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div
+                                    v-for="day in DAY_KEYS"
+                                    :key="day"
+                                    class="flex items-center gap-4 rounded-2xl border px-4 py-3 transition-colors"
+                                    :class="schedulingForm.days[day].enabled ? 'border-[#FF7A00]/20 bg-orange-50/40' : 'border-gray-100 bg-gray-50/50'"
+                                >
+                                    <!-- Toggle -->
+                                    <button
+                                        type="button"
+                                        @click="schedulingForm.days[day].enabled = !schedulingForm.days[day].enabled"
+                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200"
+                                        :class="schedulingForm.days[day].enabled ? 'bg-[#FF7A00]' : 'bg-gray-200'"
+                                    >
+                                        <span
+                                            class="inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200"
+                                            :class="schedulingForm.days[day].enabled ? 'translate-x-6' : 'translate-x-1'"
+                                        />
+                                    </button>
+
+                                    <!-- Nombre del día -->
+                                    <span class="w-24 text-sm font-black" :class="schedulingForm.days[day].enabled ? 'text-gray-800' : 'text-gray-400'">
+                                        {{ DAY_LABELS[day] }}
+                                    </span>
+
+                                    <!-- Horario -->
+                                    <template v-if="schedulingForm.days[day].enabled">
+                                        <div class="flex items-center gap-2 flex-1">
+                                            <input
+                                                v-model="schedulingForm.days[day].open"
+                                                type="time"
+                                                class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00] w-32"
+                                            />
+                                            <span class="text-xs text-gray-400 font-bold">hasta</span>
+                                            <input
+                                                v-model="schedulingForm.days[day].close"
+                                                type="time"
+                                                class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00] w-32"
+                                            />
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <span class="text-xs text-gray-400 font-semibold italic">Cerrado</span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Duración de turnos -->
+                        <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-4">
+                            <div>
+                                <p class="text-sm font-black uppercase tracking-widest text-gray-500">Duración de turnos</p>
+                                <p class="text-xs text-gray-400 mt-1 font-medium">Intervalo mínimo entre citas agendadas.</p>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <button
+                                    v-for="opt in SLOT_DURATIONS"
+                                    :key="opt.value"
+                                    type="button"
+                                    @click="schedulingForm.slot_duration = opt.value"
+                                    class="py-3 rounded-2xl text-sm font-bold border transition-all"
+                                    :class="schedulingForm.slot_duration === opt.value
+                                        ? 'bg-[#FF7A00] text-white border-[#FF7A00] shadow-sm'
+                                        : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-[#FF7A00]/40 hover:text-gray-700'"
+                                >
+                                    {{ opt.label }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bloques bloqueados -->
+                        <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-black uppercase tracking-widest text-gray-500">Horarios bloqueados</p>
+                                    <p class="text-xs text-gray-400 mt-1 font-medium">Franjas recurrentes en que NO se reciben citas (ej: hora de almuerzo, días de alta carga).</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    @click="addBlockedSlot"
+                                    class="flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-colors shrink-0"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    Agregar
+                                </button>
+                            </div>
+
+                            <div v-if="schedulingForm.blocked_slots.length === 0" class="rounded-2xl border border-dashed border-gray-200 py-8 text-center">
+                                <p class="text-sm text-gray-400 font-medium">No hay horarios bloqueados.</p>
+                                <p class="text-xs text-gray-300 mt-1">Haz clic en "Agregar" para bloquear una franja horaria.</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div
+                                    v-for="(slot, index) in schedulingForm.blocked_slots"
+                                    :key="slot.id"
+                                    class="flex flex-wrap items-center gap-3 rounded-2xl border border-red-100 bg-red-50/40 px-4 py-3"
+                                >
+                                    <select
+                                        v-model="slot.day"
+                                        class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300"
+                                    >
+                                        <option v-for="opt in BLOCK_DAY_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                                    </select>
+
+                                    <input
+                                        v-model="slot.start"
+                                        type="time"
+                                        class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300 w-32"
+                                    />
+                                    <span class="text-xs text-gray-400 font-bold">—</span>
+                                    <input
+                                        v-model="slot.end"
+                                        type="time"
+                                        class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300 w-32"
+                                    />
+
+                                    <input
+                                        v-model="slot.reason"
+                                        type="text"
+                                        placeholder="Motivo (opcional)"
+                                        maxlength="100"
+                                        class="flex-1 min-w-[140px] bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-300"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        @click="removeBlockedSlot(index)"
+                                        class="p-2 rounded-xl text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors"
+                                        title="Eliminar bloque"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button
+                                type="submit"
+                                :disabled="schedulingForm.processing"
+                                class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50"
+                            >
+                                {{ schedulingForm.processing ? 'Guardando...' : 'Guardar Horarios' }}
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Panel derecho: resumen -->
+                    <div class="space-y-4">
+                        <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-4 sticky top-6">
+                            <p class="text-sm font-black uppercase tracking-widest text-gray-500">Resumen</p>
+
+                            <div class="space-y-2">
+                                <div
+                                    v-for="day in DAY_KEYS"
+                                    :key="day"
+                                    class="flex items-center justify-between text-sm"
+                                >
+                                    <span class="font-semibold" :class="schedulingForm.days[day].enabled ? 'text-gray-800' : 'text-gray-300'">
+                                        {{ DAY_LABELS[day] }}
+                                    </span>
+                                    <span v-if="schedulingForm.days[day].enabled" class="text-gray-600 font-medium text-xs">
+                                        {{ schedulingForm.days[day].open }} – {{ schedulingForm.days[day].close }}
+                                    </span>
+                                    <span v-else class="text-gray-300 text-xs font-semibold">Cerrado</span>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-100 pt-3">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Turnos</p>
+                                <p class="text-sm font-bold text-gray-700">
+                                    {{ SLOT_DURATIONS.find(s => s.value === schedulingForm.slot_duration)?.label ?? '–' }}
+                                </p>
+                            </div>
+
+                            <div v-if="schedulingForm.blocked_slots.length > 0" class="border-t border-gray-100 pt-3 space-y-2">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-red-400 mb-2">Bloqueados</p>
+                                <div
+                                    v-for="slot in schedulingForm.blocked_slots"
+                                    :key="slot.id"
+                                    class="text-xs text-gray-500 font-medium"
+                                >
+                                    <span class="font-bold text-gray-700">{{ BLOCK_DAY_OPTIONS.find(o => o.value === slot.day)?.label }}</span>
+                                    {{ slot.start }} – {{ slot.end }}
+                                    <span v-if="slot.reason" class="text-gray-400"> · {{ slot.reason }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- ── TAB APARIENCIA ── -->
             <div v-if="activeTab === 'branding' && canAccessBranding" class="space-y-6 animate-in fade-in duration-300">

@@ -42,6 +42,7 @@ use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantBrandingController;
 use App\Http\Controllers\TenantNotificationController;
 use App\Http\Controllers\TenantRoleController;
+use App\Http\Controllers\TenantSchedulingController;
 use App\Http\Controllers\TenantSeoController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
@@ -264,6 +265,10 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::delete('/settings/branding/logo', [TenantBrandingController::class, 'deleteLogo'])
             ->middleware('permission:users.manage')
             ->name('taller.settings.branding.logo.delete');
+
+        Route::patch('/settings/scheduling', [TenantSchedulingController::class, 'update'])
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.scheduling.update');
 
         // Notificaciones CRM
         Route::prefix('/notifications')->name('notifications.')->group(function (): void {
