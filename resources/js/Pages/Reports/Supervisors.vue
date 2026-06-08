@@ -2,6 +2,7 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import ReportsNavigation from '@/Components/ReportsNavigation.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -51,6 +52,8 @@ const formatDate = (value) => {
                     Volver a ventas
                 </Link>
             </div>
+
+            <ReportsNavigation />
 
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-5">
                 <div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">

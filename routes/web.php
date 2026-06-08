@@ -21,8 +21,11 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientInvoiceController;
+use App\Http\Controllers\CollectionsReportController;
+use App\Http\Controllers\CustomerReportController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\ManualQuoteController;
 use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\OcrController;
@@ -34,6 +37,7 @@ use App\Http\Controllers\PublicPricingController;
 use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ServiceController;
@@ -343,7 +347,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->middleware('permission:users.manage')
             ->name('taller.roles.destroy');
 
-        Route::get('/reports', [SalesReportController::class, 'index'])
+        Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('permission:reports.view')
             ->name('reports.index');
         Route::get('/reports/ventas', [SalesReportController::class, 'index'])
@@ -352,6 +356,15 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/reports/supervisores', [SupervisorReportController::class, 'index'])
             ->middleware('permission:reports.view')
             ->name('reports.supervisors');
+        Route::get('/reports/existencias', [InventoryReportController::class, 'index'])
+            ->middleware('permission:reports.view')
+            ->name('reports.inventory');
+        Route::get('/reports/clientes', [CustomerReportController::class, 'index'])
+            ->middleware('permission:reports.view')
+            ->name('reports.customers');
+        Route::get('/reports/cobranza', [CollectionsReportController::class, 'index'])
+            ->middleware('permission:reports.view')
+            ->name('reports.collections');
 
         Route::resource('invoices', ClientInvoiceController::class)
             ->only(['index', 'show', 'store'])
