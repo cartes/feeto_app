@@ -29,6 +29,8 @@ use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\PublicPricingController;
+use App\Http\Controllers\ManualQuoteController;
+use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
@@ -90,6 +92,14 @@ Route::get('/ot/{uuid}', [TrackingController::class, 'show'])
 Route::post('/ot/{uuid}/quote/respond', [QuoteController::class, 'respond'])
     ->middleware('throttle:20,1')
     ->name('tracking.quote.respond');
+
+// Tracking de Cotización Manual (Público con rate limit)
+Route::get('/cotizacion/{uuid}', [ManualQuoteTrackingController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('quotes.public.show');
+Route::post('/cotizacion/{uuid}/respond', [ManualQuoteController::class, 'respond'])
+    ->middleware('throttle:20,1')
+    ->name('quotes.public.respond');
 
 // Landing page pública del taller — embudo de conversión con Pre-Check ALPR
 Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->name('taller.landing');
@@ -178,6 +188,35 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/work-orders/{workOrder}/quote/approve-manually', [QuoteController::class, 'approveManually'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('work-orders.quote.approve-manually');
+
+        // Cotizaciones manuales — independientes de OT/Cita
+        Route::get('/quotes', [ManualQuoteController::class, 'index'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.index');
+        Route::get('/quotes/create', [ManualQuoteController::class, 'create'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.create');
+        Route::post('/quotes', [ManualQuoteController::class, 'store'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.store');
+        Route::get('/quotes/{quote}', [ManualQuoteController::class, 'show'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.show');
+        Route::post('/quotes/{quote}/items', [ManualQuoteController::class, 'addItem'])
+            ->middleware('permission:work-orders.manage-items')
+            ->name('quotes.items.store');
+        Route::delete('/quotes/{quote}/items/{item}', [ManualQuoteController::class, 'removeItem'])
+            ->middleware('permission:work-orders.manage-items')
+            ->name('quotes.items.destroy');
+        Route::post('/quotes/{quote}/send', [ManualQuoteController::class, 'send'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.send');
+        Route::post('/quotes/{quote}/approve-manually', [ManualQuoteController::class, 'approveManually'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.approve-manually');
+        Route::get('/clients/{client}/vehicles', [ManualQuoteController::class, 'vehiclesForClient'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('clients.vehicles');
 
         // API Modals
         Route::get('/api/work-orders/{id}', [WorkOrderModalController::class, 'show'])->name('api.work-orders.show');

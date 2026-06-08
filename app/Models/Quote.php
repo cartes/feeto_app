@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Quote extends Model
 {
@@ -25,8 +26,12 @@ class Quote extends Model
     protected $fillable = [
         'tenant_id',
         'work_order_id',
+        'client_id',
+        'vehicle_id',
+        'uuid',
         'status',
         'subtotal_amount',
+        'notes',
         'sent_at',
         'responded_at',
         'customer_response_notes',
@@ -41,9 +46,33 @@ class Quote extends Model
         'responded_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Quote $quote) {
+            if (empty($quote->uuid)) {
+                $quote->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
     public function workOrder(): BelongsTo
     {
         return $this->belongsTo(WorkOrder::class);
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function isManual(): bool
+    {
+        return ! is_null($this->client_id);
     }
 
     public function items(): HasMany
