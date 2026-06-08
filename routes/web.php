@@ -107,6 +107,9 @@ Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->
 Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('taller.booking.store');
+Route::post('/taller/{tenantBySlug}/contacto', [PublicBookingController::class, 'storeContact'])
+    ->middleware('throttle:10,1')
+    ->name('taller.contact.store');
 Route::post('/taller/{tenantBySlug}/whatsapp-inquiry', [PublicWhatsAppInquiryController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('taller.whatsapp.inquiry');

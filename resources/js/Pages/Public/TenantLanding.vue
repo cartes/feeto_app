@@ -18,7 +18,9 @@ const props = defineProps({
 
 const page = usePage();
 const isSuccess = computed(() => page.props.flash?.booking_success === true);
+const isContactSuccess = computed(() => page.props.flash?.contact_success === true);
 const showLoginModal = ref(false);
+const activeTab = ref('booking');
 
 const toast = ref({ message: '', type: 'success' });
 
@@ -35,13 +37,36 @@ const form = useForm({
     pre_check_notes: '',
 });
 
-const scrollToForm = () => {
-    document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' });
+const contactForm = useForm({
+    name: '',
+    email: '',
+    phone: '',
+    type: 'general',
+    message: '',
+    plate: '',
+    brand: '',
+    model: '',
+    year: null,
+});
+
+const scrollToForm = (tab = 'booking', type = null) => {
+    activeTab.value = tab;
+    if (type) {
+        contactForm.type = type;
+    }
+    setTimeout(() => {
+        document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
 };
 
 const formatPlate = (e) => {
     const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
     form.plate = val;
+};
+
+const formatContactPlate = (e) => {
+    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    contactForm.plate = val;
 };
 
 const submitBooking = () => {
@@ -56,6 +81,19 @@ const submitBooking = () => {
             } else {
                 showToast('Por favor revisa los campos marcados en rojo.', 'warning');
             }
+        },
+    });
+};
+
+const submitContact = () => {
+    contactForm.post(route('taller.contact.store', props.tenant.slug), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showToast('¡Mensaje enviado! Nos contactaremos a la brevedad.', 'success');
+            contactForm.reset();
+        },
+        onError: () => {
+            showToast('Por favor revisa los campos requeridos.', 'warning');
         },
     });
 };
@@ -190,7 +228,7 @@ const trackWhatsAppClick = () => {
                     <!-- CTAs -->
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                         <button
-                            @click="scrollToForm"
+                            @click="scrollToForm('booking')"
                             class="group inline-flex items-center justify-center gap-3 text-white font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-200 active:scale-[0.97]"
                             :style="{ backgroundColor: primaryColor, boxShadow: `0 8px 28px ${primaryColor}45` }"
                         >
@@ -201,6 +239,15 @@ const trackWhatsAppClick = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>
+                        </button>
+                        <button
+                            @click="scrollToForm('contact', 'quote')"
+                            class="group inline-flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold text-lg px-8 py-4 rounded-2xl shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-[0.97]"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Deseo Cotizar
                         </button>
                         <a
                             v-if="phoneNumber"
@@ -317,153 +364,389 @@ const trackWhatsAppClick = () => {
             <!-- ====================================================
                  BOOKING FORM
             ===================================================== -->
-            <section id="booking-form" class="py-20 bg-gray-50" aria-label="Formulario de agendamiento">
+            <section id="booking-form" class="py-20 bg-gray-50" aria-label="Formulario de contacto y agendamiento">
                 <div class="max-w-2xl mx-auto px-4 sm:px-6">
-                    <div class="text-center mb-10">
-                        <h2 class="text-3xl font-black text-gray-900 tracking-tight">Agenda tu Cita</h2>
-                        <p class="mt-3 text-gray-500">Completa el formulario y te confirmaremos en minutos.</p>
+                    <!-- Tab Selector -->
+                    <div class="flex justify-center mb-10">
+                        <div class="inline-flex p-1.5 rounded-2xl bg-white border border-gray-150 shadow-sm">
+                            <button
+                                type="button"
+                                @click="activeTab = 'booking'"
+                                class="flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-black tracking-wide uppercase transition-all duration-200 focus:outline-none"
+                                :class="activeTab === 'booking'
+                                    ? 'text-white shadow-md'
+                                    : 'text-gray-400 hover:text-gray-700'"
+                                :style="activeTab === 'booking' ? { backgroundColor: primaryColor } : {}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Agendar Cita
+                            </button>
+                            <button
+                                type="button"
+                                @click="activeTab = 'contact'"
+                                class="flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-black tracking-wide uppercase transition-all duration-200 focus:outline-none"
+                                :class="activeTab === 'contact'
+                                    ? 'text-white shadow-md'
+                                    : 'text-gray-400 hover:text-gray-700'"
+                                :style="activeTab === 'contact' ? { backgroundColor: primaryColor } : {}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Contacto / Cotizar
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- ── SUCCESS STATE ── -->
-                    <div v-if="isSuccess" class="bg-white shadow-xl rounded-2xl border border-gray-100 p-10 text-center">
-                        <div class="h-20 w-20 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
+                    <!-- ── TAB 1: BOOKING FORM ── -->
+                    <div v-if="activeTab === 'booking'" class="animate-fade-in space-y-8">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-black text-gray-900 tracking-tight">Agenda tu Cita</h2>
+                            <p class="mt-2 text-gray-500">Completa el formulario y te confirmaremos en minutos.</p>
                         </div>
-                        <h3 class="text-2xl font-black text-gray-900">¡Cita Confirmada!</h3>
-                        <p class="mt-4 text-gray-600 max-w-md mx-auto leading-relaxed">
-                            Cuando llegues al taller, <strong>leeremos tu patente automáticamente</strong> para atenderte sin demoras ni filas. ¡Te esperamos!
-                        </p>
-                        <div class="mt-8 inline-flex items-center gap-2 bg-gray-50 border border-gray-100 text-gray-500 text-sm font-medium px-5 py-3 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Recibirás un recordatorio antes de tu cita.
+
+                        <!-- SUCCESS STATE -->
+                        <div v-if="isSuccess" class="bg-white shadow-xl rounded-2xl border border-gray-100 p-10 text-center">
+                            <div class="h-20 w-20 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center mx-auto mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-black text-gray-900">¡Cita Confirmada!</h3>
+                            <p class="mt-4 text-gray-600 max-w-md mx-auto leading-relaxed">
+                                Cuando llegues al taller, <strong>leeremos tu patente automáticamente</strong> para atenderte sin demoras ni filas. ¡Te esperamos!
+                            </p>
+                            <div class="mt-8 inline-flex items-center gap-2 bg-gray-50 border border-gray-100 text-gray-500 text-sm font-medium px-5 py-3 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Recibirás un recordatorio antes de tu cita.
+                            </div>
                         </div>
+
+                        <!-- BOOKING FORM -->
+                        <form v-else @submit.prevent="submitBooking" novalidate class="bg-white shadow-xl rounded-2xl border border-gray-100 p-8 space-y-8">
+                            <!-- Step 1: Basic Data -->
+                            <fieldset>
+                                <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                    <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">1</span>
+                                    Datos Básicos
+                                </legend>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="customer_name" class="block text-sm font-semibold text-gray-700 mb-1.5">Nombre Completo</label>
+                                        <input
+                                            id="customer_name"
+                                            type="text"
+                                            v-model="form.customer_name"
+                                            autocomplete="name"
+                                            placeholder="Juan Pérez"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
+                                        />
+                                        <p v-if="form.errors.customer_name" class="mt-1 text-xs text-red-500">{{ form.errors.customer_name }}</p>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1.5">Teléfono / WhatsApp</label>
+                                            <input
+                                                id="phone"
+                                                type="tel"
+                                                v-model="form.phone"
+                                                autocomplete="tel"
+                                                placeholder="+56 9 1234 5678"
+                                                class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
+                                            />
+                                            <p v-if="form.errors.phone" class="mt-1 text-xs text-red-500">{{ form.errors.phone }}</p>
+                                        </div>
+                                        <div>
+                                            <label for="plate" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                                Patente del Vehículo
+                                                <span class="text-gray-400 font-normal">(6 caracteres)</span>
+                                            </label>
+                                            <input
+                                                id="plate"
+                                                type="text"
+                                                :value="form.plate"
+                                                @input="formatPlate"
+                                                autocomplete="off"
+                                                placeholder="BBBB77"
+                                                maxlength="6"
+                                                class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm font-mono tracking-widest uppercase"
+                                            />
+                                            <p v-if="form.errors.plate" class="mt-1 text-xs text-red-500">{{ form.errors.plate }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="border-t border-gray-100"></div>
+
+                            <!-- Step 2: Date & Time -->
+                            <fieldset>
+                                <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                    <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">2</span>
+                                    Fecha y Hora Deseada
+                                </legend>
+                                <div>
+                                    <label for="appointment_date" class="block text-sm font-semibold text-gray-700 mb-1.5">Selecciona cuándo quieres venir</label>
+                                    <input
+                                        id="appointment_date"
+                                        type="datetime-local"
+                                        v-model="form.appointment_date"
+                                        :min="minDate"
+                                        class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
+                                    />
+                                    <p v-if="form.errors.appointment_date" class="mt-1 text-xs text-red-500">{{ form.errors.appointment_date }}</p>
+                                </div>
+                            </fieldset>
+
+                            <div class="border-t border-gray-100"></div>
+
+                            <!-- Step 3: Pre-Check Digital -->
+                            <fieldset>
+                                <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
+                                    <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">3</span>
+                                    Pre-Check Digital
+                                </legend>
+                                <div>
+                                    <label for="pre_check_notes" class="block text-sm font-semibold text-gray-700 mb-1.5">¿Qué le ocurre a tu vehículo?</label>
+                                    <textarea
+                                        id="pre_check_notes"
+                                        v-model="form.pre_check_notes"
+                                        rows="4"
+                                        placeholder="Cuéntanos los detalles o si tiene algún daño previo para tener todo listo cuando llegues. Por ejemplo: 'Hace ruido al frenar', 'Luz de motor encendida', 'Golpe en el parachoques'..."
+                                        class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm resize-none"
+                                    ></textarea>
+                                    <p class="mt-1.5 text-xs text-gray-400">Opcional, pero nos ayuda a prepararnos mejor para tu visita.</p>
+                                    <p v-if="form.errors.pre_check_notes" class="mt-1 text-xs text-red-500">{{ form.errors.pre_check_notes }}</p>
+                                </div>
+                            </fieldset>
+
+                            <!-- Submit -->
+                            <div class="pt-2">
+                                <button
+                                    type="submit"
+                                    :disabled="form.processing"
+                                    class="w-full inline-flex items-center justify-center gap-3 text-white font-black text-base py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-[0.98]"
+                                    :style="{ backgroundColor: form.processing ? primaryColor + '99' : primaryColor }"
+                                >
+                                    <svg v-if="form.processing" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ form.processing ? 'Agendando...' : 'Confirmar mi Cita' }}
+                                </button>
+                                <p class="mt-4 text-center text-xs text-gray-400">
+                                    Al agendar, aceptas que el taller se contacte contigo para confirmar el servicio.
+                                </p>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- ── FORM ── -->
-                    <form v-else @submit.prevent="submitBooking" novalidate class="bg-white shadow-xl rounded-2xl border border-gray-100 p-8 space-y-8">
+                    <!-- ── TAB 2: CONTACT / QUOTE FORM ── -->
+                    <div v-if="activeTab === 'contact'" class="animate-fade-in space-y-8">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-black text-gray-900 tracking-tight">Contacto y Cotizaciones</h2>
+                            <p class="mt-2 text-gray-500">Envíanos un mensaje o solicita la cotización de un servicio.</p>
+                        </div>
 
-                        <!-- Step 1: Basic Data -->
-                        <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">1</span>
-                                Datos Básicos
-                            </legend>
+                        <!-- SUCCESS STATE -->
+                        <div v-if="isContactSuccess" class="bg-white shadow-xl rounded-2xl border border-gray-100 p-10 text-center">
+                            <div class="h-20 w-20 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center mx-auto mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-black text-gray-900">¡Mensaje Enviado!</h3>
+                            <p class="mt-4 text-gray-600 max-w-md mx-auto leading-relaxed">
+                                Hemos recibido tu solicitud correctamente. El equipo de <strong>{{ tenant.name }}</strong> te responderá a tu correo electrónico o vía WhatsApp en breve.
+                            </p>
+                        </div>
+
+                        <!-- CONTACT FORM -->
+                        <form v-else @submit.prevent="submitContact" novalidate class="bg-white shadow-xl rounded-2xl border border-gray-100 p-8 space-y-6">
+                            
+                            <!-- Name, Email, Phone -->
                             <div class="space-y-4">
                                 <div>
-                                    <label for="customer_name" class="block text-sm font-semibold text-gray-700 mb-1.5">Nombre Completo</label>
+                                    <label for="contact_name" class="block text-sm font-semibold text-gray-700 mb-1.5">Nombre Completo</label>
                                     <input
-                                        id="customer_name"
+                                        id="contact_name"
                                         type="text"
-                                        v-model="form.customer_name"
-                                        autocomplete="name"
+                                        v-model="contactForm.name"
                                         placeholder="Juan Pérez"
                                         class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
                                     />
-                                    <p v-if="form.errors.customer_name" class="mt-1 text-xs text-red-500">{{ form.errors.customer_name }}</p>
+                                    <p v-if="contactForm.errors.name" class="mt-1 text-xs text-red-500">{{ contactForm.errors.name }}</p>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1.5">Teléfono / WhatsApp</label>
+                                        <label for="contact_email" class="block text-sm font-semibold text-gray-700 mb-1.5">Correo Electrónico</label>
                                         <input
-                                            id="phone"
+                                            id="contact_email"
+                                            type="email"
+                                            v-model="contactForm.email"
+                                            placeholder="juan@example.com"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
+                                        />
+                                        <p v-if="contactForm.errors.email" class="mt-1 text-xs text-red-500">{{ contactForm.errors.email }}</p>
+                                    </div>
+                                    <div>
+                                        <label for="contact_phone" class="block text-sm font-semibold text-gray-700 mb-1.5">Teléfono / WhatsApp</label>
+                                        <input
+                                            id="contact_phone"
                                             type="tel"
-                                            v-model="form.phone"
-                                            autocomplete="tel"
+                                            v-model="contactForm.phone"
                                             placeholder="+56 9 1234 5678"
                                             class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
                                         />
-                                        <p v-if="form.errors.phone" class="mt-1 text-xs text-red-500">{{ form.errors.phone }}</p>
-                                    </div>
-                                    <div>
-                                        <label for="plate" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                                            Patente del Vehículo
-                                            <span class="text-gray-400 font-normal">(6 caracteres)</span>
-                                        </label>
-                                        <input
-                                            id="plate"
-                                            type="text"
-                                            :value="form.plate"
-                                            @input="formatPlate"
-                                            autocomplete="off"
-                                            placeholder="BBBB77"
-                                            maxlength="6"
-                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm font-mono tracking-widest uppercase"
-                                        />
-                                        <p v-if="form.errors.plate" class="mt-1 text-xs text-red-500">{{ form.errors.plate }}</p>
+                                        <p v-if="contactForm.errors.phone" class="mt-1 text-xs text-red-500">{{ contactForm.errors.phone }}</p>
                                     </div>
                                 </div>
                             </div>
-                        </fieldset>
 
-                        <div class="border-t border-gray-100"></div>
+                            <!-- Selector: Consulta vs Cotización -->
+                            <div class="space-y-3 pt-2">
+                                <label class="block text-sm font-semibold text-gray-700">Tipo de Consulta</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <!-- General Option -->
+                                    <button
+                                        type="button"
+                                        @click="contactForm.type = 'general'"
+                                        class="flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200 focus:outline-none"
+                                        :class="contactForm.type === 'general'
+                                            ? 'border-slate-800 bg-slate-50 ring-1 ring-slate-800'
+                                            : 'border-gray-200 hover:border-gray-300 bg-white'"
+                                    >
+                                        <div class="h-5 w-5 rounded-full border flex items-center justify-center"
+                                            :class="contactForm.type === 'general' ? 'border-slate-800 bg-slate-800 text-white' : 'border-gray-300 bg-white'">
+                                            <span v-if="contactForm.type === 'general'" class="h-2 w-2 rounded-full bg-white"></span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-900 leading-none">Consulta General</p>
+                                            <p class="text-xs text-gray-450 mt-1">Dudas o consultas directas al taller</p>
+                                        </div>
+                                    </button>
 
-                        <!-- Step 2: Date & Time -->
-                        <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">2</span>
-                                Fecha y Hora Deseada
-                            </legend>
-                            <div>
-                                <label for="appointment_date" class="block text-sm font-semibold text-gray-700 mb-1.5">Selecciona cuándo quieres venir</label>
-                                <input
-                                    id="appointment_date"
-                                    type="datetime-local"
-                                    v-model="form.appointment_date"
-                                    :min="minDate"
-                                    class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
-                                />
-                                <p v-if="form.errors.appointment_date" class="mt-1 text-xs text-red-500">{{ form.errors.appointment_date }}</p>
+                                    <!-- Quote Option -->
+                                    <button
+                                        type="button"
+                                        @click="contactForm.type = 'quote'"
+                                        class="flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200 focus:outline-none group relative overflow-hidden"
+                                        :class="contactForm.type === 'quote'
+                                            ? 'border-[#FF7A00] bg-orange-50/20 ring-1 ring-[#FF7A00]'
+                                            : 'border-gray-200 hover:border-gray-300 bg-white'"
+                                    >
+                                        <div class="absolute top-0 right-0 bg-[#FF7A00] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-bl">
+                                            Deseo cotizar
+                                        </div>
+                                        <div class="h-5 w-5 rounded-full border flex items-center justify-center shrink-0"
+                                            :class="contactForm.type === 'quote' ? 'border-[#FF7A00] bg-[#FF7A00] text-white' : 'border-gray-300 bg-white'">
+                                            <span v-if="contactForm.type === 'quote'" class="h-2 w-2 rounded-full bg-white"></span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-900 leading-none">Solicitar Cotización</p>
+                                            <p class="text-xs text-gray-450 mt-1">Cotizar repuestos o mantención</p>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
-                        </fieldset>
 
-                        <div class="border-t border-gray-100"></div>
+                            <!-- Expandable Vehicle Fields for Quote Request -->
+                            <div v-if="contactForm.type === 'quote'" class="space-y-4 border-t border-dashed border-gray-150 pt-4 animate-fade-in">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] block">Datos del Vehículo</span>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="contact_plate" class="block text-xs font-semibold text-gray-700 mb-1.5">Patente</label>
+                                        <input
+                                            id="contact_plate"
+                                            type="text"
+                                            :value="contactForm.plate"
+                                            @input="formatContactPlate"
+                                            placeholder="BBBB77"
+                                            maxlength="6"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-xs font-mono tracking-widest uppercase"
+                                        />
+                                        <p v-if="contactForm.errors.plate" class="mt-1 text-[10px] text-red-500">{{ contactForm.errors.plate }}</p>
+                                    </div>
+                                    <div>
+                                        <label for="contact_year" class="block text-xs font-semibold text-gray-700 mb-1.5">Año (Opcional)</label>
+                                        <input
+                                            id="contact_year"
+                                            type="number"
+                                            v-model="contactForm.year"
+                                            placeholder="2018"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-xs"
+                                        />
+                                        <p v-if="contactForm.errors.year" class="mt-1 text-[10px] text-red-500">{{ contactForm.errors.year }}</p>
+                                    </div>
+                                    <div>
+                                        <label for="contact_brand" class="block text-xs font-semibold text-gray-700 mb-1.5">Marca</label>
+                                        <input
+                                            id="contact_brand"
+                                            type="text"
+                                            v-model="contactForm.brand"
+                                            placeholder="Toyota"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-xs"
+                                        />
+                                        <p v-if="contactForm.errors.brand" class="mt-1 text-[10px] text-red-500">{{ contactForm.errors.brand }}</p>
+                                    </div>
+                                    <div>
+                                        <label for="contact_model" class="block text-xs font-semibold text-gray-700 mb-1.5">Modelo</label>
+                                        <input
+                                            id="contact_model"
+                                            type="text"
+                                            v-model="contactForm.model"
+                                            placeholder="Yaris"
+                                            class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-xs"
+                                        />
+                                        <p v-if="contactForm.errors.model" class="mt-1 text-[10px] text-red-500">{{ contactForm.errors.model }}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <!-- Step 3: Pre-Check Digital -->
-                        <fieldset>
-                            <legend class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5" :style="{ color: primaryColor }">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-black" :style="{ backgroundColor: primaryColor }">3</span>
-                                Pre-Check Digital
-                            </legend>
+                            <!-- Message / Details Textarea -->
                             <div>
-                                <label for="pre_check_notes" class="block text-sm font-semibold text-gray-700 mb-1.5">¿Qué le ocurre a tu vehículo?</label>
+                                <label for="contact_message" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    {{ contactForm.type === 'quote' ? '¿Qué repuestos o trabajos deseas cotizar?' : 'Mensaje / Consulta' }}
+                                </label>
                                 <textarea
-                                    id="pre_check_notes"
-                                    v-model="form.pre_check_notes"
+                                    id="contact_message"
+                                    v-model="contactForm.message"
                                     rows="4"
-                                    placeholder="Cuéntanos los detalles o si tiene algún daño previo para tener todo listo cuando llegues. Por ejemplo: 'Hace ruido al frenar', 'Luz de motor encendida', 'Golpe en el parachoques'..."
+                                    :placeholder="contactForm.type === 'quote'
+                                        ? 'Por favor detalla los síntomas, repuestos que necesitas, o mantención que requieres. Ej: Cambio de pastillas de freno delanteras, filtro de aceite...'
+                                        : 'Escribe tu consulta o mensaje aquí...'"
                                     class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm resize-none"
                                 ></textarea>
-                                <p class="mt-1.5 text-xs text-gray-400">Opcional, pero nos ayuda a prepararnos mejor para tu visita.</p>
-                                <p v-if="form.errors.pre_check_notes" class="mt-1 text-xs text-red-500">{{ form.errors.pre_check_notes }}</p>
+                                <p v-if="contactForm.errors.message" class="mt-1 text-xs text-red-500">{{ contactForm.errors.message }}</p>
                             </div>
-                        </fieldset>
 
-                        <!-- Submit -->
-                        <div class="pt-2">
-                            <button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="w-full inline-flex items-center justify-center gap-3 text-white font-black text-base py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-[0.98]"
-                                :style="{ backgroundColor: form.processing ? primaryColor + '99' : primaryColor }"
-                            >
-                                <svg v-if="form.processing" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                {{ form.processing ? 'Agendando...' : 'Confirmar mi Cita' }}
-                            </button>
-                            <p class="mt-4 text-center text-xs text-gray-400">
-                                Al agendar, aceptas que el taller se contacte contigo para confirmar el servicio.
-                            </p>
-                        </div>
-                    </form>
+                            <!-- Submit Contact -->
+                            <div class="pt-2">
+                                <button
+                                    type="submit"
+                                    :disabled="contactForm.processing"
+                                    class="w-full inline-flex items-center justify-center gap-3 text-white font-black text-base py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-[0.98]"
+                                    :style="{ backgroundColor: contactForm.processing ? primaryColor + '99' : primaryColor }"
+                                >
+                                    <svg v-if="contactForm.processing" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ contactForm.processing ? 'Enviando...' : (contactForm.type === 'quote' ? 'Solicitar Cotización' : 'Enviar Consulta') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
         </main>
@@ -522,6 +805,10 @@ html {
     opacity: 0;
 }
 
+.animate-fade-in {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes fab-enter {
     from {
         opacity: 0;
@@ -530,6 +817,17 @@ html {
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>

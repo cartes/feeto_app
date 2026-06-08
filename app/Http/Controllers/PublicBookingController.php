@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Mail\TenantContactMail;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Tenant;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -205,4 +207,39 @@ class PublicBookingController extends Controller
         ];
     }
 
+    public function storeContact(Request $request, Tenant $tenantBySlug): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
+            'type' => ['required', 'string', 'in:general,quote'],
+            'message' => ['required', 'string', 'max:2000'],
+            'plate' => ['nullable', 'required_if:type,quote', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
+            'brand' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
+            'model' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
+            'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],
+        ]);
+
+        if (isset($validated['plate'])) {
+            $validated['plate'] = strtoupper($validated['plate']);
+        }
+
+        $branch = $tenantBySlug->branches()->where('is_main', true)->first()
+            ?? $tenantBySlug->branches()->first();
+        $recipientEmail = $branch?->email;
+
+        if (! $recipientEmail) {
+            $adminUser = $tenantBySlug->users()->first();
+            $recipientEmail = $adminUser?->email;
+        }
+
+        if (! $recipientEmail) {
+            $recipientEmail = config('mail.from.address');
+        }
+
+        Mail::to($recipientEmail)->send(new TenantContactMail($validated));
+
+        return back()->with('contact_success', true);
+    }
 }
