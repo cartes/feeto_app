@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
-import ReportPrintButton from '@/Components/ReportPrintButton.vue';
+import ReportExportActions from '@/Components/ReportExportActions.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -53,7 +53,7 @@ const formatDate = (value) => {
                 >
                     Volver a ventas
                 </Link>
-                <ReportPrintButton />
+                <ReportExportActions report="supervisors" />
             </div>
 
             <ReportsNavigation />

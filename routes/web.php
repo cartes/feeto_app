@@ -38,6 +38,7 @@ use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ServiceController;
@@ -59,6 +60,7 @@ use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
 use App\Http\Middleware\SetTenantRouteDefaults;
 use App\Models\Tenant;
+use App\Services\Reports\ReportDataService;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\Request;
@@ -365,6 +367,14 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/reports/cobranza', [CollectionsReportController::class, 'index'])
             ->middleware('permission:reports.view')
             ->name('reports.collections');
+        Route::get('/reports/export/{report}/pdf', [ReportExportController::class, 'pdf'])
+            ->whereIn('report', ReportDataService::reportKeys())
+            ->middleware('permission:reports.view')
+            ->name('reports.export.pdf');
+        Route::get('/reports/export/{report}/excel', [ReportExportController::class, 'excel'])
+            ->whereIn('report', ReportDataService::reportKeys())
+            ->middleware('permission:reports.view')
+            ->name('reports.export.excel');
 
         Route::resource('invoices', ClientInvoiceController::class)
             ->only(['index', 'show', 'store'])

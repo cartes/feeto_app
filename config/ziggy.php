@@ -123,6 +123,8 @@ return [
             'reports.inventory',
             'reports.customers',
             'reports.collections',
+            'reports.export.pdf',
+            'reports.export.excel',
             'invoices.index',
             'invoices.show',
             'invoices.store',

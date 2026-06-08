@@ -1,6 +1,27 @@
-# ETAPA 1: Dependencias de PHP (Composer)
-FROM composer:2 AS vendor
+# ETAPA 1: Composer
+FROM composer:2 AS composer
+
+# ETAPA 2: Dependencias de PHP (Composer)
+FROM php:8.4-cli-bookworm AS vendor
 WORKDIR /app
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+RUN apt-get update && apt-get install -y \
+    git \
+    libfreetype6-dev \
+    libicu-dev \
+    libjpeg62-turbo-dev \
+    libonig-dev \
+    libpng-dev \
+    libpq-dev \
+    libxml2-dev \
+    libzip-dev \
+    unzip \
+    zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install bcmath dom gd intl mbstring pcntl pdo_mysql pdo_pgsql simplexml xml xmlreader xmlwriter zip \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY composer.json composer.lock ./
 # Instalamos sin ejecutar scripts para evitar errores con 'artisan' ausente
 RUN composer install \
@@ -15,7 +36,7 @@ COPY . .
 # Ahora que los archivos están presentes, generamos el autoload
 RUN composer dump-autoload --optimize --no-dev
 
-# ETAPA 2: Compilación de Frontend (Vite/Vue)
+# ETAPA 3: Compilación de Frontend (Vite/Vue)
 FROM node:22-bookworm-slim AS frontend
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -29,22 +50,28 @@ COPY postcss.config.js ./
 COPY tailwind.config.js ./
 RUN npm run build
 
-# ETAPA 3: Producción (PHP 8.5)
-FROM php:8.5-fpm-bookworm AS runtime
+# ETAPA 4: Producción (PHP 8.4)
+FROM php:8.4-fpm-bookworm AS runtime
 WORKDIR /var/www/html
 
-# Instalamos dependencias del sistema incluyendo libpq-dev para Postgres
+# Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones
 RUN apt-get update && apt-get install -y \
     curl \
     git \
+    libfreetype6-dev \
     libicu-dev \
+    libjpeg62-turbo-dev \
+    libonig-dev \
+    libpng-dev \
     libzip-dev \
     libpq-dev \
+    libxml2-dev \
     nginx \
     supervisor \
     unzip \
     zip \
-    && docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install bcmath dom gd intl mbstring pcntl pdo_mysql pdo_pgsql simplexml xml xmlreader xmlwriter zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
@@ -55,7 +82,7 @@ RUN { \
     } > /usr/local/etc/php/conf.d/uploads.ini
 
 # Copiamos archivos desde las etapas anteriores
-COPY --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app /var/www/html
 COPY --from=frontend /app/public/build /var/www/html/public/build
 COPY nginx.conf /etc/nginx/conf.d/default.conf
