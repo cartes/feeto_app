@@ -2,7 +2,9 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
+import ReportPrintButton from '@/Components/ReportPrintButton.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -26,7 +28,7 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
     <Head title="Reporte de Existencias" />
 
     <TallerLayout>
-        <div class="space-y-8">
+        <PrintableReportShell>
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Operación</p>
@@ -41,6 +43,7 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
                     >
                         Ver inventario
                     </Link>
+                    <ReportPrintButton />
                 </div>
             </div>
 
@@ -194,6 +197,6 @@ const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
                     </div>
                 </div>
             </div>
-        </div>
+        </PrintableReportShell>
     </TallerLayout>
 </template>

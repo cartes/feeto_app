@@ -2,7 +2,9 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
+import ReportPrintButton from '@/Components/ReportPrintButton.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -43,7 +45,7 @@ const formatDate = (value) => {
     <Head title="Reportes de Ventas" />
 
     <TallerLayout>
-        <div class="space-y-8">
+        <PrintableReportShell>
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Comercial</p>
@@ -64,6 +66,7 @@ const formatDate = (value) => {
                     >
                         Ver facturas
                     </Link>
+                    <ReportPrintButton />
                 </div>
             </div>
 
@@ -166,6 +169,6 @@ const formatDate = (value) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </PrintableReportShell>
     </TallerLayout>
 </template>

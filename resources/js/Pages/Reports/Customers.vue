@@ -2,7 +2,9 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
+import ReportPrintButton from '@/Components/ReportPrintButton.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -37,7 +39,7 @@ const formatDate = (value) => {
     <Head title="Reporte de Clientes" />
 
     <TallerLayout>
-        <div class="space-y-8">
+        <PrintableReportShell>
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">CRM</p>
@@ -45,12 +47,15 @@ const formatDate = (value) => {
                     <p class="mt-2 text-sm font-medium text-gray-500">Actividad, valor generado y foco comercial de la cartera del taller.</p>
                 </div>
 
-                <Link
-                    :href="route('clients.index', tenantRouteParams)"
-                    class="inline-flex items-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                    Ver directorio
-                </Link>
+                <div class="flex flex-wrap gap-3">
+                    <Link
+                        :href="route('clients.index', tenantRouteParams)"
+                        class="inline-flex items-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50"
+                    >
+                        Ver directorio
+                    </Link>
+                    <ReportPrintButton />
+                </div>
             </div>
 
             <ReportsNavigation />
@@ -177,6 +182,6 @@ const formatDate = (value) => {
                     </Link>
                 </div>
             </div>
-        </div>
+        </PrintableReportShell>
     </TallerLayout>
 </template>
