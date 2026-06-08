@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services\Reports;
 
+use App\Models\Appointment;
 use App\Models\Client;
 use App\Models\ClientInvoice;
+use App\Models\PageVisit;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Models\Tenant;
+use App\Models\TenantLead;
 use App\Models\WorkOrder;
 use App\Services\ClientCrmService;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -30,6 +34,7 @@ class ReportDataService
         'inventory',
         'customers',
         'collections',
+        'acquisition',
     ];
 
     public function __construct(protected ClientCrmService $clientCrmService) {}
@@ -361,6 +366,75 @@ class ReportDataService
     }
 
     /**
+     * @param  array<string, mixed>  $filters
+     * @return array<string, mixed>
+     */
+    public function acquisition(array $filters = []): array
+    {
+        $tenant = Tenant::current();
+
+        if (! $tenant) {
+            throw new InvalidArgumentException('A current tenant is required to build the acquisition report.');
+        }
+
+        $range = $this->resolveAcquisitionRange(isset($filters['range']) && is_string($filters['range']) ? $filters['range'] : null);
+        $landingPath = 'taller/'.$tenant->slug;
+
+        $pageVisits = PageVisit::query()
+            ->where('tenant_id', $tenant->id)
+            ->where('path', $landingPath)
+            ->whereDate('date', '>=', $range['start']->toDateString())
+            ->whereDate('date', '<=', $range['end']->toDateString())
+            ->orderBy('date')
+            ->get();
+
+        $leads = TenantLead::query()
+            ->whereBetween('occurred_at', [$range['start'], $range['end']])
+            ->orderByDesc('occurred_at')
+            ->get();
+
+        $appointments = Appointment::query()
+            ->whereBetween('created_at', [$range['start'], $range['end']])
+            ->orderByDesc('created_at')
+            ->get();
+
+        $summary = $this->buildAcquisitionSummary($pageVisits, $leads, $appointments);
+
+        return [
+            'filters' => [
+                'range' => $range['key'],
+                'label' => $range['label'],
+                'start' => $range['start']->toDateString(),
+                'end' => $range['end']->toDateString(),
+            ],
+            'rangeOptions' => $this->acquisitionRangeOptions(),
+            'summary' => $summary,
+            'funnel' => [
+                [
+                    'label' => 'Visitas unicas',
+                    'count' => $summary['unique_visits'],
+                    'conversion_rate' => 100.0,
+                    'description' => 'Personas unicas que llegaron al landing del taller.',
+                ],
+                [
+                    'label' => 'Intentos de contacto',
+                    'count' => $summary['engaged_leads'],
+                    'conversion_rate' => $summary['visit_to_engaged_rate'],
+                    'description' => 'WhatsApp y formularios capturados desde la landing.',
+                ],
+                [
+                    'label' => 'Citas agendadas',
+                    'count' => $summary['booked_appointments'],
+                    'conversion_rate' => $summary['visit_to_booking_rate'],
+                    'description' => 'Reservas creadas durante el periodo seleccionado.',
+                ],
+            ],
+            'dailySeries' => $this->buildAcquisitionDailySeries($pageVisits, $leads, $appointments, $range),
+            'recentActivity' => $this->buildRecentAcquisitionActivity($leads, $appointments),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function exportDefinition(string $report): array
@@ -371,6 +445,7 @@ class ReportDataService
             'inventory' => $this->inventoryExportDefinition(),
             'customers' => $this->customersExportDefinition(),
             'collections' => $this->collectionsExportDefinition(),
+            'acquisition' => $this->acquisitionExportDefinition(),
             default => throw new InvalidArgumentException("Unknown report [{$report}]."),
         };
     }
@@ -680,6 +755,54 @@ class ReportDataService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function acquisitionExportDefinition(): array
+    {
+        $data = $this->acquisition();
+
+        return [
+            'report' => 'acquisition',
+            'title' => 'Reporte de Adquisicion',
+            'description' => 'Visitas, contactos y citas capturadas desde la landing publica del taller.',
+            'file_name' => $this->buildFileName('reporte-adquisicion'),
+            'summary' => [
+                ['label' => 'Visitas Totales', 'value' => $data['summary']['total_visits'], 'type' => 'number'],
+                ['label' => 'Visitas Unicas', 'value' => $data['summary']['unique_visits'], 'type' => 'number'],
+                ['label' => 'WhatsApp', 'value' => $data['summary']['whatsapp_leads'], 'type' => 'number'],
+                ['label' => 'Formularios', 'value' => $data['summary']['form_leads'], 'type' => 'number'],
+                ['label' => 'Citas Agendadas', 'value' => $data['summary']['booked_appointments'], 'type' => 'number'],
+                ['label' => 'Conv. Visita a Contacto', 'value' => $data['summary']['visit_to_engaged_rate'], 'type' => 'percent'],
+                ['label' => 'Conv. Visita a Cita', 'value' => $data['summary']['visit_to_booking_rate'], 'type' => 'percent'],
+            ],
+            'sections' => [
+                [
+                    'title' => 'Serie Diaria',
+                    'columns' => [
+                        ['key' => 'date', 'label' => 'Fecha', 'type' => 'date'],
+                        ['key' => 'unique_visits', 'label' => 'Visitas Unicas', 'type' => 'number'],
+                        ['key' => 'whatsapp_leads', 'label' => 'WhatsApp', 'type' => 'number'],
+                        ['key' => 'form_leads', 'label' => 'Formularios', 'type' => 'number'],
+                        ['key' => 'booked_appointments', 'label' => 'Citas', 'type' => 'number'],
+                    ],
+                    'rows' => $data['dailySeries'],
+                ],
+                [
+                    'title' => 'Actividad Reciente',
+                    'columns' => [
+                        ['key' => 'source_label', 'label' => 'Canal', 'type' => 'text'],
+                        ['key' => 'visitor_name', 'label' => 'Nombre', 'type' => 'text'],
+                        ['key' => 'contact', 'label' => 'Contacto', 'type' => 'text'],
+                        ['key' => 'detail', 'label' => 'Detalle', 'type' => 'text'],
+                        ['key' => 'occurred_at', 'label' => 'Fecha', 'type' => 'date'],
+                    ],
+                    'rows' => $data['recentActivity'],
+                ],
+            ],
+        ];
+    }
+
     private function clientMetricsQuery(): Builder
     {
         return Client::query()
@@ -779,5 +902,195 @@ class ReportDataService
             Quote::STATUS_REJECTED => 'Rechazada',
             default => $status,
         };
+    }
+
+    /**
+     * @return array<int, array{value: string, label: string}>
+     */
+    private function acquisitionRangeOptions(): array
+    {
+        return [
+            ['value' => '7d', 'label' => 'Ultimos 7 dias'],
+            ['value' => '30d', 'label' => 'Ultimos 30 dias'],
+            ['value' => '90d', 'label' => 'Ultimos 90 dias'],
+            ['value' => '365d', 'label' => 'Ultimos 12 meses'],
+        ];
+    }
+
+    /**
+     * @return array{key: string, label: string, start: Carbon, end: Carbon}
+     */
+    private function resolveAcquisitionRange(?string $range): array
+    {
+        $definitions = collect($this->acquisitionRangeOptions())
+            ->keyBy('value')
+            ->map(fn (array $option): array => match ($option['value']) {
+                '7d' => ['label' => $option['label'], 'days' => 7],
+                '90d' => ['label' => $option['label'], 'days' => 90],
+                '365d' => ['label' => $option['label'], 'days' => 365],
+                default => ['label' => $option['label'], 'days' => 30],
+            });
+
+        $selectedKey = is_string($range) && $definitions->has($range) ? $range : '30d';
+        $selected = $definitions->get($selectedKey);
+        $end = now()->endOfDay();
+        $start = now()->subDays(($selected['days'] ?? 30) - 1)->startOfDay();
+
+        return [
+            'key' => $selectedKey,
+            'label' => $selected['label'] ?? 'Ultimos 30 dias',
+            'start' => $start,
+            'end' => $end,
+        ];
+    }
+
+    /**
+     * @param  Collection<int, PageVisit>  $pageVisits
+     * @param  Collection<int, TenantLead>  $leads
+     * @param  Collection<int, Appointment>  $appointments
+     * @return array<string, float|int>
+     */
+    private function buildAcquisitionSummary(Collection $pageVisits, Collection $leads, Collection $appointments): array
+    {
+        $whatsappLeads = $leads->where('source', TenantLead::SOURCE_WHATSAPP)->count();
+        $generalContactLeads = $leads->where('source', TenantLead::SOURCE_CONTACT_GENERAL)->count();
+        $quoteLeads = $leads->where('source', TenantLead::SOURCE_CONTACT_QUOTE)->count();
+        $formLeads = $generalContactLeads + $quoteLeads;
+        $engagedLeads = $whatsappLeads + $formLeads;
+        $uniqueVisits = (int) $pageVisits->sum('unique_visits');
+        $bookedAppointments = $appointments->count();
+
+        return [
+            'total_visits' => (int) $pageVisits->sum('visits'),
+            'unique_visits' => $uniqueVisits,
+            'whatsapp_leads' => $whatsappLeads,
+            'general_contact_leads' => $generalContactLeads,
+            'quote_leads' => $quoteLeads,
+            'form_leads' => $formLeads,
+            'engaged_leads' => $engagedLeads,
+            'booked_appointments' => $bookedAppointments,
+            'visit_to_engaged_rate' => $this->percentage($engagedLeads, $uniqueVisits),
+            'visit_to_booking_rate' => $this->percentage($bookedAppointments, $uniqueVisits),
+        ];
+    }
+
+    /**
+     * @param  Collection<int, PageVisit>  $pageVisits
+     * @param  Collection<int, TenantLead>  $leads
+     * @param  Collection<int, Appointment>  $appointments
+     * @param  array{start: Carbon, end: Carbon}  $range
+     * @return list<array<string, int|string>>
+     */
+    private function buildAcquisitionDailySeries(Collection $pageVisits, Collection $leads, Collection $appointments, array $range): array
+    {
+        $visitsByDate = $pageVisits->keyBy(fn (PageVisit $visit): string => $visit->date->toDateString());
+        $leadsByDate = $leads->groupBy(fn (TenantLead $lead): string => ($lead->occurred_at ?? $lead->created_at)->toDateString());
+        $appointmentsByDate = $appointments->groupBy(fn (Appointment $appointment): string => $appointment->created_at->toDateString());
+
+        return collect(CarbonPeriod::create($range['start']->toDateString(), $range['end']->toDateString()))
+            ->map(function (CarbonInterface $date) use ($appointmentsByDate, $leadsByDate, $visitsByDate): array {
+                $dateKey = $date->toDateString();
+                /** @var PageVisit|null $visit */
+                $visit = $visitsByDate->get($dateKey);
+                /** @var Collection<int, TenantLead> $dayLeads */
+                $dayLeads = $leadsByDate->get($dateKey, collect());
+                /** @var Collection<int, Appointment> $dayAppointments */
+                $dayAppointments = $appointmentsByDate->get($dateKey, collect());
+
+                return [
+                    'date' => $dateKey,
+                    'label' => $date->locale('es_CL')->translatedFormat('d M'),
+                    'visits' => (int) ($visit?->visits ?? 0),
+                    'unique_visits' => (int) ($visit?->unique_visits ?? 0),
+                    'whatsapp_leads' => $dayLeads->where('source', TenantLead::SOURCE_WHATSAPP)->count(),
+                    'form_leads' => $dayLeads
+                        ->whereIn('source', [TenantLead::SOURCE_CONTACT_GENERAL, TenantLead::SOURCE_CONTACT_QUOTE])
+                        ->count(),
+                    'booked_appointments' => $dayAppointments->count(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, TenantLead>  $leads
+     * @param  Collection<int, Appointment>  $appointments
+     * @return list<array<string, string|int|null>>
+     */
+    private function buildRecentAcquisitionActivity(Collection $leads, Collection $appointments): array
+    {
+        $leadActivity = $leads->map(function (TenantLead $lead): array {
+            $metadata = is_array($lead->metadata) ? $lead->metadata : [];
+
+            return [
+                'source' => $lead->source,
+                'source_label' => $this->leadSourceLabel($lead->source),
+                'visitor_name' => $lead->visitor_name ?: 'Visitante sin nombre',
+                'contact' => $lead->phone ?: $lead->email ?: 'Sin contacto',
+                'detail' => $this->leadActivityDetail($lead, $metadata),
+                'occurred_at' => ($lead->occurred_at ?? $lead->created_at)->toISOString(),
+                'sort_at' => ($lead->occurred_at ?? $lead->created_at)->timestamp,
+            ];
+        });
+
+        $appointmentActivity = $appointments->map(function (Appointment $appointment): array {
+            $schedule = $appointment->appointment_date->locale('es_CL')->translatedFormat('d M H:i');
+
+            return [
+                'source' => 'booking',
+                'source_label' => 'Cita agendada',
+                'visitor_name' => $appointment->customer_name ?: 'Cliente sin nombre',
+                'contact' => $appointment->phone ?: 'Sin telefono',
+                'detail' => "Patente {$appointment->plate} · {$schedule}",
+                'occurred_at' => $appointment->created_at->toISOString(),
+                'sort_at' => $appointment->created_at->timestamp,
+            ];
+        });
+
+        return $leadActivity
+            ->merge($appointmentActivity)
+            ->sortByDesc('sort_at')
+            ->take(12)
+            ->values()
+            ->map(function (array $activity): array {
+                unset($activity['sort_at']);
+
+                return $activity;
+            })
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
+    private function leadActivityDetail(TenantLead $lead, array $metadata): string
+    {
+        return match ($lead->source) {
+            TenantLead::SOURCE_WHATSAPP => 'Click al boton de WhatsApp desde la landing.',
+            TenantLead::SOURCE_CONTACT_QUOTE => 'Solicitud de cotizacion'.(filled($metadata['plate'] ?? null) ? " · {$metadata['plate']}" : ''),
+            default => filled($metadata['message'] ?? null)
+                ? Str::limit((string) $metadata['message'], 80)
+                : 'Formulario de contacto general.',
+        };
+    }
+
+    private function leadSourceLabel(string $source): string
+    {
+        return match ($source) {
+            TenantLead::SOURCE_WHATSAPP => 'WhatsApp',
+            TenantLead::SOURCE_CONTACT_GENERAL => 'Formulario contacto',
+            TenantLead::SOURCE_CONTACT_QUOTE => 'Formulario cotizacion',
+            default => $source,
+        };
+    }
+
+    private function percentage(int $value, int $total): float
+    {
+        if ($total === 0) {
+            return 0.0;
+        }
+
+        return (float) round(($value / $total) * 100, 1);
     }
 }

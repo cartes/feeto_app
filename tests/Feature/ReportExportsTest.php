@@ -21,7 +21,7 @@ class ReportExportsTest extends TestCase
         $supervisor = User::factory()->create(['tenant_id' => $tenant->id]);
         $supervisor->assignRole('Supervisor');
 
-        foreach (['sales', 'supervisors', 'inventory', 'customers', 'collections'] as $report) {
+        foreach (['sales', 'supervisors', 'inventory', 'customers', 'collections', 'acquisition'] as $report) {
             $this->actingAs($supervisor)
                 ->get(route('reports.export.pdf', ['tenantBySlug' => $tenant->slug, 'report' => $report]))
                 ->assertOk()
@@ -38,7 +38,7 @@ class ReportExportsTest extends TestCase
         $supervisor = User::factory()->create(['tenant_id' => $tenant->id]);
         $supervisor->assignRole('Supervisor');
 
-        foreach (['sales', 'supervisors', 'inventory', 'customers', 'collections'] as $report) {
+        foreach (['sales', 'supervisors', 'inventory', 'customers', 'collections', 'acquisition'] as $report) {
             $response = $this->actingAs($supervisor)
                 ->get(route('reports.export.excel', ['tenantBySlug' => $tenant->slug, 'report' => $report]));
 

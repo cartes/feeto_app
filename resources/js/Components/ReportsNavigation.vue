@@ -12,6 +12,7 @@ const reports = [
     { label: 'Existencias', route: 'reports.inventory' },
     { label: 'Clientes', route: 'reports.customers' },
     { label: 'Cobranza', route: 'reports.collections' },
+    { label: 'Adquisición', route: 'reports.acquisition' },
 ];
 </script>
 

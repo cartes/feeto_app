@@ -34,10 +34,11 @@ class ReportPagesTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Reports/Index')
-                ->has('reports', 5)
+                ->has('reports', 6)
                 ->where('reports.2.route', 'reports.inventory')
                 ->where('reports.3.route', 'reports.customers')
                 ->where('reports.4.route', 'reports.collections')
+                ->where('reports.5.route', 'reports.acquisition')
             );
     }
 

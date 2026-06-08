@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Mail\TenantContactMail;
 use App\Models\Branch;
 use App\Models\Tenant;
+use App\Models\TenantLead;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -54,6 +55,15 @@ class TenantContactTest extends TestCase
                 $mail->data['name'] === 'Juan Pérez' &&
                 $mail->data['type'] === 'general';
         });
+
+        $this->assertDatabaseHas('tenant_leads', [
+            'tenant_id' => $this->tenant->id,
+            'source' => TenantLead::SOURCE_CONTACT_GENERAL,
+            'channel' => 'landing_page',
+            'visitor_name' => 'Juan Pérez',
+            'email' => 'juan@example.com',
+            'phone' => '+56912345678',
+        ]);
     }
 
     public function test_contact_submission_sends_email_quote_with_vehicle_fields(): void
@@ -93,6 +103,15 @@ class TenantContactTest extends TestCase
                 $mail->data['model'] === 'Yaris' &&
                 $mail->data['year'] === 2018;
         });
+
+        $lead = TenantLead::query()->first();
+
+        $this->assertNotNull($lead);
+        $this->assertSame(TenantLead::SOURCE_CONTACT_QUOTE, $lead->source);
+        $this->assertSame('AB1234', $lead->metadata['plate'] ?? null);
+        $this->assertSame('Toyota', $lead->metadata['brand'] ?? null);
+        $this->assertSame('Yaris', $lead->metadata['model'] ?? null);
+        $this->assertSame(2018, $lead->metadata['year'] ?? null);
     }
 
     public function test_contact_validation_rules(): void

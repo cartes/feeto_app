@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\PageVisit;
+use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -78,5 +79,25 @@ class RecordPageVisitTest extends TestCase
         $visit = PageVisit::first();
         $this->assertEquals(2, $visit->visits);
         $this->assertEquals(2, $visit->unique_visits);
+    }
+
+    public function test_public_tenant_landing_visit_is_attributed_to_the_tenant(): void
+    {
+        $this->withoutVite();
+
+        $tenant = Tenant::factory()->create([
+            'name' => 'Taller Norte',
+            'slug' => 'taller-norte',
+        ]);
+
+        $this->get(route('taller.landing', ['tenantBySlug' => $tenant->slug]))
+            ->assertOk();
+
+        $this->assertDatabaseHas('page_visits', [
+            'tenant_id' => $tenant->id,
+            'path' => 'taller/taller-norte',
+            'visits' => 1,
+            'unique_visits' => 1,
+        ]);
     }
 }

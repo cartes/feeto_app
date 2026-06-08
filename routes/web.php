@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AcquisitionReportController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BlogCategoryController;
@@ -367,6 +368,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/reports/cobranza', [CollectionsReportController::class, 'index'])
             ->middleware('permission:reports.view')
             ->name('reports.collections');
+        Route::get('/reports/adquisicion', [AcquisitionReportController::class, 'index'])
+            ->middleware('permission:reports.view')
+            ->name('reports.acquisition');
         Route::get('/reports/export/{report}/pdf', [ReportExportController::class, 'pdf'])
             ->whereIn('report', ReportDataService::reportKeys())
             ->middleware('permission:reports.view')

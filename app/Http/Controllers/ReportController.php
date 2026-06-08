@@ -67,6 +67,12 @@ class ReportController extends Controller
                     'route' => 'reports.collections',
                     'category' => 'Caja',
                 ],
+                [
+                    'name' => 'Adquisición',
+                    'description' => 'Landing, contactos, WhatsApp y citas agendadas por taller.',
+                    'route' => 'reports.acquisition',
+                    'category' => 'Marketing',
+                ],
             ],
         ]);
     }

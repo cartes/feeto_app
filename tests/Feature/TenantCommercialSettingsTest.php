@@ -36,7 +36,7 @@ class TenantCommercialSettingsTest extends TestCase
         ]);
     }
 
-    public function test_professional_plan_users_can_access_sales_and_supervisor_reports(): void
+    public function test_professional_plan_users_can_access_sales_supervisor_and_acquisition_reports(): void
     {
         $tenant = $this->setUpTenant();
         $tenant->update(['plan' => 'profesional']);
@@ -53,6 +53,11 @@ class TenantCommercialSettingsTest extends TestCase
             ->get(route('reports.supervisors', ['tenantBySlug' => $tenant->slug]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Reports/Supervisors'));
+
+        $this->actingAs($supervisor)
+            ->get(route('reports.acquisition', ['tenantBySlug' => $tenant->slug]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Reports/Acquisition'));
     }
 
     public function test_dashboard_shows_overdue_invoices_only_for_users_with_financials_permission(): void

@@ -8,6 +8,7 @@ use App\Mail\TenantContactMail;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Tenant;
+use App\Models\TenantLead;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -237,6 +238,28 @@ class PublicBookingController extends Controller
         if (! $recipientEmail) {
             $recipientEmail = config('mail.from.address');
         }
+
+        TenantLead::create([
+            'tenant_id' => $tenantBySlug->id,
+            'source' => $validated['type'] === 'quote'
+                ? TenantLead::SOURCE_CONTACT_QUOTE
+                : TenantLead::SOURCE_CONTACT_GENERAL,
+            'channel' => 'landing_page',
+            'visitor_name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'metadata' => [
+                'type' => $validated['type'],
+                'message' => $validated['message'],
+                'plate' => $validated['plate'] ?? null,
+                'brand' => $validated['brand'] ?? null,
+                'model' => $validated['model'] ?? null,
+                'year' => $validated['year'] ?? null,
+                'landing_path' => $request->path() ?: '/',
+                'referer' => $request->headers->get('referer'),
+            ],
+            'occurred_at' => now(),
+        ]);
 
         Mail::to($recipientEmail)->send(new TenantContactMail($validated));
 
