@@ -189,6 +189,17 @@ class SeoBlogTest extends TestCase
         $response->assertSee('Contenido del articulo publico');
     }
 
+    public function test_public_blog_pages_include_blog_category_route_in_ziggy(): void
+    {
+        $this->withoutVite();
+
+        $response = $this->get(route('blog.index'));
+
+        $response->assertOk();
+        $response->assertSee('"blog.category"', false);
+        $response->assertSee('"uri":"blog\\/categoria\\/{slug}"', false);
+    }
+
     public function test_public_blog_category_pages(): void
     {
         $category = BlogCategory::create([
