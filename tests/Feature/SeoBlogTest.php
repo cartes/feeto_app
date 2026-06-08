@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Tenant;
 use App\Models\User;
@@ -62,6 +63,22 @@ class SeoBlogTest extends TestCase
             'is_published' => false,
         ]);
 
+        // Crear categorías
+        $activeCategory = BlogCategory::create([
+            'name' => 'Categoría Activa',
+            'slug' => 'categoria-activa',
+            'color' => '#FF7A00',
+        ]);
+
+        $inactiveCategory = BlogCategory::create([
+            'name' => 'Categoría Inactiva',
+            'slug' => 'categoria-inactiva',
+            'color' => '#FF7A00',
+        ]);
+
+        // Vincular categoría activa al post publicado
+        $publishedPost->categories()->attach($activeCategory->id);
+
         $response = $this->get(route('sitemap'));
 
         $response->assertOk();
@@ -84,6 +101,12 @@ class SeoBlogTest extends TestCase
 
         // No debe contener el post borrador
         $response->assertDontSee(route('blog.show', 'post-borrador'), false);
+
+        // Debe contener la categoría activa
+        $response->assertSee(route('blog.category', 'categoria-activa'), false);
+
+        // No debe contener la categoría inactiva
+        $response->assertDontSee(route('blog.category', 'categoria-inactiva'), false);
     }
 
     public function test_super_admin_can_access_blog_crud(): void
@@ -164,6 +187,33 @@ class SeoBlogTest extends TestCase
         $response->assertOk();
         $response->assertSee('Post Publico Test');
         $response->assertSee('Contenido del articulo publico');
+    }
+
+    public function test_public_blog_category_pages(): void
+    {
+        $category = BlogCategory::create([
+            'name' => 'Consejos de Gestión',
+            'slug' => 'consejos-de-gestion',
+            'color' => '#10B981',
+        ]);
+
+        $post = BlogPost::create([
+            'title' => 'Como gestionar un taller',
+            'slug' => 'como-gestionar-un-taller',
+            'summary' => 'Resumen de gestion',
+            'content' => '<p>Contenido de gestion</p>',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $post->categories()->attach($category->id);
+
+        $this->withoutVite();
+
+        $response = $this->get(route('blog.category', $category->slug));
+        $response->assertOk();
+        $response->assertSee('Consejos de Gestión');
+        $response->assertSee('Como gestionar un taller');
     }
 
     public function test_super_admin_can_see_drafts_on_public_blog_pages(): void

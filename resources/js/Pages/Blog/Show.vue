@@ -104,12 +104,13 @@ const formatDate = (dateStr) => {
                         <span>{{ seo.reading_minutes }} min de lectura</span>
                         <template v-if="post.categories?.length">
                             <span>•</span>
-                            <span
+                            <Link
                                 v-for="cat in post.categories"
                                 :key="cat.id"
-                                class="px-2.5 py-0.5 rounded-full text-white text-xs font-medium"
+                                :href="route('blog.category', cat.slug)"
+                                class="px-2.5 py-0.5 rounded-full text-white text-xs font-bold transition-opacity hover:opacity-90"
                                 :style="`background-color: ${cat.color}`"
-                            >{{ cat.name }}</span>
+                            >{{ cat.name }}</Link>
                         </template>
                     </div>
                     <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">

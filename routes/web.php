@@ -23,14 +23,14 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientInvoiceController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ManualQuoteController;
+use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\PublicPricingController;
-use App\Http\Controllers\ManualQuoteController;
-use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
@@ -78,6 +78,7 @@ Route::get('/precios', PublicPricingController::class)->name('pricing');
 
 // Blog Público
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/categoria/{slug}', [PublicBlogController::class, 'category'])->name('blog.category');
 Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 // Solicitud de prueba gratuita

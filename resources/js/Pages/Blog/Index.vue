@@ -8,6 +8,8 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 defineProps({
     posts: Array,
     seo: Object,
+    categories: Array,
+    activeCategory: Object,
 });
 
 const showLoginModal = ref(false);
@@ -64,12 +66,50 @@ const formatDate = (dateStr) => {
             <!-- Hero Header -->
             <div class="max-w-5xl mx-auto px-6 lg:px-8 text-center mb-16">
                 <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Recursos y Consejos</span>
-                <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
-                    Blog de <em class="text-[#FF7A00] not-italic">TallerFlow</em>
-                </h1>
-                <p class="text-slate-500 max-w-2xl mx-auto text-base leading-relaxed">
-                    Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.
-                </p>
+                
+                <template v-if="activeCategory">
+                    <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
+                        Categoría: <em class="text-[#FF7A00] not-italic">{{ activeCategory.name }}</em>
+                    </h1>
+                    <p class="text-slate-500 max-w-2xl mx-auto text-base leading-relaxed">
+                        Explora recursos, consejos y guías sobre {{ activeCategory.name.toLowerCase() }} para optimizar y hacer crecer tu taller mecánico.
+                    </p>
+                </template>
+                <template v-else>
+                    <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
+                        Blog de <em class="text-[#FF7A00] not-italic">TallerFlow</em>
+                    </h1>
+                    <p class="text-slate-500 max-w-2xl mx-auto text-base leading-relaxed">
+                        Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.
+                    </p>
+                </template>
+            </div>
+
+            <!-- Category Filters -->
+            <div v-if="categories && categories.length > 0" class="max-w-5xl mx-auto px-6 lg:px-8 mb-12">
+                <div class="flex items-center justify-center flex-wrap gap-2">
+                    <Link
+                        :href="route('blog.index')"
+                        class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm duration-200 border"
+                        :class="!activeCategory
+                            ? 'bg-slate-900 border-slate-900 text-white'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'"
+                    >
+                        Todos
+                    </Link>
+                    <Link
+                        v-for="cat in categories"
+                        :key="cat.id"
+                        :href="route('blog.category', cat.slug)"
+                        class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm duration-200 border"
+                        :class="activeCategory?.id === cat.id
+                            ? 'text-white'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'"
+                        :style="activeCategory?.id === cat.id ? `background-color: ${cat.color}; border-color: ${cat.color}` : ''"
+                    >
+                        {{ cat.name }}
+                    </Link>
+                </div>
             </div>
 
             <!-- List of posts -->
@@ -107,12 +147,13 @@ const formatDate = (dateStr) => {
                                     <span>Por TallerFlow</span>
                                     <template v-if="post.categories?.length">
                                         <span>•</span>
-                                        <span
+                                        <Link
                                             v-for="cat in post.categories"
                                             :key="cat.id"
-                                            class="px-2 py-0.5 rounded-full text-white text-xs font-medium"
+                                            :href="route('blog.category', cat.slug)"
+                                            class="px-2 py-0.5 rounded-full text-white text-[10px] font-bold tracking-wide transition-opacity hover:opacity-90"
                                             :style="`background-color: ${cat.color}`"
-                                        >{{ cat.name }}</span>
+                                        >{{ cat.name }}</Link>
                                     </template>
                                 </div>
                                 <h2 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-[#FF7A00] transition duration-200">
@@ -142,7 +183,7 @@ const formatDate = (dateStr) => {
                     <svg class="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5-6h7.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/>
                     </svg>
-                    <p class="text-slate-500 font-medium">Próximamente publicaremos artículos interesantes.</p>
+                    <p class="text-slate-500 font-medium">No se encontraron artículos en esta categoría.</p>
                 </div>
             </div>
         </main>

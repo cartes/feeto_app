@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -23,6 +24,13 @@ class PublicBlogController extends Controller
             ->map(fn ($post) => array_merge($post->toArray(), [
                 'featured_image_url' => $post->featured_image_url,
             ]));
+
+        $categories = BlogCategory::query()
+            ->whereHas('posts', function ($query) {
+                $query->where('is_published', true);
+            })
+            ->orderBy('name')
+            ->get();
 
         $canonicalUrl = request()->url();
         $title = 'Blog · TallerFlow — Recursos para Talleres Mecánicos';
@@ -68,6 +76,83 @@ class PublicBlogController extends Controller
         return Inertia::render('Blog/Index', [
             'posts' => $posts,
             'seo' => $seo,
+            'categories' => $categories,
+            'activeCategory' => null,
+        ]);
+    }
+
+    public function category(string $slug): Response
+    {
+        $category = BlogCategory::where('slug', $slug)->firstOrFail();
+
+        $posts = BlogPost::with(['categories', 'featuredMedia'])
+            ->whereHas('categories', function ($query) use ($category) {
+                $query->where('blog_categories.id', $category->id);
+            })
+            ->when(! auth()->check() || ! auth()->user()->is_super_admin, function ($query) {
+                $query->where('is_published', true);
+            })
+            ->orderBy('published_at', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn ($post) => array_merge($post->toArray(), [
+                'featured_image_url' => $post->featured_image_url,
+            ]));
+
+        $categories = BlogCategory::query()
+            ->whereHas('posts', function ($query) {
+                $query->where('is_published', true);
+            })
+            ->orderBy('name')
+            ->get();
+
+        $canonicalUrl = request()->url();
+        $title = "Artículos sobre {$category->name} · Blog de TallerFlow";
+        $description = "Explora recursos, consejos y guías sobre {$category->name} para optimizar y hacer crecer tu taller mecánico.";
+        $ogImage = url('/images/tallerflow-social-share.png');
+
+        $seo = [
+            'title' => $title,
+            'description' => $description,
+            'canonical_url' => $canonicalUrl,
+            'og_image' => $ogImage,
+            'og_image_alt' => "Blog de TallerFlow - {$category->name}",
+            'og_image_width' => 1200,
+            'og_image_height' => 630,
+            'twitter_card' => 'summary_large_image',
+            'schema' => [
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'CollectionPage',
+                    '@id' => $canonicalUrl.'#collection',
+                    'url' => $canonicalUrl,
+                    'name' => $title,
+                    'description' => $description,
+                    'inLanguage' => 'es-CL',
+                    'publisher' => [
+                        '@type' => 'Organization',
+                        '@id' => url('/').'#organization',
+                        'name' => 'TallerFlow',
+                        'logo' => ['@type' => 'ImageObject', 'url' => url('/images/tallerflow-logo.png')],
+                    ],
+                ],
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => url('/')],
+                        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => route('blog.index')],
+                        ['@type' => 'ListItem', 'position' => 3, 'name' => $category->name, 'item' => $canonicalUrl],
+                    ],
+                ],
+            ],
+        ];
+
+        return Inertia::render('Blog/Index', [
+            'posts' => $posts,
+            'seo' => $seo,
+            'categories' => $categories,
+            'activeCategory' => $category,
         ]);
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Tenant;
 use Illuminate\Http\Response;
@@ -71,6 +72,21 @@ class SeoController extends Controller
                 'lastmod' => ($post->published_at ?? $post->updated_at)->toAtomString(),
                 'changefreq' => 'weekly',
                 'priority' => '0.6',
+            ];
+        }
+
+        // 4. Categorías del blog
+        $categories = BlogCategory::query()
+            ->whereHas('posts', function ($query) {
+                $query->where('is_published', true);
+            })
+            ->get();
+        foreach ($categories as $category) {
+            $urls[] = [
+                'loc' => route('blog.category', ['slug' => $category->slug]),
+                'lastmod' => now()->startOfDay()->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
             ];
         }
 
