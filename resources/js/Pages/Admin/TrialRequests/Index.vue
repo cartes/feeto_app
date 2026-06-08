@@ -2,6 +2,7 @@
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 
 const props = defineProps({
     requests: Object,
@@ -178,11 +179,10 @@ const formatDate = (date) => {
                                                 Se activará un trial de 14 días con plan Básico.
                                             </p>
                                             <label class="block text-xs font-semibold text-slate-700 mb-1">Contraseña provisional del administrador</label>
-                                            <input
+                                            <PasswordInput
                                                 v-model="approveForm.admin_password"
-                                                type="password"
                                                 placeholder="Mínimo 8 caracteres"
-                                                class="w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                                                class="w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 text-slate-900"
                                                 :class="{ 'border-rose-400': approveForm.errors.admin_password }"
                                             />
                                             <p v-if="approveForm.errors.admin_password" class="mt-1 text-xs text-rose-600">{{ approveForm.errors.admin_password }}</p>

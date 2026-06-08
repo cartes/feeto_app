@@ -2,6 +2,7 @@
 import { ref, computed, watch, reactive } from 'vue';
 import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 
 const page = usePage();
 const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
@@ -444,13 +445,13 @@ const removeBlockedDate = (index) => {
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contraseña</label>
-                            <input v-model="userForm.password" type="password" required placeholder="Mínimo 8 caracteres"
+                            <PasswordInput v-model="userForm.password" required placeholder="Mínimo 8 caracteres"
                                 class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.password" class="text-red-500 text-xs">{{ userForm.errors.password }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Confirmar Contraseña</label>
-                            <input v-model="userForm.password_confirmation" type="password" required placeholder="Repite la contraseña"
+                            <PasswordInput v-model="userForm.password_confirmation" required placeholder="Repite la contraseña"
                                 class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]" />
                             <p v-if="userForm.errors.password_confirmation" class="text-red-500 text-xs">{{ userForm.errors.password_confirmation }}</p>
                         </div>

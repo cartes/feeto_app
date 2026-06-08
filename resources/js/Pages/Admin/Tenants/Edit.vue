@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 
 const props = defineProps({
     tenant: Object,
@@ -154,7 +155,7 @@ const submitAdmin = () => {
 
                         <div>
                             <label for="admin_password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                            <input type="password" id="admin_password" v-model="adminForm.password" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="Deja en blanco para mantener la actual" />
+                            <PasswordInput id="admin_password" v-model="adminForm.password" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="Deja en blanco para mantener la actual" />
                             <p class="mt-1 text-xs text-gray-500">Mínimo 8 caracteres. Opcional si ya existe un usuario.</p>
                             <div v-if="adminForm.errors.password" class="mt-1 text-sm text-red-600">{{ adminForm.errors.password }}</div>
                         </div>

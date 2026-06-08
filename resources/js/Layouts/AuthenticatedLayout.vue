@@ -1,13 +1,16 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+const user = computed(() => page.props.auth.user);
 </script>
 
 <template>
@@ -196,5 +199,6 @@ const showingNavigationDropdown = ref(false);
                 <slot />
             </main>
         </div>
+        <PasswordChangeModal v-if="user?.needs_password_change" />
     </div>
 </template>

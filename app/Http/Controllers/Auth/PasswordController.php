@@ -22,8 +22,26 @@ class PasswordController extends Controller
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+            'needs_password_change' => false,
         ]);
 
         return back();
+    }
+
+    /**
+     * Force change user's password on first login.
+     */
+    public function forceChange(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+            'needs_password_change' => false,
+        ]);
+
+        return back()->with('success', 'Contraseña actualizada correctamente.');
     }
 }

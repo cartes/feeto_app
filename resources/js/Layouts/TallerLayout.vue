@@ -3,6 +3,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import NotificationBell from '@/Components/NotificationBell.vue';
+import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -205,6 +206,7 @@ const navItems = computed(() => ([
             </nav>
 
         </div>
+        <PasswordChangeModal v-if="user?.needs_password_change" />
     </div>
 </template>
 

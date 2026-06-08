@@ -58,6 +58,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'tenant_id' => Tenant::current()->id,
+            'needs_password_change' => false,
         ]);
 
         event(new Registered($user));

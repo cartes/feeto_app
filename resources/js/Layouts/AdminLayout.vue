@@ -3,6 +3,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import Toast from '@/Components/Toast.vue';
+import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const page = usePage();
@@ -436,5 +437,6 @@ onUnmounted(() => {
       :type="toast.type"
       @dismiss="toast.message = ''"
     />
+    <PasswordChangeModal v-if="user?.needs_password_change" />
   </div>
 </template>

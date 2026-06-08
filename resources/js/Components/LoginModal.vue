@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -85,9 +86,8 @@ const close = () => {
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
-                    <TextInput
+                    <PasswordInput
                         id="modal_password"
-                        type="password"
                         class="block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-12"
                         v-model="form.password"
                         required

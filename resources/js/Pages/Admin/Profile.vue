@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 
 const props = defineProps({
     ai_settings: Object,
@@ -159,8 +160,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                     <form @submit.prevent="submitPassword" class="space-y-6 max-w-lg">
                         <div>
                             <label for="current_password" class="block text-sm font-medium text-gray-700">Contraseña actual</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 id="current_password"
                                 v-model="passwordForm.current_password"
                                 autocomplete="current-password"
@@ -170,8 +170,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                         </div>
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 id="password"
                                 v-model="passwordForm.password"
                                 autocomplete="new-password"
@@ -181,8 +180,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                         </div>
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar nueva contraseña</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 id="password_confirmation"
                                 v-model="passwordForm.password_confirmation"
                                 autocomplete="new-password"
@@ -235,8 +233,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(ai_settings, 'gemini_api_key')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurada</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurada</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="gemini_api_key"
                                         v-model="apiForm.gemini_api_key"
                                         :placeholder="hasSetting(ai_settings, 'gemini_api_key') ? '••••••••' : 'Ingrese la API Key'"
@@ -252,8 +249,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(ai_settings, 'openai_api_key')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurada</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurada</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="openai_api_key"
                                         v-model="apiForm.openai_api_key"
                                         :placeholder="hasSetting(ai_settings, 'openai_api_key') ? '••••••••' : 'Ingrese la API Key'"
@@ -269,8 +265,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(ai_settings, 'anthropic_api_key')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurada</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurada</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="anthropic_api_key"
                                         v-model="apiForm.anthropic_api_key"
                                         :placeholder="hasSetting(ai_settings, 'anthropic_api_key') ? '••••••••' : 'Ingrese la API Key'"
@@ -296,8 +291,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(integration_settings, 'boostr_api_key')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurada</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurada</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="boostr_api_key"
                                         v-model="apiForm.boostr_api_key"
                                         :placeholder="hasSetting(integration_settings, 'boostr_api_key') ? '••••••••' : 'Ingrese la API Key'"
@@ -351,8 +345,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(payment_settings, 'mp_access_token')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurado</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurado</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="mp_access_token"
                                         v-model="apiForm.mp_access_token"
                                         :placeholder="hasSetting(payment_settings, 'mp_access_token') ? '••••••••' : 'APP_USR-...'"
@@ -368,8 +361,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(payment_settings, 'mp_public_key')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurada</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurada</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="mp_public_key"
                                         v-model="apiForm.mp_public_key"
                                         :placeholder="hasSetting(payment_settings, 'mp_public_key') ? '••••••••' : 'APP_USR-...'"
@@ -385,8 +377,7 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                         <span v-if="hasSetting(payment_settings, 'mp_webhook_secret')" class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Configurado</span>
                                         <span v-else class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">No configurado</span>
                                     </div>
-                                    <input
-                                        type="password"
+                                    <PasswordInput
                                         id="mp_webhook_secret"
                                         v-model="apiForm.mp_webhook_secret"
                                         :placeholder="hasSetting(payment_settings, 'mp_webhook_secret') ? '••••••••' : 'Ingrese el secreto'"

@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -142,10 +143,9 @@ const submitPassword = () => {
                         <form @submit.prevent="submitPassword" class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Nueva contraseña</label>
-                                <input
-                                    type="password"
+                                <PasswordInput
                                     v-model="passwordForm.password"
-                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900"
                                     placeholder="Mínimo 8 caracteres"
                                     autocomplete="new-password"
                                 />
@@ -154,10 +154,9 @@ const submitPassword = () => {
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirmar contraseña</label>
-                                <input
-                                    type="password"
+                                <PasswordInput
                                     v-model="passwordForm.password_confirmation"
-                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900"
                                     placeholder="Repetir contraseña"
                                     autocomplete="new-password"
                                 />

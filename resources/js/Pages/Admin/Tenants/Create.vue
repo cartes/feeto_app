@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 
 const form = useForm({
     name: '',
@@ -185,8 +186,7 @@ const submit = () => {
 
                         <div>
                             <label for="admin_password" class="block text-sm font-medium text-gray-700">Contraseña <span class="text-red-500">*</span></label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 id="admin_password"
                                 v-model="form.admin_password"
                                 required
