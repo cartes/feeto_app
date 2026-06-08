@@ -828,7 +828,7 @@ const removeBlockedDate = (index) => {
                         <p class="text-sm font-black uppercase tracking-widest text-gray-500">Vista previa Google</p>
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-1">
                             <p class="text-[#1a0dab] text-sm font-medium leading-tight truncate">{{ tenant?.name ?? 'Tu Taller' }} | Agendar cita</p>
-                            <p class="text-[#006621] text-[11px]">feeto.cl/taller/{{ tenant?.slug ?? 'tu-taller' }}</p>
+                            <p class="text-[#006621] text-[11px]">tallerflow.cl/taller/{{ tenant?.slug ?? 'tu-taller' }}</p>
                             <p class="text-gray-600 text-[11px] leading-relaxed">
                                 {{ seoForm.seo_description?.slice(0, 160) || 'Agrega una descripción para tu taller y aparecerá aquí en los resultados de Google.' }}
                             </p>

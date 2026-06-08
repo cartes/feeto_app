@@ -47,7 +47,7 @@ class ReceptionControllerTest extends TestCase
         $tenantB = $this->createTenant([
             'name' => 'Taller Dos',
             'slug' => 'taller-dos',
-            'domain' => 'dos.feeto.test',
+            'domain' => 'dos.tallerflow.test',
             'rut_taller' => '22222222-2',
         ]);
 
@@ -83,7 +83,7 @@ class ReceptionControllerTest extends TestCase
         $tenantB = $this->createTenant([
             'name' => 'Taller Dos',
             'slug' => 'taller-dos',
-            'domain' => 'dos.feeto.test',
+            'domain' => 'dos.tallerflow.test',
             'rut_taller' => '22222222-2',
         ]);
 
@@ -377,7 +377,7 @@ class ReceptionControllerTest extends TestCase
         $tenantB = $this->createTenant([
             'name' => 'Taller Dos',
             'slug' => 'taller-dos',
-            'domain' => 'dos.feeto.test',
+            'domain' => 'dos.tallerflow.test',
             'rut_taller' => '22222222-2',
         ]);
 

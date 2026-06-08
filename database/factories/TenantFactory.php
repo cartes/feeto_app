@@ -25,7 +25,7 @@ class TenantFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1, 9999),
-            'domain' => Str::slug($name).'.feeto.cl',
+            'domain' => Str::slug($name).'.tallerflow.cl',
             'rut_taller' => fake()->numerify('##.###.###-#'),
             'is_active' => true,
             'plan_type' => 'gratuito',

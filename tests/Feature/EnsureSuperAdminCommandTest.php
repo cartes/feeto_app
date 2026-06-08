@@ -17,11 +17,11 @@ class EnsureSuperAdminCommandTest extends TestCase
     public function test_it_creates_a_super_admin_when_missing(): void
     {
         $this->artisan('feeto:ensure-super-admin', [
-            'email' => 'superadmin@feeto.cl',
+            'email' => 'superadmin@tallerflow.cl',
             '--password' => 'ClaveSegura123!',
         ])->assertSuccessful();
 
-        $user = User::query()->where('email', 'superadmin@feeto.cl')->first();
+        $user = User::query()->where('email', 'superadmin@tallerflow.cl')->first();
 
         $this->assertNotNull($user);
         $this->assertSame('Super Admin', $user->name);
@@ -37,7 +37,7 @@ class EnsureSuperAdminCommandTest extends TestCase
 
         $user = User::factory()->create([
             'name' => 'Usuario Normal',
-            'email' => 'admin@feeto.cl',
+            'email' => 'admin@tallerflow.cl',
             'password' => 'password-anterior',
             'is_super_admin' => false,
             'tenant_id' => $tenant->id,
@@ -45,7 +45,7 @@ class EnsureSuperAdminCommandTest extends TestCase
         ]);
 
         $this->artisan('feeto:ensure-super-admin', [
-            'email' => 'admin@feeto.cl',
+            'email' => 'admin@tallerflow.cl',
             '--name' => 'Super Admin Recuperado',
             '--password' => 'NuevaClaveSegura123!',
         ])->assertSuccessful();

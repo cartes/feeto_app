@@ -40,11 +40,11 @@ class AdminProfileControllerTest extends TestCase
         $response = $this->actingAs($this->superAdmin)
             ->put(route('admin.profile.update'), [
                 'name' => 'Updated Name',
-                'email' => 'updated@feeto.cl',
+                'email' => 'updated@tallerflow.cl',
             ]);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('users', ['name' => 'Updated Name', 'email' => 'updated@feeto.cl']);
+        $this->assertDatabaseHas('users', ['name' => 'Updated Name', 'email' => 'updated@tallerflow.cl']);
     }
 
     public function test_password_can_be_changed(): void

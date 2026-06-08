@@ -756,7 +756,7 @@ const trackWhatsAppClick = () => {
         ===================================================== -->
         <footer class="bg-white border-t border-gray-100 py-8 text-center">
             <p class="text-sm text-gray-400">
-                Powered by <span class="font-bold text-orange-500">Feeto</span> — La plataforma inteligente para talleres automotrices
+                Powered by <span class="font-bold text-orange-500">Taller Flow</span> — La plataforma inteligente para talleres automotrices
             </p>
         </footer>
 
@@ -769,7 +769,7 @@ const trackWhatsAppClick = () => {
         ===================================================== -->
         <a
             v-if="tenant.whatsapp_number"
-            :href="`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${tenant.name}, vi tu página en Feeto y tengo una consulta.`)}`"
+            :href="`https://wa.me/${tenant.whatsapp_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${tenant.name}, vi tu página en Taller Flow y tengo una consulta.`)}`"
             target="_blank"
             rel="noopener noreferrer"
             @click="trackWhatsAppClick"

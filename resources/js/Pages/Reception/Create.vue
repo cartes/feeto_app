@@ -92,7 +92,7 @@ const formattedPlate = computed(() => {
 
 const ownerSourceLabel = computed(() => {
     if (ownerSource.value === 'internal') {
-        return 'Dueño guardado en Feeto';
+        return 'Dueño guardado en Taller Flow';
     }
 
     if (ownerSource.value === 'boostr') {

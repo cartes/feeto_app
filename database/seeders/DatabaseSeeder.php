@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         // Super Admin (sin tenant)
         User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@feeto.cl',
+            'email' => 'superadmin@tallerflow.cl',
             'password' => bcrypt('password'),
             'is_super_admin' => true,
             'tenant_id' => null,

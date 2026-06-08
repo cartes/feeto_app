@@ -23,7 +23,7 @@ const subscribe = (plan) => {
 </script>
 
 <template>
-    <Head :title="`Planes para ${tenant.name} — Feeto`" />
+    <Head :title="`Planes para ${tenant.name} — Taller Flow`" />
 
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 font-sans">
 
@@ -32,7 +32,7 @@ const subscribe = (plan) => {
             <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
                 <ApplicationLogo class="h-9 w-9 rounded-xl flex-shrink-0 shadow-sm" />
                 <div>
-                    <span class="text-lg font-extrabold text-slate-800 leading-none">Feeto</span>
+                    <span class="text-lg font-extrabold text-slate-800 leading-none">Taller Flow</span>
                     <span class="text-slate-400 mx-2">·</span>
                     <span class="text-slate-600 font-medium text-sm">{{ tenant.name }}</span>
                 </div>

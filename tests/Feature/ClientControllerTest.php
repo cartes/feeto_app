@@ -257,7 +257,7 @@ class ClientControllerTest extends TestCase
         $tenantB = $this->createTenant([
             'name' => 'Taller Dos',
             'slug' => 'taller-dos',
-            'domain' => 'dos.feeto.test',
+            'domain' => 'dos.tallerflow.test',
             'rut_taller' => '99999999-9',
         ]);
 

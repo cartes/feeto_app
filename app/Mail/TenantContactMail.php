@@ -19,7 +19,7 @@ class TenantContactMail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function __construct(public array $data) {}
 
@@ -30,8 +30,8 @@ class TenantContactMail extends Mailable
     {
         $isQuote = ($this->data['type'] ?? 'general') === 'quote';
         $subject = $isQuote
-            ? '[Cotización] Nueva solicitud de cotización - Feeto'
-            : '[Contacto] Nuevo mensaje de contacto - Feeto';
+            ? '[Cotización] Nueva solicitud de cotización - Taller Flow'
+            : '[Contacto] Nuevo mensaje de contacto - Taller Flow';
 
         return new Envelope(
             subject: $subject,

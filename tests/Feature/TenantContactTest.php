@@ -30,10 +30,10 @@ class TenantContactTest extends TestCase
         Mail::fake();
 
         // Create main branch for the tenant
-        Branch::create([
+        Branch::forceCreate([
             'tenant_id' => $this->tenant->id,
             'name' => 'Sucursal Principal',
-            'email' => 'sucursal-principal@feeto.cl',
+            'email' => 'sucursal-principal@tallerflow.cl',
             'is_main' => true,
             'is_active' => true,
         ]);
@@ -50,7 +50,7 @@ class TenantContactTest extends TestCase
         $response->assertSessionHas('contact_success', true);
 
         Mail::assertSent(TenantContactMail::class, function (TenantContactMail $mail): bool {
-            return $mail->hasTo('sucursal-principal@feeto.cl') &&
+            return $mail->hasTo('sucursal-principal@tallerflow.cl') &&
                 $mail->data['name'] === 'Juan Pérez' &&
                 $mail->data['type'] === 'general';
         });
@@ -61,10 +61,10 @@ class TenantContactTest extends TestCase
         Mail::fake();
 
         // Create main branch for the tenant
-        Branch::create([
+        Branch::forceCreate([
             'tenant_id' => $this->tenant->id,
             'name' => 'Sucursal Principal',
-            'email' => 'sucursal-principal@feeto.cl',
+            'email' => 'sucursal-principal@tallerflow.cl',
             'is_main' => true,
             'is_active' => true,
         ]);
@@ -85,7 +85,7 @@ class TenantContactTest extends TestCase
         $response->assertSessionHas('contact_success', true);
 
         Mail::assertSent(TenantContactMail::class, function (TenantContactMail $mail): bool {
-            return $mail->hasTo('sucursal-principal@feeto.cl') &&
+            return $mail->hasTo('sucursal-principal@tallerflow.cl') &&
                 $mail->data['name'] === 'Juan Pérez' &&
                 $mail->data['type'] === 'quote' &&
                 $mail->data['plate'] === 'AB1234' &&
@@ -121,7 +121,7 @@ class TenantContactTest extends TestCase
         // Create an admin user for the tenant, and no branches
         $admin = User::factory()->create([
             'tenant_id' => $this->tenant->id,
-            'email' => 'admin-taller@feeto.cl',
+            'email' => 'admin-taller@tallerflow.cl',
         ]);
 
         $response = $this->post(route('taller.contact.store', $this->tenant->slug), [
@@ -134,8 +134,8 @@ class TenantContactTest extends TestCase
 
         $response->assertRedirect();
 
-        Mail::assertSent(TenantContactMail::class, function (TenantContactMail $mail) use ($admin): bool {
-            return $mail->hasTo('admin-taller@feeto.cl');
+        Mail::assertSent(TenantContactMail::class, function (TenantContactMail $mail): bool {
+            return $mail->hasTo('admin-taller@tallerflow.cl');
         });
     }
 

@@ -165,7 +165,7 @@ onUnmounted(() => {
                         <button v-else class="cta primary" type="button" @click="showLoginModal = true">
                             <span>
                                 <span class="cta-title">Prueba gratis 14 días</span>
-                                <span class="cta-sub">Ingresa y empieza a probar Feeto</span>
+                                <span class="cta-sub">Ingresa y empieza a probar Taller Flow</span>
                             </span>
                             <span class="cta-arrow">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -393,7 +393,7 @@ onUnmounted(() => {
                         </div>
                         <div class="bg-gray-900 rounded-3xl p-6 col-span-2">
                             <p class="text-4xl font-black text-white">+200</p>
-                            <p class="text-sm text-gray-400 mt-1 font-medium">talleres mecánicos ya confían en Feeto</p>
+                            <p class="text-sm text-gray-400 mt-1 font-medium">talleres mecánicos ya confían en Taller Flow</p>
                         </div>
                     </div>
                 </div>
@@ -554,7 +554,7 @@ onUnmounted(() => {
             <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-2">
                     <ApplicationLogo class="h-7 w-7 rounded-lg" />
-                    <span class="text-base font-black text-gray-900">Feeto</span>
+                    <span class="text-base font-black text-gray-900">Taller Flow</span>
                 </div>
 
                 <nav class="flex items-center gap-6 flex-wrap justify-center">
@@ -578,7 +578,7 @@ onUnmounted(() => {
                 </nav>
 
                 <p class="text-xs text-gray-400 font-medium">
-                    &copy; {{ new Date().getFullYear() }} Feeto. Todos los derechos reservados.
+                    &copy; {{ new Date().getFullYear() }} Taller Flow. Todos los derechos reservados.
                 </p>
             </div>
         </footer>

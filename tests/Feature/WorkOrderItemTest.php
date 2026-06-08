@@ -28,7 +28,7 @@ class WorkOrderItemTest extends TestCase
             [
                 'name' => 'Taller Test',
                 'slug' => 'taller-test',
-                'domain' => 'test.feeto.test',
+                'domain' => 'test.tallerflow.test',
             ]
         );
 

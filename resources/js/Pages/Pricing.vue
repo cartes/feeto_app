@@ -243,7 +243,7 @@ const jsonLd = computed(() => JSON.stringify({
             <div class="pricing-footer-inner">
                 <div class="flex items-center gap-2">
                     <ApplicationLogo class="h-7 w-7 rounded-lg" />
-                    <span class="font-black text-gray-900 text-base">Feeto</span>
+                    <span class="font-black text-gray-900 text-base">Taller Flow</span>
                 </div>
                 <nav class="flex items-center gap-6 flex-wrap justify-center">
                     <Link :href="route('home')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Inicio</Link>
@@ -252,7 +252,7 @@ const jsonLd = computed(() => JSON.stringify({
                     <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Términos</a>
                     <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Privacidad</a>
                 </nav>
-                <p class="text-xs text-gray-400 font-medium">&copy; {{ new Date().getFullYear() }} Feeto. Todos los derechos reservados.</p>
+                <p class="text-xs text-gray-400 font-medium">&copy; {{ new Date().getFullYear() }} Taller Flow. Todos los derechos reservados.</p>
             </div>
         </footer>
     </div>

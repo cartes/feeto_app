@@ -25,7 +25,7 @@ class TenantControllerTest extends TestCase
     {
         $tenant = Tenant::factory()->create([
             'name' => 'Taller Original',
-            'domain' => 'original.feeto.test',
+            'domain' => 'original.tallerflow.test',
             'plan' => 'básico',
             'status' => 'active',
         ]);
@@ -35,7 +35,7 @@ class TenantControllerTest extends TestCase
             ->from(route('admin.tenants.edit', $tenant))
             ->put(route('admin.tenants.update', $tenant), [
                 'name' => 'Taller Actualizado',
-                'domain' => 'actualizado.feeto.test',
+                'domain' => 'actualizado.tallerflow.test',
                 'plan' => 'profesional',
                 'status' => 'active',
             ]);
@@ -107,7 +107,7 @@ class TenantControllerTest extends TestCase
             ->post(route('admin.tenants.store'), [
                 'name' => 'Taller Manuel',
                 'rut_taller' => '12.345.678-9',
-                'domain' => 'manual.feeto.test',
+                'domain' => 'manual.tallerflow.test',
                 'plan' => 'basico',
                 'status' => 'active',
                 'subscription_ends_at' => '2026-12-31',
@@ -121,7 +121,7 @@ class TenantControllerTest extends TestCase
         $this->assertDatabaseHas('tenants', [
             'name' => 'Taller Manuel',
             'rut_taller' => '12.345.678-9',
-            'domain' => 'manual.feeto.test',
+            'domain' => 'manual.tallerflow.test',
             'plan' => 'basico',
             'status' => 'active',
         ]);
@@ -140,7 +140,7 @@ class TenantControllerTest extends TestCase
         // Create an existing tenant to conflict with unique fields
         $existingTenant = Tenant::factory()->create([
             'rut_taller' => '12.345.678-9',
-            'domain' => 'manual.feeto.test',
+            'domain' => 'manual.tallerflow.test',
         ]);
 
         $existingUser = User::factory()->create([
@@ -151,7 +151,7 @@ class TenantControllerTest extends TestCase
             ->post(route('admin.tenants.store'), [
                 'name' => '', // required
                 'rut_taller' => '12.345.678-9', // unique
-                'domain' => 'manual.feeto.test', // unique
+                'domain' => 'manual.tallerflow.test', // unique
                 'plan' => 'invalid-plan', // invalid enum
                 'status' => 'invalid-status', // invalid in
                 'admin_name' => '', // required

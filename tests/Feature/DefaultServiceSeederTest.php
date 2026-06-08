@@ -75,7 +75,7 @@ class DefaultServiceSeederTest extends TestCase
             [
                 'name' => 'Taller Provisión',
                 'slug' => 'taller-provision',
-                'domain' => 'provision.feeto.test',
+                'domain' => 'provision.tallerflow.test',
             ],
         );
 

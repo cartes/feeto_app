@@ -22,4 +22,4 @@ Has recibido una nueva consulta a través de tu página de contacto en **TallerF
 {{ $data['message'] }}
 
 ---
-Este correo fue enviado automáticamente por la plataforma Feeto. Puedes responder a este correo para comunicarte directamente con el cliente en su casilla: {{ $data['email'] }}.
+Este correo fue enviado automáticamente por la plataforma Taller Flow. Puedes responder a este correo para comunicarte directamente con el cliente en su casilla: {{ $data['email'] }}.

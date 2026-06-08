@@ -90,7 +90,7 @@ const submitAdmin = () => {
                             <label for="domain" class="block text-sm font-medium text-gray-700">Dominio</label>
                             <div class="relative mt-2 rounded-md shadow-sm">
                                 <span class="text-gray-500 sm:text-sm absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">http://</span>
-                                <input type="text" id="domain" v-model="tenantForm.domain" class="block w-full rounded-md border-gray-200 pl-14 text-gray-900 focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="mitaller.feeto.cl" />
+                                <input type="text" id="domain" v-model="tenantForm.domain" class="block w-full rounded-md border-gray-200 pl-14 text-gray-900 focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="mitaller.tallerflow.cl" />
                             </div>
                             <div v-if="tenantForm.errors.domain" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.domain }}</div>
                         </div>
