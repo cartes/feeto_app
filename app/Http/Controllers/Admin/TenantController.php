@@ -20,15 +20,24 @@ class TenantController extends Controller
 {
     public function __construct(protected TenantSetupService $tenantSetupService) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $search = $request->query('search', '');
+
         $tenants = Tenant::query()
             ->withCount('users')
+            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('rut_taller', 'like', "%{$search}%");
+            }))
             ->latest()
-            ->get(['id', 'name', 'slug', 'rut_taller', 'is_active', 'status', 'plan', 'plan_id', 'max_users', 'subscription_ends_at']);
+            ->paginate(20, ['id', 'name', 'slug', 'rut_taller', 'is_active', 'status', 'plan', 'plan_id', 'max_users', 'subscription_ends_at'])
+            ->withQueryString();
 
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,
+            'filters' => ['search' => $search],
         ]);
     }
 

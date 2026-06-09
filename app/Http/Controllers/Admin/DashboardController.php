@@ -115,6 +115,72 @@ class DashboardController extends Controller
             ->limit(5)
             ->get(['id', 'name', 'email', 'business_name', 'business_type', 'city', 'created_at']);
 
+        // Tenants más activos (por logins en últimos 30 días)
+        $mostActiveTenantsChart = LoginLog::query()
+            ->where('created_at', '>=', $thirtyDaysAgo)
+            ->whereNotNull('tenant_id')
+            ->select('tenant_id', DB::raw('count(*) as logins'))
+            ->groupBy('tenant_id')
+            ->orderByDesc('logins')
+            ->limit(8)
+            ->with('tenant:id,name')
+            ->get()
+            ->map(fn ($r) => [
+                'name' => $r->tenant?->name ?? 'Sin nombre',
+                'logins' => (int) $r->logins,
+            ]);
+
+        // Nuevos tenants por mes (últimos 6 meses)
+        $newTenantsByMonth = Tenant::query()
+            ->where('created_at', '>=', $now->copy()->subMonths(6))
+            ->select(DB::raw("strftime('%Y-%m', created_at) as month"), DB::raw('count(*) as total'))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->map(fn ($r) => ['month' => $r->month, 'total' => (int) $r->total]);
+
+        // --- Scatter: actividad vs. tamaño por tenant ---
+        $allTenants = Tenant::query()
+            ->where('status', 'active')
+            ->withCount('users')
+            ->get(['id', 'name', 'plan', 'status']);
+
+        $loginsByTenant = LoginLog::query()
+            ->where('created_at', '>=', $thirtyDaysAgo)
+            ->whereNotNull('tenant_id')
+            ->select('tenant_id', DB::raw('count(*) as total'))
+            ->groupBy('tenant_id')
+            ->pluck('total', 'tenant_id');
+
+        $workOrdersByTenantMap = WorkOrder::query()
+            ->where('created_at', '>=', $thirtyDaysAgo)
+            ->select('tenant_id', DB::raw('count(*) as total'))
+            ->groupBy('tenant_id')
+            ->pluck('total', 'tenant_id');
+
+        $scatterPoints = $allTenants->map(fn ($t) => [
+            'id' => $t->id,
+            'name' => $t->name,
+            'plan' => $t->plan ?? 'gratuito',
+            'users' => (int) $t->users_count,
+            'logins' => (int) ($loginsByTenant[$t->id] ?? 0),
+            'work_orders' => (int) ($workOrdersByTenantMap[$t->id] ?? 0),
+        ]);
+
+        // Medianas para definir cuadrantes
+        $medianUsers = $scatterPoints->median('users') ?? 1;
+        $medianLogins = $scatterPoints->median('logins') ?? 1;
+
+        $tenantScatter = $scatterPoints->map(fn ($p) => [
+            ...$p,
+            'quadrant' => match (true) {
+                $p['users'] >= $medianUsers && $p['logins'] >= $medianLogins => 'champions',
+                $p['users'] < $medianUsers && $p['logins'] >= $medianLogins => 'growing',
+                $p['users'] >= $medianUsers && $p['logins'] < $medianLogins => 'at_risk',
+                default => 'sleeping',
+            },
+        ])->values();
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'total_tenants' => $totalTenants,
@@ -133,6 +199,10 @@ class DashboardController extends Controller
             'expiring_tenants' => $expiringTenants,
             'pending_trial_requests' => $pendingTrialRequests,
             'recent_trial_requests' => $recentTrialRequests,
+            'most_active_tenants' => $mostActiveTenantsChart,
+            'new_tenants_by_month' => $newTenantsByMonth,
+            'tenant_scatter' => $tenantScatter,
+            'scatter_medians' => ['users' => $medianUsers, 'logins' => $medianLogins],
         ]);
     }
 }

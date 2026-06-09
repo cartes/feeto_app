@@ -1,15 +1,31 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
-    tenants: Array,
+    tenants: Object,
+    filters: Object,
+});
+
+const search = ref(props.filters?.search ?? '');
+let searchTimeout = null;
+
+watch(search, (val) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        router.get(route('admin.tenants.index'), { search: val }, { preserveState: true, replace: true });
+    }, 350);
 });
 
 const toggleStatus = (tenant) => {
     if (confirm(`¿Estás seguro de que quieres cambiar el estado de este taller?`)) {
         router.put(route('admin.tenants.suspend', tenant.id), {}, { preserveScroll: true });
     }
+};
+
+const goToPage = (url) => {
+    if (url) router.get(url, {}, { preserveState: true });
 };
 </script>
 
@@ -20,7 +36,9 @@ const toggleStatus = (tenant) => {
         <div class="sm:flex sm:items-center sm:justify-between mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Talleres</h1>
-                <p class="mt-1 text-sm text-slate-500">Lista de todos los talleres registrados en el SaaS (Tenants).</p>
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ tenants.total }} taller{{ tenants.total !== 1 ? 'es' : '' }} registrado{{ tenants.total !== 1 ? 's' : '' }}.
+                </p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                 <Link
@@ -35,7 +53,22 @@ const toggleStatus = (tenant) => {
             </div>
         </div>
 
-        <div class="mt-8 flow-root">
+        <!-- Buscador -->
+        <div class="mb-4">
+            <div class="relative max-w-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+                <input
+                    v-model="search"
+                    type="text"
+                    placeholder="Buscar por nombre, slug o RUT..."
+                    class="w-full rounded-md border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                />
+            </div>
+        </div>
+
+        <div class="flow-root">
             <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div class="overflow-hidden shadow-sm ring-1 ring-slate-900/5 sm:rounded-lg">
@@ -54,7 +87,7 @@ const toggleStatus = (tenant) => {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white">
-                                <tr v-for="tenant in tenants" :key="tenant.id">
+                                <tr v-for="tenant in tenants.data" :key="tenant.id" class="hover:bg-slate-50/50 transition-colors">
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">
                                         {{ tenant.name }}
                                         <div class="text-xs text-slate-500 font-normal">RUT: {{ tenant.rut_taller || 'N/D' }}</div>
@@ -91,24 +124,54 @@ const toggleStatus = (tenant) => {
                                         </span>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                                        {{ tenant.subscription_ends_at ? new Date(tenant.subscription_ends_at).toLocaleDateString() : 'Ilimitada' }}
+                                        {{ tenant.subscription_ends_at ? new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') : 'Ilimitada' }}
                                     </td>
-                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                        <button @click="toggleStatus(tenant)" :class="[tenant.status === 'active' ? 'text-amber-600 hover:text-amber-900' : 'text-emerald-600 hover:text-emerald-900', 'mr-4 font-semibold']">
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-3">
+                                        <Link
+                                            :href="route('admin.tenants.activity', tenant.id)"
+                                            class="text-indigo-600 hover:text-indigo-900 font-semibold"
+                                        >
+                                            Actividad
+                                        </Link>
+                                        <button @click="toggleStatus(tenant)" :class="[tenant.status === 'active' ? 'text-amber-600 hover:text-amber-900' : 'text-emerald-600 hover:text-emerald-900', 'font-semibold']">
                                             {{ tenant.status === 'active' ? 'Suspender' : 'Activar' }}
                                         </button>
                                         <Link :href="route('admin.tenants.edit', tenant.id)" class="text-slate-600 hover:text-slate-900 font-semibold">Editar</Link>
                                     </td>
                                 </tr>
-                                <tr v-if="tenants.length === 0">
+                                <tr v-if="tenants.data.length === 0">
                                     <td colspan="7" class="py-10 text-center text-sm text-slate-500">
-                                        No hay talleres registrados aún.
+                                        No se encontraron talleres.
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div v-if="tenants.last_page > 1" class="mt-6 flex items-center justify-between">
+            <p class="text-sm text-slate-500">
+                Mostrando {{ tenants.from }}–{{ tenants.to }} de {{ tenants.total }}
+            </p>
+            <div class="flex gap-1">
+                <button
+                    v-for="link in tenants.links"
+                    :key="link.label"
+                    @click="goToPage(link.url)"
+                    :disabled="!link.url"
+                    v-html="link.label"
+                    :class="[
+                        'px-3 py-1.5 rounded text-sm transition-colors',
+                        link.active
+                            ? 'bg-slate-900 text-white font-semibold'
+                            : link.url
+                                ? 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                                : 'bg-white border border-slate-200 text-slate-300 cursor-not-allowed',
+                    ]"
+                />
             </div>
         </div>
     </AdminLayout>

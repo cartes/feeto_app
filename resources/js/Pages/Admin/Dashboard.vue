@@ -2,6 +2,7 @@
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import VueApexCharts from 'vue3-apexcharts';
 
 const props = defineProps({
     stats: Object,
@@ -12,6 +13,10 @@ const props = defineProps({
     pending_trial_requests: { type: Number, default: 0 },
     recent_trial_requests: { type: Array, default: () => [] },
     current_period: { type: String, default: '30d' },
+    most_active_tenants: { type: Array, default: () => [] },
+    new_tenants_by_month: { type: Array, default: () => [] },
+    tenant_scatter: { type: Array, default: () => [] },
+    scatter_medians: { type: Object, default: () => ({ users: 0, logins: 0 }) },
 });
 const page = usePage();
 
@@ -126,6 +131,137 @@ const periodTotals = computed(() => {
         unique: data.reduce((acc, d) => acc + (d.unique_visits ?? 0), 0),
     };
 });
+
+// Chart: Tenants más activos (horizontal bar)
+const activeTenantsChartOptions = computed(() => ({
+    chart: { type: 'bar', toolbar: { show: false } },
+    plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '60%' } },
+    colors: ['#6366f1'],
+    dataLabels: { enabled: false },
+    xaxis: { categories: props.most_active_tenants.map((t) => t.name), labels: { style: { fontSize: '11px' } } },
+    yaxis: { labels: { style: { fontSize: '11px', maxWidth: 100 } } },
+    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
+    tooltip: { y: { title: { formatter: () => 'Logins' } } },
+}));
+const activeTenantsChartSeries = computed(() => [
+    { name: 'Logins (30d)', data: props.most_active_tenants.map((t) => t.logins) },
+]);
+
+// Chart: Nuevos tenants por mes (columnas)
+const newTenantsChartOptions = computed(() => ({
+    chart: { type: 'bar', toolbar: { show: false } },
+    plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+    colors: ['#10b981'],
+    dataLabels: { enabled: false },
+    xaxis: { categories: props.new_tenants_by_month.map((d) => d.month), labels: { style: { fontSize: '11px' } } },
+    yaxis: { labels: { style: { fontSize: '11px' } }, min: 0 },
+    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
+}));
+const newTenantsChartSeries = computed(() => [
+    { name: 'Nuevos talleres', data: props.new_tenants_by_month.map((d) => d.total) },
+]);
+
+// ── Scatter: actividad vs. tamaño ───────────────────────────────────────────
+const QUADRANTS = {
+    champions: { label: 'Champions',  color: '#10b981' }, // activos + grandes
+    growing:   { label: 'Creciendo',  color: '#6366f1' }, // activos + pequeños
+    at_risk:   { label: 'En riesgo',  color: '#f59e0b' }, // inactivos + grandes
+    sleeping:  { label: 'Dormidos',   color: '#94a3b8' }, // inactivos + pequeños
+};
+
+const scatterSeries = computed(() => {
+    const groups = { champions: [], growing: [], at_risk: [], sleeping: [] };
+    for (const t of props.tenant_scatter) {
+        groups[t.quadrant]?.push({
+            x: t.users,
+            y: t.logins,
+            z: Math.max(t.work_orders, 1),
+            name: t.name,
+            plan: t.plan,
+            id: t.id,
+            work_orders: t.work_orders,
+        });
+    }
+    return Object.entries(QUADRANTS).map(([key, meta]) => ({
+        name: meta.label,
+        data: groups[key],
+    }));
+});
+
+const scatterChartOptions = computed(() => {
+    const mu = props.scatter_medians.users ?? 1;
+    const ml = props.scatter_medians.logins ?? 1;
+    return {
+        chart: {
+            type: 'bubble',
+            toolbar: { show: false },
+            zoom: { enabled: true },
+            events: {
+                dataPointSelection: (_e, _ctx, { seriesIndex, dataPointIndex }) => {
+                    const series = scatterSeries.value[seriesIndex];
+                    const pt = series?.data?.[dataPointIndex];
+                    if (pt?.id) window.location.href = route('admin.tenants.activity', pt.id);
+                },
+            },
+        },
+        colors: Object.values(QUADRANTS).map((q) => q.color),
+        dataLabels: { enabled: false },
+        fill: { opacity: 0.75 },
+        xaxis: {
+            title: { text: 'Usuarios del taller', style: { fontSize: '11px', color: '#64748b' } },
+            tickAmount: 5,
+            labels: { style: { fontSize: '11px' } },
+            min: 0,
+        },
+        yaxis: {
+            title: { text: 'Logins últimos 30 días', style: { fontSize: '11px', color: '#64748b' } },
+            labels: { style: { fontSize: '11px' } },
+            min: 0,
+        },
+        annotations: {
+            xaxis: [{
+                x: mu,
+                borderColor: '#cbd5e1',
+                strokeDashArray: 5,
+                label: { text: 'Mediana usuarios', style: { fontSize: '10px', color: '#94a3b8', background: 'transparent' } },
+            }],
+            yaxis: [{
+                y: ml,
+                borderColor: '#cbd5e1',
+                strokeDashArray: 5,
+                label: { text: 'Mediana logins', style: { fontSize: '10px', color: '#94a3b8', background: 'transparent' } },
+            }],
+        },
+        tooltip: {
+            custom: ({ seriesIndex, dataPointIndex, w }) => {
+                const pt = w.config.series[seriesIndex]?.data?.[dataPointIndex];
+                if (!pt) return '';
+                const q = Object.values(QUADRANTS)[seriesIndex];
+                return `
+                    <div class="px-3 py-2 text-xs bg-white shadow-lg rounded-lg border border-slate-200 min-w-[160px]">
+                        <p class="font-semibold text-slate-800 mb-1">${pt.name}</p>
+                        <p class="text-slate-500">Plan: <span class="font-medium text-slate-700 uppercase">${pt.plan}</span></p>
+                        <p class="text-slate-500">Usuarios: <span class="font-medium text-slate-700">${pt.x}</span></p>
+                        <p class="text-slate-500">Logins 30d: <span class="font-medium text-slate-700">${pt.y}</span></p>
+                        <p class="text-slate-500">OTs 30d: <span class="font-medium text-slate-700">${pt.work_orders}</span></p>
+                        <p class="mt-1 font-semibold" style="color:${q.color}">${q.label}</p>
+                    </div>`;
+            },
+        },
+        legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
+        grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
+        plotOptions: { bubble: { minBubbleRadius: 6, maxBubbleRadius: 30 } },
+    };
+});
+
+// Tabla resumen por cuadrante
+const scatterByQuadrant = computed(() =>
+    Object.entries(QUADRANTS).map(([key, meta]) => ({
+        key,
+        ...meta,
+        tenants: props.tenant_scatter.filter((t) => t.quadrant === key),
+    }))
+);
 </script>
 
 <template>
@@ -461,6 +597,185 @@ const periodTotals = computed(() => {
                 </table>
             </div>
             <p v-else class="px-6 py-8 text-sm text-slate-400 text-center">No hay solicitudes pendientes.</p>
+        </div>
+
+        <!-- ===== SECCIÓN: ACTIVIDAD DE TENANTS ===== -->
+        <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-slate-800">Actividad de Talleres</h2>
+                <Link :href="route('admin.tenants.index')" class="text-sm text-indigo-600 hover:text-indigo-900 font-medium">
+                    Ver todos →
+                </Link>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Más activos -->
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-100">
+                        <h3 class="text-sm font-semibold text-slate-700">Talleres más activos — últimos 30 días</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Por número de ingresos al sistema</p>
+                    </div>
+                    <div class="p-4">
+                        <VueApexCharts
+                            v-if="most_active_tenants.length"
+                            type="bar"
+                            height="240"
+                            :options="activeTenantsChartOptions"
+                            :series="activeTenantsChartSeries"
+                        />
+                        <div v-else class="flex items-center justify-center h-48 text-sm text-slate-400">
+                            Sin actividad registrada
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nuevos tenants por mes -->
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-100">
+                        <h3 class="text-sm font-semibold text-slate-700">Nuevos talleres registrados</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Últimos 6 meses</p>
+                    </div>
+                    <div class="p-4">
+                        <VueApexCharts
+                            v-if="new_tenants_by_month.length"
+                            type="bar"
+                            height="240"
+                            :options="newTenantsChartOptions"
+                            :series="newTenantsChartSeries"
+                        />
+                        <div v-else class="flex items-center justify-center h-48 text-sm text-slate-400">
+                            Sin datos disponibles
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista compacta de tenants más activos -->
+            <div v-if="most_active_tenants.length" class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-slate-700">Top talleres activos</h3>
+                    <span class="text-xs text-slate-400">Logins últimos 30 días</span>
+                </div>
+                <ul class="divide-y divide-slate-100">
+                    <li v-for="(t, i) in most_active_tenants" :key="t.name" class="flex items-center justify-between px-5 py-3 hover:bg-slate-50/60 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 text-xs font-bold text-slate-400 text-right">{{ i + 1 }}</span>
+                            <span class="text-sm font-medium text-slate-800">{{ t.name }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-24 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                <div
+                                    class="h-full rounded-full bg-indigo-500"
+                                    :style="{ width: Math.round(t.logins / most_active_tenants[0].logins * 100) + '%' }"
+                                />
+                            </div>
+                            <span class="text-xs font-semibold text-slate-600 w-8 text-right">{{ t.logins }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ===== SCATTER: Actividad vs. Tamaño ===== -->
+        <div v-if="tenant_scatter.length" class="mt-8">
+            <div class="mb-4">
+                <h2 class="text-lg font-semibold text-slate-800">Comparativa de talleres — Actividad vs. Tamaño</h2>
+                <p class="text-sm text-slate-500 mt-0.5">
+                    Cada burbuja es un taller. Eje X: usuarios · Eje Y: logins en 30 días · Tamaño: órdenes de trabajo en 30 días.
+                    Haz clic en un taller para ver su actividad detallada.
+                </p>
+            </div>
+
+            <!-- Leyenda de cuadrantes -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                <div v-for="q in scatterByQuadrant" :key="q.key" class="rounded-xl border bg-white px-4 py-3 shadow-sm flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full flex-shrink-0" :style="{ background: q.color }" />
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-slate-800">{{ q.label }}</p>
+                        <p class="text-xs text-slate-400">{{ q.tenants.length }} taller{{ q.tenants.length !== 1 ? 'es' : '' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico bubble -->
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100">
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-slate-400">
+                        <span><span class="font-semibold text-emerald-600">Champions</span> — activos y con equipo grande</span>
+                        <span><span class="font-semibold text-indigo-600">Creciendo</span> — activos, equipo pequeño → potencial upsell</span>
+                        <span><span class="font-semibold text-amber-500">En riesgo</span> — equipo grande, baja actividad → churn alert</span>
+                        <span><span class="font-semibold text-slate-400">Dormidos</span> — baja actividad y equipo pequeño</span>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <VueApexCharts
+                        type="bubble"
+                        height="380"
+                        :options="scatterChartOptions"
+                        :series="scatterSeries"
+                    />
+                </div>
+            </div>
+
+            <!-- Tabla de "En riesgo" y "Creciendo" (acción inmediata) -->
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- En riesgo -->
+                <div class="rounded-xl border border-amber-200 bg-white shadow-sm overflow-hidden">
+                    <div class="px-5 py-3.5 border-b border-amber-100 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
+                        <h3 class="text-sm font-semibold text-slate-800">En riesgo de churn</h3>
+                        <span class="ml-auto text-xs text-slate-400">Equipo grande · baja actividad</span>
+                    </div>
+                    <ul v-if="scatterByQuadrant.find(q=>q.key==='at_risk')?.tenants.length" class="divide-y divide-slate-100">
+                        <li
+                            v-for="t in scatterByQuadrant.find(q=>q.key==='at_risk')?.tenants"
+                            :key="t.id"
+                            class="flex items-center justify-between px-5 py-2.5 hover:bg-amber-50/40 transition-colors"
+                        >
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-slate-800 truncate">{{ t.name }}</p>
+                                <p class="text-xs text-slate-400 uppercase tracking-wide">{{ t.plan }}</p>
+                            </div>
+                            <div class="flex items-center gap-4 ml-3 flex-shrink-0 text-xs text-slate-500">
+                                <span>{{ t.users }} usuarios</span>
+                                <span class="text-amber-600 font-semibold">{{ t.logins }} logins</span>
+                                <Link :href="route('admin.tenants.activity', t.id)" class="text-amber-600 hover:text-amber-900 font-semibold">Ver →</Link>
+                            </div>
+                        </li>
+                    </ul>
+                    <p v-else class="px-5 py-6 text-sm text-slate-400 text-center">Sin talleres en esta categoría</p>
+                </div>
+
+                <!-- Creciendo → upsell -->
+                <div class="rounded-xl border border-indigo-200 bg-white shadow-sm overflow-hidden">
+                    <div class="px-5 py-3.5 border-b border-indigo-100 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 flex-shrink-0" />
+                        <h3 class="text-sm font-semibold text-slate-800">Candidatos a upsell</h3>
+                        <span class="ml-auto text-xs text-slate-400">Muy activos · equipo pequeño</span>
+                    </div>
+                    <ul v-if="scatterByQuadrant.find(q=>q.key==='growing')?.tenants.length" class="divide-y divide-slate-100">
+                        <li
+                            v-for="t in scatterByQuadrant.find(q=>q.key==='growing')?.tenants"
+                            :key="t.id"
+                            class="flex items-center justify-between px-5 py-2.5 hover:bg-indigo-50/40 transition-colors"
+                        >
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-slate-800 truncate">{{ t.name }}</p>
+                                <p class="text-xs text-slate-400 uppercase tracking-wide">{{ t.plan }}</p>
+                            </div>
+                            <div class="flex items-center gap-4 ml-3 flex-shrink-0 text-xs text-slate-500">
+                                <span>{{ t.users }} usuarios</span>
+                                <span class="text-indigo-600 font-semibold">{{ t.logins }} logins</span>
+                                <Link :href="route('admin.tenants.activity', t.id)" class="text-indigo-600 hover:text-indigo-900 font-semibold">Ver →</Link>
+                            </div>
+                        </li>
+                    </ul>
+                    <p v-else class="px-5 py-6 text-sm text-slate-400 text-center">Sin talleres en esta categoría</p>
+                </div>
+            </div>
+        </div>
+        <div v-else class="mt-8 rounded-xl border border-dashed border-slate-200 bg-slate-50 py-10 text-center text-sm text-slate-400">
+            No hay tenants activos para mostrar en el comparativo.
         </div>
     </AdminLayout>
 </template>
