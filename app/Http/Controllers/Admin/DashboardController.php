@@ -133,7 +133,7 @@ class DashboardController extends Controller
         // Nuevos tenants por mes (últimos 6 meses)
         $newTenantsByMonth = Tenant::query()
             ->where('created_at', '>=', $now->copy()->subMonths(6))
-            ->select(DB::raw("strftime('%Y-%m', created_at) as month"), DB::raw('count(*) as total'))
+            ->select(DB::raw("to_char(created_at, 'YYYY-MM') as month"), DB::raw('count(*) as total'))
             ->groupBy('month')
             ->orderBy('month')
             ->get()
