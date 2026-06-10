@@ -56,6 +56,8 @@ WORKDIR /var/www/html
 
 # Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones
 RUN apt-get update && apt-get install -y \
+    autoconf \
+    build-essential \
     curl \
     git \
     libfreetype6-dev \
@@ -74,6 +76,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install bcmath dom gd intl mbstring pcntl pdo_mysql pdo_pgsql simplexml xml xmlreader xmlwriter zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
+    && apt-get purge -y --auto-remove autoconf build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 RUN { \
