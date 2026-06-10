@@ -6,20 +6,14 @@ FROM php:8.5-cli-bookworm AS vendor
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions
+
 RUN apt-get update && apt-get install -y \
     git \
-    libfreetype6-dev \
-    libicu-dev \
-    libjpeg62-turbo-dev \
-    libonig-dev \
-    libpng-dev \
-    libpq-dev \
-    libxml2-dev \
-    libzip-dev \
     unzip \
     zip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install bcmath dom gd intl mbstring pcntl pdo_mysql pdo_pgsql simplexml xml xmlreader xmlwriter zip \
+    && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY composer.json composer.lock ./
@@ -54,29 +48,18 @@ RUN npm run build
 FROM php:8.5-fpm-bookworm AS runtime
 WORKDIR /var/www/html
 
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions
+
 # Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones
 RUN apt-get update && apt-get install -y \
-    autoconf \
-    build-essential \
     curl \
     git \
-    libfreetype6-dev \
-    libicu-dev \
-    libjpeg62-turbo-dev \
-    libonig-dev \
-    libpng-dev \
-    libzip-dev \
-    libpq-dev \
-    libxml2-dev \
     nginx \
     supervisor \
     unzip \
     zip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install bcmath dom gd intl mbstring pcntl pdo_mysql pdo_pgsql simplexml xml xmlreader xmlwriter zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apt-get purge -y --auto-remove autoconf build-essential \
+    && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip redis \
     && rm -rf /var/lib/apt/lists/*
 
 RUN { \
