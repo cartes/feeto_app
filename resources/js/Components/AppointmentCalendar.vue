@@ -54,12 +54,13 @@ const calendarDays = computed(() => {
     const days = [];
 
     for (let index = 0; index < firstWeekday; index += 1) {
-        days.push({ key: `empty-${index}`, empty: true });
+        days.push({ key: `empty-${index}`, empty: true, column: index });
     }
 
     for (let day = 1; day <= lastDayOfMonth.getDate(); day += 1) {
         const date = new Date(year, month, day);
         const isoDate = date.toISOString().slice(0, 10);
+        const overallIndex = firstWeekday + day - 1;
 
         days.push({
             key: isoDate,
@@ -69,6 +70,7 @@ const calendarDays = computed(() => {
             isToday: isoDate === props.today,
             isSelected: isoDate === selectedDate.value,
             count: appointmentsByDate.value[isoDate]?.length ?? 0,
+            column: overallIndex % 7,
         });
     }
 
@@ -155,7 +157,10 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                     <button
                         v-else
                         type="button"
-                        :class="day.isSelected ? 'border-[#FF7A00] bg-[#FF7A00] text-white shadow-[0_12px_24px_rgba(249,168,38,0.22)]' : day.isToday ? 'border-[#FF7A00]/30 bg-amber-50 text-gray-900' : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-[#FF7A00]/30 hover:bg-amber-50/60'"
+                        :class="[
+                            day.isSelected ? 'border-[#FF7A00] bg-[#FF7A00] text-white shadow-[0_12px_24px_rgba(249,168,38,0.22)]' : day.isToday ? 'border-[#FF7A00]/30 bg-amber-50 text-gray-900' : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-[#FF7A00]/30 hover:bg-amber-50/60',
+                            'relative group'
+                        ]"
                         class="aspect-square rounded-2xl border p-2 text-left transition"
                         @click="selectDate(day.date)"
                     >
@@ -173,6 +178,58 @@ const formattedSelectedDate = computed(() => new Date(`${selectedDate.value}T12:
                                 :class="day.isSelected ? 'bg-white/15 text-white/70' : 'bg-white text-gray-300'"
                                 class="inline-flex h-2 w-2 rounded-full"
                             ></span>
+                        </div>
+
+                        <!-- Tooltip interactivo -->
+                        <div
+                            class="absolute z-50 bottom-full mb-3 w-64 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-white rounded-2xl p-3 shadow-2xl opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 transform translate-y-1 group-hover:translate-y-0"
+                            :class="{
+                                'left-0 translate-x-0': day.column <= 1,
+                                'right-0 left-auto translate-x-0': day.column >= 5,
+                                'left-1/2 -translate-x-1/2': day.column > 1 && day.column < 5
+                            }"
+                        >
+                            <!-- Caso con citas -->
+                            <div v-if="day.count && appointmentsByDate[day.date]">
+                                <div class="text-xs font-black uppercase tracking-widest text-[#FF7A00] mb-2 flex items-center justify-between">
+                                    <span>Agendados</span>
+                                    <span class="bg-white/10 text-white rounded-full px-1.5 py-0.5 text-[10px]">{{ day.count }}</span>
+                                </div>
+                                <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                    <div
+                                        v-for="app in appointmentsByDate[day.date].slice(0, 4)"
+                                        :key="app.id"
+                                        class="border-t border-slate-800/60 pt-2 first:border-0 first:pt-0"
+                                    >
+                                        <div class="flex items-start justify-between gap-1">
+                                            <span class="font-black text-[#FF7A00] text-[11px] shrink-0 mt-0.5">{{ app.time }}</span>
+                                            <span class="font-bold text-slate-100 text-[11px] truncate flex-1 text-left">{{ app.client?.name || 'Sin registrar' }}</span>
+                                        </div>
+                                        <span class="block text-[10px] text-slate-400 text-left truncate mt-0.5 pl-9">
+                                            {{ app.plate }} <span v-if="app.vehicle?.brand">· {{ app.vehicle.brand }} {{ app.vehicle.model }}</span>
+                                        </span>
+                                    </div>
+                                    <div v-if="day.count > 4" class="text-[10px] text-slate-400 font-bold text-center pt-1 border-t border-slate-800/60">
+                                        + {{ day.count - 4 }} más...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Caso sin citas -->
+                            <div v-else class="text-center py-1">
+                                <p class="text-xs font-bold text-slate-300">Sin citas programadas</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Jornada libre</p>
+                            </div>
+
+                            <!-- Flecha indicadora -->
+                            <div
+                                class="absolute top-full w-3 h-3 bg-slate-900/95 border-b border-r border-slate-800 rotate-45 -mt-1.5"
+                                :class="{
+                                    'left-6 -translate-x-0': day.column <= 1,
+                                    'right-6 left-auto -translate-x-0': day.column >= 5,
+                                    'left-1/2 -translate-x-1/2': day.column > 1 && day.column < 5
+                                }"
+                            ></div>
                         </div>
                     </button>
                 </template>
