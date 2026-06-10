@@ -44,6 +44,7 @@ class PublicBookingController extends Controller
                 'seo_description' => $tenantBySlug->seo_description,
                 'seo_address' => $tenantBySlug->seo_address,
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
+                'website_url' => $tenantBySlug->website_url,
                 'primary_color' => $tenantBySlug->primary_color,
                 'logo_url' => $tenantBySlug->logoUrl(),
                 'branches' => $branches->map(fn ($b) => [
@@ -55,7 +56,7 @@ class PublicBookingController extends Controller
                 ])->values(),
             ],
             'seo' => [
-                'title' => "Agendar Cita | {$tenantBySlug->name}",
+                'title' => "Agendamiento - {$tenantBySlug->name}",
                 'description' => $defaultDescription,
                 'canonical_url' => $canonicalUrl,
                 'og_image' => $this->resolveSocialImageUrl(),
@@ -135,6 +136,10 @@ class PublicBookingController extends Controller
             $businessSchema['telephone'] = $tenant->whatsapp_number;
         }
 
+        if (filled($tenant->website_url)) {
+            $businessSchema['sameAs'] = [$tenant->website_url];
+        }
+
         if ($branches->isNotEmpty()) {
             $locations = $branches
                 ->filter(fn (Branch $b): bool => filled($b->address) || filled($b->phone))
@@ -189,7 +194,7 @@ class PublicBookingController extends Controller
                 '@type' => 'WebPage',
                 '@id' => "{$canonicalUrl}#webpage",
                 'url' => $canonicalUrl,
-                'name' => "Agendar Cita | {$tenant->name}",
+                'name' => "Agendamiento - {$tenant->name}",
                 'description' => $description,
                 'about' => [
                     '@id' => "{$canonicalUrl}#business",

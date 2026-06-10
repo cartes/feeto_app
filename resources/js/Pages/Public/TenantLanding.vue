@@ -125,7 +125,7 @@ const trackWhatsAppClick = () => {
 
 <template>
     <Head>
-        <title>{{ seo.title ?? `Agendar Cita | ${tenant.name}` }}</title>
+        <title>{{ seo.title ?? `Agendamiento - ${tenant.name}` }}</title>
     </Head>
 
     <div class="min-h-screen bg-gray-50 font-sans antialiased" :style="{ '--brand': primaryColor, '--brand-hover': primaryColor + 'dd' }">
@@ -754,7 +754,17 @@ const trackWhatsAppClick = () => {
         <!-- ====================================================
              FOOTER
         ===================================================== -->
-        <footer class="bg-white border-t border-gray-100 py-8 text-center">
+        <footer class="bg-white border-t border-gray-100 py-8 text-center space-y-2">
+            <p v-if="tenant.website_url" class="text-sm text-gray-500">
+                Sitio web oficial de {{ tenant.name }}:
+                <a
+                    :href="tenant.website_url"
+                    target="_blank"
+                    rel="noopener"
+                    class="font-bold underline decoration-2 underline-offset-2 hover:opacity-80 transition-opacity"
+                    :style="{ color: primaryColor }"
+                >{{ tenant.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '') }}</a>
+            </p>
             <p class="text-sm text-gray-400">
                 Powered by <span class="font-bold text-orange-500">Taller Flow</span> — La plataforma inteligente para talleres automotrices
             </p>

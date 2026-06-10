@@ -19,6 +19,7 @@ class TenantSeoController extends Controller
             'seo_description' => ['nullable', 'string', 'max:500'],
             'seo_address'     => ['nullable', 'string', 'max:255'],
             'whatsapp_number' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]{7,20}$/'],
+            'website_url'     => ['nullable', 'string', 'url:http,https', 'max:255'],
         ]);
 
         $tenant = Tenant::current();

@@ -68,9 +68,30 @@ class MarketingSeoTest extends TestCase
         $response = $this->get(route('taller.landing', ['tenantBySlug' => $tenant->slug]));
 
         $response->assertOk();
-        $response->assertSee('Agendar Cita | Taller Norte', false);
+        $response->assertSee('Agendamiento - Taller Norte', false);
         $response->assertSee('Especialistas en mantenciones, diagnóstico y reparación automotriz.', false);
         $response->assertSee(url('/images/tallerflow-social-share.png'), false);
+    }
+
+    public function test_public_tenant_landing_includes_website_backlink_in_schema(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'name' => 'Taller Sur',
+            'slug' => 'taller-sur',
+            'seo_description' => 'Mecánica general y diagnóstico.',
+            'website_url' => 'https://www.tallersur.cl',
+        ]);
+
+        $response = $this->get(route('taller.landing', ['tenantBySlug' => $tenant->slug]));
+
+        $response->assertOk();
+        $response->assertSee('application/ld+json', false);
+        $response->assertSee('"sameAs"', false);
+        $response->assertSee('https://www.tallersur.cl', false);
+        $response->assertInertia(fn ($page) => $page
+            ->where('tenant.website_url', 'https://www.tallersur.cl')
+            ->where('seo.title', 'Agendamiento - Taller Sur')
+        );
     }
 
     public function test_home_page_includes_json_ld_schema_markup(): void

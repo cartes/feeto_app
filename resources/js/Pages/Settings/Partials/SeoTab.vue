@@ -13,6 +13,7 @@ const seoForm = useForm({
     seo_description: props.tenant?.seo_description ?? '',
     seo_address: props.tenant?.seo_address ?? '',
     whatsapp_number: props.tenant?.whatsapp_number ?? '',
+    website_url: props.tenant?.website_url ?? '',
 });
 
 const submitSeoSettings = () => {
@@ -185,6 +186,19 @@ const generateAiDescription = async () => {
                     <p v-if="seoForm.errors.whatsapp_number" class="text-red-500 text-xs">{{ seoForm.errors.whatsapp_number }}</p>
                 </div>
 
+                <!-- Sitio web -->
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sitio web del taller</label>
+                    <input
+                        v-model="seoForm.website_url"
+                        type="url"
+                        placeholder="https://www.tutaller.cl"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
+                    />
+                    <p class="text-[10px] text-gray-400 font-medium">Se mostrará como enlace en tu página pública y en los datos estructurados de Google, generando un backlink hacia tu sitio.</p>
+                    <p v-if="seoForm.errors.website_url" class="text-red-500 text-xs">{{ seoForm.errors.website_url }}</p>
+                </div>
+
                 <div class="flex justify-end">
                     <button type="submit" :disabled="seoForm.processing"
                         class="px-6 py-2.5 bg-[#FF7A00] text-white rounded-xl font-bold text-sm shadow-sm hover:bg-[#CC6200] transition-all disabled:opacity-50">
@@ -198,7 +212,7 @@ const generateAiDescription = async () => {
                 <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4">
                     <p class="text-sm font-black uppercase tracking-widest text-gray-500">Vista previa Google</p>
                     <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-1">
-                        <p class="text-[#1a0dab] text-sm font-medium leading-tight truncate">{{ tenant?.name ?? 'Tu Taller' }} | Agendar cita</p>
+                        <p class="text-[#1a0dab] text-sm font-medium leading-tight truncate">Agendamiento - {{ tenant?.name ?? 'Tu Taller' }}</p>
                         <p class="text-[#006621] text-[11px]">tallerflow.cl/taller/{{ tenant?.slug ?? 'tu-taller' }}</p>
                         <p class="text-gray-600 text-[11px] leading-relaxed">
                             {{ seoForm.seo_description?.slice(0, 160) || 'Agrega una descripción para tu taller y aparecerá aquí en los resultados de Google.' }}
