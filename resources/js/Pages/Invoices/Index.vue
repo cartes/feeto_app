@@ -1,33 +1,17 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatDate } = useFormatting();
 
 defineProps({
     invoices: Object,
     summary: Object,
 });
 
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
-
-const formatDate = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleDateString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
+import TallerLayout from '@/Layouts/TallerLayout.vue';
 </script>
 
 <template>

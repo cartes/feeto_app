@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { useFormatting } from '@/composables/useFormatting';
 
 const props = defineProps({
     workOrder: Object,
@@ -9,27 +10,11 @@ const props = defineProps({
     },
 });
 
+const { formatCurrency, formatDate, formatUf: formatUfRaw } = useFormatting();
+
 const quote = computed(() => props.workOrder?.quote ?? props.workOrder ?? { items: [], subtotal_amount: 0 });
 
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('es-CL', {
-        day: '2-digit', month: 'long', year: 'numeric'
-    });
-};
-
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-};
-
-const formatUf = (clpValue) => {
-    if (!props.ufValue || !clpValue) return null;
-    const uf = Number(clpValue) / props.ufValue;
-    return new Intl.NumberFormat('es-CL', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(uf);
-};
+const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
 </script>
 
 <template>

@@ -1,13 +1,14 @@
 <script setup>
-import { computed } from 'vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
 import ReportExportActions from '@/Components/ReportExportActions.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatDateTime } = useFormatting();
 
 const props = defineProps({
     filters: {
@@ -37,20 +38,6 @@ const props = defineProps({
 });
 
 const formatPercent = (value) => `${Number(value || 0).toFixed(1)}%`;
-
-const formatDateTime = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
 </script>
 
 <template>

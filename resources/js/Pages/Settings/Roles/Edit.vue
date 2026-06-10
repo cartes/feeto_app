@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 
 const props = defineProps({
@@ -26,8 +27,7 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
 const isSystemRole = computed(() => props.role.is_system ?? false);
 
 const form = useForm({

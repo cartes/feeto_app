@@ -1,9 +1,8 @@
 <script setup>
-import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
 
 const reports = [
     { label: 'Inicio', route: 'reports.index' },

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { useStatusConfig } from '@/composables/useStatusConfig';
 
 const props = defineProps({
     appointments: {
@@ -26,22 +27,8 @@ const props = defineProps({
 
 const emit = defineEmits(['delete']);
 
-const statusLabels = {
-    pending: 'Pendiente',
-    arrived: 'Llegó',
-    cancelled: 'Cancelado',
-};
-
-const statusColors = {
-    pending: 'bg-amber-100 text-amber-800',
-    arrived: 'bg-emerald-100 text-emerald-800',
-    cancelled: 'bg-red-100 text-red-800',
-};
-
 const normalizedAppointments = computed(() => props.appointments ?? []);
-
-const statusLabel = (status) => statusLabels[status] ?? status;
-const statusColor = (status) => statusColors[status] ?? 'bg-gray-100 text-gray-700';
+const { resolveAppointmentStatus } = useStatusConfig();
 const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
 </script>
 
@@ -78,10 +65,10 @@ const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es
                             </p>
                             <div class="flex items-center gap-2">
                                 <span
-                                    :class="statusColor(appointment.status)"
+                                    :class="resolveAppointmentStatus(appointment.status).classes"
                                     class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
                                 >
-                                    {{ statusLabel(appointment.status) }}
+                                    {{ resolveAppointmentStatus(appointment.status).label }}
                                 </span>
                                 <button
                                     v-if="canDelete"

@@ -2,8 +2,15 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useStatusConfig } from '@/composables/useStatusConfig';
 
 const page = usePage();
+
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatUf: formatUfRaw, formatDateTime } = useFormatting();
+const { resolveWorkOrderStatus, resolveQuoteStatus, QUOTE_ITEM_TYPE_LABELS } = useStatusConfig();
 
 const props = defineProps({
     workOrder: Object,
@@ -43,62 +50,11 @@ const quote = computed(() => props.workOrder.quote ?? {
 
 const items = computed(() => quote.value.items ?? []);
 
-const workOrderStatusConfig = {
-    recepcion: { label: 'Recepción', classes: 'bg-blue-50 text-blue-600 border-blue-100' },
-    diagnostico: { label: 'En Diagnóstico', classes: 'bg-yellow-50 text-yellow-600 border-yellow-100' },
-    esperando_repuestos: { label: 'Esperando Repuestos', classes: 'bg-red-50 text-red-500 border-red-100' },
-    control_calidad: { label: 'Control de Calidad', classes: 'bg-cyan-50 text-cyan-600 border-cyan-100' },
-    listo: { label: 'Listo', classes: 'bg-green-50 text-green-600 border-green-100' },
-};
+const workOrderStatus = computed(() => resolveWorkOrderStatus(props.workOrder.status));
 
-const quoteStatusConfig = {
-    draft: { label: 'Borrador', classes: 'bg-slate-100 text-slate-600 border-slate-200' },
-    pending_customer: { label: 'Pendiente Cliente', classes: 'bg-amber-50 text-amber-600 border-amber-200' },
-    accepted: { label: 'Aceptada', classes: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-    rejected: { label: 'Rechazada', classes: 'bg-rose-50 text-rose-600 border-rose-200' },
-};
+const quoteStatus = computed(() => resolveQuoteStatus(quote.value.status));
 
-const quoteItemTypeLabels = {
-    product: 'Repuesto',
-    service: 'Servicio',
-    manual: 'Manual',
-};
-
-const workOrderStatus = computed(() => workOrderStatusConfig[props.workOrder.status] ?? {
-    label: props.workOrder.status,
-    classes: 'bg-gray-50 text-gray-600 border-gray-200',
-});
-
-const quoteStatus = computed(() => quoteStatusConfig[quote.value.status] ?? quoteStatusConfig.draft);
-
-const formatCurrency = (amount) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(amount || 0));
-
-const formatUf = (clpValue) => {
-    if (!props.ufValue || !clpValue) return null;
-    const uf = Number(clpValue) / props.ufValue;
-    return new Intl.NumberFormat('es-CL', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(uf);
-};
-
-const formatDateTime = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
+const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
 
 const trackingUrl = computed(() => `${window.location.origin}/ot/${props.workOrder.uuid}`);
 const whatsAppMessage = computed(() => {
@@ -179,8 +135,6 @@ watch(serviceSearch, (newVal) => {
 const editingCatalogType = ref(null); // 'product' | 'service'
 const editingCatalogItem = ref(null); // Product | Service object
 const showCatalogEditModal = ref(false);
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
-
 const catalogForm = useForm({
     name: '',
     sku: '',
@@ -651,7 +605,7 @@ const submitDeleteWorkOrder = () => {
                                         </td>
                                         <td class="px-4 py-4">
                                             <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                                {{ quoteItemTypeLabels[item.item_type] ?? item.item_type }}
+                                                {{ QUOTE_ITEM_TYPE_LABELS[item.item_type] ?? item.item_type }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>

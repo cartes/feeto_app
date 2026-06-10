@@ -1,10 +1,12 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatDate, formatDateTime } = useFormatting();
 
 const props = defineProps({
     client: Object,
@@ -43,43 +45,11 @@ const clientWhatsAppLink = computed(() => {
     }
 
     const message = encodeURIComponent(
-        `Hola ${props.client.name}, te contactamos desde el taller para hacer seguimiento a tu saldo pendiente por ${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(amountDue)}.`
+        `Hola ${props.client.name}, te contactamos desde el taller para hacer seguimiento a tu saldo pendiente por ${formatCurrency(amountDue)}.`
     );
 
     return `https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`;
 });
-
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
-
-const formatDate = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleDateString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
-
-const formatDateTime = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
 
 const noteAuthorInitial = (note) => (note.user?.name?.charAt(0) ?? 'N').toUpperCase();
 const clientInitial = computed(() => props.client.name?.charAt(0)?.toUpperCase() ?? 'C');

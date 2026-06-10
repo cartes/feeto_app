@@ -1,44 +1,22 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import PrintableReportShell from '@/Components/PrintableReportShell.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
 import ReportExportActions from '@/Components/ReportExportActions.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useStatusConfig } from '@/composables/useStatusConfig';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatDate } = useFormatting();
+const { QUOTE_STATUS_CONFIG } = useStatusConfig();
 
 defineProps({
     summary: Object,
     recentQuotes: Array,
     overdueInvoices: Array,
 });
-
-const quoteStatusLabels = {
-    draft: 'Borrador',
-    pending_customer: 'Pendiente cliente',
-    accepted: 'Aceptada',
-    rejected: 'Rechazada',
-};
-
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
-
-const formatDate = (value) => {
-    if (!value) {
-        return 'Sin fecha';
-    }
-
-    return new Date(value).toLocaleDateString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
 </script>
 
 <template>
@@ -128,7 +106,7 @@ const formatDate = (value) => {
                                     <td class="px-4 py-4 font-mono text-sm font-bold tracking-widest text-[#FF7A00]">{{ quote.plate || 'N/A' }}</td>
                                     <td class="px-4 py-4">
                                         <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-gray-600">
-                                            {{ quoteStatusLabels[quote.status] || quote.status }}
+                                            {{ QUOTE_STATUS_CONFIG[quote.status]?.label || quote.status }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-right text-sm font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</td>

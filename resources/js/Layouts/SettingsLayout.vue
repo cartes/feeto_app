@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import SettingsSectionTabs from '@/Components/SettingsSectionTabs.vue';
 
@@ -23,8 +23,7 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user ?? null);
 const permissions = computed(() => user.value?.permissions ?? []);
 const userRoles = computed(() => user.value?.roles ?? []);

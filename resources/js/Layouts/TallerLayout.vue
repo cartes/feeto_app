@@ -1,13 +1,13 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 
-const page = usePage();
+const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user);
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const permissions = computed(() => user.value?.permissions ?? []);
 const roles = computed(() => user.value?.roles ?? []);
 const planAccess = computed(() => page.props.planAccess ?? null);

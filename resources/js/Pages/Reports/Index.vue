@@ -1,11 +1,10 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import ReportsNavigation from '@/Components/ReportsNavigation.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
 
 defineProps({
     summary: Object,

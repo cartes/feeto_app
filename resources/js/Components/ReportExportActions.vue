@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 
 const props = defineProps({
     report: {
@@ -9,8 +9,7 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
 const currentQuery = computed(() => Object.fromEntries(new URLSearchParams((page.url?.split('?')[1] ?? ''))));
 </script>
 

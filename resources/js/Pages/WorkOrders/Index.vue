@@ -1,10 +1,13 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { router, usePage, Link } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 import Dropdown from '@/Components/Dropdown.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useDebounce } from '@/composables/useDebounce';
+import { useFormatting } from '@/composables/useFormatting';
 
 const props = defineProps({
     kanban: Object,
@@ -13,8 +16,9 @@ const props = defineProps({
     tenantId: Number
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
+const { debounce } = useDebounce();
+const { formatCurrency } = useFormatting();
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
@@ -55,14 +59,6 @@ const updateFilters = () => {
             replace: true,
         }
     );
-};
-
-const debounce = (fn, delay) => {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
 };
 
 const triggerSearch = debounce(() => {
@@ -263,9 +259,6 @@ const previewQuote = () => {
     window.open(route('tracking.show', { uuid: selectedWorkOrder.value.uuid }), '_blank');
 };
 
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-};
 
 // Columns already defined at the top
 

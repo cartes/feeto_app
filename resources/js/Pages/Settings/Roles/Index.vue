@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 
@@ -31,8 +32,7 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
 
 const expandedRoles = ref({});
 

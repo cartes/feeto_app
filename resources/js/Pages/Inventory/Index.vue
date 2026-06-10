@@ -1,10 +1,15 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useDebounce } from '@/composables/useDebounce';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency } = useFormatting();
+const { debounce } = useDebounce();
+
 const props = defineProps({
     products: Object,
     filters: Object,
@@ -15,17 +20,12 @@ const showModal = ref(false);
 const editingProduct = ref(null);
 const showDeleteConfirm = ref(null);
 
-// Debounce utility
-let searchTimeout;
-watch(search, (value) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        router.get(route('inventory.index', tenantRouteParams.value), { search: value }, {
-            preserveState: true,
-            replace: true,
-        });
-    }, 300);
-});
+watch(search, debounce((value) => {
+    router.get(route('inventory.index', tenantRouteParams.value), { search: value }, {
+        preserveState: true,
+        replace: true,
+    });
+}, 300));
 
 const form = useForm({
     name: '',
@@ -80,9 +80,6 @@ const handleDelete = (product) => {
     });
 };
 
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(value);
-};
 </script>
 
 <template>

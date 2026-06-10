@@ -1,11 +1,13 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useDebounce } from '@/composables/useDebounce';
 import axios from 'axios';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { debounce } = useDebounce();
 
 const currentStep = ref(1);
 
@@ -24,14 +26,6 @@ const vehicles = ref([]);
 const isLoadingVehicles = ref(false);
 const selectedVehicle = ref(null);
 
-const debounce = (fn, delay) => {
-    let timeoutId;
-
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
 
 const fetchClientMatches = async (search) => {
     const normalizedSearch = search.trim();

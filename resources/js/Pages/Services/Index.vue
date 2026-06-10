@@ -1,10 +1,12 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency } = useFormatting();
 
 const props = defineProps({
     services: Object,
@@ -81,12 +83,6 @@ const handleDelete = (service) => {
         onSuccess: () => { showDeleteConfirm.value = null; },
     });
 };
-
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    minimumFractionDigits: 0,
-}).format(Number(value || 0));
 </script>
 
 <template>

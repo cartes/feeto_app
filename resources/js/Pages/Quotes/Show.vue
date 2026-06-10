@@ -2,8 +2,15 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useStatusConfig } from '@/composables/useStatusConfig';
 
 const page = usePage();
+
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatUf: formatUfRaw, formatDateTime } = useFormatting();
+const { resolveQuoteStatus, QUOTE_ITEM_TYPE_LABELS } = useStatusConfig();
 
 const props = defineProps({
     quote: Object,
@@ -20,7 +27,6 @@ const props = defineProps({
     },
 });
 
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
@@ -33,47 +39,9 @@ const canManageItems = computed(() => (
 
 const items = computed(() => props.quote.items ?? []);
 
-const quoteStatusConfig = {
-    draft: { label: 'Borrador', classes: 'bg-slate-100 text-slate-600 border-slate-200' },
-    pending_customer: { label: 'Pendiente Cliente', classes: 'bg-amber-50 text-amber-600 border-amber-200' },
-    accepted: { label: 'Aceptada', classes: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-    rejected: { label: 'Rechazada', classes: 'bg-rose-50 text-rose-600 border-rose-200' },
-};
+const quoteStatus = computed(() => resolveQuoteStatus(props.quote.status));
 
-const quoteItemTypeLabels = {
-    product: 'Repuesto',
-    service: 'Servicio',
-    manual: 'Manual',
-};
-
-const quoteStatus = computed(() => quoteStatusConfig[props.quote.status] ?? quoteStatusConfig.draft);
-
-const formatCurrency = (amount) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(amount || 0));
-
-const formatUf = (clpValue) => {
-    if (!props.uf_value || !clpValue) return null;
-    const uf = Number(clpValue) / props.uf_value;
-    return new Intl.NumberFormat('es-CL', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(uf);
-};
-
-const formatDateTime = (value) => {
-    if (!value) return 'Sin fecha';
-
-    return new Date(value).toLocaleString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
+const formatUf = (clpValue) => formatUfRaw(clpValue, props.uf_value);
 
 const trackingUrl = computed(() => `${window.location.origin}/cotizacion/${props.quote.uuid}`);
 const whatsAppMessage = computed(() => {
@@ -472,7 +440,7 @@ const submitApproveManually = (channel) => {
                                         </td>
                                         <td class="px-4 py-4">
                                             <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                                {{ quoteItemTypeLabels[item.item_type] ?? item.item_type }}
+                                                {{ QUOTE_ITEM_TYPE_LABELS[item.item_type] ?? item.item_type }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>

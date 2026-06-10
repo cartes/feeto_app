@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
@@ -41,11 +43,11 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
+const { page, tenantRouteParams } = useTenantRouting();
+const { formatCurrency } = useFormatting();
 const dismissedKey = 'dismissed_activities';
 
 const tenantId = computed(() => page.props.tenant?.id ?? page.props.auth?.user?.tenant_id ?? null);
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
 const tenantPublicUrl = computed(() => page.props.tenant?.public_url ?? null);
 const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
@@ -583,7 +585,7 @@ onUnmounted(() => {
                                 </p>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-black text-rose-500">{{ new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(invoice.amount_due) }}</p>
+                                <p class="text-sm font-black text-rose-500">{{ formatCurrency(invoice.amount_due) }}</p>
                                 <p class="mt-1 text-xs text-gray-400">Vence {{ invoice.due_at }}</p>
                             </div>
                         </div>

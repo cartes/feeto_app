@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import axios from 'axios';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
@@ -30,8 +31,7 @@ const props = defineProps({
     },
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
 const planAccess = computed(() => page.props.planAccess ?? {});
 const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
 const canManageAppointments = computed(() => permissions.value.includes('appointments.manage'));

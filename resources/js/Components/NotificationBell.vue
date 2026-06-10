@@ -1,9 +1,8 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
 
 const notifications = ref([]);
 const unreadCount = ref(0);

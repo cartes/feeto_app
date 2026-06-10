@@ -1,11 +1,11 @@
 <script setup>
 import { ref, computed, watch, reactive } from 'vue';
-import { Head, useForm, router, usePage } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
+import { useTenantRouting } from '@/composables/useTenantRouting';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
 import PasswordInput from '@/Components/PasswordInput.vue';
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user ?? null);
 const permissions = computed(() => user.value?.permissions ?? []);
 const userRoles = computed(() => user.value?.roles ?? []);

@@ -5,11 +5,14 @@ import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useDebounce } from '@/composables/useDebounce';
 
 const page = usePage();
 const tenantId = page.props.tenantId;
 const maxImageUploadBytes = computed(() => Number(page.props.maxImageUploadBytes ?? 5 * 1024 * 1024));
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { debounce } = useDebounce();
 const planAccess = computed(() => page.props.planAccess ?? {});
 const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
 const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
@@ -59,14 +62,6 @@ const revokePreviewImage = () => {
     }
 };
 
-const debounce = (fn, delay) => {
-    let timeoutId;
-
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
 
 const form = useForm({
     plate: '',

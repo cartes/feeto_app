@@ -1,15 +1,19 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useDebounce } from '@/composables/useDebounce';
 
 const props = defineProps({
     clients: Object,
     filters: Object,
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatDate } = useFormatting();
+const { debounce } = useDebounce();
 const search = ref(props.filters.search || '');
 const isCreateModalOpen = ref(false);
 
@@ -21,39 +25,12 @@ const form = useForm({
     max_credit_limit: '',
 });
 
-const debounce = (fn, delay) => {
-    let timeoutId;
-
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
-
 watch(search, debounce((value) => {
     router.get(route('clients.index', tenantRouteParams.value), { search: value }, {
         preserveState: true,
         replace: true,
     });
 }, 300));
-
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
-
-const formatDate = (value) => {
-    if (!value) {
-        return 'Sin visitas';
-    }
-
-    return new Date(value).toLocaleDateString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
 
 const submit = () => {
     form.post(route('clients.store', tenantRouteParams.value), {

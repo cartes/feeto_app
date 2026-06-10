@@ -1,7 +1,11 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
+import { useStatusConfig } from '@/composables/useStatusConfig';
+import { useDebounce } from '@/composables/useDebounce';
 
 const props = defineProps({
     quotes: Object,
@@ -9,21 +13,14 @@ const props = defineProps({
     quoteStatuses: Array,
 });
 
-const page = usePage();
-const tenantRouteParams = computed(() => page.props.tenant?.slug ? { tenantBySlug: page.props.tenant.slug } : {});
+const { page, tenantRouteParams } = useTenantRouting();
+const { formatCurrency, formatDate } = useFormatting();
+const { resolveQuoteStatus } = useStatusConfig();
+const { debounce } = useDebounce();
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 
 const search = ref(props.filters?.search || '');
-
-const debounce = (fn, delay) => {
-    let timeoutId;
-
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
 
 watch(search, debounce((value) => {
     router.get(route('quotes.index', tenantRouteParams.value), { search: value }, {
@@ -31,34 +28,6 @@ watch(search, debounce((value) => {
         replace: true,
     });
 }, 300));
-
-const quoteStatusConfig = {
-    draft: { label: 'Borrador', classes: 'border-slate-200 bg-slate-50 text-slate-500' },
-    pending_customer: { label: 'Pendiente cliente', classes: 'border-amber-200 bg-amber-50 text-amber-600' },
-    accepted: { label: 'Aceptada', classes: 'border-emerald-200 bg-emerald-50 text-emerald-600' },
-    rejected: { label: 'Rechazada', classes: 'border-rose-200 bg-rose-50 text-rose-600' },
-};
-
-const resolveQuoteStatus = (status) => quoteStatusConfig[status] ?? {
-    label: status,
-    classes: 'border-slate-200 bg-slate-50 text-slate-500',
-};
-
-const formatCurrency = (value) => new Intl.NumberFormat('es-CL', {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0,
-}).format(Number(value || 0));
-
-const formatDate = (value) => {
-    if (!value) return 'Sin fecha';
-
-    return new Date(value).toLocaleDateString('es-CL', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
 </script>
 
 <template>
