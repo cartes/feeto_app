@@ -82,6 +82,11 @@ class AppServiceProvider extends ServiceProvider
                 $runtimeConfig['services.boostr.base_url'] = $boostrBaseUrl;
             }
 
+            $vatRate = Setting::get('vat_rate');
+            if (filled($vatRate)) {
+                $runtimeConfig['billing.vat_rate'] = (float) $vatRate;
+            }
+
             if ($runtimeConfig !== []) {
                 Config::set($runtimeConfig);
             }

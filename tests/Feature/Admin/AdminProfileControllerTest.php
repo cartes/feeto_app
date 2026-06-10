@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Setting;
 use App\Models\User;
+use App\Providers\AppServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -103,5 +104,25 @@ class AdminProfileControllerTest extends TestCase
         $response->assertRedirect();
         $this->assertEquals($gaCode, Setting::get('analytics_google_analytics_code'));
         $this->assertEquals($gscCode, Setting::get('analytics_google_search_console_code'));
+    }
+
+    public function test_vat_rate_setting_can_be_updated_from_profile(): void
+    {
+        // Update vat_rate via profile API keys endpoint
+        $response = $this->actingAs($this->superAdmin)
+            ->put(route('admin.profile.api-keys'), [
+                'vat_rate' => 0.15,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertEquals('0.15', Setting::get('vat_rate'));
+
+        // Manually run bootstrapping to simulate request cycle reload of config
+        $appServiceProvider = new AppServiceProvider(app());
+        $method = new \ReflectionMethod($appServiceProvider, 'bootstrapRuntimeConfiguration');
+        $method->setAccessible(true);
+        $method->invoke($appServiceProvider);
+
+        $this->assertEquals(0.15, config('billing.vat_rate'));
     }
 }

@@ -131,49 +131,42 @@ const quickLinks = computed(() => ([
         label: 'Nueva Recepción',
         route: 'receptions.create',
         visible: canManageAppointments.value,
-        accent: 'bg-white',
         iconPath: 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 10a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
     },
     {
         label: 'Agenda',
         route: 'appointments.index',
         visible: canManageAppointments.value,
-        accent: 'bg-white',
         iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z',
     },
     {
         label: 'Órdenes',
         route: 'work-orders.index',
         visible: canViewWorkOrders.value,
-        accent: 'bg-white',
         iconPath: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2',
     },
     {
         label: 'Inventario',
         route: 'inventory.index',
         visible: canManageInventory.value,
-        accent: 'bg-white',
         iconPath: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10',
     },
     {
         label: 'Servicios',
         route: 'services.index',
         visible: canManageInventory.value && commercialQuotesEnabled.value,
-        accent: 'bg-white',
         iconPath: 'M9 12h6m-3-3v6m6 5H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.172a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 12.828 8H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2z',
     },
     {
         label: 'Clientes',
         route: 'clients.index',
         visible: canManageCustomers.value,
-        accent: 'bg-white',
         iconPath: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0 .01 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75',
     },
     {
         label: 'Reportes',
         route: 'reports.index',
         visible: canViewReports.value && commercialReportsEnabled.value,
-        accent: 'bg-white',
         iconPath: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z',
     },
 ]).filter((item) => item.visible));
@@ -183,6 +176,37 @@ const notificationStatusClass = (status) => ({
     arrived: 'bg-emerald-100 text-emerald-800',
     cancelled: 'bg-red-100 text-red-800',
 }[status] ?? 'bg-gray-100 text-gray-700');
+
+const summaryStats = computed(() => ([
+    {
+        label: calendarSchedulingEnabled.value ? 'Citas de hoy' : 'Citas agendadas',
+        value: calendarSchedulingEnabled.value ? props.todayAppointments.length : props.appointments.length,
+        hint: 'Agendamiento',
+        visible: true,
+        alert: false,
+    },
+    {
+        label: 'Movimientos del tablero',
+        value: recentActivities.value.length,
+        hint: 'Actividad reciente',
+        visible: canViewWorkOrders.value,
+        alert: false,
+    },
+    {
+        label: 'Eventos de cotización',
+        value: props.quoteNotifications.length,
+        hint: 'Comercial',
+        visible: commercialQuotesEnabled.value,
+        alert: false,
+    },
+    {
+        label: 'Facturas atrasadas',
+        value: props.overdueInvoices.length,
+        hint: 'Cobranza',
+        visible: isAdmin.value,
+        alert: props.overdueInvoices.length > 0,
+    },
+]).filter((stat) => stat.visible));
 
 onMounted(() => {
     if (!tenantId.value || !window.Echo?.private) {
@@ -232,69 +256,48 @@ onUnmounted(() => {
     <Head title="Centro de Comando" />
 
     <TallerLayout>
-        <div class="space-y-8">
-            <!-- Banner espacio público -->
-            <a
-                v-if="tenantPublicUrl"
-                :href="tenantPublicUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center justify-between gap-3 rounded-2xl border border-[#FF7A00]/20 bg-orange-50 px-5 py-3.5 transition hover:bg-orange-100 group"
-            >
-                <div class="flex items-center gap-3">
-                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-black uppercase tracking-widest text-[#FF7A00]">Tu espacio público</p>
-                        <p class="text-sm font-semibold text-gray-700 group-hover:text-gray-900">{{ tenantPublicUrl }}</p>
-                    </div>
-                </div>
-                <svg class="h-4 w-4 shrink-0 text-[#FF7A00] transition group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-
-            <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Dashboard operativo</p>
-                    <h1 class="mt-2 text-3xl font-black tracking-tight text-gray-900">Centro de comando del taller</h1>
-                    <p class="mt-2 text-sm font-medium text-gray-500">
+                    <h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900">Centro de comando del taller</h1>
+                    <p class="mt-1.5 text-sm font-medium text-gray-500">
                         {{ new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}
                     </p>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-3 w-3">
-                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3.5 py-2">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Sistema activo</span>
                     </span>
-                    <span class="text-xs font-black uppercase tracking-[0.25em] text-gray-500">Sistema activo</span>
-                </div>
-            </div>
 
-            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
-                <Link
-                    v-for="item in quickLinks"
-                    :key="item.label"
-                    :href="route(item.route, tenantRouteParams)"
-                    class="group rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#FF7A00]/30 hover:shadow-[0_18px_36px_rgba(0,0,0,0.05)]"
-                >
-                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF7A00]/10 text-[#FF7A00]">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
-                            <path stroke-linecap="round" stroke-linejoin="round" :d="item.iconPath" />
+                    <a
+                        v-if="tenantPublicUrl"
+                        :href="tenantPublicUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group inline-flex items-center gap-2 rounded-full border border-[#FF7A00]/20 bg-orange-50 px-3.5 py-2 transition hover:bg-orange-100"
+                    >
+                        <svg class="h-3.5 w-3.5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
-                    </div>
-                    <p class="mt-6 text-lg font-black uppercase tracking-tight text-gray-900">{{ item.label }}</p>
-                </Link>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF7A00]">Tu espacio público</span>
+                        <svg class="h-3 w-3 text-[#FF7A00] transition group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
             </div>
 
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">
-                <div 
-                    v-for="alert in inventoryAlerts" 
+                <div
+                    v-for="alert in inventoryAlerts"
                     :key="alert.id"
                     :class="[
                         'rounded-2xl border p-4 flex justify-between items-start',
@@ -305,12 +308,46 @@ onUnmounted(() => {
                         <p :class="['text-sm font-black', alert.type === 'danger' ? 'text-red-900' : 'text-amber-900']">{{ alert.title }}</p>
                         <p :class="['mt-1 text-sm', alert.type === 'danger' ? 'text-red-700' : 'text-amber-700']">{{ alert.message }}</p>
                     </div>
-                    <button 
+                    <button
                         @click="inventoryAlerts = inventoryAlerts.filter(a => a.id !== alert.id)"
                         :class="['text-xs font-bold uppercase tracking-wide px-2 py-1 rounded hover:bg-white/50 transition', alert.type === 'danger' ? 'text-red-600' : 'text-amber-600']"
                     >
                         Descartar
                     </button>
+                </div>
+            </div>
+
+            <!-- Resumen del día -->
+            <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+                <div
+                    v-for="stat in summaryStats"
+                    :key="stat.label"
+                    class="rounded-2xl border bg-white p-4 shadow-sm"
+                    :class="stat.alert ? 'border-rose-200' : 'border-gray-100'"
+                >
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em]" :class="stat.alert ? 'text-rose-400' : 'text-gray-400'">{{ stat.hint }}</p>
+                    <p class="mt-2 text-3xl font-black tracking-tight" :class="stat.alert ? 'text-rose-600' : 'text-gray-900'">{{ stat.value }}</p>
+                    <p class="mt-1 text-xs font-semibold text-gray-500">{{ stat.label }}</p>
+                </div>
+            </div>
+
+            <!-- Accesos rápidos -->
+            <div>
+                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Accesos rápidos</p>
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
+                    <Link
+                        v-for="item in quickLinks"
+                        :key="item.label"
+                        :href="route(item.route, tenantRouteParams)"
+                        class="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7A00]/30 hover:shadow-md"
+                    >
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                                <path stroke-linecap="round" stroke-linejoin="round" :d="item.iconPath" />
+                            </svg>
+                        </div>
+                        <p class="truncate text-sm font-black uppercase tracking-tight text-gray-900">{{ item.label }}</p>
+                    </Link>
                 </div>
             </div>
 

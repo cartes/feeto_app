@@ -54,6 +54,7 @@ const apiForm = useForm({
     mp_access_token: '',
     mp_public_key: '',
     mp_webhook_secret: '',
+    vat_rate: props.payment_settings?.vat_rate?.value || '0.19',
 });
 
 const submitApiKeys = () => {
@@ -386,6 +387,21 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                     />
                                     <p class="mt-1 text-xs text-gray-400">Deja en blanco para conservar el valor actual.</p>
                                     <div v-if="apiForm.errors.mp_webhook_secret" class="mt-1 text-sm text-red-600">{{ apiForm.errors.mp_webhook_secret }}</div>
+                                </div>
+                                <div>
+                                    <label for="vat_rate" class="block text-sm font-medium text-gray-700">Tasa de IVA general (Decimal)</label>
+                                    <input
+                                        type="number"
+                                        id="vat_rate"
+                                        v-model="apiForm.vat_rate"
+                                        step="0.01"
+                                        min="0"
+                                        max="1"
+                                        placeholder="0.19"
+                                        class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                                    />
+                                    <p class="mt-1 text-xs text-slate-400">Porcentaje expresado en decimales (ej: 0.19 para el 19%).</p>
+                                    <div v-if="apiForm.errors.vat_rate" class="mt-1 text-sm text-red-600">{{ apiForm.errors.vat_rate }}</div>
                                 </div>
                             </div>
                         </div>
