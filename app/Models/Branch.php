@@ -5,16 +5,26 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\TenantAware;
-use Database\Factories\BranchFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Branch extends Model
 {
     use HasFactory, TenantAware;
+
+    /** @var array<int, string> */
+    protected $fillable = [
+        'tenant_id',
+        'name',
+        'code',
+        'address',
+        'phone',
+        'email',
+        'is_active',
+        'is_main',
+    ];
 
     /** @var array<string, string> */
     protected $casts = [

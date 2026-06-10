@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpsertProductRequest;
 use App\Models\Product;
 use App\Models\Tenant;
 use App\Services\PlanFeatureService;
@@ -39,20 +40,9 @@ class InventoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(UpsertProductRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:100'],
-            'type' => ['nullable', 'string', 'in:repuesto_nacional,repuesto_internacional,insumo'],
-            'description' => ['nullable', 'string'],
-            'cost_price' => ['required', 'numeric', 'min:0'],
-            'selling_price' => ['required', 'numeric', 'min:0'],
-            'physical_stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
-
-        Product::create($validated);
+        Product::create($request->validated());
 
         return redirect()->route('inventory.index')->with('success', 'Repuesto agregado exitosamente.');
     }
@@ -60,20 +50,9 @@ class InventoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(UpsertProductRequest $request, Product $product): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:100'],
-            'type' => ['nullable', 'string', 'in:repuesto_nacional,repuesto_internacional,insumo'],
-            'description' => ['nullable', 'string'],
-            'cost_price' => ['required', 'numeric', 'min:0'],
-            'selling_price' => ['required', 'numeric', 'min:0'],
-            'physical_stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $product->update($validated);
+        $product->update($request->validated());
 
         return redirect()->back()->with('success', 'Repuesto actualizado.');
     }

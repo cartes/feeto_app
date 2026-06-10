@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpsertBranchRequest;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Services\BranchLimitService;
@@ -14,9 +15,7 @@ use Inertia\Response;
 
 class BranchController extends Controller
 {
-    public function __construct(protected BranchLimitService $branchLimitService)
-    {
-    }
+    public function __construct(protected BranchLimitService $branchLimitService) {}
 
     /**
      * Display a listing of the resource.
@@ -50,7 +49,7 @@ class BranchController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(UpsertBranchRequest $request): RedirectResponse
     {
         $tenant = Tenant::current();
 
@@ -66,14 +65,7 @@ class BranchController extends Controller
                 ]);
         }
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:50'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'is_main' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         // If this branch is set as main, unset any existing main branch
         if (! empty($validated['is_main'])) {
@@ -90,17 +82,9 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Branch $branch): RedirectResponse
+    public function update(UpsertBranchRequest $request, Branch $branch): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:50'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'is_main' => ['nullable', 'boolean'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         // If this branch is set as main, unset any existing main branch
         if (! empty($validated['is_main']) && ! $branch->is_main) {

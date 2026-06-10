@@ -1,16 +1,19 @@
 <script setup>
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
-import { useTenantRouting } from '@/composables/useTenantRouting';
-import { useFormatting } from '@/composables/useFormatting';
 import { useStatusConfig } from '@/composables/useStatusConfig';
+import QuoteSidebar from './Partials/QuoteSidebar.vue';
+import QuoteItemsTable from './Partials/QuoteItemsTable.vue';
+import AddQuoteItemForm from './Partials/AddQuoteItemForm.vue';
+import QuoteHistoryCard from './Partials/QuoteHistoryCard.vue';
+import EditCatalogItemModal from './Partials/EditCatalogItemModal.vue';
+import ApproveManuallyModal from './Partials/ApproveManuallyModal.vue';
+import DeleteWorkOrderModal from './Partials/DeleteWorkOrderModal.vue';
 
 const page = usePage();
 
-const { tenantRouteParams } = useTenantRouting();
-const { formatCurrency, formatUf: formatUfRaw, formatDateTime } = useFormatting();
-const { resolveWorkOrderStatus, resolveQuoteStatus, QUOTE_ITEM_TYPE_LABELS } = useStatusConfig();
+const { resolveWorkOrderStatus, resolveQuoteStatus } = useStatusConfig();
 
 const props = defineProps({
     workOrder: Object,
@@ -54,21 +57,6 @@ const workOrderStatus = computed(() => resolveWorkOrderStatus(props.workOrder.st
 
 const quoteStatus = computed(() => resolveQuoteStatus(quote.value.status));
 
-const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
-
-const trackingUrl = computed(() => `${window.location.origin}/ot/${props.workOrder.uuid}`);
-const whatsAppMessage = computed(() => {
-    const vehicle = `${props.workOrder.vehicle?.brand ?? ''} ${props.workOrder.vehicle?.model ?? ''}`.trim();
-
-    return encodeURIComponent(`Hola, tu cotización para ${vehicle} (${props.workOrder.vehicle?.plate}) está disponible: ${trackingUrl.value}`);
-});
-
-const whatsAppLink = computed(() => {
-    const phone = props.workOrder.vehicle?.client?.phone ?? '';
-    return `https://wa.me/${phone.replace(/\D/g, '')}?text=${whatsAppMessage.value}`;
-});
-const hasClientPhone = computed(() => Boolean(props.workOrder.vehicle?.client?.phone));
-const hasClientEmail = computed(() => Boolean(props.workOrder.vehicle?.client?.email));
 const canDeliverQuote = computed(() => (
     isSuperAdmin.value || roles.value.some((role) => ['Admin', 'Supervisor', 'Jefe'].includes(role))
 ));
@@ -76,310 +64,17 @@ const canNotifyAdmin = computed(() => (
     !canDeliverQuote.value && items.value.length > 0 && !['pending_customer', 'accepted'].includes(quote.value.status)
 ));
 const canShareQuote = computed(() => quote.value.status === 'pending_customer');
-const mailSubject = computed(() => encodeURIComponent(`Cotización OT #${props.workOrder.id} disponible para revisión`));
-const mailBody = computed(() => {
-    const clientName = props.workOrder.vehicle?.client?.name ?? 'cliente';
-    const vehicle = `${props.workOrder.vehicle?.brand ?? ''} ${props.workOrder.vehicle?.model ?? ''}`.trim();
 
-    return encodeURIComponent(
-        `Hola ${clientName},%0D%0A%0D%0ATu cotización${vehicle ? ` para ${vehicle}` : ''} ya está disponible para revisión.%0D%0A%0D%0APuedes verla y responderla aquí:%0D%0A${trackingUrl.value}`
-    );
-});
-const mailToLink = computed(() => {
-    const email = props.workOrder.vehicle?.client?.email ?? '';
-
-    return `mailto:${email}?subject=${mailSubject.value}&body=${mailBody.value}`;
-});
-const sendChannel = ref('manual');
-
-const selectedMode = ref('manual');
-const selectedProduct = ref(null);
-const selectedService = ref(null);
-const productSearch = ref('');
-const serviceSearch = ref('');
-const showProductDropdown = ref(false);
-const showServiceDropdown = ref(false);
-
-const hasSelectedProduct = computed(() => selectedProduct.value !== null);
-const hasSelectedService = computed(() => selectedService.value !== null);
-const hasManualInput = computed(() => selectedMode.value === 'manual' && (addForm.description !== '' || addForm.unit_price !== ''));
-
-const clearProduct = () => {
-    selectedProduct.value = null;
-    productSearch.value = '';
-    addForm.product_id = null;
-    addForm.description = '';
-    addForm.unit_price = '';
-};
-
-const clearService = () => {
-    selectedService.value = null;
-    serviceSearch.value = '';
-    addForm.service_id = null;
-    addForm.description = '';
-    addForm.unit_price = '';
-};
-
-watch(productSearch, (newVal) => {
-    if (!newVal && selectedProduct.value) {
-        clearProduct();
-    }
-});
-
-watch(serviceSearch, (newVal) => {
-    if (!newVal && selectedService.value) {
-        clearService();
-    }
-});
-
-const editingCatalogType = ref(null); // 'product' | 'service'
-const editingCatalogItem = ref(null); // Product | Service object
 const showCatalogEditModal = ref(false);
-const catalogForm = useForm({
-    name: '',
-    sku: '',
-    type: 'repuesto_nacional',
-    description: '',
-    cost_price: 0,
-    selling_price: 0,
-    physical_stock: 0,
-    min_stock: 0,
-    code: '',
-    estimated_minutes: 0,
-    is_active: true,
-});
+const editingCatalogItem = ref(null);
 
 const openEditCatalogItemModal = (item) => {
-    editingCatalogType.value = item.item_type;
-    if (item.item_type === 'product') {
-        editingCatalogItem.value = item.product;
-        catalogForm.name = item.product.name;
-        catalogForm.sku = item.product.sku;
-        catalogForm.type = item.product.type || 'repuesto_nacional';
-        catalogForm.description = item.product.description || '';
-        catalogForm.cost_price = Number(item.product.cost_price || 0);
-        catalogForm.selling_price = Number(item.product.selling_price || 0);
-        catalogForm.physical_stock = Number(item.product.physical_stock || 0);
-        catalogForm.min_stock = Number(item.product.min_stock || 0);
-    } else if (item.item_type === 'service') {
-        editingCatalogItem.value = item.service;
-        catalogForm.name = item.service.name;
-        catalogForm.code = item.service.code || '';
-        catalogForm.description = item.service.description || '';
-        catalogForm.cost_price = Number(item.service.cost_price || 0);
-        catalogForm.selling_price = Number(item.service.selling_price || 0);
-        catalogForm.estimated_minutes = Number(item.service.estimated_minutes || 0);
-        catalogForm.is_active = Boolean(item.service.is_active);
-    }
-    catalogForm.clearErrors();
+    editingCatalogItem.value = item;
     showCatalogEditModal.value = true;
 };
 
-const submitCatalogEdit = () => {
-    if (editingCatalogType.value === 'product') {
-        catalogForm.put(route('inventory.update', { ...tenantRouteParams.value, product: editingCatalogItem.value.id }), {
-            preserveScroll: true,
-            onSuccess: () => {
-                showCatalogEditModal.value = false;
-            },
-        });
-    } else if (editingCatalogType.value === 'service') {
-        catalogForm.put(route('services.update', { ...tenantRouteParams.value, service: editingCatalogItem.value.id }), {
-            preserveScroll: true,
-            onSuccess: () => {
-                showCatalogEditModal.value = false;
-            },
-        });
-    }
-};
-
-const addForm = useForm({
-    product_id: null,
-    service_id: null,
-    description: '',
-    quantity: 1,
-    unit_price: '',
-    discount_percent: 0,
-});
-
-const sendQuoteForm = useForm({
-    channel: 'manual',
-});
-const notifyReadyForm = useForm({});
-
-const filteredProducts = computed(() => {
-    if (!productSearch.value) {
-        return props.products;
-    }
-
-    const query = productSearch.value.toLowerCase();
-
-    return props.products.filter((product) => (
-        product.name.toLowerCase().includes(query)
-        || product.sku?.toLowerCase().includes(query)
-    ));
-});
-
-const filteredServices = computed(() => {
-    if (!serviceSearch.value) {
-        return props.services;
-    }
-
-    const query = serviceSearch.value.toLowerCase();
-
-    return props.services.filter((service) => (
-        service.name.toLowerCase().includes(query)
-        || service.code?.toLowerCase().includes(query)
-    ));
-});
-
-const previewSubtotal = computed(() => Number(addForm.quantity || 0) * Number(addForm.unit_price || 0));
-const previewDiscountAmount = computed(() => previewSubtotal.value * (Number(addForm.discount_percent || 0) / 100));
-const previewTotal = computed(() => previewSubtotal.value - previewDiscountAmount.value);
-
-const selectMode = (mode) => {
-    selectedMode.value = mode;
-    addForm.clearErrors();
-
-    if (mode !== 'product') {
-        selectedProduct.value = null;
-        productSearch.value = '';
-        addForm.product_id = null;
-    }
-
-    if (mode !== 'service') {
-        selectedService.value = null;
-        serviceSearch.value = '';
-        addForm.service_id = null;
-    }
-
-    if (mode === 'manual') {
-        addForm.description = '';
-        addForm.unit_price = '';
-    }
-};
-
-const selectProduct = (product) => {
-    selectedMode.value = 'product';
-    selectedProduct.value = product;
-    selectedService.value = null;
-    serviceSearch.value = '';
-    addForm.service_id = null;
-    addForm.product_id = product.id;
-    addForm.description = product.name;
-    addForm.unit_price = product.selling_price;
-    productSearch.value = product.name;
-    showProductDropdown.value = false;
-};
-
-const selectService = (service) => {
-    selectedMode.value = 'service';
-    selectedService.value = service;
-    selectedProduct.value = null;
-    productSearch.value = '';
-    addForm.product_id = null;
-    addForm.service_id = service.id;
-    addForm.description = service.name;
-    addForm.unit_price = service.selling_price;
-    serviceSearch.value = service.name;
-    showServiceDropdown.value = false;
-};
-
-const resetForm = () => {
-    addForm.reset();
-    addForm.quantity = 1;
-    addForm.discount_percent = 0;
-    selectedProduct.value = null;
-    selectedService.value = null;
-    productSearch.value = '';
-    serviceSearch.value = '';
-    selectedMode.value = 'manual';
-};
-
-const submitItem = () => {
-    addForm.post(route('work-orders.items.store', props.workOrder.id), {
-        preserveScroll: true,
-        onSuccess: () => resetForm(),
-    });
-};
-
-const removeItem = (itemId) => {
-    router.delete(route('work-orders.items.destroy', { workOrder: props.workOrder.id, item: itemId }), {
-        preserveScroll: true,
-    });
-};
-
-const shareQuoteByWhatsApp = () => {
-    if (!hasClientPhone.value) {
-        return;
-    }
-
-    window.open(whatsAppLink.value, '_blank', 'noopener');
-};
-
-const shareQuoteByEmail = () => {
-    if (!hasClientEmail.value) {
-        return;
-    }
-
-    window.location.href = mailToLink.value;
-};
-
-const shareQuoteByBoth = () => {
-    shareQuoteByWhatsApp();
-    shareQuoteByEmail();
-};
-
-const sendQuote = () => {
-    sendQuoteForm.channel = sendChannel.value;
-
-    sendQuoteForm.post(route('work-orders.quote.send', { workOrder: props.workOrder.id }), {
-        preserveScroll: true,
-        onSuccess: () => {
-            if (sendChannel.value === 'whatsapp') {
-                shareQuoteByWhatsApp();
-            } else if (sendChannel.value === 'email') {
-                shareQuoteByEmail();
-            } else if (sendChannel.value === 'both') {
-                shareQuoteByBoth();
-            }
-        },
-    });
-};
-
-const notifyReady = () => {
-    notifyReadyForm.post(route('work-orders.quote.notify-ready', { workOrder: props.workOrder.id }), {
-        preserveScroll: true,
-    });
-};
-
 const showApproveManuallyModal = ref(false);
-
-const approveManuallyForm = useForm({ channel: '' });
-
-const submitApproveManually = (channel) => {
-    approveManuallyForm.channel = channel;
-    approveManuallyForm.post(route('work-orders.quote.approve-manually', { workOrder: props.workOrder.id }), {
-        preserveScroll: true,
-        onSuccess: () => {
-            showApproveManuallyModal.value = false;
-        },
-    });
-};
-
 const showDeleteModal = ref(false);
-
-const confirmDeleteWorkOrder = () => {
-    showDeleteModal.value = true;
-};
-
-const submitDeleteWorkOrder = () => {
-    router.delete(route('work-orders.destroy', { ...tenantRouteParams.value, workOrder: props.workOrder.id }), {
-        onSuccess: () => {
-            showDeleteModal.value = false;
-        }
-    });
-};
 </script>
 
 <template>
@@ -414,7 +109,7 @@ const submitDeleteWorkOrder = () => {
                         v-if="canDeleteWorkOrder"
                         type="button"
                         class="rounded-xl bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5"
-                        @click="confirmDeleteWorkOrder"
+                        @click="showDeleteModal = true"
                     >
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -455,352 +150,39 @@ const submitDeleteWorkOrder = () => {
             <div v-if="commercialQuotesEnabled" class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px] xl:items-start">
 
                 <!-- SIDEBAR: primero en DOM → aparece arriba en mobile, columna derecha en desktop -->
-                <div class="space-y-4 xl:order-last xl:sticky xl:top-6">
-
-                    <!-- Total -->
-                    <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
-                        <p class="mt-1.5 text-3xl font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</p>
-                        <p v-if="formatUf(quote.subtotal_amount)" class="mt-0.5 text-xs font-semibold text-gray-400">≈ UF {{ formatUf(quote.subtotal_amount) }}</p>
-                        <p class="mt-1.5 text-xs font-medium text-gray-400">{{ items.length }} ítems cargados</p>
-                    </div>
-
-                    <!-- Canal de envío + botón (admin/supervisor) -->
-                    <template v-if="canDeliverQuote">
-                        <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                            <p class="mb-3 text-[10px] font-black uppercase tracking-widest text-gray-400">Canal de envío</p>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors" :class="sendChannel === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'" @click="sendChannel = 'manual'">Solo marcar</button>
-                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientPhone" @click="sendChannel = 'whatsapp'">WhatsApp</button>
-                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'email' ? 'bg-sky-600 text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientEmail" @click="sendChannel = 'email'">Email</button>
-                                <button type="button" class="rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50" :class="sendChannel === 'both' ? 'bg-[#FF7A00] text-white' : 'bg-gray-50 text-gray-500'" :disabled="!hasClientPhone || !hasClientEmail" @click="sendChannel = 'both'">Ambos</button>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            class="w-full rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#FF7A00] disabled:cursor-not-allowed disabled:opacity-50"
-                            :disabled="sendQuoteForm.processing || items.length === 0 || quote.status === 'accepted'"
-                            @click="sendQuote"
-                        >
-                            {{ sendQuoteForm.processing ? 'Enviando...' : sendChannel === 'whatsapp' ? 'Enviar por WhatsApp' : sendChannel === 'email' ? 'Enviar por Email' : sendChannel === 'both' ? 'Enviar por Ambos' : 'Marcar como Enviada' }}
-                        </button>
-                    </template>
-
-                    <!-- Aprobar manualmente (admin/supervisor/jefe) -->
-                    <template v-if="canDeliverQuote && quote.status !== 'accepted'">
-                        <button
-                            type="button"
-                            class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
-                            :disabled="items.length === 0"
-                            @click="showApproveManuallyModal = true"
-                        >
-                            Aprobar manualmente
-                        </button>
-                    </template>
-
-                    <!-- Aviso + botón (mecánico) -->
-                    <template v-if="!canDeliverQuote">
-                        <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Revisión administrativa</p>
-                            <p class="mt-2 text-sm font-medium text-amber-900">Cuando termines la cotización, avisa al equipo administrador para que la envíe al cliente.</p>
-                        </div>
-                        <button
-                            type="button"
-                            class="w-full rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
-                            :disabled="notifyReadyForm.processing || !canNotifyAdmin"
-                            @click="notifyReady"
-                        >
-                            {{ notifyReadyForm.processing ? 'Avisando...' : 'Avisar al Administrador' }}
-                        </button>
-                    </template>
-
-                    <!-- Compartir (pending_customer) -->
-                    <template v-if="canShareQuote">
-                        <a v-if="hasClientPhone" :href="whatsAppLink" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-green-600">Compartir por WhatsApp</a>
-                        <a v-if="hasClientEmail" :href="mailToLink" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-sky-700">Compartir por Email</a>
-                        <button v-if="hasClientPhone && hasClientEmail" type="button" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#CC6200]" @click="shareQuoteByBoth">Compartir por Ambos</button>
-                    </template>
-
-                    <!-- Tracking -->
-                    <a :href="trackingUrl" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50">
-                        Ver Tracking del Cliente
-                    </a>
-
-                    <!-- Historial (solo desktop; en mobile va al final del contenido principal) -->
-                    <div class="hidden xl:block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <div class="flex items-center justify-between border-b border-gray-50 px-5 py-4">
-                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Historial Comercial</h2>
-                            <span class="text-[10px] font-bold text-gray-400">{{ quote.events?.length ?? 0 }} eventos</span>
-                        </div>
-                        <div class="p-5">
-                            <div v-if="!(quote.events?.length)" class="rounded-xl border border-dashed border-gray-200 px-4 py-6 text-center text-xs font-semibold uppercase tracking-widest text-gray-400">Sin historial todavía</div>
-                            <div v-else class="space-y-3">
-                                <div v-for="event in quote.events" :key="event.id" class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-800">{{ event.description }}</p>
-                                            <p class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-gray-400">{{ event.actor_type }} · {{ event.event_type }}</p>
-                                        </div>
-                                        <span class="shrink-0 text-[10px] font-semibold text-gray-400">{{ formatDateTime(event.created_at) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <QuoteSidebar
+                    :work-order="workOrder"
+                    :quote="quote"
+                    :items="items"
+                    :uf-value="ufValue"
+                    :can-deliver-quote="canDeliverQuote"
+                    :can-notify-admin="canNotifyAdmin"
+                    :can-share-quote="canShareQuote"
+                    @open-approve-modal="showApproveManuallyModal = true"
+                />
 
                 <!-- CONTENIDO PRINCIPAL: tabla + formulario -->
                 <div class="space-y-6 xl:order-first">
+                    <QuoteItemsTable
+                        :work-order-id="workOrder.id"
+                        :items="items"
+                        :subtotal-amount="quote.subtotal_amount"
+                        :uf-value="ufValue"
+                        :can-manage-items="canManageItems"
+                        :can-manage-inventory="canManageInventory"
+                        @edit-catalog-item="openEditCatalogItemModal"
+                    />
 
-                    <!-- Tabla de ítems -->
-                    <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <div class="flex items-center justify-between border-b border-gray-50 px-6 py-4">
-                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Detalle Cotización</h2>
-                            <span class="text-[10px] font-bold text-gray-400">{{ items.length }} registros</span>
-                        </div>
-
-                        <div v-if="items.length === 0" class="flex flex-col items-center justify-center px-6 py-14 text-center">
-                            <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50">
-                                <svg class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                            </div>
-                            <p class="text-xs font-semibold uppercase tracking-tight text-gray-400">Aún no hay ítems en la cotización</p>
-                        </div>
-
-                        <div v-else class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead>
-                                    <tr class="border-b border-gray-50">
-                                        <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Descripción</th>
-                                        <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Tipo</th>
-                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Cant.</th>
-                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">P. Unit.</th>
-                                        <th class="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
-                                        <th class="px-4 py-3"></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-50">
-                                    <tr v-for="item in items" :key="item.id" class="transition-colors hover:bg-gray-50/50">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2">
-                                                <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
-                                                <button
-                                                    v-if="canManageInventory && (item.item_type === 'product' || item.item_type === 'service')"
-                                                    type="button"
-                                                    class="text-gray-400 hover:text-[#FF7A00] transition-colors"
-                                                    title="Editar en catálogo"
-                                                    @click="openEditCatalogItemModal(item)"
-                                                >
-                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <p v-if="item.product?.sku" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
-                                            <p v-if="item.service?.code" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
-                                            <p v-if="Number(item.discount_percent) > 0" class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-rose-500">
-                                                Desc. {{ item.discount_percent }}% · ahorro {{ formatCurrency(item.discount_amount) }}
-                                            </p>
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                                {{ QUOTE_ITEM_TYPE_LABELS[item.item_type] ?? item.item_type }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">{{ item.quantity }}</td>
-                                        <td class="px-4 py-4 text-right text-sm font-medium tabular-nums text-gray-600">
-                                            <span v-if="Number(item.discount_percent) > 0" class="block text-[10px] text-gray-400 line-through">{{ formatCurrency(item.original_unit_price) }}</span>
-                                            <span>{{ formatCurrency(item.unit_price) }}</span>
-                                        </td>
-                                        <td class="px-4 py-4 text-right">
-                                            <span class="text-sm font-black tabular-nums text-gray-900">{{ formatCurrency(item.total_price) }}</span>
-                                            <span v-if="formatUf(item.total_price)" class="block text-[10px] font-medium tabular-nums text-gray-400">UF {{ formatUf(item.total_price) }}</span>
-                                        </td>
-                                        <td class="px-4 py-4 text-right">
-                                            <button v-if="canManageItems" type="button" class="text-gray-300 transition-colors hover:text-rose-500" @click="removeItem(item.id)">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="border-t-2 border-gray-100 bg-gray-50/50">
-                                        <td colspan="4" class="px-6 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-600">Total Cotización</td>
-                                        <td class="px-4 py-4 text-right">
-                                            <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</span>
-                                            <span v-if="formatUf(quote.subtotal_amount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">UF {{ formatUf(quote.subtotal_amount) }}</span>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Formulario agregar ítem -->
-                    <div v-if="canManageItems" class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Agregar Ítem</h2>
-                            <Link :href="route('services.index')" class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]">Gestionar Servicios</Link>
-                        </div>
-
-                        <div class="mb-4 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Política de descuentos</p>
-                            <p class="mt-1.5 text-sm font-medium text-amber-900">
-                                Hasta {{ props.discountPolicy?.threshold ?? 0 }}% sin aprobación. Sobre ese umbral requiere rol {{ (props.discountPolicy?.approver_roles || []).join(' o ') }}.
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-2">
-                            <button
-                                type="button"
-                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                :class="selectedMode === 'manual' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                :disabled="hasSelectedProduct || hasSelectedService"
-                                @click="selectMode('manual')"
-                            >
-                                Manual
-                            </button>
-                            <button
-                                type="button"
-                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                :class="selectedMode === 'product' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                :disabled="hasManualInput || hasSelectedService"
-                                @click="selectMode('product')"
-                            >
-                                Repuesto
-                            </button>
-                            <button
-                                type="button"
-                                class="rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                :class="selectedMode === 'service' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'"
-                                :disabled="hasManualInput || hasSelectedProduct"
-                                @click="selectMode('service')"
-                            >
-                                Servicio
-                            </button>
-                        </div>
-
-                        <form class="mt-5 space-y-4" @submit.prevent="submitItem">
-                            <div v-if="selectedMode === 'product'" class="space-y-1.5">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Repuesto</label>
-                                <div class="relative">
-                                    <input v-model="productSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300 pr-10" placeholder="Nombre o SKU" @focus="showProductDropdown = true" @blur="setTimeout(() => { showProductDropdown = false; }, 200)" />
-                                    <button
-                                        v-if="hasSelectedProduct"
-                                        type="button"
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        @click="clearProduct"
-                                    >
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                    <div v-if="showProductDropdown && filteredProducts.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
-                                        <button v-for="product in filteredProducts.slice(0, 8)" :key="product.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectProduct(product)">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">{{ product.name }}</p>
-                                                <p class="text-[10px] font-mono text-gray-400">{{ product.sku }} · Stock {{ product.physical_stock }}</p>
-                                            </div>
-                                            <span class="text-sm font-black text-orange-500">{{ formatCurrency(product.selling_price) }}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div v-if="selectedMode === 'service'" class="space-y-1.5">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Buscar Servicio</label>
-                                <div class="relative">
-                                    <input v-model="serviceSearch" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300 pr-10" placeholder="Nombre o código" @focus="showServiceDropdown = true" @blur="setTimeout(() => { showServiceDropdown = false; }, 200)" />
-                                    <button
-                                        v-if="hasSelectedService"
-                                        type="button"
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        @click="clearService"
-                                    >
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                    <div v-if="showServiceDropdown && filteredServices.length" class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-lg">
-                                        <button v-for="service in filteredServices.slice(0, 8)" :key="service.id" type="button" class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-orange-50" @click="selectService(service)">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">{{ service.name }}</p>
-                                                <p class="text-[10px] font-mono text-gray-400">{{ service.code || 'Sin código' }} · {{ service.estimated_minutes }} min</p>
-                                            </div>
-                                            <span class="text-sm font-black text-orange-500">{{ formatCurrency(service.selling_price) }}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Descripción</label>
-                                <input v-model="addForm.description" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" placeholder="Ej: Cambio de aceite, diagnóstico eléctrico" />
-                                <p v-if="addForm.errors.description" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.description }}</p>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="space-y-1.5">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Cantidad</label>
-                                    <input v-model.number="addForm.quantity" type="number" min="0.01" step="0.01" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
-                                    <p v-if="addForm.errors.quantity" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.quantity }}</p>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">P. Unitario</label>
-                                    <input v-model.number="addForm.unit_price" type="number" min="0" step="1" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
-                                    <p v-if="addForm.errors.unit_price" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.unit_price }}</p>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Desc. (%)</label>
-                                    <input v-model.number="addForm.discount_percent" type="number" min="0" max="100" step="0.01" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300" />
-                                    <p v-if="addForm.errors.discount_percent" class="text-[10px] font-semibold text-rose-500">{{ addForm.errors.discount_percent }}</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
-                                <div>
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Subtotal</span>
-                                    <p v-if="Number(addForm.discount_percent) > 0" class="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-rose-500">
-                                        Desc. {{ addForm.discount_percent }}% · ahorro {{ formatCurrency(previewDiscountAmount) }}
-                                    </p>
-                                </div>
-                                <div class="text-right">
-                                    <span v-if="Number(addForm.discount_percent) > 0" class="block text-xs font-semibold text-gray-400 line-through">{{ formatCurrency(previewSubtotal) }}</span>
-                                    <span class="text-base font-black text-orange-600">{{ formatCurrency(previewTotal) }}</span>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-700 disabled:opacity-50" :disabled="addForm.processing">
-                                {{ addForm.processing ? 'Agregando...' : 'Agregar a Cotización' }}
-                            </button>
-                        </form>
-                    </div>
+                    <AddQuoteItemForm
+                        v-if="canManageItems"
+                        :work-order-id="workOrder.id"
+                        :products="products"
+                        :services="services"
+                        :discount-policy="discountPolicy"
+                    />
 
                     <!-- Historial (solo mobile; en desktop va en el sidebar) -->
-                    <div class="xl:hidden overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <div class="flex items-center justify-between border-b border-gray-50 px-6 py-4">
-                            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Historial Comercial</h2>
-                            <span class="text-[10px] font-bold text-gray-400">{{ quote.events?.length ?? 0 }} eventos</span>
-                        </div>
-                        <div class="p-6">
-                            <div v-if="!(quote.events?.length)" class="rounded-xl border border-dashed border-gray-200 px-4 py-8 text-center text-xs font-semibold uppercase tracking-widest text-gray-400">Sin historial todavía</div>
-                            <div v-else class="space-y-3">
-                                <div v-for="event in quote.events" :key="event.id" class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-800">{{ event.description }}</p>
-                                            <p class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-gray-400">{{ event.actor_type }} · {{ event.event_type }}</p>
-                                        </div>
-                                        <span class="shrink-0 text-[10px] font-semibold text-gray-400">{{ formatDateTime(event.created_at) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <QuoteHistoryCard :events="quote.events" variant="mobile" />
                 </div>
             </div>
 
@@ -823,223 +205,8 @@ const submitDeleteWorkOrder = () => {
             </div>
         </div>
 
-        <!-- EditCatalogItemModal -->
-        <div v-if="showCatalogEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showCatalogEditModal = false"></div>
-
-            <div class="relative w-full max-w-lg overflow-y-auto rounded-[2.5rem] border border-gray-100 bg-white shadow-[0_32px_64px_rgba(0,0,0,0.1)] max-h-[90vh] animate-in zoom-in-95 duration-300">
-                <div class="flex items-center justify-between border-b border-gray-50 bg-gray-50/50 p-6 lg:p-8">
-                    <div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight text-gray-900">
-                            {{ editingCatalogType === 'product' ? 'Editar Repuesto' : 'Editar Servicio' }}
-                        </h2>
-                        <p class="mt-1 text-xs font-medium text-gray-400">Edita la información del catálogo general.</p>
-                    </div>
-                    <button
-                        type="button"
-                        class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-sm transition-all hover:bg-gray-100 hover:text-gray-600"
-                        @click="showCatalogEditModal = false"
-                    >
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <form class="space-y-6 p-6 lg:p-8" @submit.prevent="submitCatalogEdit">
-                    <div class="space-y-1.5">
-                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Nombre</label>
-                        <input v-model="catalogForm.name" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                        <p v-if="catalogForm.errors.name" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.name }}</p>
-                    </div>
-
-                    <template v-if="editingCatalogType === 'product'">
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">SKU</label>
-                                <input v-model="catalogForm.sku" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                                <p v-if="catalogForm.errors.sku" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.sku }}</p>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Tipo de Repuesto</label>
-                                <select v-model="catalogForm.type" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]">
-                                    <option value="repuesto_nacional">Repuesto Nacional</option>
-                                    <option value="repuesto_internacional">Repuesto Internacional</option>
-                                    <option value="insumo">Insumo</option>
-                                </select>
-                                <p v-if="catalogForm.errors.type" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.type }}</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Stock Físico</label>
-                                <input v-model.number="catalogForm.physical_stock" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                                <p v-if="catalogForm.errors.physical_stock" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.physical_stock }}</p>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Stock Mínimo</label>
-                                <input v-model.number="catalogForm.min_stock" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                                <p v-if="catalogForm.errors.min_stock" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.min_stock }}</p>
-                            </div>
-                        </div>
-                    </template>
-
-                    <template v-if="editingCatalogType === 'service'">
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Código</label>
-                                <input v-model="catalogForm.code" type="text" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 font-mono text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                                <p v-if="catalogForm.errors.code" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.code }}</p>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Duración Estimada (min)</label>
-                                <input v-model.number="catalogForm.estimated_minutes" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                                <p v-if="catalogForm.errors.estimated_minutes" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.estimated_minutes }}</p>
-                            </div>
-                        </div>
-                    </template>
-
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div class="space-y-1.5">
-                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Costo</label>
-                            <input v-model.number="catalogForm.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                            <p v-if="catalogForm.errors.cost_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.cost_price }}</p>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Precio Venta</label>
-                            <input v-model.number="catalogForm.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                            <p v-if="catalogForm.errors.selling_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.selling_price }}</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Descripción</label>
-                        <textarea v-model="catalogForm.description" rows="3" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-medium text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" placeholder="Detalle opcional"></textarea>
-                        <p v-if="catalogForm.errors.description" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.description }}</p>
-                    </div>
-
-                    <label v-if="editingCatalogType === 'service'" class="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
-                        <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Servicio activo</span>
-                        <input v-model="catalogForm.is_active" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]" />
-                    </label>
-
-                    <button type="submit" class="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-black uppercase tracking-wide text-white transition-colors hover:bg-[#FF7A00]" :disabled="catalogForm.processing">
-                        {{ catalogForm.processing ? 'Guardando...' : 'Guardar Cambios' }}
-                    </button>
-                </form>
-            </div>
-        </div>
-        <!-- Approve Manually Modal -->
-        <div v-if="showApproveManuallyModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showApproveManuallyModal = false"></div>
-
-            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
-                <div class="text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-amber-500">
-                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-black uppercase tracking-tight text-gray-900">¿Cómo aprobó el cliente?</h3>
-                    <p class="mt-2 text-sm font-medium text-gray-500">El cliente aprobó la cotización por un medio externo. Selecciona cómo fue confirmada para dejar registro.</p>
-                </div>
-
-                <div class="mt-6 grid grid-cols-2 gap-3">
-                    <button
-                        type="button"
-                        class="flex flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-gray-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-                        :disabled="approveManuallyForm.processing"
-                        @click="submitApproveManually('phone')"
-                    >
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                        </svg>
-                        Llamada Telefónica
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-gray-700 transition-colors hover:border-green-200 hover:bg-green-50 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
-                        :disabled="approveManuallyForm.processing"
-                        @click="submitApproveManually('whatsapp')"
-                    >
-                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        WhatsApp
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-gray-700 transition-colors hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
-                        :disabled="approveManuallyForm.processing"
-                        @click="submitApproveManually('email')"
-                    >
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                        </svg>
-                        Mail Directo
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        :disabled="approveManuallyForm.processing"
-                        @click="submitApproveManually('other')"
-                    >
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Otro Medio
-                    </button>
-                </div>
-
-                <div class="mt-5">
-                    <button type="button" class="w-full rounded-2xl bg-gray-100 py-3 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showApproveManuallyModal = false">Cancelar</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete Work Order Confirmation Modal -->
-        <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteModal = false"></div>
-
-            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
-                <div class="text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
-                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">¿Eliminar Orden de Trabajo?</h3>
-                    <p class="mt-2 text-sm text-gray-500 font-medium">Esta acción no se puede deshacer de forma sencilla. Por favor confirma los datos de la OT a eliminar:</p>
-                </div>
-
-                <div class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Número de OT:</span>
-                        <span class="font-bold text-gray-900">#OT-{{ props.workOrder.id }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha de Ingreso:</span>
-                        <span class="font-bold text-gray-900">{{ new Date(props.workOrder.created_at).toLocaleDateString('es-CL') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
-                        <span class="font-bold text-gray-900">{{ props.workOrder.vehicle?.client?.name || 'No registrado' }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
-                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ props.workOrder.vehicle?.plate || 'S/P' }}</span>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex gap-3">
-                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteModal = false">Cancelar</button>
-                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteWorkOrder">Eliminar OT</button>
-                </div>
-            </div>
-        </div>
+        <EditCatalogItemModal v-model:show="showCatalogEditModal" :item="editingCatalogItem" />
+        <ApproveManuallyModal v-model:show="showApproveManuallyModal" :work-order-id="workOrder.id" />
+        <DeleteWorkOrderModal v-model:show="showDeleteModal" :work-order="workOrder" />
     </TallerLayout>
 </template>

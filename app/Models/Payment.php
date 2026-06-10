@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     use HasFactory;
+
     /** @var array<string, string> */
     protected $casts = [
         'paid_at' => 'datetime',
@@ -50,13 +51,12 @@ class Payment extends Model
 
     /**
      * Calcula y asigna comisiones a partir del monto bruto de MP.
-     * En Chile el IVA de la comisión es 19%.
      *
      * @param  float  $mpFeeWithVat  Comisión total cobrada por MP (incluye IVA)
      */
     public function calculateFees(float $mpFeeWithVat): void
     {
-        $vatRate = 0.19;
+        $vatRate = (float) config('billing.vat_rate');
         $feeNet = (int) round($mpFeeWithVat / (1 + $vatRate));
         $feeVat = (int) round($mpFeeWithVat) - $feeNet;
 

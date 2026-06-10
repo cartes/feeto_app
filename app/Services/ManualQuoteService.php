@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Quote;
-use App\Models\QuoteEvent;
 use App\Models\QuoteItem;
 use App\Models\WorkOrder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ManualQuoteService
 {
-    public function __construct(protected WorkOrderQuoteService $workOrderQuoteService) {}
+    public function __construct(protected QuoteItemService $quoteItemService) {}
 
     /**
      * @param  array<string, mixed>  $data
@@ -37,20 +35,7 @@ class ManualQuoteService
         string $description = 'Se agregó un ítem a la cotización.',
         array $metadata = []
     ): QuoteItem {
-        $itemPayload = $this->workOrderQuoteService->buildItemPayload($validated);
-
-        $item = $quote->items()->create($itemPayload);
-
-        $this->markQuoteAsDraft($quote);
-        $this->recalculateTotal($quote);
-        $this->recordEvent($quote, 'staff', 'item_added', $description, array_merge([
-            'description' => $itemPayload['description'],
-            'item_type' => $itemPayload['item_type'],
-            'discount_percent' => $itemPayload['discount_percent'],
-            'discount_amount' => $itemPayload['discount_amount'],
-        ], $metadata));
-
-        return $item->loadMissing(['product', 'service']);
+        return $this->quoteItemService->addItem($quote, $validated, $description, $metadata);
     }
 
     public function removeItem(
@@ -58,18 +43,7 @@ class ManualQuoteService
         QuoteItem $item,
         string $description = 'Se eliminó un ítem de la cotización.'
     ): void {
-        if ($item->quote_id !== $quote->id) {
-            throw new ModelNotFoundException;
-        }
-
-        $removedDescription = $item->description;
-        $item->delete();
-
-        $this->markQuoteAsDraft($quote);
-        $this->recalculateTotal($quote);
-        $this->recordEvent($quote, 'staff', 'item_removed', $description, [
-            'description' => $removedDescription,
-        ]);
+        $this->quoteItemService->removeItem($quote, $item, $description);
     }
 
     public function send(Quote $quote, string $channel): void
@@ -81,7 +55,7 @@ class ManualQuoteService
             'customer_response_notes' => null,
         ]);
 
-        $this->recordEvent(
+        $this->quoteItemService->recordEvent(
             $quote,
             'staff',
             'quote_sent',
@@ -104,7 +78,7 @@ class ManualQuoteService
             default => 'Cotización aprobada manualmente por el equipo.',
         };
 
-        $this->recordEvent($quote, 'staff', 'staff_approved_manually', $description, [
+        $this->quoteItemService->recordEvent($quote, 'staff', 'staff_approved_manually', $description, [
             'channel' => $channel,
         ]);
 
@@ -127,7 +101,7 @@ class ManualQuoteService
             ? 'El cliente aceptó la cotización.'
             : 'El cliente rechazó la cotización.';
 
-        $this->recordEvent($quote, 'customer', 'customer_'.$decision, $description, [
+        $this->quoteItemService->recordEvent($quote, 'customer', 'customer_'.$decision, $description, [
             'notes' => $notes,
         ]);
 
@@ -156,43 +130,6 @@ class ManualQuoteService
         $quote->update(['work_order_id' => $workOrder->id]);
 
         return $workOrder;
-    }
-
-    private function markQuoteAsDraft(Quote $quote): void
-    {
-        $quote->update([
-            'status' => Quote::STATUS_DRAFT,
-            'responded_at' => null,
-            'customer_response_notes' => null,
-        ]);
-    }
-
-    private function recalculateTotal(Quote $quote): void
-    {
-        $total = (float) $quote->items()->sum('total_price');
-
-        $quote->update(['subtotal_amount' => $total]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $metadata
-     */
-    private function recordEvent(
-        Quote $quote,
-        string $actorType,
-        string $eventType,
-        string $description,
-        array $metadata = []
-    ): void {
-        QuoteEvent::create([
-            'tenant_id' => $quote->tenant_id,
-            'work_order_id' => $quote->work_order_id,
-            'quote_id' => $quote->id,
-            'actor_type' => $actorType,
-            'event_type' => $eventType,
-            'description' => $description,
-            'metadata' => $metadata,
-        ]);
     }
 
     private function sendEventDescription(string $channel): string

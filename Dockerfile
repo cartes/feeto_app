@@ -2,7 +2,7 @@
 FROM composer:2 AS composer
 
 # ETAPA 2: Dependencias de PHP (Composer)
-FROM php:8.4-cli-bookworm AS vendor
+FROM php:8.5-cli-bookworm AS vendor
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
@@ -50,8 +50,8 @@ COPY postcss.config.js ./
 COPY tailwind.config.js ./
 RUN npm run build
 
-# ETAPA 4: Producción (PHP 8.4)
-FROM php:8.4-fpm-bookworm AS runtime
+# ETAPA 4: Producción (PHP 8.5)
+FROM php:8.5-fpm-bookworm AS runtime
 WORKDIR /var/www/html
 
 # Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones

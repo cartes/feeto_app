@@ -44,7 +44,7 @@ class OrderObserver
 
                     if ($tenant->hasFeature(PlanFeatureService::FEATURE_ADVANCED_INVENTORY)) {
                         $margin = $item->unit_price - $product->cost_price;
-                        $minMargin = $product->cost_price * 0.10; // 10% minimum margin rule
+                        $minMargin = $product->cost_price * (float) config('billing.minimum_margin_rate');
                         if ($margin < $minMargin) {
                             event(new MinimumMarginWarning($product, $item, $tenant));
                         }

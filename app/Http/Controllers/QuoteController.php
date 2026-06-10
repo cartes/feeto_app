@@ -7,18 +7,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RespondToQuoteRequest;
 use App\Http\Requests\SendQuoteRequest;
 use App\Models\Quote;
-use App\Models\QuoteEvent;
 use App\Models\Tenant;
 use App\Models\TenantNotification;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
+use App\Services\QuoteItemService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
 {
-    public function __construct(protected PlanFeatureService $planFeatureService) {}
+    public function __construct(
+        protected PlanFeatureService $planFeatureService,
+        protected QuoteItemService $quoteItemService,
+    ) {}
 
     public function send(SendQuoteRequest $request, WorkOrder $workOrder): RedirectResponse
     {
@@ -49,7 +52,7 @@ class QuoteController extends Controller
             'customer_response_notes' => null,
         ]);
 
-        $this->recordEvent(
+        $this->quoteItemService->recordEvent(
             $quote,
             'staff',
             'quote_sent',
@@ -106,7 +109,7 @@ class QuoteController extends Controller
             ],
         ]);
 
-        $this->recordEvent(
+        $this->quoteItemService->recordEvent(
             $quote,
             'staff',
             'quote_ready_for_admin_review',
@@ -148,7 +151,7 @@ class QuoteController extends Controller
             default => 'Cotización aprobada manualmente por el equipo.',
         };
 
-        $this->recordEvent($quote, 'staff', 'staff_approved_manually', $description, [
+        $this->quoteItemService->recordEvent($quote, 'staff', 'staff_approved_manually', $description, [
             'channel' => $validated['channel'],
         ]);
 
@@ -186,7 +189,7 @@ class QuoteController extends Controller
             ? 'El cliente aceptó la cotización.'
             : 'El cliente rechazó la cotización.';
 
-        $this->recordEvent($quote, 'customer', 'customer_'.$decision, $description, [
+        $this->quoteItemService->recordEvent($quote, 'customer', 'customer_'.$decision, $description, [
             'notes' => $request->validated('notes'),
         ]);
 
@@ -206,27 +209,6 @@ class QuoteController extends Controller
         if ($user->tenant_id !== $workOrder->tenant_id) {
             abort(403, 'No tienes permiso para gestionar esta cotización.');
         }
-    }
-
-    /**
-     * @param  array<string, mixed>  $metadata
-     */
-    private function recordEvent(
-        Quote $quote,
-        string $actorType,
-        string $eventType,
-        string $description,
-        array $metadata = []
-    ): void {
-        QuoteEvent::create([
-            'tenant_id' => $quote->tenant_id,
-            'work_order_id' => $quote->work_order_id,
-            'quote_id' => $quote->id,
-            'actor_type' => $actorType,
-            'event_type' => $eventType,
-            'description' => $description,
-            'metadata' => $metadata,
-        ]);
     }
 
     private function ensureCommercialQuotesEnabled(?Tenant $tenant): void
