@@ -467,6 +467,12 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         // SEO páginas públicas
         Route::get('/landing-seo', [LandingPageSeoController::class, 'index'])->name('landing-seo.index');
         Route::put('/landing-seo', [LandingPageSeoController::class, 'update'])->name('landing-seo.update');
+        Route::post('/landing-seo/{pageKey}/og-image', [LandingPageSeoController::class, 'uploadOgImage'])
+            ->where('pageKey', 'home|pricing|trial|blog')
+            ->name('landing-seo.og-image.upload');
+        Route::delete('/landing-seo/{pageKey}/og-image', [LandingPageSeoController::class, 'deleteOgImage'])
+            ->where('pageKey', 'home|pricing|trial|blog')
+            ->name('landing-seo.og-image.delete');
 
         // Blog
         Route::resource('/blog', BlogPostController::class)->except(['show']);

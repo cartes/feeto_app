@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\Setting;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,9 +34,9 @@ class PublicBlogController extends Controller
             ->get();
 
         $canonicalUrl = request()->url();
-        $title = 'Blog · TallerFlow — Recursos para Talleres Mecánicos';
-        $description = 'Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.';
-        $ogImage = url('/images/tallerflow-social-share.png');
+        $title = Setting::get('seo_blog_title', 'Blog · TallerFlow — Recursos para Talleres Mecánicos');
+        $description = Setting::get('seo_blog_description', 'Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.');
+        $ogImage = $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
 
         $seo = [
             'title' => $title,
@@ -109,7 +110,7 @@ class PublicBlogController extends Controller
         $canonicalUrl = request()->url();
         $title = "Artículos sobre {$category->name} · Blog de TallerFlow";
         $description = "Explora recursos, consejos y guías sobre {$category->name} para optimizar y hacer crecer tu taller mecánico.";
-        $ogImage = url('/images/tallerflow-social-share.png');
+        $ogImage = $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
 
         $seo = [
             'title' => $title,
@@ -166,7 +167,7 @@ class PublicBlogController extends Controller
             ->firstOrFail();
 
         $canonicalUrl = request()->url();
-        $imageUrl = $post->featured_image_url ?? url('/images/tallerflow-social-share.png');
+        $imageUrl = $post->featured_image_url ?? $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
 
         $seoTitle = filled($post->meta_title) ? $post->meta_title : "{$post->title} · Blog de TallerFlow";
         $seoDescription = filled($post->meta_description)

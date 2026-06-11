@@ -48,6 +48,16 @@ class BlogPost extends Model
 
     public function getFeaturedImageUrlAttribute(): ?string
     {
-        return $this->featuredMedia?->url ?? ($this->featured_image ?: null);
+        if ($this->featuredMedia) {
+            return $this->featuredMedia->url;
+        }
+
+        if (blank($this->featured_image)) {
+            return null;
+        }
+
+        return Str::startsWith($this->featured_image, ['http://', 'https://'])
+            ? $this->featured_image
+            : url($this->featured_image);
     }
 }

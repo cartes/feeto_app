@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
@@ -14,7 +14,6 @@ const form = useForm({
         key: p.key,
         title: p.title ?? '',
         description: p.description ?? '',
-        og_image: p.og_image ?? '',
     })),
     analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
     analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
@@ -22,6 +21,41 @@ const form = useForm({
     marketing_whatsapp_number: props.marketing_whatsapp?.number || '',
     marketing_whatsapp_message: props.marketing_whatsapp?.message || 'Hola, vi TallerFlow y quiero más información.',
 });
+
+// Imágenes OG: subida/eliminación independiente por página
+const ogImages = ref(props.pages.map(p => p.og_image || ''));
+const ogImagePreviews = ref(props.pages.map(() => null));
+const ogImageForms = props.pages.map(() => useForm({ og_image: null }));
+
+const onOgImageSelected = (i, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    ogImagePreviews.value[i] = URL.createObjectURL(file);
+    ogImageForms[i].og_image = file;
+    ogImageForms[i].post(route('admin.landing-seo.og-image.upload', props.pages[i].key), {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            ogImages.value[i] = ogImagePreviews.value[i];
+            ogImageForms[i].reset();
+        },
+        onError: () => {
+            ogImagePreviews.value[i] = null;
+        },
+    });
+};
+
+const deleteOgImage = (i) => {
+    if (!confirm('¿Eliminar la imagen OG de esta página?')) return;
+
+    router.delete(route('admin.landing-seo.og-image.delete', props.pages[i].key), {
+        preserveScroll: true,
+        onSuccess: () => {
+            ogImages.value[i] = '';
+            ogImagePreviews.value[i] = null;
+        },
+    });
+};
 
 const isEditingGa = ref(false);
 
@@ -65,7 +99,6 @@ const submit = () => {
 const resetPage = (i) => {
     form.pages[i].title = props.pages[i]?.default_title ?? '';
     form.pages[i].description = props.pages[i]?.default_description ?? '';
-    form.pages[i].og_image = '';
 };
 </script>
 
@@ -172,14 +205,26 @@ const resetPage = (i) => {
 
                         <!-- OG Image -->
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">OG Image URL <span class="text-slate-400 normal-case font-normal">(opcional)</span></label>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Imagen OG <span class="text-slate-400 normal-case font-normal">(opcional)</span></label>
                             <input
-                                v-model="form.pages[i].og_image"
-                                type="url"
-                                placeholder="https://tallerflow.cl/images/og-precios.jpg"
-                                class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                @change="onOgImageSelected(i, $event)"
+                                class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer"
                             />
-                            <p class="mt-1 text-xs text-slate-400">Imagen que aparece al compartir en redes sociales. Recomendado: 1200×630 px.</p>
+                            <p v-if="ogImageForms[i].errors.og_image" class="mt-1 text-sm text-red-600">{{ ogImageForms[i].errors.og_image }}</p>
+                            <div class="mt-1.5 flex items-center justify-between">
+                                <p class="text-xs text-slate-400">JPG, PNG o WebP. Máx. 5 MB. Recomendado: 1200×630 px.</p>
+                                <button
+                                    v-if="ogImages[i] && !ogImageForms[i].processing"
+                                    type="button"
+                                    @click="deleteOgImage(i)"
+                                    class="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors shrink-0 ml-2"
+                                >
+                                    Eliminar imagen
+                                </button>
+                                <span v-if="ogImageForms[i].processing" class="text-xs text-slate-400 shrink-0 ml-2">Subiendo…</span>
+                            </div>
                         </div>
                     </div>
 
@@ -205,8 +250,8 @@ const resetPage = (i) => {
                         <!-- OG Preview -->
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-5 mb-3">Vista previa en redes sociales</p>
                         <div class="rounded-xl border border-slate-200 overflow-hidden">
-                            <div v-if="form.pages[i].og_image" class="aspect-[1200/630] bg-slate-100">
-                                <img :src="form.pages[i].og_image" class="w-full h-full object-cover" :alt="previewTitle(i)" @error="$event.target.style.display='none'" />
+                            <div v-if="ogImagePreviews[i] || ogImages[i]" class="aspect-[1200/630] bg-slate-100">
+                                <img :src="ogImagePreviews[i] || ogImages[i]" class="w-full h-full object-cover" :alt="previewTitle(i)" @error="$event.target.style.display='none'" />
                             </div>
                             <div v-else class="aspect-[1200/630] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
                                 <div class="text-center">
