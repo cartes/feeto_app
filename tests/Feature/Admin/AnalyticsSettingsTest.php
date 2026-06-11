@@ -65,17 +65,7 @@ class AnalyticsSettingsTest extends TestCase
     public function test_marketing_whatsapp_settings_can_be_updated_by_super_admin(): void
     {
         $response = $this->actingAs($this->superAdmin)
-            ->put(route('admin.landing-seo.update'), [
-                'pages' => [
-                    [
-                        'key' => 'home',
-                        'title' => 'TallerFlow Home Test',
-                        'description' => 'Home test description',
-                        'og_image' => 'https://example.com/image.png',
-                    ],
-                ],
-                'analytics_google_analytics_code' => null,
-                'analytics_google_search_console_code' => null,
+            ->put(route('admin.landing-seo.whatsapp.update'), [
                 'marketing_whatsapp_enabled' => true,
                 'marketing_whatsapp_number' => '+56 9 1234 5678',
                 'marketing_whatsapp_message' => 'Hola, quiero más información sobre TallerFlow.',
