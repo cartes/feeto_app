@@ -467,6 +467,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         // SEO páginas públicas
         Route::get('/landing-seo', [LandingPageSeoController::class, 'index'])->name('landing-seo.index');
         Route::put('/landing-seo', [LandingPageSeoController::class, 'update'])->name('landing-seo.update');
+        Route::put('/landing-seo/whatsapp', [LandingPageSeoController::class, 'updateWhatsApp'])->name('landing-seo.whatsapp.update');
         Route::post('/landing-seo/{pageKey}/og-image', [LandingPageSeoController::class, 'uploadOgImage'])
             ->where('pageKey', 'home|pricing|trial|blog')
             ->name('landing-seo.og-image.upload');

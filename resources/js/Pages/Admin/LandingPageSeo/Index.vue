@@ -17,10 +17,17 @@ const form = useForm({
     })),
     analytics_google_analytics_code: props.analytics_settings?.analytics_google_analytics_code?.value || '',
     analytics_google_search_console_code: props.analytics_settings?.analytics_google_search_console_code?.value || '',
+});
+
+const whatsappForm = useForm({
     marketing_whatsapp_enabled: Boolean(props.marketing_whatsapp?.is_enabled),
     marketing_whatsapp_number: props.marketing_whatsapp?.number || '',
     marketing_whatsapp_message: props.marketing_whatsapp?.message || 'Hola, vi TallerFlow y quiero más información.',
 });
+
+const submitWhatsapp = () => {
+    whatsappForm.put(route('admin.landing-seo.whatsapp.update'), { preserveScroll: true });
+};
 
 // Imágenes OG: subida/eliminación independiente por página
 const ogImages = ref(props.pages.map(p => p.og_image || ''));
@@ -83,13 +90,13 @@ const descProgress = (i) => Math.min(descLen(i) / 220, 1);
 
 const previewTitle = (i) => form.pages[i]?.title || props.pages[i]?.default_title || '';
 const previewDesc = (i) => form.pages[i]?.description || props.pages[i]?.default_description || '';
-const whatsappPreviewNumber = computed(() => (form.marketing_whatsapp_number || '').replace(/\D/g, ''));
+const whatsappPreviewNumber = computed(() => (whatsappForm.marketing_whatsapp_number || '').replace(/\D/g, ''));
 const whatsappPreviewHref = computed(() => {
-    if (!form.marketing_whatsapp_enabled || !whatsappPreviewNumber.value) {
+    if (!whatsappForm.marketing_whatsapp_enabled || !whatsappPreviewNumber.value) {
         return '';
     }
 
-    return `https://wa.me/${whatsappPreviewNumber.value}?text=${encodeURIComponent(form.marketing_whatsapp_message || '')}`;
+    return `https://wa.me/${whatsappPreviewNumber.value}?text=${encodeURIComponent(whatsappForm.marketing_whatsapp_message || '')}`;
 });
 
 const submit = () => {
@@ -123,7 +130,7 @@ const resetPage = (i) => {
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
-                {{ form.processing ? 'Guardando…' : 'Guardar cambios' }}
+                {{ form.processing ? 'Guardando…' : 'Guardar SEO y Analytics' }}
             </button>
         </div>
 
@@ -268,9 +275,9 @@ const resetPage = (i) => {
                     </div>
                 </div>
             </div>
-            <!-- Analytics Card -->
+            <!-- WhatsApp Card -->
             <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between gap-4 flex-wrap">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -282,6 +289,13 @@ const resetPage = (i) => {
                             <p class="text-xs text-slate-500">Canal directo para leads orgánicos desde Inicio, Precios, Trial y Blog.</p>
                         </div>
                     </div>
+                    <button
+                        @click="submitWhatsapp"
+                        :disabled="whatsappForm.processing"
+                        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors disabled:opacity-60"
+                    >
+                        {{ whatsappForm.processing ? 'Guardando…' : 'Guardar WhatsApp' }}
+                    </button>
                 </div>
 
                 <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -293,12 +307,12 @@ const resetPage = (i) => {
                             </div>
                             <button
                                 type="button"
-                                @click="form.marketing_whatsapp_enabled = !form.marketing_whatsapp_enabled"
-                                :class="form.marketing_whatsapp_enabled ? 'bg-emerald-500' : 'bg-slate-300'"
+                                @click="whatsappForm.marketing_whatsapp_enabled = !whatsappForm.marketing_whatsapp_enabled"
+                                :class="whatsappForm.marketing_whatsapp_enabled ? 'bg-emerald-500' : 'bg-slate-300'"
                                 class="relative inline-flex h-7 w-12 shrink-0 rounded-full transition-colors"
                             >
                                 <span
-                                    :class="form.marketing_whatsapp_enabled ? 'translate-x-5' : 'translate-x-0.5'"
+                                    :class="whatsappForm.marketing_whatsapp_enabled ? 'translate-x-5' : 'translate-x-0.5'"
                                     class="inline-block h-6 w-6 transform rounded-full bg-white shadow transition"
                                 ></span>
                             </button>
@@ -307,29 +321,29 @@ const resetPage = (i) => {
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">Número de WhatsApp</label>
                             <input
-                                v-model="form.marketing_whatsapp_number"
+                                v-model="whatsappForm.marketing_whatsapp_number"
                                 type="text"
                                 inputmode="tel"
                                 placeholder="+56 9 1234 5678"
                                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                             />
                             <p class="mt-1 text-xs text-slate-400">Usa código de país. Ejemplo: Chile `+56 9 ...`.</p>
-                            <p v-if="form.errors.marketing_whatsapp_number" class="mt-1 text-sm text-red-600">{{ form.errors.marketing_whatsapp_number }}</p>
+                            <p v-if="whatsappForm.errors.marketing_whatsapp_number" class="mt-1 text-sm text-red-600">{{ whatsappForm.errors.marketing_whatsapp_number }}</p>
                         </div>
 
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
                                 <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Mensaje inicial</label>
-                                <span class="text-xs font-mono text-slate-400">{{ form.marketing_whatsapp_message.length }}/300</span>
+                                <span class="text-xs font-mono text-slate-400">{{ whatsappForm.marketing_whatsapp_message.length }}/300</span>
                             </div>
                             <textarea
-                                v-model="form.marketing_whatsapp_message"
+                                v-model="whatsappForm.marketing_whatsapp_message"
                                 rows="4"
                                 maxlength="300"
                                 placeholder="Hola, vi TallerFlow y quiero más información."
                                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition resize-none"
                             ></textarea>
-                            <p v-if="form.errors.marketing_whatsapp_message" class="mt-1 text-sm text-red-600">{{ form.errors.marketing_whatsapp_message }}</p>
+                            <p v-if="whatsappForm.errors.marketing_whatsapp_message" class="mt-1 text-sm text-red-600">{{ whatsappForm.errors.marketing_whatsapp_message }}</p>
                         </div>
                     </div>
 
@@ -337,7 +351,7 @@ const resetPage = (i) => {
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Vista previa del botón</p>
                         <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-5 min-h-[16rem] flex items-end justify-end">
                             <div
-                                :class="form.marketing_whatsapp_enabled && whatsappPreviewNumber ? 'opacity-100' : 'opacity-50'"
+                                :class="whatsappForm.marketing_whatsapp_enabled && whatsappPreviewNumber ? 'opacity-100' : 'opacity-50'"
                                 class="inline-flex items-center gap-3 rounded-full bg-[#25D366] p-3 text-white shadow-[0_20px_45px_rgba(11,56,31,0.32)]"
                             >
                                 <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white/14 ring-1 ring-white/20">
@@ -348,13 +362,13 @@ const resetPage = (i) => {
                                 <div class="hidden sm:block">
                                     <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">WhatsApp</p>
                                     <p class="text-sm font-semibold">Habla con TallerFlow</p>
-                                    <p class="text-xs text-white/80">{{ form.marketing_whatsapp_number || 'Número pendiente' }}</p>
+                                    <p class="text-xs text-white/80">{{ whatsappForm.marketing_whatsapp_number || 'Número pendiente' }}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 space-y-2">
-                            <p><span class="font-semibold text-slate-900">Estado:</span> {{ form.marketing_whatsapp_enabled ? 'Activo' : 'Desactivado' }}</p>
+                            <p><span class="font-semibold text-slate-900">Estado:</span> {{ whatsappForm.marketing_whatsapp_enabled ? 'Activo' : 'Desactivado' }}</p>
                             <p><span class="font-semibold text-slate-900">Enlace:</span> <span class="font-mono text-xs break-all">{{ whatsappPreviewHref || 'Se generará al ingresar un número válido.' }}</span></p>
                             <p>Este botón ayuda a capturar consultas rápidas de usuarios que llegan por búsqueda orgánica o contenido del blog.</p>
                         </div>
@@ -433,7 +447,7 @@ const resetPage = (i) => {
                 :disabled="form.processing"
                 class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-slate-800 transition-colors disabled:opacity-60"
             >
-                {{ form.processing ? 'Guardando…' : 'Guardar todos los cambios' }}
+                {{ form.processing ? 'Guardando…' : 'Guardar SEO y Analytics' }}
             </button>
         </div>
     </AdminLayout>

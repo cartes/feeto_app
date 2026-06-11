@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateLandingPageSeoRequest;
+use App\Http\Requests\Admin\UpdateMarketingWhatsAppRequest;
 use App\Models\AuditLog;
 use App\Models\Setting;
 use App\Services\MarketingWhatsAppService;
@@ -89,13 +90,23 @@ class LandingPageSeoController extends Controller
 
         Setting::set('analytics_google_analytics_code', $validated['analytics_google_analytics_code'] ?? null);
         Setting::set('analytics_google_search_console_code', $validated['analytics_google_search_console_code'] ?? null);
+
+        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración SEO y analytics del sitio público');
+
+        return back()->with('success', 'Configuración SEO y analytics guardada correctamente.');
+    }
+
+    public function updateWhatsApp(UpdateMarketingWhatsAppRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
         Setting::set('marketing_whatsapp_enabled', $validated['marketing_whatsapp_enabled']);
         Setting::set('marketing_whatsapp_number', $validated['marketing_whatsapp_number'] ?? null);
         Setting::set('marketing_whatsapp_message', $validated['marketing_whatsapp_message'] ?? null);
 
-        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó la configuración SEO, analytics y WhatsApp del sitio público');
+        AuditLog::record('analytics_settings.updated', 'Super-admin actualizó el botón flotante de WhatsApp del sitio público');
 
-        return back()->with('success', 'Configuración SEO, analytics y WhatsApp guardada correctamente.');
+        return back()->with('success', 'Configuración de WhatsApp guardada correctamente.');
     }
 
     public function uploadOgImage(Request $request, string $pageKey): RedirectResponse
