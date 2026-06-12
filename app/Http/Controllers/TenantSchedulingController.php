@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Services\ChileHolidayService;
 use App\Models\Tenant;
+use App\Services\ChileHolidayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,13 +18,13 @@ class TenantSchedulingController extends Controller
             'slot_duration' => 'required|integer|in:15,30,45,60,90,120',
             'days' => 'required|array',
             'days.*.enabled' => 'required|boolean',
-            'days.*.open' => 'nullable|date_format:H:i',
-            'days.*.close' => 'nullable|date_format:H:i',
+            'days.*.open' => 'nullable|date_format:H:i,H:i:s',
+            'days.*.close' => 'nullable|date_format:H:i,H:i:s',
             'blocked_slots' => 'nullable|array',
             'blocked_slots.*.id' => 'nullable|string|max:64',
             'blocked_slots.*.date' => 'required|date_format:Y-m-d',
-            'blocked_slots.*.start' => 'required|date_format:H:i',
-            'blocked_slots.*.end' => 'required|date_format:H:i',
+            'blocked_slots.*.start' => 'required|date_format:H:i,H:i:s',
+            'blocked_slots.*.end' => 'required|date_format:H:i,H:i:s',
             'blocked_slots.*.reason' => 'nullable|string|max:100',
             'blocked_dates' => 'nullable|array',
             'blocked_dates.*.date' => 'required|date_format:Y-m-d',
@@ -37,8 +37,8 @@ class TenantSchedulingController extends Controller
             ->only($allowedDays)
             ->map(fn (array $day): array => [
                 'enabled' => (bool) $day['enabled'],
-                'open' => $day['open'] ?? '09:00',
-                'close' => $day['close'] ?? '18:00',
+                'open' => ! empty($day['open']) ? substr($day['open'], 0, 5) : '09:00',
+                'close' => ! empty($day['close']) ? substr($day['close'], 0, 5) : '18:00',
             ])
             ->all();
 
@@ -47,8 +47,8 @@ class TenantSchedulingController extends Controller
             ->map(fn (array $slot): array => [
                 'id' => $slot['id'] ?? uniqid('slot_', true),
                 'date' => $slot['date'],
-                'start' => $slot['start'],
-                'end' => $slot['end'],
+                'start' => substr($slot['start'], 0, 5),
+                'end' => substr($slot['end'], 0, 5),
                 'reason' => $slot['reason'] ?? '',
             ])
             ->sortBy(fn (array $s): string => $s['date'].$s['start'])

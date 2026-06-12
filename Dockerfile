@@ -52,7 +52,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 # Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones.
-# Redis queda fijado en 6.3.0RC1 porque agrega compatibilidad con PHP 8.5.
+# Redis se compila desde phpredis en un commit con soporte para PHP 8.5.
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -60,7 +60,8 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     unzip \
     zip \
-    && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip redis-6.3.0RC1 \
+    && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip \
+    && install-php-extensions phpredis/phpredis@1e6f5477 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN { \
