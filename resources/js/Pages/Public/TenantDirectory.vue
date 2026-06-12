@@ -111,8 +111,15 @@ const props = defineProps({
             <!-- Main Listing -->
             <div class="max-w-5xl mx-auto px-6 lg:px-8">
                 <h2 class="text-xl font-bold text-slate-900 mb-6">
-                    {{ filters.comuna ? `Talleres en ${filters.comuna}` : 'Todos los talleres' }}
+                    {{ filters.comuna && !filters.fallback_to_all ? `Talleres en ${filters.comuna}` : 'Todos los talleres' }}
                 </h2>
+
+                <div
+                    v-if="filters.fallback_to_all"
+                    class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800"
+                >
+                    No encontramos talleres con ubicacion verificada en {{ filters.comuna }} por ahora. Te mostramos todos los talleres disponibles.
+                </div>
 
                 <div v-if="tenants.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div
@@ -153,7 +160,9 @@ const props = defineProps({
                     <svg class="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21" />
                     </svg>
-                    <p class="text-slate-500 font-medium">No encontramos talleres en esta comuna por ahora.</p>
+                    <p class="text-slate-500 font-medium">
+                        {{ filters.comuna ? 'No encontramos talleres en esta comuna por ahora.' : 'Aún no hay talleres disponibles.' }}
+                    </p>
                 </div>
             </div>
         </main>

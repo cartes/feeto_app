@@ -17,7 +17,8 @@ class PublicTenantDirectoryController extends Controller
 
     public function index(Request $request): Response
     {
-        $comuna = $request->query('comuna');
+        $comuna = trim((string) $request->query('comuna', ''));
+        $comuna = $comuna !== '' ? $comuna : null;
         $canonicalUrl = route('talleres.index');
 
         $comunas = $this->eligibleTenantsQuery()
@@ -33,10 +34,12 @@ class PublicTenantDirectoryController extends Controller
             ->take(self::LATEST_COUNT)
             ->get(['id', 'name', 'slug', 'comuna', 'seo_address', 'website_url', 'created_at']);
 
-        $tenants = $this->eligibleTenantsQuery()
-            ->when(filled($comuna), fn (Builder $query) => $query->where('comuna', $comuna))
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug', 'comuna', 'seo_address', 'website_url', 'created_at']);
+        $tenants = $this->directoryTenants($comuna);
+        $fallbackToAll = $comuna !== null && $tenants->isEmpty();
+
+        if ($fallbackToAll) {
+            $tenants = $this->directoryTenants();
+        }
 
         $title = 'Directorio de Talleres Mecánicos en Chile · TallerFlow';
         $description = 'Encuentra talleres mecánicos confiables en tu comuna. Agenda tu hora directamente con cada taller asociado a TallerFlow.';
@@ -47,6 +50,7 @@ class PublicTenantDirectoryController extends Controller
             'comunas' => $comunas,
             'filters' => [
                 'comuna' => $comuna,
+                'fallback_to_all' => $fallbackToAll,
             ],
             'seo' => [
                 'title' => $title,
@@ -67,6 +71,17 @@ class PublicTenantDirectoryController extends Controller
         return Tenant::query()
             ->where('is_active', true)
             ->where('status', 'active');
+    }
+
+    /**
+     * @return Collection<int, Tenant>
+     */
+    private function directoryTenants(?string $comuna = null): Collection
+    {
+        return $this->eligibleTenantsQuery()
+            ->when($comuna !== null, fn (Builder $query) => $query->where('comuna', $comuna))
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug', 'comuna', 'seo_address', 'website_url', 'created_at']);
     }
 
     /**
