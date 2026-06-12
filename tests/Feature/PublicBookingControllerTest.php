@@ -187,4 +187,23 @@ class PublicBookingControllerTest extends TestCase
             return $mail->hasTo('admin-taller@tallerflow.cl');
         });
     }
+
+    public function test_booking_page_passes_comuna_and_metadata_to_inertia(): void
+    {
+        $this->tenant->update([
+            'comuna' => 'Providencia',
+            'seo_address' => 'Av. Providencia 1234',
+            'website_url' => 'https://mitaller.cl',
+        ]);
+
+        $response = $this->get("/taller/{$this->tenant->slug}/");
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Public/TenantLanding')
+                ->where('tenant.comuna', 'Providencia')
+                ->where('tenant.seo_address', 'Av. Providencia 1234')
+                ->where('tenant.website_url', 'https://mitaller.cl')
+            );
+    }
 }

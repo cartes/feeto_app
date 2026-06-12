@@ -44,6 +44,7 @@ class PublicBookingController extends Controller
                 'plan_label' => $tenantBySlug->currentPlan()->label(),
                 'seo_description' => $tenantBySlug->seo_description,
                 'seo_address' => $tenantBySlug->seo_address,
+                'comuna' => $tenantBySlug->comuna,
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
                 'website_url' => $tenantBySlug->website_url,
                 'primary_color' => $tenantBySlug->primary_color,

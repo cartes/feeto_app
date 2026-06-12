@@ -225,6 +225,35 @@ const trackWhatsAppClick = () => {
                         {{ tenant.seo_description || 'Diagnóstico rápido, repuestos garantizados y transparencia total. Cuando llegues, leeremos tu patente automáticamente para atenderte sin esperas.' }}
                     </p>
 
+                    <!-- Location & Website Details -->
+                    <div v-if="tenant.seo_address || tenant.comuna || tenant.website_url" class="mt-8 flex flex-wrap justify-center items-center gap-y-3 gap-x-6 text-sm text-gray-600 bg-gray-50/50 backdrop-blur-sm border border-gray-100 rounded-2xl p-4 max-w-2xl mx-auto shadow-sm">
+                        <span v-if="tenant.seo_address || tenant.comuna" class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" :style="{ color: primaryColor }">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="font-medium text-gray-700">
+                                {{ [tenant.seo_address, tenant.comuna].filter(Boolean).join(', ') }}
+                            </span>
+                        </span>
+                        
+                        <span v-if="(tenant.seo_address || tenant.comuna) && tenant.website_url" class="hidden sm:inline text-gray-300">|</span>
+
+                        <a
+                            v-if="tenant.website_url"
+                            :href="tenant.website_url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-2 font-bold transition-all duration-200 hover:opacity-80 decoration-2 underline-offset-4"
+                            :style="{ color: primaryColor }"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            Visita nuestro sitio web {{ tenant.name }}
+                        </a>
+                    </div>
+
                     <!-- CTAs -->
                     <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                         <button
@@ -754,18 +783,24 @@ const trackWhatsAppClick = () => {
         <!-- ====================================================
              FOOTER
         ===================================================== -->
-        <footer class="bg-white border-t border-gray-100 py-8 text-center space-y-2">
+        <footer class="bg-white border-t border-gray-100 py-8 text-center space-y-3">
             <p v-if="tenant.website_url" class="text-sm text-gray-500">
-                Sitio web oficial de {{ tenant.name }}:
                 <a
                     :href="tenant.website_url"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="font-bold underline decoration-2 underline-offset-2 hover:opacity-80 transition-opacity"
                     :style="{ color: primaryColor }"
-                >{{ tenant.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '') }}</a>
+                >Visita nuestro sitio web {{ tenant.name }}</a>
             </p>
-            <p class="text-sm text-gray-400">
+            <p v-if="tenant.seo_address || tenant.comuna" class="text-xs text-gray-450 flex items-center justify-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{{ [tenant.seo_address, tenant.comuna].filter(Boolean).join(', ') }}</span>
+            </p>
+            <p class="text-sm text-gray-450">
                 Powered by <span class="font-bold text-orange-500">Taller Flow</span> — La plataforma inteligente para talleres automotrices
             </p>
         </footer>
