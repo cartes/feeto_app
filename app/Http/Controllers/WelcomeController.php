@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,10 +29,29 @@ class WelcomeController extends Controller
                 'featured_image_url' => $post->featured_image_url,
             ]);
 
+        $tenants = Tenant::query()
+            ->where('is_active', true)
+            ->where('status', 'active')
+            ->withCount(['appointments', 'workOrders'])
+            ->get()
+            ->sortByDesc(fn (Tenant $t): int => (int) $t->appointments_count + (int) $t->work_orders_count)
+            ->take(6)
+            ->map(fn (Tenant $t): array => [
+                'id' => $t->id,
+                'name' => $t->name,
+                'slug' => $t->slug,
+                'comuna' => $t->comuna,
+                'website_url' => $t->website_url,
+                'landing_url' => route('taller.landing', ['tenantBySlug' => $t->slug]),
+            ])
+            ->values()
+            ->all();
+
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'posts' => $posts,
+            'tenants' => $tenants,
             'seo' => $this->resolveMarketingSeo(
                 'home',
                 'TallerFlow · Software para Talleres Mecánicos en Chile',

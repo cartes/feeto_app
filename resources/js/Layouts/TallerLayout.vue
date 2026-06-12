@@ -1,10 +1,11 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
+import Toast from '@/Components/Toast.vue';
 
 const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user);
@@ -37,6 +38,49 @@ const navItems = computed(() => ([
     { label: 'Suscripción', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route: 'subscription.plans', visible: canAccessSettings.value },
     { label: 'Facturación', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route: 'subscription.billing', visible: canAccessSettings.value },
 ]).filter((item) => item.visible));
+
+const toast = ref({ message: '', type: 'success' });
+const showToast = (message, type = 'success') => {
+    if (!message) {
+        return;
+    }
+    toast.value = { message: '', type };
+    requestAnimationFrame(() => {
+        toast.value = { message, type };
+    });
+};
+
+watch(
+    () => [
+        page.props.flash?.success,
+        page.props.flash?.error,
+        page.props.flash?.warning,
+        page.props.flash?.info,
+        page.props.flash?.status,
+    ],
+    ([success, error, warning, info, status]) => {
+        if (error) {
+            showToast(error, 'error');
+            return;
+        }
+        if (warning) {
+            showToast(warning, 'warning');
+            return;
+        }
+        if (success) {
+            showToast(success, 'success');
+            return;
+        }
+        if (info) {
+            showToast(info, 'info');
+            return;
+        }
+        if (status) {
+            showToast(status, 'info');
+        }
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
@@ -207,6 +251,7 @@ const navItems = computed(() => ([
 
         </div>
         <PasswordChangeModal v-if="user?.needs_password_change" />
+        <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
     </div>
 </template>
 

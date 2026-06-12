@@ -10,6 +10,7 @@ const props = defineProps({
     canRegister: { type: Boolean },
     seo: { type: Object, default: () => ({}) },
     posts: { type: Array, default: () => [] },
+    tenants: { type: Array, default: () => [] },
 });
 
 const showLoginModal = ref(false);
@@ -394,6 +395,69 @@ onUnmounted(() => {
                         <div class="bg-gray-900 rounded-3xl p-6 col-span-2">
                             <p class="text-4xl font-black text-white">+200</p>
                             <p class="text-sm text-gray-400 mt-1 font-medium">talleres mecánicos ya confían en Taller Flow</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección "Visita nuestros clientes" (Talleres activos) -->
+        <section v-if="tenants && tenants.length > 0" id="our-clients" class="py-24 bg-slate-50/50 border-t border-slate-100 font-sans antialiased">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Nuestra Red</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                        Visita nuestros <em class="text-[#FF7A00] not-italic">clientes</em>
+                    </h2>
+                    <p class="text-slate-500 mt-4 text-base leading-relaxed">
+                        Conoce a los talleres mecánicos con más actividad que confían en TallerFlow para optimizar su gestión diaria.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div
+                        v-for="tenant in tenants"
+                        :key="tenant.id"
+                        class="bg-white rounded-3xl p-8 border border-slate-100 hover:border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full"
+                    >
+                        <div>
+                            <span v-if="tenant.comuna" class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                {{ tenant.comuna }}
+                            </span>
+                            <h3 class="text-xl font-black text-slate-900 leading-snug group-hover:text-[#FF7A00] transition-colors mb-2">
+                                <Link :href="tenant.landing_url">{{ tenant.name }}</Link>
+                            </h3>
+                            <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                                Agenda tu hora directamente en la landing page del taller para recibir una atención inteligente y sin esperas.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto">
+                            <Link
+                                :href="tenant.landing_url"
+                                class="inline-flex items-center gap-1.5 text-sm font-bold text-[#FF7A00] hover:text-[#CC6200] group/link transition-colors"
+                            >
+                                Agendar Hora
+                                <svg class="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                    <polyline points="12 5 19 12 12 19"/>
+                                </svg>
+                            </Link>
+                            <a
+                                v-if="tenant.website_url"
+                                :href="tenant.website_url"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-slate-600 hover:underline transition-colors"
+                            >
+                                Sitio web
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>

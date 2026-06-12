@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -67,5 +68,45 @@ class ExampleTest extends TestCase
     {
         $publicGroup = config('ziggy.groups.public', []);
         $this->assertContains('dashboard', $publicGroup);
+    }
+
+    public function test_homepage_lists_top_6_active_tenants_by_activity(): void
+    {
+        $tenant1 = Tenant::factory()->create([
+            'name' => 'Taller Activo 1',
+            'slug' => 'taller-activo-1',
+            'is_active' => true,
+            'status' => 'active',
+            'comuna' => 'Providencia',
+            'website_url' => 'https://taller1.cl',
+        ]);
+        $tenant2 = Tenant::factory()->create([
+            'name' => 'Taller Activo 2',
+            'slug' => 'taller-activo-2',
+            'is_active' => true,
+            'status' => 'active',
+            'comuna' => 'Las Condes',
+            'website_url' => 'https://taller2.cl',
+        ]);
+
+        // Simular actividad (appointment para tenant2 para que tenga mayor actividad)
+        $tenant2->appointments()->create([
+            'plate' => 'XY9999',
+            'customer_name' => 'Cliente Activo',
+            'phone' => '+56999999999',
+            'appointment_date' => now()->addDays(2),
+            'status' => 'pending',
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Welcome')
+                ->has('tenants')
+                ->where('tenants.0.name', 'Taller Activo 2') // Debería ser el primero por tener más actividad (appointments_count = 1 vs 0)
+                ->where('tenants.0.comuna', 'Las Condes')
+                ->where('tenants.0.website_url', 'https://taller2.cl')
+            );
     }
 }

@@ -316,6 +316,16 @@ class Tenant extends SpatieTenant
         return $this->hasMany(Branch::class);
     }
 
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function workOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class);
+    }
+
     /**
      * Obtiene el correo electrónico de notificación configurado para el Tenant.
      */
