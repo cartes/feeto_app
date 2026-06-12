@@ -110,6 +110,8 @@ return [
             'taller.settings.branding.color',
             'taller.settings.branding.logo',
             'taller.settings.branding.logo.delete',
+            'taller.settings.scheduling.update',
+            'taller.settings.scheduling.feriados',
             'notifications.index',
             'notifications.read',
             'notifications.read-all',
