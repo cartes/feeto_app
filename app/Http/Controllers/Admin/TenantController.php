@@ -111,6 +111,10 @@ class TenantController extends Controller
             'domain' => 'required|string|max:255|unique:tenants,domain,'.$tenant->id,
             'plan' => ['required', Rule::enum(TenantPlan::class)],
             'status' => 'required|in:active,suspended',
+            'phone' => ['nullable', 'string', 'max:20'],
+            'seo_address' => ['nullable', 'string', 'max:255'],
+            'comuna' => ['nullable', 'string', 'max:100'],
+            'whatsapp_number' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]{7,20}$/'],
         ]);
 
         $tenant->update($validated);

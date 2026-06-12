@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentScheduledMail;
 use App\Mail\TenantContactMail;
 use App\Models\Appointment;
 use App\Models\Branch;
@@ -91,7 +92,7 @@ class PublicBookingController extends Controller
                 ->withInput();
         }
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'tenant_id' => $tenantBySlug->id,
             'plate' => strtoupper($validated['plate']),
             'customer_name' => $validated['customer_name'],
@@ -100,6 +101,9 @@ class PublicBookingController extends Controller
             'pre_check_notes' => $validated['pre_check_notes'] ?? null,
             'status' => 'pending',
         ]);
+
+        $recipientEmail = $tenantBySlug->getNotificationEmail();
+        Mail::to($recipientEmail)->send(new AppointmentScheduledMail($appointment));
 
         return back()->with('booking_success', true);
     }
@@ -231,18 +235,7 @@ class PublicBookingController extends Controller
             $validated['plate'] = strtoupper($validated['plate']);
         }
 
-        $branch = $tenantBySlug->branches()->where('is_main', true)->first()
-            ?? $tenantBySlug->branches()->first();
-        $recipientEmail = $branch?->email;
-
-        if (! $recipientEmail) {
-            $adminUser = $tenantBySlug->users()->first();
-            $recipientEmail = $adminUser?->email;
-        }
-
-        if (! $recipientEmail) {
-            $recipientEmail = config('mail.from.address');
-        }
+        $recipientEmail = $tenantBySlug->getNotificationEmail();
 
         TenantLead::create([
             'tenant_id' => $tenantBySlug->id,

@@ -315,4 +315,22 @@ class Tenant extends SpatieTenant
     {
         return $this->hasMany(Branch::class);
     }
+
+    /**
+     * Obtiene el correo electrónico de notificación configurado para el Tenant.
+     */
+    public function getNotificationEmail(): string
+    {
+        $branch = $this->branches()->where('is_main', true)->first()
+            ?? $this->branches()->first();
+
+        $email = $branch?->email;
+
+        if (! $email) {
+            $adminUser = $this->users()->first();
+            $email = $adminUser?->email;
+        }
+
+        return $email ?? (string) config('mail.from.address');
+    }
 }

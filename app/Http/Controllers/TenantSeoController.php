@@ -17,9 +17,10 @@ class TenantSeoController extends Controller
     {
         $validated = $request->validate([
             'seo_description' => ['nullable', 'string', 'max:500'],
-            'seo_address'     => ['nullable', 'string', 'max:255'],
+            'seo_address' => ['nullable', 'string', 'max:255'],
+            'comuna' => ['nullable', 'string', 'max:100'],
             'whatsapp_number' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]{7,20}$/'],
-            'website_url'     => ['nullable', 'string', 'url:http,https', 'max:255'],
+            'website_url' => ['nullable', 'string', 'url:http,https', 'max:255'],
         ]);
 
         $tenant = Tenant::current();
@@ -32,8 +33,8 @@ class TenantSeoController extends Controller
     {
         $validated = $request->validate([
             'workshop_name' => ['required', 'string', 'max:100'],
-            'concepts'      => ['required', 'array', 'min:1', 'max:3'],
-            'concepts.*'    => ['required', 'string', 'max:60'],
+            'concepts' => ['required', 'array', 'min:1', 'max:3'],
+            'concepts.*' => ['required', 'string', 'max:60'],
         ]);
 
         $conceptsText = implode(', ', $validated['concepts']);
@@ -44,7 +45,7 @@ class TenantSeoController extends Controller
             );
 
             return response()->json([
-                'description'      => $result['description'] ?? '',
+                'description' => $result['description'] ?? '',
                 'long_description' => $result['long_description'] ?? '',
             ]);
         } catch (\Throwable $e) {

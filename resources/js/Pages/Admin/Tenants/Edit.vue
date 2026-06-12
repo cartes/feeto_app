@@ -17,6 +17,10 @@ const tenantForm = useForm({
     domain: props.tenant.domain || '',
     plan: props.tenant.plan || 'gratuito',
     status: props.tenant.status || 'active',
+    phone: props.tenant.phone || '',
+    seo_address: props.tenant.seo_address || '',
+    comuna: props.tenant.comuna || '',
+    whatsapp_number: props.tenant.whatsapp_number || '',
 });
 
 const adminForm = useForm({
@@ -114,6 +118,33 @@ const submitAdmin = () => {
                                     <option value="suspended">Suspendido</option>
                                 </select>
                                 <div v-if="tenantForm.errors.status" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.status }}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                                <input type="text" id="phone" v-model="tenantForm.phone" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="+56 9 1234 5678" />
+                                <div v-if="tenantForm.errors.phone" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.phone }}</div>
+                            </div>
+                            <div>
+                                <label for="whatsapp_number" class="block text-sm font-medium text-gray-700">WhatsApp</label>
+                                <input type="text" id="whatsapp_number" v-model="tenantForm.whatsapp_number" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="+56 9 1234 5678" />
+                                <div v-if="tenantForm.errors.whatsapp_number" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.whatsapp_number }}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="seo_address" class="block text-sm font-medium text-gray-700">Dirección</label>
+                                <input type="text" id="seo_address" v-model="tenantForm.seo_address" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="Av. Siempre Viva 123, Santiago" />
+                                <div v-if="tenantForm.errors.seo_address" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.seo_address }}</div>
+                            </div>
+                            <div>
+                                <label for="comuna" class="block text-sm font-medium text-gray-700">Comuna</label>
+                                <input type="text" id="comuna" v-model="tenantForm.comuna" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" placeholder="Las Condes" />
+                                <p class="mt-1 text-xs text-gray-500">Se usa para el Directorio de Talleres público.</p>
+                                <div v-if="tenantForm.errors.comuna" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.comuna }}</div>
                             </div>
                         </div>
 

@@ -36,6 +36,7 @@ use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\PublicPricingController;
+use App\Http\Controllers\PublicTenantDirectoryController;
 use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
@@ -88,6 +89,9 @@ Route::get('/precios', PublicPricingController::class)->name('pricing');
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/categoria/{slug}', [PublicBlogController::class, 'category'])->name('blog.category');
 Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
+
+// Directorio público de talleres
+Route::get('/talleres', [PublicTenantDirectoryController::class, 'index'])->name('talleres.index');
 
 // Solicitud de prueba gratuita
 Route::get('/trial', [TrialRequestController::class, 'create'])->name('trial.create');

@@ -12,6 +12,7 @@ const props = defineProps({
 const seoForm = useForm({
     seo_description: props.tenant?.seo_description ?? '',
     seo_address: props.tenant?.seo_address ?? '',
+    comuna: props.tenant?.comuna ?? '',
     whatsapp_number: props.tenant?.whatsapp_number ?? '',
     website_url: props.tenant?.website_url ?? '',
 });
@@ -164,6 +165,19 @@ const generateAiDescription = async () => {
                         class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
                     />
                     <p v-if="seoForm.errors.seo_address" class="text-red-500 text-xs">{{ seoForm.errors.seo_address }}</p>
+                </div>
+
+                <!-- Comuna -->
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Comuna</label>
+                    <input
+                        v-model="seoForm.comuna"
+                        type="text"
+                        placeholder="Las Condes"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
+                    />
+                    <p class="text-[10px] text-gray-400 font-medium">Aparecerá en el Directorio de Talleres de TallerFlow para que los clientes te encuentren por zona.</p>
+                    <p v-if="seoForm.errors.comuna" class="text-red-500 text-xs">{{ seoForm.errors.comuna }}</p>
                 </div>
 
                 <!-- WhatsApp -->

@@ -1,10 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
+use App\Mail\AppointmentScheduledMail;
 use App\Models\Appointment;
+use App\Models\Branch;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class PublicBookingControllerTest extends TestCase
@@ -41,6 +47,8 @@ class PublicBookingControllerTest extends TestCase
 
     public function test_booking_can_be_created(): void
     {
+        Mail::fake();
+
         $response = $this->post("/taller/{$this->tenant->slug}/booking", [
             'customer_name' => 'Juan Pérez',
             'phone' => '+56912345678',
@@ -55,6 +63,8 @@ class PublicBookingControllerTest extends TestCase
             'plate' => 'AB1234',
             'customer_name' => 'Juan Pérez',
         ]);
+
+        Mail::assertSent(AppointmentScheduledMail::class);
     }
 
     public function test_booking_rejects_conflicting_time_slot(): void
@@ -84,6 +94,8 @@ class PublicBookingControllerTest extends TestCase
 
     public function test_booking_allows_slot_outside_conflict_window(): void
     {
+        Mail::fake();
+
         $date = now()->addDays(2)->setMinutes(0)->setSeconds(0);
 
         Appointment::create([
@@ -105,6 +117,8 @@ class PublicBookingControllerTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseCount('appointments', 2);
+
+        Mail::assertSent(AppointmentScheduledMail::class);
     }
 
     public function test_booking_requires_valid_plate_format(): void
@@ -117,5 +131,60 @@ class PublicBookingControllerTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['plate']);
+    }
+
+    public function test_booking_sends_email_to_tenant_configured_email(): void
+    {
+        Mail::fake();
+
+        // Crear sucursal principal
+        Branch::forceCreate([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Sucursal Principal',
+            'email' => 'sucursal-principal@tallerflow.cl',
+            'is_main' => true,
+            'is_active' => true,
+        ]);
+
+        $response = $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'Juan Pérez',
+            'phone' => '+56912345678',
+            'plate' => 'AB1234',
+            'appointment_date' => now()->addDays(2)->format('Y-m-d H:i'),
+            'pre_check_notes' => 'Cambio de aceite',
+        ]);
+
+        $response->assertRedirect();
+
+        Mail::assertSent(AppointmentScheduledMail::class, function (AppointmentScheduledMail $mail): bool {
+            return $mail->hasTo('sucursal-principal@tallerflow.cl') &&
+                $mail->appointment->customer_name === 'Juan Pérez' &&
+                $mail->appointment->plate === 'AB1234';
+        });
+    }
+
+    public function test_booking_sends_email_to_admin_fallback(): void
+    {
+        Mail::fake();
+
+        // Sin sucursal, pero con admin
+        User::factory()->create([
+            'tenant_id' => $this->tenant->id,
+            'email' => 'admin-taller@tallerflow.cl',
+        ]);
+
+        $response = $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'Juan Pérez',
+            'phone' => '+56912345678',
+            'plate' => 'AB1234',
+            'appointment_date' => now()->addDays(2)->format('Y-m-d H:i'),
+            'pre_check_notes' => 'Cambio de aceite',
+        ]);
+
+        $response->assertRedirect();
+
+        Mail::assertSent(AppointmentScheduledMail::class, function (AppointmentScheduledMail $mail): bool {
+            return $mail->hasTo('admin-taller@tallerflow.cl');
+        });
     }
 }
