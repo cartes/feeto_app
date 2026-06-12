@@ -373,6 +373,12 @@ onMounted(() => {
     const hasSeenTutorial = sessionStorage.getItem('feeto_kanban_tutorial_shown');
     if (!hasSeenTutorial && window.innerWidth < 1024) {
         showSwipeTutorial.value = true;
+        // Auto-dismiss the swipe tutorial overlay after 8 seconds
+        setTimeout(() => {
+            if (showSwipeTutorial.value) {
+                dismissTutorial();
+            }
+        }, 8000);
     }
 
     if (window.Echo) {
@@ -526,7 +532,7 @@ const submitDeleteWorkOrder = () => {
             </div>
         </div>
 
-        <div v-if="viewMode === 'kanban'">
+        <div v-if="viewMode === 'kanban'" class="relative">
 
             <!-- Scroll arrows -->
             <div class="flex items-center gap-2 mb-3">
@@ -580,16 +586,54 @@ const submitDeleteWorkOrder = () => {
                 </div>
             </div>
 
+            <!-- Tutorial de navegación Kanban en Mobile (Una vez por sesión) -->
+            <div v-if="showSwipeTutorial" class="absolute inset-0 z-40 bg-slate-900/10 backdrop-blur-[2px] pointer-events-auto flex items-center justify-start pl-8 md:pl-12 rounded-[2rem] overflow-hidden" @click="dismissTutorial">
+                <div class="relative flex flex-col items-center">
+                    <!-- Floating simulated work order card -->
+                    <div class="animate-swipe-tutorial-card bg-white/95 p-5 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] border-2 border-orange-100 w-[240px] flex flex-col gap-2 relative pointer-events-none select-none">
+                        <div class="bg-[#E2EAF4] text-slate-600 text-[10px] font-bold uppercase px-3 py-1.5 rounded-full self-start">
+                            #OT-1234
+                        </div>
+                        <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
+                            HH-GG-12
+                        </p>
+                        <div class="space-y-1 mt-1">
+                            <p class="text-xs font-semibold text-slate-500">
+                                Marca Modelo
+                            </p>
+                            <p class="text-[10px] text-slate-400 font-medium">
+                                Arrastra para mover estado
+                            </p>
+                        </div>
+                        
+                        <!-- Animated hand cursor hovering/grabbing the card -->
+                        <div class="absolute -bottom-6 right-6 text-[#FF7A00] animate-swipe-tutorial-hand">
+                            <svg class="w-14 h-14 drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 11a3 3 0 0 0-3-3h-1.5V7a3 3 0 0 0-6 0v1H10a3 3 0 0 0-3 3v4.3c-.3-.2-.7-.3-1.1-.3a2.9 2.9 0 0 0-2.9 3c0 2 1.6 3.7 3.5 3.7H15c3.3 0 6-2.7 6-6V11zM11.5 7a1 1 0 0 1 2 0v5h-2V7zm7.5 10c0 2.2-1.8 4-4 4H9.5c-1 0-1.8-.8-1.8-1.7v-7.6a1 1 0 0 1 1-1h1.8v2.3c0 .6.4 1 1 1s1-.4 1-1V8.5h1.5a1 1 0 0 1 1 1V11c0 .6.4 1 1 1s1-.4 1-1v-1a1 1 0 0 1 1-1h1.5a1 1 0 0 1 1 1v7z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating instructions box with quick action button -->
+                    <div class="mt-6 bg-slate-900/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-3 border border-slate-700 max-w-[280px]">
+                        <span class="leading-relaxed">Desliza para mover entre columnas</span>
+                        <button @click.stop="dismissTutorial" class="text-xs font-black uppercase text-[#FF7A00] border border-[#FF7A00] px-2.5 py-1 rounded-xl hover:bg-[#FF7A00] hover:text-white transition-all duration-300">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div ref="kanbanRef"
                 class="h-[calc(100vh-260px)] lg:h-[calc(100vh-180px)] overflow-x-auto no-scrollbar pb-10 select-none"
                 :class="isGrabbing ? 'cursor-grabbing' : 'cursor-grab'" @mousedown="onKanbanMouseDown"
                 @mousemove="onKanbanMouseMove" @mouseup="onKanbanMouseUp" @mouseleave="onKanbanMouseUp">
                 <!-- Kanban Board -->
-                <div class="flex gap-6 min-w-max h-full items-start">
+                <div class="flex gap-4 sm:gap-6 min-w-max h-full items-start">
 
                     <!-- Column -->
                     <div v-for="col in columns" :key="col.id"
-                        class="w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
+                        class="w-[275px] sm:w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
                         :class="[
                             currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
                         ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
@@ -1267,62 +1311,6 @@ const submitDeleteWorkOrder = () => {
                 </div>
             </div>
         </div>
-
-        <!-- Tutorial de navegación Kanban en Mobile (Una vez por sesión) -->
-        <div v-if="showSwipeTutorial" class="fixed inset-0 z-[120] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"
-                @click="dismissTutorial"></div>
-
-            <div
-                class="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] border border-white bg-white/95 p-6 shadow-2xl text-center flex flex-col items-center animate-in zoom-in-95 duration-300">
-                <!-- Close Button -->
-                <button @click="dismissTutorial"
-                    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
-                    aria-label="Cerrar tutorial">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-                <!-- Swipe Animation graphic -->
-                <div
-                    class="relative w-full h-36 flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-3xl mb-5 overflow-hidden border border-orange-100 select-none">
-                    <!-- Column indicator boxes behind -->
-                    <div class="absolute left-6 w-3 h-10 bg-slate-200/60 rounded-lg border border-slate-300/30"></div>
-                    <div class="absolute w-3 h-12 bg-slate-300/80 rounded-lg border border-slate-400/30"></div>
-                    <div class="absolute right-6 w-3 h-10 bg-slate-200/60 rounded-lg border border-slate-300/30"></div>
-
-                    <!-- Dotted path -->
-                    <div
-                        class="absolute left-12 right-12 border-t-2 border-dashed border-orange-300 top-1/2 -translate-y-1/2">
-                    </div>
-
-                    <!-- Floating Hand SVG -->
-                    <div class="absolute top-1/2 -translate-y-1/2 animate-swipe-hand pointer-events-none">
-                        <svg class="w-12 h-12 text-[#FF7A00] drop-shadow-md" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M21 11a3 3 0 0 0-3-3h-1.5V7a3 3 0 0 0-6 0v1H10a3 3 0 0 0-3 3v4.3c-.3-.2-.7-.3-1.1-.3a2.9 2.9 0 0 0-2.9 3c0 2 1.6 3.7 3.5 3.7H15c3.3 0 6-2.7 6-6V11zM11.5 7a1 1 0 0 1 2 0v5h-2V7zm7.5 10c0 2.2-1.8 4-4 4H9.5c-1 0-1.8-.8-1.8-1.7v-7.6a1 1 0 0 1 1-1h1.8v2.3c0 .6.4 1 1 1s1-.4 1-1V8.5h1.5a1 1 0 0 1 1 1V11c0 .6.4 1 1 1s1-.4 1-1v-1a1 1 0 0 1 1-1h1.5a1 1 0 0 1 1 1v7z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <h3 class="text-lg font-black text-slate-800 uppercase tracking-tight mb-2">
-                    Desliza para Navegar
-                </h3>
-                <p class="text-sm font-semibold text-slate-500 leading-relaxed mb-6">
-                    Arrastra el tablero hacia la **derecha o izquierda** para moverte entre las diferentes etapas de tus
-                    órdenes
-                    de trabajo.
-                </p>
-
-                <button @click="dismissTutorial"
-                    class="w-full py-4 bg-[#FF7A00] text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#e06b00] active:scale-95 transition-all shadow-lg shadow-orange-500/20">
-                    ¡Entendido!
-                </button>
-            </div>
-        </div>
     </TallerLayout>
 </template>
 
@@ -1342,49 +1330,66 @@ const submitDeleteWorkOrder = () => {
     border-radius: 20px;
 }
 
-@keyframes swipe-hand-animation {
+@keyframes swipe-tutorial-card-animation {
     0% {
-        transform: translate(30px, -50%) scale(1);
+        transform: translateX(0);
         opacity: 0;
     }
-
-    10% {
-        transform: translate(30px, -50%) scale(1);
+    8% {
+        transform: translateX(0);
         opacity: 1;
     }
-
-    45% {
-        transform: translate(-30px, -50%) scale(0.95);
+    18% {
+        transform: translateX(0);
         opacity: 1;
     }
-
-    55% {
-        transform: translate(-30px, -50%) scale(0.9);
-        opacity: 0.2;
+    68% {
+        transform: translateX(180px);
+        opacity: 1;
     }
-
-    65% {
-        transform: translate(-30px, -50%) scale(1);
-        opacity: 0;
-    }
-
-    70% {
-        transform: translate(30px, -50%) scale(1);
-        opacity: 0;
-    }
-
     80% {
-        transform: translate(30px, -50%) scale(1);
-        opacity: 1;
+        transform: translateX(180px);
+        opacity: 0;
     }
-
     100% {
-        transform: translate(-30px, -50%) scale(0.95);
-        opacity: 1;
+        transform: translateX(0);
+        opacity: 0;
     }
 }
 
-.animate-swipe-hand {
-    animation: swipe-hand-animation 2.5s ease-in-out infinite;
+.animate-swipe-tutorial-card {
+    animation: swipe-tutorial-card-animation 3.5s ease-in-out infinite;
+}
+
+@keyframes swipe-tutorial-hand-animation {
+    0% {
+        transform: scale(1.1);
+        opacity: 0;
+    }
+    8% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    15% {
+        transform: scale(0.85); /* grab card */
+    }
+    68% {
+        transform: scale(0.85);
+    }
+    76% {
+        transform: scale(1.1); /* release card */
+    }
+    80% {
+        transform: scale(1.1);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1.1);
+        opacity: 0;
+    }
+}
+
+.animate-swipe-tutorial-hand {
+    animation: swipe-tutorial-hand-animation 3.5s ease-in-out infinite;
 }
 </style>
