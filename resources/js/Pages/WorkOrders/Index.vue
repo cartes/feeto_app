@@ -269,12 +269,16 @@ const currentHoverColumn = ref(null);
 const kanbanRef = ref(null);
 const canScrollLeft = ref(false);
 const canScrollRight = ref(true);
+const scrollProgress = ref(0);
+const showSwipeTutorial = ref(false);
 let scrollInterval = null;
 
 const updateScrollState = () => {
     if (!kanbanRef.value) return;
     canScrollLeft.value = kanbanRef.value.scrollLeft > 0;
-    canScrollRight.value = kanbanRef.value.scrollLeft < kanbanRef.value.scrollWidth - kanbanRef.value.clientWidth - 1;
+    const maxScroll = kanbanRef.value.scrollWidth - kanbanRef.value.clientWidth;
+    canScrollRight.value = kanbanRef.value.scrollLeft < maxScroll - 1;
+    scrollProgress.value = maxScroll > 0 ? (kanbanRef.value.scrollLeft / maxScroll) * 100 : 0;
 };
 
 const startScroll = (direction) => {
@@ -366,6 +370,11 @@ const onDrop = (columnId) => {
 
 // Implementación WebSockets Reverb (Actualización en tiempo real)
 onMounted(() => {
+    const hasSeenTutorial = sessionStorage.getItem('feeto_kanban_tutorial_shown');
+    if (!hasSeenTutorial && window.innerWidth < 1024) {
+        showSwipeTutorial.value = true;
+    }
+
     if (window.Echo) {
         window.Echo.private(`tenant.${props.tenantId}.work-orders`)
             .listen('WorkOrderDraftCreated', (e) => {
@@ -409,6 +418,11 @@ onUnmounted(() => {
     kanbanRef.value?.removeEventListener('scroll', updateScrollState);
 });
 
+const dismissTutorial = () => {
+    showSwipeTutorial.value = false;
+    sessionStorage.setItem('feeto_kanban_tutorial_shown', 'true');
+};
+
 const showDeleteModal = ref(false);
 const workOrderToDelete = ref(null);
 
@@ -438,24 +452,29 @@ const submitDeleteWorkOrder = () => {
                     {{ viewMode === 'list' ? 'Listado de Órdenes' : 'Tablero de Órdenes' }}
                 </h2>
                 <p class="text-sm font-medium text-slate-500">
-                    {{ viewMode === 'list' ? 'Búsqueda e historial de órdenes de trabajo' : 'Gestión del flujo de trabajo en tiempo real' }}
+                    {{ viewMode === 'list' ? 'Búsqueda e historial de órdenes de trabajo' : 'Gestión del flujo de
+                    trabajo en tiempo real' }}
                 </p>
             </div>
 
             <!-- View Switcher (Tabs / Icons) -->
-            <div class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm shrink-0 self-start md:self-auto">
+            <div
+                class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm shrink-0 self-start md:self-auto">
                 <button type="button" @click="setViewMode('kanban')"
                     :class="viewMode === 'kanban' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                     class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     Tablero
                 </button>
                 <button type="button" @click="setViewMode('list')"
                     :class="viewMode === 'list' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                     class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                     Listado
@@ -464,12 +483,14 @@ const submitDeleteWorkOrder = () => {
         </div>
 
         <!-- Filters Bar -->
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white/80 backdrop-blur-md p-4 rounded-[2rem] border border-white shadow-sm mb-6">
+        <div
+            class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white/80 backdrop-blur-md p-4 rounded-[2rem] border border-white shadow-sm mb-6">
             <!-- Search Filter -->
             <div class="relative flex-1 max-w-md">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                     <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
                 <input v-model="search" type="text" placeholder="Buscar por Patente, OT, Cliente, Marca..."
@@ -508,164 +529,192 @@ const submitDeleteWorkOrder = () => {
 
         <div v-if="viewMode === 'kanban'">
 
-        <!-- Scroll arrows -->
-        <div class="flex items-center gap-2 mb-3">
-            <button @mousedown="startScroll('left')" @mouseup="stopScroll" @mouseleave="stopScroll"
-                @touchstart.prevent="startScroll('left')" @touchend="stopScroll" :disabled="!canScrollLeft"
-                class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
-                :class="canScrollLeft ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
-                aria-label="Scroll izquierda">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-            <button @mousedown="startScroll('right')" @mouseup="stopScroll" @mouseleave="stopScroll"
-                @touchstart.prevent="startScroll('right')" @touchend="stopScroll" :disabled="!canScrollRight"
-                class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
-                :class="canScrollRight ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
-                aria-label="Scroll derecha">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-        </div>
-
-        <div ref="kanbanRef"
-            class="h-[calc(100vh-260px)] lg:h-[calc(100vh-180px)] overflow-x-auto no-scrollbar pb-10 select-none"
-            :class="isGrabbing ? 'cursor-grabbing' : 'cursor-grab'" @mousedown="onKanbanMouseDown"
-            @mousemove="onKanbanMouseMove" @mouseup="onKanbanMouseUp" @mouseleave="onKanbanMouseUp">
-            <!-- Kanban Board -->
-            <div class="flex gap-6 min-w-max h-full items-start">
-
-                <!-- Column -->
-                <div v-for="col in columns" :key="col.id"
-                    class="w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
-                    :class="[
-                        currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
-                    ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
-                    <!-- Header -->
-                    <div class="px-5 py-4 mb-2 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700 text-lg tracking-tight">
-                            {{ col.title }}
-                        </h3>
-                        <span class="text-[10px] font-bold text-white bg-slate-800 px-3 py-1 rounded-full shadow-sm">
-                            {{ kanban[col.id]?.length || 0 }}
-                        </span>
-                    </div>
-
-                    <!-- Cards Container -->
-                    <div class="flex-1 overflow-y-auto space-y-5 no-scrollbar px-1">
-                        <div v-for="order in kanban[col.id]" :key="order.id" draggable="true"
-                            @dragstart="onDragStart(order, col.id)" @click="openModal(order.id)"
-                            class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white cursor-pointer hover:shadow-lg transition-all duration-300 touch-none select-none relative"
-                            :class="{
-                                'opacity-50 scale-95': draggedItem?.id === order.id,
-                                'ring-2 ring-[#FF7A00] bg-orange-50/50': order.isNew
-                            }">
-                            <!-- Etiqueta Flotante Estado / OT -->
-                            <div
-                                class="absolute top-4 left-4 bg-[#E2EAF4] text-slate-600 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
-                                #OT-{{ order.id }}
-                            </div>
-
-                            <!-- Drag Handle Sutil -->
-                            <div class="absolute top-4 right-4 text-slate-300" @click.stop>
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <button type="button"
-                                            class="rounded-full p-1 transition-colors hover:bg-slate-100 hover:text-slate-500">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M4 8h16M4 16h16" />
-                                            </svg>
-                                        </button>
-                                    </template>
-
-                                    <template #content>
-                                        <div class="flex flex-col py-2">
-                                            <Link
-                                                :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })"
-                                                class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
-                                                Ver detalle OT
-                                            </Link>
-                                            <Link v-if="commercialReportsEnabled && order.vehicle?.client?.id"
-                                                :href="route('clients.show', { ...tenantRouteParams, client: order.vehicle.client.id })"
-                                                class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
-                                                Ver reporte cliente
-                                            </Link>
-                                            <button
-                                                v-if="canDeleteWorkOrder"
-                                                type="button"
-                                                class="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 border-t border-slate-50 mt-1 pt-2"
-                                                @click="confirmDeleteWorkOrder(order)"
-                                            >
-                                                Eliminar OT
-                                            </button>
-                                        </div>
-                                    </template>
-                                </Dropdown>
-                            </div>
-
-                            <div class="mt-8 mb-4">
-                                <div class="flex items-center gap-2">
-                                    <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
-                                        {{ order.vehicle?.plate || 'S/P' }}
-                                    </p>
-                                    <span v-if="commercialQuotesEnabled && order.quote?.status"
-                                        :class="['rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-widest', formatQuoteStatusClasses(order.quote.status)]">
-                                        {{ formatQuoteStatusLabel(order.quote.status) }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1 mb-2">
-                                <p class="text-sm font-semibold text-slate-700">
-                                    {{ order.vehicle?.brand || 'Marca' }} {{ order.vehicle?.model || 'Modelo' }}
-                                </p>
-                                <p class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    {{ order.vehicle?.client?.name || 'Cliente' }}
-                                </p>
-                            </div>
-
-                            <!-- O.T. Number and Date Base -->
-                            <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-400">
-                                <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">{{ new
-                                    Date(order.created_at).toLocaleDateString() }}</span>
-                                <div
-                                    class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- Empty Placeholder for easy dropping -->
-                        <div v-if="!kanban[col.id]?.length"
-                            class="h-full min-h-[150px] w-full border-2 border-dashed border-slate-300 rounded-[2rem] flex items-center justify-center text-slate-400">
-                            Arrastra aquí
-                        </div>
-                    </div>
-                </div>
-
+            <!-- Scroll arrows -->
+            <div class="flex items-center gap-2 mb-3">
+                <button @mousedown="startScroll('left')" @mouseup="stopScroll" @mouseleave="stopScroll"
+                    @touchstart.prevent="startScroll('left')" @touchend="stopScroll" :disabled="!canScrollLeft"
+                    class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
+                    :class="canScrollLeft ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                    aria-label="Scroll izquierda">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button @mousedown="startScroll('right')" @mouseup="stopScroll" @mouseleave="stopScroll"
+                    @touchstart.prevent="startScroll('right')" @touchend="stopScroll" :disabled="!canScrollRight"
+                    class="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 transition-all duration-200"
+                    :class="canScrollRight ? 'text-slate-700 hover:bg-[#FF7A00] hover:text-white hover:border-[#FF7A00] hover:shadow-md' : 'text-slate-300 cursor-not-allowed'"
+                    aria-label="Scroll derecha">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
-        </div>
+
+            <!-- Mobile scroll progress indicator -->
+            <div class="lg:hidden flex flex-col gap-2 mb-4 px-2 select-none">
+                <div
+                    class="flex justify-between items-center text-[10px] font-black uppercase tracking-wider text-slate-500">
+                    <span class="flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 animate-pulse text-[#FF7A00]" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Recepción
+                    </span>
+                    <span class="text-[9px] text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full font-bold">
+                        ← Desliza para navegar →
+                    </span>
+                    <span class="flex items-center gap-1">
+                        Listo para Entrega
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 animate-pulse text-[#FF7A00]" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative shadow-inner">
+                    <div class="bg-gradient-to-r from-orange-400 to-[#FF7A00] h-full rounded-full transition-all duration-75 shadow-sm"
+                        :style="{ width: `${scrollProgress}%` }"></div>
+                </div>
+            </div>
+
+            <div ref="kanbanRef"
+                class="h-[calc(100vh-260px)] lg:h-[calc(100vh-180px)] overflow-x-auto no-scrollbar pb-10 select-none"
+                :class="isGrabbing ? 'cursor-grabbing' : 'cursor-grab'" @mousedown="onKanbanMouseDown"
+                @mousemove="onKanbanMouseMove" @mouseup="onKanbanMouseUp" @mouseleave="onKanbanMouseUp">
+                <!-- Kanban Board -->
+                <div class="flex gap-6 min-w-max h-full items-start">
+
+                    <!-- Column -->
+                    <div v-for="col in columns" :key="col.id"
+                        class="w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
+                        :class="[
+                            currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
+                        ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
+                        <!-- Header -->
+                        <div class="px-5 py-4 mb-2 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-700 text-lg tracking-tight">
+                                {{ col.title }}
+                            </h3>
+                            <span
+                                class="text-[10px] font-bold text-white bg-slate-800 px-3 py-1 rounded-full shadow-sm">
+                                {{ kanban[col.id]?.length || 0 }}
+                            </span>
+                        </div>
+
+                        <!-- Cards Container -->
+                        <div class="flex-1 overflow-y-auto space-y-5 no-scrollbar px-1">
+                            <div v-for="order in kanban[col.id]" :key="order.id" draggable="true"
+                                @dragstart="onDragStart(order, col.id)" @click="openModal(order.id)"
+                                class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white cursor-pointer hover:shadow-lg transition-all duration-300 touch-none select-none relative"
+                                :class="{
+                                    'opacity-50 scale-95': draggedItem?.id === order.id,
+                                    'ring-2 ring-[#FF7A00] bg-orange-50/50': order.isNew
+                                }">
+                                <!-- Etiqueta Flotante Estado / OT -->
+                                <div
+                                    class="absolute top-4 left-4 bg-[#E2EAF4] text-slate-600 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
+                                    #OT-{{ order.id }}
+                                </div>
+
+                                <!-- Drag Handle Sutil -->
+                                <div class="absolute top-4 right-4 text-slate-300" @click.stop>
+                                    <Dropdown align="right" width="48">
+                                        <template #trigger>
+                                            <button type="button"
+                                                class="rounded-full p-1 transition-colors hover:bg-slate-100 hover:text-slate-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M4 8h16M4 16h16" />
+                                                </svg>
+                                            </button>
+                                        </template>
+
+                                        <template #content>
+                                            <div class="flex flex-col py-2">
+                                                <Link
+                                                    :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })"
+                                                    class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                                                    Ver detalle OT
+                                                </Link>
+                                                <Link v-if="commercialReportsEnabled && order.vehicle?.client?.id"
+                                                    :href="route('clients.show', { ...tenantRouteParams, client: order.vehicle.client.id })"
+                                                    class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
+                                                    Ver reporte cliente
+                                                </Link>
+                                                <button v-if="canDeleteWorkOrder" type="button"
+                                                    class="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 border-t border-slate-50 mt-1 pt-2"
+                                                    @click="confirmDeleteWorkOrder(order)">
+                                                    Eliminar OT
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </Dropdown>
+                                </div>
+
+                                <div class="mt-8 mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-3xl font-black font-mono text-slate-800 tracking-wider">
+                                            {{ order.vehicle?.plate || 'S/P' }}
+                                        </p>
+                                        <span v-if="commercialQuotesEnabled && order.quote?.status"
+                                            :class="['rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-widest', formatQuoteStatusClasses(order.quote.status)]">
+                                            {{ formatQuoteStatusLabel(order.quote.status) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1 mb-2">
+                                    <p class="text-sm font-semibold text-slate-700">
+                                        {{ order.vehicle?.brand || 'Marca' }} {{ order.vehicle?.model || 'Modelo' }}
+                                    </p>
+                                    <p class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        {{ order.vehicle?.client?.name || 'Cliente' }}
+                                    </p>
+                                </div>
+
+                                <!-- O.T. Number and Date Base -->
+                                <div
+                                    class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-400">
+                                    <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">{{ new
+                                        Date(order.created_at).toLocaleDateString() }}</span>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Empty Placeholder for easy dropping -->
+                            <div v-if="!kanban[col.id]?.length"
+                                class="h-full min-h-[150px] w-full border-2 border-dashed border-slate-300 rounded-[2rem] flex items-center justify-center text-slate-400">
+                                Arrastra aquí
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div> <!-- closes v-if="viewMode === 'kanban'" -->
 
         <!-- List View -->
         <div v-else class="space-y-6">
-            <div class="overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div
+                class="overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <div v-if="!orders?.data || orders.data.length === 0" class="p-12 text-center">
                     <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50">
                         <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -674,13 +723,15 @@ const submitDeleteWorkOrder = () => {
                         </svg>
                     </div>
                     <h3 class="text-lg font-bold text-slate-800">No se encontraron órdenes</h3>
-                    <p class="mt-1 text-sm text-slate-500 font-medium">Prueba limpiando o cambiando los filtros de búsqueda.</p>
+                    <p class="mt-1 text-sm text-slate-500 font-medium">Prueba limpiando o cambiando los filtros de
+                        búsqueda.</p>
                 </div>
 
                 <div v-else class="overflow-x-auto">
                     <table class="w-full border-collapse text-left">
                         <thead>
-                            <tr class="border-b border-slate-100 bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <tr
+                                class="border-b border-slate-100 bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
                                 <th class="px-6 py-4">OT</th>
                                 <th class="px-6 py-4">Patente</th>
                                 <th class="px-6 py-4">Vehículo</th>
@@ -692,10 +743,13 @@ const submitDeleteWorkOrder = () => {
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100/50">
-                            <tr v-for="order in orders.data" :key="order.id" class="group transition-colors hover:bg-slate-50/50 cursor-pointer" @click="openModal(order.id)">
+                            <tr v-for="order in orders.data" :key="order.id"
+                                class="group transition-colors hover:bg-slate-50/50 cursor-pointer"
+                                @click="openModal(order.id)">
                                 <!-- OT Number -->
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#E2EAF4] text-slate-600">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#E2EAF4] text-slate-600">
                                         #OT-{{ order.id }}
                                     </span>
                                 </td>
@@ -720,8 +774,10 @@ const submitDeleteWorkOrder = () => {
                                 <!-- Client -->
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                         {{ order.vehicle?.client?.name || 'Cliente' }}
                                     </div>
@@ -729,12 +785,16 @@ const submitDeleteWorkOrder = () => {
 
                                 <!-- Date -->
                                 <td class="px-6 py-4 text-sm font-semibold text-slate-500">
-                                    {{ new Date(order.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }) }}
+                                    {{ new Date(order.created_at).toLocaleDateString('es-CL', {
+                                        day: '2-digit', month:
+                                    'short',
+                                    year: 'numeric' }) }}
                                 </td>
 
                                 <!-- Workshop Status -->
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
+                                    <span
+                                        class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
                                         {{ getStatusLabel(order.status) }}
                                     </span>
                                 </td>
@@ -754,27 +814,31 @@ const submitDeleteWorkOrder = () => {
                                         <button @click="openModal(order.id)"
                                             class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
                                             title="Ver resumen">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </button>
-                                        <Link :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })"
+                                        <Link
+                                            :href="route('work-orders.show', { ...tenantRouteParams, workOrder: order.id })"
                                             class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 hover:bg-[#FF7A00] text-white transition-colors"
                                             title="Ir al detalle">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                             </svg>
                                         </Link>
-                                        <button
-                                            v-if="canDeleteWorkOrder"
-                                            type="button"
+                                        <button v-if="canDeleteWorkOrder" type="button"
                                             @click="confirmDeleteWorkOrder(order)"
                                             class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
-                                            title="Eliminar OT"
-                                        >
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            title="Eliminar OT">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
                                     </div>
@@ -803,15 +867,14 @@ const submitDeleteWorkOrder = () => {
             <div
                 class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
                 <!-- Modal Header -->
-                <div
-                    class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <div v-if="selectedWorkOrder" class="flex items-center gap-4">
                         <div>
                             <Link
                                 :href="route('work-orders.show', { ...tenantRouteParams, workOrder: selectedWorkOrder.id })"
-                                class="group inline-block"
-                            >
-                                <h2 class="text-2xl font-black text-slate-800 group-hover:text-[#FF7A00] group-hover:underline transition-colors">
+                                class="group inline-block">
+                                <h2
+                                    class="text-2xl font-black text-slate-800 group-hover:text-[#FF7A00] group-hover:underline transition-colors">
                                     OT #{{ selectedWorkOrder.id }} — {{ selectedWorkOrder.vehicle?.plate }}
                                 </h2>
                             </Link>
@@ -825,8 +888,8 @@ const submitDeleteWorkOrder = () => {
                         </span>
                         <button @click="previewQuote"
                             class="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#FF7A00]" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -838,10 +901,9 @@ const submitDeleteWorkOrder = () => {
                     <div v-else class="animate-pulse flex space-x-4">
                         <div class="h-8 bg-slate-200 rounded w-48"></div>
                     </div>
-                    <button @click="closeModal"
-                        class="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button @click="closeModal" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -870,8 +932,7 @@ const submitDeleteWorkOrder = () => {
                 <!-- Modal Body -->
                 <div class="flex-1 overflow-y-auto p-8 no-scrollbar">
                     <div v-if="isLoadingModal" class="flex items-center justify-center h-64">
-                        <div
-                            class="animate-spin rounded-full h-12 w-12 border-4 border-[#FF7A00] border-t-transparent">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-[#FF7A00] border-t-transparent">
                         </div>
                     </div>
 
@@ -882,8 +943,7 @@ const submitDeleteWorkOrder = () => {
                             <div
                                 class="flex flex-col gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 md:flex-row md:items-start md:justify-between">
                                 <div class="space-y-2">
-                                    <p
-                                        class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                         Estado comercial
                                     </p>
                                     <div class="flex flex-wrap items-center gap-3">
@@ -935,18 +995,15 @@ const submitDeleteWorkOrder = () => {
                                                 item.quantity }}</td>
                                             <td class="py-4 text-right text-slate-500 font-mono">{{
                                                 formatCurrency(item.unit_price) }}</td>
-                                            <td
-                                                class="py-4 text-right font-bold text-slate-800 font-mono">
+                                            <td class="py-4 text-right font-bold text-slate-800 font-mono">
                                                 <div class="flex items-center justify-end gap-3">
                                                     {{ formatCurrency(item.total_price) }}
                                                     <button @click="removeItem(item.id)"
                                                         class="p-1.5 text-red-400 hover:text-red-600 transition-colors">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-4 w-4" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round"
-                                                                stroke-linejoin="round" stroke-width="2"
-                                                                d="M6 18L18 6M6 6l12 12" />
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
                                                     </button>
                                                 </div>
@@ -958,8 +1015,7 @@ const submitDeleteWorkOrder = () => {
                                             <td colspan="4"
                                                 class="pt-4 text-right text-xs font-black uppercase text-slate-400">
                                                 Total OT</td>
-                                            <td
-                                                class="pt-4 text-right text-xl font-black text-slate-900 font-mono">
+                                            <td class="pt-4 text-right text-xl font-black text-slate-900 font-mono">
                                                 {{
                                                     formatCurrency(selectedWorkOrder.total_amount) }}</td>
                                         </tr>
@@ -968,11 +1024,9 @@ const submitDeleteWorkOrder = () => {
                             </div>
 
                             <!-- Add Item Form -->
-                            <div
-                                class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-6">
+                            <div class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-6">
                                 <div class="flex flex-col gap-5">
-                                    <div
-                                        class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                                         <div>
                                             <h4
                                                 class="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">
@@ -981,8 +1035,7 @@ const submitDeleteWorkOrder = () => {
                                                 un repuesto del
                                                 inventario o un servicio activo.</p>
                                         </div>
-                                        <div
-                                            class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                                        <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
                                             <button type="button" @click="setItemMode('product')"
                                                 :class="itemMode === 'product' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all">
@@ -998,17 +1051,15 @@ const submitDeleteWorkOrder = () => {
 
                                     <div class="flex flex-col items-end gap-4 md:flex-row">
                                         <div class="w-full flex-1">
-                                            <p
-                                                class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">
+                                            <p class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">
                                                 {{ itemMode === 'product' ? 'Buscar repuesto' : 'Buscar servicio' }}
                                             </p>
-                                            <select v-if="itemMode === 'product'"
-                                                v-model="itemForm.product_id"
+                                            <select v-if="itemMode === 'product'" v-model="itemForm.product_id"
                                                 class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#FF7A00]">
                                                 <option value="" disabled>Seleccionar repuesto...
                                                 </option>
-                                                <option v-for="product in availableProducts"
-                                                    :key="product.id" :value="product.id">
+                                                <option v-for="product in availableProducts" :key="product.id"
+                                                    :value="product.id">
                                                     {{ product.name }} (Stock: {{ product.physical_stock
                                                     }}) — {{
                                                         formatCurrency(product.selling_price) }}
@@ -1018,8 +1069,8 @@ const submitDeleteWorkOrder = () => {
                                                 class="w-full cursor-pointer rounded-xl border-none bg-slate-50 py-3.5 text-xs font-bold focus:ring-2 focus:ring-[#FF7A00]">
                                                 <option value="" disabled>Seleccionar servicio...
                                                 </option>
-                                                <option v-for="service in availableServices"
-                                                    :key="service.id" :value="service.id">
+                                                <option v-for="service in availableServices" :key="service.id"
+                                                    :value="service.id">
                                                     {{ service.name }} — {{
                                                         formatCurrency(service.selling_price) }}
                                                 </option>
@@ -1043,11 +1094,9 @@ const submitDeleteWorkOrder = () => {
                                         </div>
 
                                         <div class="w-full md:w-32">
-                                            <p
-                                                class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">
+                                            <p class="mb-1 ml-2 text-[8px] font-bold uppercase text-slate-400">
                                                 Cant.</p>
-                                            <input v-model.number="itemForm.quantity" type="number"
-                                                min="1"
+                                            <input v-model.number="itemForm.quantity" type="number" min="1"
                                                 class="w-full rounded-xl border-none bg-slate-50 py-3.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#FF7A00]" />
                                             <p v-if="itemErrors.quantity"
                                                 class="ml-1 mt-2 text-[10px] font-semibold text-rose-500">
@@ -1061,9 +1110,8 @@ const submitDeleteWorkOrder = () => {
                                         </button>
                                     </div>
 
-                                    <p v-if="itemErrors.description"
-                                        class="text-[10px] font-semibold text-rose-500">{{
-                                            itemErrors.description[0] }}</p>
+                                    <p v-if="itemErrors.description" class="text-[10px] font-semibold text-rose-500">{{
+                                        itemErrors.description[0] }}</p>
                                 </div>
                             </div>
                         </div>
@@ -1097,10 +1145,9 @@ const submitDeleteWorkOrder = () => {
                                     <!-- Delete Button -->
                                     <button @click.stop="deletePhoto(image.id)"
                                         class="absolute top-2 right-2 p-2 bg-red-500/80 backdrop-blur-md text-white rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
@@ -1117,14 +1164,13 @@ const submitDeleteWorkOrder = () => {
                                     class="aspect-square rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-50/50 transition-colors group">
                                     <div
                                         class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#FF7A00] transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M12 4v16m8-8H4" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
                                         </svg>
                                     </div>
-                                    <span
-                                        class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Añadir
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Añadir
                                         Foto</span>
                                     <input type="file" accept="image/*" capture="camera" class="hidden"
                                         @change="uploadPhoto" />
@@ -1139,8 +1185,7 @@ const submitDeleteWorkOrder = () => {
                                 class="max-w-xl mx-auto bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100">
                                 <div class="mb-6 flex items-center justify-between gap-3">
                                     <div>
-                                        <p
-                                            class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                             Acciones de
                                             envío</p>
                                         <p class="mt-1 text-sm font-medium text-slate-500">
@@ -1153,11 +1198,9 @@ const submitDeleteWorkOrder = () => {
                                         :href="route('work-orders.show', { ...tenantRouteParams, workOrder: selectedWorkOrder.id })"
                                         class="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-700 transition-colors hover:bg-slate-50">
                                         Ir al detalle
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                            stroke-width="2.2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M9 5l7 7-7 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </Link>
                                 </div>
@@ -1174,40 +1217,113 @@ const submitDeleteWorkOrder = () => {
         <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteModal = false"></div>
 
-            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div
+                class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
                 <div class="text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                    <div
+                        class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">¿Eliminar Orden de Trabajo?</h3>
-                    <p class="mt-2 text-sm text-gray-500 font-medium">Esta acción no se puede deshacer de forma sencilla. Por favor confirma los datos de la OT a eliminar:</p>
+                    <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">¿Eliminar Orden de Trabajo?
+                    </h3>
+                    <p class="mt-2 text-sm text-gray-500 font-medium">Esta acción no se puede deshacer de forma
+                        sencilla. Por
+                        favor confirma los datos de la OT a eliminar:</p>
                 </div>
 
-                <div class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
+                <div
+                    class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Número de OT:</span>
                         <span class="font-bold text-gray-900">#OT-{{ workOrderToDelete?.id }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha de Ingreso:</span>
-                        <span class="font-bold text-gray-900">{{ workOrderToDelete ? new Date(workOrderToDelete.created_at).toLocaleDateString('es-CL') : '' }}</span>
+                        <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha de
+                            Ingreso:</span>
+                        <span class="font-bold text-gray-900">{{ workOrderToDelete ? new
+                            Date(workOrderToDelete.created_at).toLocaleDateString('es-CL') : '' }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
-                        <span class="font-bold text-gray-900">{{ workOrderToDelete?.vehicle?.client?.name || 'No registrado' }}</span>
+                        <span class="font-bold text-gray-900">{{ workOrderToDelete?.vehicle?.client?.name || 'No
+                            registrado'
+                            }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
-                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ workOrderToDelete?.vehicle?.plate || 'S/P' }}</span>
+                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{
+                            workOrderToDelete?.vehicle?.plate ||
+                            'S/P' }}</span>
                     </div>
                 </div>
 
                 <div class="mt-6 flex gap-3">
-                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteModal = false">Cancelar</button>
-                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteWorkOrder">Eliminar OT</button>
+                    <button type="button"
+                        class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200"
+                        @click="showDeleteModal = false">Cancelar</button>
+                    <button type="button"
+                        class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700"
+                        @click="submitDeleteWorkOrder">Eliminar OT</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tutorial de navegación Kanban en Mobile (Una vez por sesión) -->
+        <div v-if="showSwipeTutorial" class="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"
+                @click="dismissTutorial"></div>
+
+            <div
+                class="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] border border-white bg-white/95 p-6 shadow-2xl text-center flex flex-col items-center animate-in zoom-in-95 duration-300">
+                <!-- Close Button -->
+                <button @click="dismissTutorial"
+                    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+                    aria-label="Cerrar tutorial">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Swipe Animation graphic -->
+                <div
+                    class="relative w-full h-36 flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-3xl mb-5 overflow-hidden border border-orange-100 select-none">
+                    <!-- Column indicator boxes behind -->
+                    <div class="absolute left-6 w-3 h-10 bg-slate-200/60 rounded-lg border border-slate-300/30"></div>
+                    <div class="absolute w-3 h-12 bg-slate-300/80 rounded-lg border border-slate-400/30"></div>
+                    <div class="absolute right-6 w-3 h-10 bg-slate-200/60 rounded-lg border border-slate-300/30"></div>
+
+                    <!-- Dotted path -->
+                    <div
+                        class="absolute left-12 right-12 border-t-2 border-dashed border-orange-300 top-1/2 -translate-y-1/2">
+                    </div>
+
+                    <!-- Floating Hand SVG -->
+                    <div class="absolute top-1/2 -translate-y-1/2 animate-swipe-hand pointer-events-none">
+                        <svg class="w-12 h-12 text-[#FF7A00] drop-shadow-md" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M21 11a3 3 0 0 0-3-3h-1.5V7a3 3 0 0 0-6 0v1H10a3 3 0 0 0-3 3v4.3c-.3-.2-.7-.3-1.1-.3a2.9 2.9 0 0 0-2.9 3c0 2 1.6 3.7 3.5 3.7H15c3.3 0 6-2.7 6-6V11zM11.5 7a1 1 0 0 1 2 0v5h-2V7zm7.5 10c0 2.2-1.8 4-4 4H9.5c-1 0-1.8-.8-1.8-1.7v-7.6a1 1 0 0 1 1-1h1.8v2.3c0 .6.4 1 1 1s1-.4 1-1V8.5h1.5a1 1 0 0 1 1 1V11c0 .6.4 1 1 1s1-.4 1-1v-1a1 1 0 0 1 1-1h1.5a1 1 0 0 1 1 1v7z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-black text-slate-800 uppercase tracking-tight mb-2">
+                    Desliza para Navegar
+                </h3>
+                <p class="text-sm font-semibold text-slate-500 leading-relaxed mb-6">
+                    Arrastra el tablero hacia la **derecha o izquierda** para moverte entre las diferentes etapas de tus
+                    órdenes
+                    de trabajo.
+                </p>
+
+                <button @click="dismissTutorial"
+                    class="w-full py-4 bg-[#FF7A00] text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#e06b00] active:scale-95 transition-all shadow-lg shadow-orange-500/20">
+                    ¡Entendido!
+                </button>
             </div>
         </div>
     </TallerLayout>
@@ -1227,5 +1343,51 @@ const submitDeleteWorkOrder = () => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);
     border-radius: 20px;
+}
+
+@keyframes swipe-hand-animation {
+    0% {
+        transform: translate(30px, -50%) scale(1);
+        opacity: 0;
+    }
+
+    10% {
+        transform: translate(30px, -50%) scale(1);
+        opacity: 1;
+    }
+
+    45% {
+        transform: translate(-30px, -50%) scale(0.95);
+        opacity: 1;
+    }
+
+    55% {
+        transform: translate(-30px, -50%) scale(0.9);
+        opacity: 0.2;
+    }
+
+    65% {
+        transform: translate(-30px, -50%) scale(1);
+        opacity: 0;
+    }
+
+    70% {
+        transform: translate(30px, -50%) scale(1);
+        opacity: 0;
+    }
+
+    80% {
+        transform: translate(30px, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-30px, -50%) scale(0.95);
+        opacity: 1;
+    }
+}
+
+.animate-swipe-hand {
+    animation: swipe-hand-animation 2.5s ease-in-out infinite;
 }
 </style>
