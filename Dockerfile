@@ -60,7 +60,21 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip \
-    && install-php-extensions redis \
+    && rm -rf /var/lib/apt/lists/*
+
+# Compilamos phpredis con submódulos manualmente desde el commit compatible con PHP 8.5.
+RUN apt-get update && apt-get install -y --no-install-recommends $PHPIZE_DEPS \
+    && git clone https://github.com/phpredis/phpredis.git /tmp/phpredis \
+    && cd /tmp/phpredis \
+    && git checkout 1e6f5477 \
+    && git submodule update --init --recursive \
+    && phpize \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/phpredis \
+    && apt-get purge -y --auto-remove $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
 RUN { \
