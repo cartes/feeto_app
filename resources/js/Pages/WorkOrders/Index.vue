@@ -452,8 +452,7 @@ const submitDeleteWorkOrder = () => {
                     {{ viewMode === 'list' ? 'Listado de Órdenes' : 'Tablero de Órdenes' }}
                 </h2>
                 <p class="text-sm font-medium text-slate-500">
-                    {{ viewMode === 'list' ? 'Búsqueda e historial de órdenes de trabajo' : 'Gestión del flujo de
-                    trabajo en tiempo real' }}
+                    {{ viewMode === 'list' ? 'Búsqueda e historial de órdenes de trabajo' : 'Gestión del flujo de trabajo en tiempo real' }}
                 </p>
             </div>
 
@@ -1248,9 +1247,7 @@ const submitDeleteWorkOrder = () => {
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
-                        <span class="font-bold text-gray-900">{{ workOrderToDelete?.vehicle?.client?.name || 'No
-                            registrado'
-                            }}</span>
+                        <span class="font-bold text-gray-900">{{ workOrderToDelete?.vehicle?.client?.name || 'No registrado' }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
