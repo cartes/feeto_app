@@ -51,8 +51,7 @@ WORKDIR /var/www/html
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
 
-# Instalamos dependencias del sistema y extensiones requeridas por reportes/exportaciones.
-# Redis se compila desde phpredis en un commit con soporte para PHP 8.5.
+# Instalamos dependencias del sistema y la extensión redis.
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -61,7 +60,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     && install-php-extensions bcmath gd intl mbstring pcntl pdo_mysql pdo_pgsql zip \
-    && install-php-extensions phpredis/phpredis@1e6f5477 \
+    && install-php-extensions redis \
     && rm -rf /var/lib/apt/lists/*
 
 RUN { \
