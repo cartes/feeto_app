@@ -197,6 +197,7 @@ const formatDate = (dateStr) => {
                 <nav class="flex items-center gap-6 flex-wrap justify-center">
                     <a href="#" class="text-xs text-slate-400 hover:text-slate-600 transition-colors font-medium">Términos de Servicio</a>
                     <a href="#" class="text-xs text-slate-400 hover:text-slate-600 transition-colors font-medium">Política de Privacidad</a>
+                    <Link :href="route('talleres.index')" class="text-xs text-slate-400 hover:text-slate-600 transition-colors font-medium">Talleres</Link>
                     <a href="#" class="text-xs text-slate-400 hover:text-slate-600 transition-colors font-medium">Contacto</a>
                 </nav>
                 <p class="text-xs text-slate-400 font-medium">

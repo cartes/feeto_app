@@ -249,6 +249,7 @@ const jsonLd = computed(() => JSON.stringify({
                     <Link :href="route('home')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Inicio</Link>
                     <Link :href="route('pricing')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Precios</Link>
                     <Link :href="route('trial.create')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Prueba gratis</Link>
+                    <Link :href="route('talleres.index')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Talleres</Link>
                     <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Términos</a>
                     <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Privacidad</a>
                 </nav>

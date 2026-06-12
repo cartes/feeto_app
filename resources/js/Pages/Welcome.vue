@@ -564,6 +564,7 @@ onUnmounted(() => {
                     <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Política
                         de
                         Privacidad</a>
+                    <Link :href="route('talleres.index')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Talleres</Link>
                     <a href="#"
                         class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Contacto</a>
                     <a v-if="$page.props.marketing_whatsapp?.is_ready"
