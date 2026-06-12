@@ -21,6 +21,8 @@ class PublicTenantDirectoryController extends Controller
         $canonicalUrl = route('talleres.index');
 
         $comunas = $this->eligibleTenantsQuery()
+            ->whereNotNull('comuna')
+            ->where('comuna', '!=', '')
             ->select('comuna')
             ->distinct()
             ->orderBy('comuna')
@@ -64,9 +66,7 @@ class PublicTenantDirectoryController extends Controller
     {
         return Tenant::query()
             ->where('is_active', true)
-            ->where('status', 'active')
-            ->whereNotNull('comuna')
-            ->where('comuna', '!=', '');
+            ->where('status', 'active');
     }
 
     /**
