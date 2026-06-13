@@ -270,6 +270,7 @@ const kanbanRef = ref(null);
 const canScrollLeft = ref(false);
 const canScrollRight = ref(true);
 const scrollProgress = ref(0);
+const activeColumnIndex = ref(0);
 const showSwipeTutorial = ref(false);
 let scrollInterval = null;
 
@@ -279,6 +280,36 @@ const updateScrollState = () => {
     const maxScroll = kanbanRef.value.scrollWidth - kanbanRef.value.clientWidth;
     canScrollRight.value = kanbanRef.value.scrollLeft < maxScroll - 1;
     scrollProgress.value = maxScroll > 0 ? (kanbanRef.value.scrollLeft / maxScroll) * 100 : 0;
+
+    // Calcular la columna activa basada en la posición de scroll
+    const cols = kanbanRef.value.querySelectorAll('.kanban-column');
+    if (cols.length > 0) {
+        let nearestIndex = 0;
+        let minDiff = Infinity;
+
+        cols.forEach((col, idx) => {
+            const colLeft = col.offsetLeft - kanbanRef.value.offsetLeft;
+            const diff = Math.abs(colLeft - kanbanRef.value.scrollLeft);
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearestIndex = idx;
+            }
+        });
+
+        activeColumnIndex.value = nearestIndex;
+    }
+};
+
+const scrollToColumn = (index) => {
+    if (!kanbanRef.value) return;
+    const cols = kanbanRef.value.querySelectorAll('.kanban-column');
+    if (cols[index]) {
+        const colLeft = cols[index].offsetLeft - kanbanRef.value.offsetLeft;
+        kanbanRef.value.scrollTo({
+            left: colLeft,
+            behavior: 'smooth'
+        });
+    }
 };
 
 const startScroll = (direction) => {
@@ -633,7 +664,7 @@ const submitDeleteWorkOrder = () => {
 
                     <!-- Column -->
                     <div v-for="col in columns" :key="col.id"
-                        class="w-[275px] sm:w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
+                        class="kanban-column w-[82vw] max-w-[290px] sm:max-w-none sm:w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
                         :class="[
                             currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
                         ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
@@ -749,7 +780,40 @@ const submitDeleteWorkOrder = () => {
                             </div>
                         </div>
                     </div>
+            </div>
+        </div>
 
+            <!-- Indicador de Navegación por Pasos (Dots) para Móvil -->
+            <div class="lg:hidden flex flex-col items-center gap-3 mt-4 px-4 py-3 bg-white/90 backdrop-blur-md rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] select-none">
+                <div class="text-[11px] font-black uppercase tracking-wider text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all duration-300">
+                    <span class="text-[#FF7A00]">Paso {{ activeColumnIndex + 1 }} de {{ columns.length }}:</span>
+                    <span>{{ columns[activeColumnIndex]?.title }}</span>
+                    <span class="ml-1 text-[9px] bg-slate-800 text-white px-2 py-0.5 rounded-full font-bold">
+                        {{ kanban[columns[activeColumnIndex]?.id]?.length || 0 }} {{ (kanban[columns[activeColumnIndex]?.id]?.length || 0) === 1 ? 'OT' : 'OTs' }}
+                    </span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button 
+                        v-for="(col, index) in columns" 
+                        :key="col.id"
+                        @click="scrollToColumn(index)"
+                        class="h-2.5 transition-all duration-300 rounded-full focus:outline-none relative flex items-center justify-center"
+                        :class="[
+                            activeColumnIndex === index 
+                                ? 'w-8 bg-gradient-to-r from-orange-400 to-[#FF7A00] shadow-sm shadow-orange-500/20' 
+                                : 'w-2.5 bg-slate-200 hover:bg-slate-300'
+                        ]"
+                        :aria-label="`Ir a columna ${col.title}`"
+                    >
+                        <!-- Pequeño contador sobre el dot inactivo si hay ítems -->
+                        <span 
+                            v-if="activeColumnIndex !== index && (kanban[col.id]?.length || 0) > 0"
+                            class="absolute -top-3 text-[8px] font-bold text-slate-400"
+                        >
+                            {{ kanban[col.id]?.length }}
+                        </span>
+                    </button>
                 </div>
             </div>
         </div> <!-- closes v-if="viewMode === 'kanban'" -->
