@@ -664,12 +664,12 @@ const submitDeleteWorkOrder = () => {
 
                     <!-- Column -->
                     <div v-for="col in columns" :key="col.id"
-                        class="kanban-column w-[82vw] max-w-[290px] sm:max-w-none sm:w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2rem] transition-colors duration-300 relative border border-transparent"
+                        class="kanban-column w-[82vw] max-w-[290px] sm:max-w-none sm:w-[300px] md:w-[320px] shrink-0 h-full flex flex-col rounded-[2.2rem] transition-colors duration-300 relative border border-slate-200/60 bg-white/50 backdrop-blur-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.01),0_4px_20px_rgba(0,0,0,0.02)] p-3 pb-5"
                         :class="[
-                            currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5' : ''
+                            currentHoverColumn === col.id ? 'border-[#FF7A00] bg-[#FF7A00]/5 ring-2 ring-[#FF7A00]/10' : ''
                         ]" @dragover="(e) => onDragOver(e, col.id)" @drop="() => onDrop(col.id)">
                         <!-- Header -->
-                        <div class="px-5 py-4 mb-2 flex justify-between items-center">
+                        <div class="px-2 py-2.5 mb-2 flex justify-between items-center">
                             <h3 class="font-bold text-slate-700 text-lg tracking-tight">
                                 {{ col.title }}
                             </h3>
@@ -680,7 +680,7 @@ const submitDeleteWorkOrder = () => {
                         </div>
 
                         <!-- Cards Container -->
-                        <div class="flex-1 overflow-y-auto space-y-5 no-scrollbar px-1">
+                        <div class="flex-1 overflow-y-auto space-y-4 no-scrollbar px-1">
                             <div v-for="order in kanban[col.id]" :key="order.id" draggable="true"
                                 @dragstart="onDragStart(order, col.id)" @click="openModal(order.id)"
                                 class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white cursor-pointer hover:shadow-lg transition-all duration-300 touch-none select-none relative"
