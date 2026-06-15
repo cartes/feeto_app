@@ -19,10 +19,16 @@ class WorkOrderModalController extends Controller
     /**
      * Devuelve el detalle de la OT para el Modal.
      */
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
         $workOrder = WorkOrder::with(['quote.items.product', 'quote.items.service', 'images', 'vehicle.client'])
             ->findOrFail($id);
+
+        // Verificar que el usuario pertenezca al tenant de la work order
+        $user = $request->user();
+        if ($user && ! $user->is_super_admin && $user->tenant_id !== $workOrder->tenant_id) {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
 
         $payload = $workOrder->toArray();
         $payload['items'] = $workOrder->quote?->items?->values()->all() ?? [];
@@ -56,7 +62,7 @@ class WorkOrderModalController extends Controller
 
         // Verificar que el usuario pertenezca al tenant de la work order
         $user = $request->user();
-        if ($user->tenant_id !== $workOrder->tenant_id) {
+        if (! $user->is_super_admin && $user->tenant_id !== $workOrder->tenant_id) {
             return response()->json(['message' => 'No autorizado.'], 403);
         }
 
@@ -94,7 +100,7 @@ class WorkOrderModalController extends Controller
 
         // Verificar que el usuario pertenezca al tenant de la work order
         $user = $request->user();
-        if ($user->tenant_id !== $image->workOrder->tenant_id) {
+        if (! $user->is_super_admin && $user->tenant_id !== $image->workOrder->tenant_id) {
             return response()->json(['message' => 'No autorizado.'], 403);
         }
 
