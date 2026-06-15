@@ -148,9 +148,9 @@ const hydrateCatalogs = (workOrder) => {
     availableServices.value = workOrder?.catalogs?.services ?? [];
 };
 
-const requiresQuoteConfirmation = (order, nextStatus) => (
-    order?.originalStatus === 'recepcion'
-    && nextStatus !== 'recepcion'
+const requiresQuoteConfirmation = (order, fromStatus, nextStatus) => (
+    fromStatus === 'recepcion'
+    && nextStatus !== fromStatus
     && order?.quote?.status !== 'accepted'
 );
 
@@ -367,33 +367,43 @@ const onDragOver = (e, columnId) => {
     currentHoverColumn.value = columnId;
 };
 
+// Mueve una OT desde una columna a otra, validando la cotización si corresponde
+const moveOrderToColumn = (order, fromColumnId, toColumnId) => {
+    if (toColumnId === fromColumnId) return;
+
+    const confirmedWithoutAcceptedQuote = requiresQuoteConfirmation(order, fromColumnId, toColumnId);
+
+    if (confirmedWithoutAcceptedQuote) {
+        const shouldContinue = window.confirm('La cotización aún no está aceptada por el cliente. ¿Quieres mover igualmente esta OT al siguiente paso?');
+        if (!shouldContinue) return;
+    }
+
+    router.put(route('work-orders.status.update', { workOrder: order.id }), {
+        status: toColumnId,
+        confirmed_without_accepted_quote: confirmedWithoutAcceptedQuote,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
+
+// Devuelve la columna anterior (-1) o siguiente (1) respecto a columnId, o null si no existe
+const getAdjacentColumn = (columnId, direction) => {
+    const idx = columns.findIndex(c => c.id === columnId);
+    if (idx === -1) return null;
+    return columns[idx + direction] ?? null;
+};
+
+const moveOrderStep = (order, columnId, direction) => {
+    const target = getAdjacentColumn(columnId, direction);
+    if (!target) return;
+    moveOrderToColumn(order, columnId, target.id);
+};
+
 const onDrop = (columnId) => {
     if (!draggedItem.value) return;
 
-    const newStatus = columnId;
-    const oldStatus = draggedItem.value.originalStatus;
-
-    if (newStatus !== oldStatus) {
-        const confirmedWithoutAcceptedQuote = requiresQuoteConfirmation(draggedItem.value, newStatus);
-
-        if (confirmedWithoutAcceptedQuote) {
-            const shouldContinue = window.confirm('La cotización aún no está aceptada por el cliente. ¿Quieres mover igualmente esta OT al siguiente paso?');
-
-            if (!shouldContinue) {
-                draggedItem.value = null;
-                currentHoverColumn.value = null;
-                return;
-            }
-        }
-
-        router.put(route('work-orders.status.update', { workOrder: draggedItem.value.id }), {
-            status: newStatus,
-            confirmed_without_accepted_quote: confirmedWithoutAcceptedQuote,
-        }, {
-            preserveScroll: true,
-            preserveState: true,
-        });
-    }
+    moveOrderToColumn(draggedItem.value, draggedItem.value.originalStatus, columnId);
 
     draggedItem.value = null;
     currentHoverColumn.value = null;
@@ -720,6 +730,21 @@ const submitDeleteWorkOrder = () => {
                                                     class="px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50">
                                                     Ver reporte cliente
                                                 </Link>
+
+                                                <p class="px-4 pt-2 pb-1 text-[9px] font-black uppercase tracking-widest text-slate-400 border-t border-slate-50 mt-1">
+                                                    Mover a
+                                                </p>
+                                                <button v-for="targetCol in columns.filter(c => c.id !== col.id)"
+                                                    :key="targetCol.id" type="button"
+                                                    class="w-full text-left px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 flex items-center gap-2"
+                                                    @click="moveOrderToColumn(order, col.id, targetCol.id)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#FF7A00] shrink-0"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                    {{ targetCol.title }}
+                                                </button>
+
                                                 <button v-if="canDeleteWorkOrder" type="button"
                                                     class="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 border-t border-slate-50 mt-1 pt-2"
                                                     @click="confirmDeleteWorkOrder(order)">
@@ -761,14 +786,40 @@ const submitDeleteWorkOrder = () => {
                                     class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-400">
                                     <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">{{ new
                                         Date(order.created_at).toLocaleDateString() }}</span>
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 transition-colors">
+                                    <button v-if="getAdjacentColumn(col.id, 1)" type="button"
+                                        @click.stop="moveOrderStep(order, col.id, 1)"
+                                        :title="`Mover a ${getAdjacentColumn(col.id, 1).title}`"
+                                        class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 active:scale-90 transition-all">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
-                                    </div>
+                                    </button>
+                                </div>
+
+                                <!-- Acciones rápidas de avance (Mobile) -->
+                                <div v-if="getAdjacentColumn(col.id, -1) || getAdjacentColumn(col.id, 1)"
+                                    class="mt-3 grid gap-2 lg:hidden"
+                                    :class="getAdjacentColumn(col.id, -1) && getAdjacentColumn(col.id, 1) ? 'grid-cols-2' : 'grid-cols-1'">
+                                    <button v-if="getAdjacentColumn(col.id, -1)" type="button"
+                                        @click.stop="moveOrderStep(order, col.id, -1)"
+                                        class="flex items-center justify-center gap-1.5 rounded-xl bg-slate-50 border border-slate-100 py-2.5 text-[10px] font-black uppercase tracking-wide text-slate-500 active:scale-95 active:bg-slate-100 transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                        <span class="truncate">{{ getAdjacentColumn(col.id, -1).title }}</span>
+                                    </button>
+                                    <button v-if="getAdjacentColumn(col.id, 1)" type="button"
+                                        @click.stop="moveOrderStep(order, col.id, 1)"
+                                        class="flex items-center justify-center gap-1.5 rounded-xl bg-[#1C1C1E] py-2.5 text-[10px] font-black uppercase tracking-wide text-white active:scale-95 active:bg-[#FF7A00] transition-all">
+                                        <span class="truncate">{{ getAdjacentColumn(col.id, 1).title }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
 
