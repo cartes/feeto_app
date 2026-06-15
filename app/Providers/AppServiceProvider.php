@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\WorkOrderStatusUpdated;
 use App\Listeners\RecordLoginLog;
+use App\Listeners\SendWorkOrderStatusChangedEmail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
@@ -41,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
 
         Event::listen(Login::class, RecordLoginLog::class);
+        Event::listen(WorkOrderStatusUpdated::class, SendWorkOrderStatusChangedEmail::class);
 
         Route::bind('tenantBySlug', fn (string $value) => Tenant::where('slug', $value)->firstOrFail());
     }

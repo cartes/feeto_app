@@ -8,8 +8,10 @@ use App\Models\Quote;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
+use App\Notifications\WorkOrderStatusChangedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;
 
@@ -77,6 +79,44 @@ class WorkOrderStatusTest extends TestCase
         $this->assertSame(WorkOrder::STATUS_CONTROL_CALIDAD, $this->workOrder->refresh()->status);
 
         Event::assertDispatched(WorkOrderStatusUpdated::class);
+    }
+
+    public function test_work_order_status_change_sends_email_when_client_email_is_configured(): void
+    {
+        Notification::fake();
+
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_CONTROL_CALIDAD,
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemand(
+            WorkOrderStatusChangedNotification::class,
+            function (WorkOrderStatusChangedNotification $notification, array $channels, object $notifiable): bool {
+                return $channels === ['mail']
+                    && $notifiable->routeNotificationFor('mail', $notification) === 'test@example.com'
+                    && $notification->workOrder->id === $this->workOrder->id
+                    && $notification->newStatus === WorkOrder::STATUS_CONTROL_CALIDAD;
+            }
+        );
+    }
+
+    public function test_work_order_status_change_does_not_send_email_without_client_email(): void
+    {
+        Notification::fake();
+
+        $this->workOrder->vehicle->client->update([
+            'email' => null,
+        ]);
+
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_CONTROL_CALIDAD,
+            ])
+            ->assertRedirect();
+
+        Notification::assertNothingSent();
     }
 
     public function test_unknown_work_order_status_is_rejected(): void

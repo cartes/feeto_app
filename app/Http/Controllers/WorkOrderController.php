@@ -200,7 +200,7 @@ class WorkOrderController extends Controller
             'new_status' => $validated['status'],
         ]);
 
-        broadcast(new WorkOrderStatusUpdated(
+        event(new WorkOrderStatusUpdated(
             $workOrder->load('vehicle'),
             $oldStatus,
             $validated['status']
