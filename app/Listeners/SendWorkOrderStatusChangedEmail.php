@@ -25,6 +25,10 @@ class SendWorkOrderStatusChangedEmail implements ShouldQueueAfterCommit
             ->with(['vehicle.client'])
             ->findOrFail($event->workOrder->id);
 
+        if ($workOrder->hasBeenNotifiedFor($event->newStatus)) {
+            return;
+        }
+
         $client = $workOrder->vehicle?->client;
         $email = $client?->email;
 
@@ -34,5 +38,7 @@ class SendWorkOrderStatusChangedEmail implements ShouldQueueAfterCommit
 
         Notification::route('mail', $email)
             ->notify(new WorkOrderStatusChangedNotification($workOrder, $event->oldStatus, $event->newStatus));
+
+        $workOrder->markStatusAsNotified($event->newStatus);
     }
 }

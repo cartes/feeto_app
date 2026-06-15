@@ -34,6 +34,7 @@ class WorkOrder extends Model
         'observations',
         'uuid',
         'total_amount',
+        'notified_statuses',
     ];
 
     /**
@@ -41,6 +42,7 @@ class WorkOrder extends Model
      */
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'notified_statuses' => 'array',
     ];
 
     protected static function booted(): void
@@ -49,7 +51,35 @@ class WorkOrder extends Model
             if (empty($workOrder->uuid)) {
                 $workOrder->uuid = (string) Str::uuid();
             }
+
+            if (empty($workOrder->notified_statuses)) {
+                $workOrder->notified_statuses = [$workOrder->status];
+            }
         });
+    }
+
+    /**
+     * Indica si ya se notificó al cliente sobre el estado dado.
+     */
+    public function hasBeenNotifiedFor(string $status): bool
+    {
+        return in_array($status, $this->notified_statuses ?? [], true);
+    }
+
+    /**
+     * Marca un estado como notificado al cliente.
+     */
+    public function markStatusAsNotified(string $status): void
+    {
+        $notifiedStatuses = $this->notified_statuses ?? [];
+
+        if (in_array($status, $notifiedStatuses, true)) {
+            return;
+        }
+
+        $notifiedStatuses[] = $status;
+
+        $this->update(['notified_statuses' => $notifiedStatuses]);
     }
 
     public function tenant(): BelongsTo

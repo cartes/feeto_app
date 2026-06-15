@@ -102,6 +102,48 @@ class WorkOrderStatusTest extends TestCase
         );
     }
 
+    public function test_work_order_status_change_does_not_resend_email_for_previously_notified_status(): void
+    {
+        Notification::fake();
+
+        // Avanza a control_calidad: primera vez, debe notificar.
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_CONTROL_CALIDAD,
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemandTimes(WorkOrderStatusChangedNotification::class, 1);
+
+        // Vuelve a un paso anterior (esperando_repuestos): no debe notificar de nuevo
+        // porque ya fue notificado al crear la OT.
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_ESPERANDO_REPUESTOS,
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemandTimes(WorkOrderStatusChangedNotification::class, 1);
+
+        // Avanza de nuevo a control_calidad: ya fue notificado anteriormente, no debe repetirse.
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_CONTROL_CALIDAD,
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemandTimes(WorkOrderStatusChangedNotification::class, 1);
+
+        // Avanza a un estado nuevo nunca notificado: debe notificar.
+        $this->actingAs($this->user)
+            ->put(route('work-orders.status.update', ['workOrder' => $this->workOrder->id]), [
+                'status' => WorkOrder::STATUS_LISTO,
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemandTimes(WorkOrderStatusChangedNotification::class, 2);
+    }
+
     public function test_work_order_status_change_does_not_send_email_without_client_email(): void
     {
         Notification::fake();
