@@ -6,7 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { route as ziggyRoute, ZiggyVue } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'TallerFlow';
 let rememberedTenantSlug = window.history.state?.page?.props?.tenant?.slug || null;
 
 const routeParameterNames = (routeName) => {
