@@ -130,6 +130,7 @@ return [
             'reports.inventory',
             'reports.customers',
             'reports.collections',
+            'reports.acquisition',
             'reports.export.pdf',
             'reports.export.excel',
             'invoices.index',
