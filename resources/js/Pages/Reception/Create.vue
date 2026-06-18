@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue';
 import { Head, usePage, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
@@ -80,7 +80,7 @@ const form = useForm({
     appointment_id: null,
 });
 
-const vehicleCatalog = useVehicleCatalog({
+const vehicleCatalog = reactive(useVehicleCatalog({
     form,
     brands: vehicleCatalogBrands,
     tenantRouteParams,
@@ -88,7 +88,7 @@ const vehicleCatalog = useVehicleCatalog({
     modelField: 'model',
     brandIdField: 'vehicle_brand_id',
     modelIdField: 'vehicle_model_id',
-});
+}));
 
 const formattedPlate = computed(() => {
     if (!recognizedPlate.value) return '';

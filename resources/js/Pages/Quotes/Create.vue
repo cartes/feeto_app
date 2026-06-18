@@ -50,7 +50,7 @@ const createForm = reactive({
     address: '',
 });
 
-const vehicleCatalog = useVehicleCatalog({
+const vehicleCatalog = reactive(useVehicleCatalog({
     form: createForm,
     brands: props.vehicleCatalogBrands,
     tenantRouteParams,
@@ -58,7 +58,7 @@ const vehicleCatalog = useVehicleCatalog({
     modelField: 'vehicle_model',
     brandIdField: 'vehicle_brand_id',
     modelIdField: 'vehicle_model_id',
-});
+}));
 
 const fetchPlateMatches = async (search) => {
     const normalized = search.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');

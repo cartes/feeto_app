@@ -1,0 +1,317 @@
+- generic [ref=e2]:
+  - navigation [ref=e4]:
+    - link "Taller Flow Taller Flow" [ref=e5] [cursor=pointer]:
+      - /url: https://tallerflow.cl/
+      - img "Taller Flow" [ref=e6]
+      - text: Taller
+      - generic [ref=e7]: Flow
+    - generic [ref=e8]:
+      - link "Características" [ref=e9] [cursor=pointer]:
+        - /url: /#features
+      - link "Beneficios" [ref=e10] [cursor=pointer]:
+        - /url: /#benefits
+      - link "Planes" [ref=e11] [cursor=pointer]:
+        - /url: https://tallerflow.cl/precios
+      - link "Talleres" [ref=e12] [cursor=pointer]:
+        - /url: https://tallerflow.cl/talleres
+      - link "Blog" [ref=e13] [cursor=pointer]:
+        - /url: https://tallerflow.cl/blog
+    - generic [ref=e14]:
+      - button "Iniciar sesión" [ref=e15] [cursor=pointer]:
+        - img [ref=e16]
+        - text: Iniciar sesión
+      - link "Probar gratis" [ref=e19] [cursor=pointer]:
+        - /url: https://tallerflow.cl/trial
+  - dialog [active] [ref=e20]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - heading "Iniciar Sesión" [level=2] [ref=e28]
+          - paragraph [ref=e29]: Ingresa tus credenciales para continuar
+        - button [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: Correo electrónico
+          - textbox "Correo electrónico" [ref=e36]:
+            - /placeholder: "ej: nombre@empresa.com"
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: Contraseña
+            - link "¿Olvidaste tu contraseña?" [ref=e40] [cursor=pointer]:
+              - /url: "#"
+          - generic [ref=e41]:
+            - textbox "Contraseña" [ref=e42]:
+              - /placeholder: ••••••••
+            - button [ref=e43] [cursor=pointer]:
+              - img [ref=e44]
+        - generic [ref=e47]:
+          - checkbox "Recordar sesión" [ref=e48]
+          - generic [ref=e49] [cursor=pointer]: Recordar sesión
+        - button "Entrar a mi cuenta" [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: Entrar a mi cuenta
+      - paragraph [ref=e54]:
+        - text: ¿No tienes una cuenta?
+        - link "Empieza gratis por 14 días" [ref=e55] [cursor=pointer]:
+          - /url: "#"
+  - link "Escribir por WhatsApp a +56989020072" [ref=e56] [cursor=pointer]:
+    - /url: https://wa.me/56989020072?text=Hola%2C%20vi%20TallerFlow%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.
+    - img [ref=e58]
+    - generic [ref=e60]:
+      - generic [ref=e61]: WhatsApp
+      - generic [ref=e62]: Habla con TallerFlow
+      - generic [ref=e63]: "+56989020072"
+  - generic [ref=e64]:
+    - generic [ref=e65]:
+      - generic [ref=e67]:
+        - generic [ref=e69]:
+          - generic [ref=e71]: Software para Talleres
+          - generic [ref=e73]:
+            - generic [ref=e74]: Hecho para mecánicos.
+            - generic [ref=e75]: Diseñado con talleres reales para acelerar cada orden.
+          - generic [ref=e76]:
+            - generic [ref=e77]: Todo en un lugar.
+            - generic [ref=e78]: Órdenes de trabajo, agenda, inventario y clientes en un sistema único, en español, listo para usar hoy.
+        - generic [ref=e79]:
+          - generic [ref=e80]: 001 / T-FLOW
+          - heading "Acelera tu taller. Domina cada orden." [level=1] [ref=e81]:
+            - text: Acelera tu taller.
+            - emphasis [ref=e82]: Domina cada orden.
+        - generic [ref=e83]:
+          - link "Prueba gratis 14 días Crea tu cuenta y empieza hoy mismo" [ref=e84] [cursor=pointer]:
+            - /url: https://tallerflow.cl/trial
+            - generic [ref=e85]:
+              - generic [ref=e86]: Prueba gratis 14 días
+              - generic [ref=e87]: Crea tu cuenta y empieza hoy mismo
+            - img [ref=e89]
+          - link "Ver funcionalidades Explora agenda, órdenes, inventario y recepción con IA" [ref=e91] [cursor=pointer]:
+            - /url: "#features"
+            - generic [ref=e92]:
+              - generic [ref=e93]: Ver funcionalidades
+              - generic [ref=e94]: Explora agenda, órdenes, inventario y recepción con IA
+            - img [ref=e96]
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - generic [ref=e101]: Herramientas
+          - heading "Una sola plataforma para tu taller completo." [level=2] [ref=e103]:
+            - text: Una sola plataforma para
+            - emphasis [ref=e104]: tu taller completo.
+          - paragraph [ref=e105]: Diseñado con talleres mecánicos reales para resolver los problemas del día a día.
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - img [ref=e109]
+            - heading "Tablero Kanban en Vivo" [level=3] [ref=e111]
+            - paragraph [ref=e112]: Coordina equipos y órdenes en un flujo visual. Mueve trabajos entre etapas con un clic y ten siempre el control del piso del taller.
+            - generic [ref=e113]:
+              - generic [ref=e114]: Tiempo Real
+              - generic [ref=e115]: WebSockets
+          - generic [ref=e116]:
+            - img [ref=e118]
+            - heading "Inventario Inteligente" [level=3] [ref=e121]
+            - paragraph [ref=e122]: Stock al día con alertas de mínimos, control de proveedores y registro automático al cerrar cada orden.
+            - generic [ref=e123]:
+              - generic [ref=e124]: Stock Mínimo
+              - generic [ref=e125]: Alertas
+          - generic [ref=e126]:
+            - generic [ref=e127]: IA
+            - img [ref=e129]
+            - heading "Recepción con IA" [level=3] [ref=e134]
+            - paragraph [ref=e135]: Escanea patentes con la cámara de tu celular. Gemini AI lee la patente, cruza la agenda y muestra los datos del cliente en segundos.
+            - generic [ref=e136]:
+              - generic [ref=e137]: Gemini AI
+              - generic [ref=e138]: ALPR
+    - generic [ref=e140]:
+      - generic [ref=e141]:
+        - generic [ref=e142]: Vista en Vivo
+        - heading "Una interfaz potente y sorprendentemente simple." [level=2] [ref=e143]:
+          - text: Una interfaz potente y
+          - emphasis [ref=e144]: sorprendentemente simple.
+        - paragraph [ref=e145]: Explora cómo funciona TallerFlow desde adentro. Diseñado para verse increíble en cualquier pantalla y funcionar a la velocidad de tu taller.
+      - generic [ref=e146]:
+        - generic [ref=e148]:
+          - img "Agenda Semanal del Taller" [ref=e150]
+          - generic:
+            - img "Tablero Kanban de Órdenes"
+          - generic:
+            - img "Recepción con IA móvil"
+        - generic [ref=e151]:
+          - button "Calendario 01 Agenda Semanal del Taller Controla citas, asigna mecánicos y programa servicios con un calendario interactivo en tiempo real." [ref=e152] [cursor=pointer]:
+            - generic [ref=e154]:
+              - generic [ref=e155]: Calendario
+              - generic [ref=e156]: "01"
+            - heading "Agenda Semanal del Taller" [level=3] [ref=e157]
+            - paragraph [ref=e158]: Controla citas, asigna mecánicos y programa servicios con un calendario interactivo en tiempo real.
+          - button "Tablero Kanban 02 Tablero Kanban de Órdenes Mueve órdenes de trabajo entre etapas (Recepción, Diagnóstico, Listo) arrastrándolas con un clic en tiempo real." [ref=e159] [cursor=pointer]:
+            - generic [ref=e160]:
+              - generic [ref=e161]: Tablero Kanban
+              - generic [ref=e162]: "02"
+            - heading "Tablero Kanban de Órdenes" [level=3] [ref=e163]
+            - paragraph [ref=e164]: Mueve órdenes de trabajo entre etapas (Recepción, Diagnóstico, Listo) arrastrándolas con un clic en tiempo real.
+          - button "Recepción IA 03 Recepción con IA móvil Escanea la patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini." [ref=e165] [cursor=pointer]:
+            - generic [ref=e166]:
+              - generic [ref=e167]: Recepción IA
+              - generic [ref=e168]: "03"
+            - heading "Recepción con IA móvil" [level=3] [ref=e169]
+            - paragraph [ref=e170]: Escanea la patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.
+    - generic [ref=e173]:
+      - generic [ref=e174]:
+        - paragraph [ref=e175]: Beneficios
+        - heading "Menos papel, menos caos, más tiempo para trabajar." [level=2] [ref=e176]:
+          - text: Menos papel, menos caos,
+          - text: más tiempo para trabajar.
+        - paragraph [ref=e177]: Digitaliza tu taller en menos de un día. Sin instalaciones, sin servidores, sin dolores de cabeza. Accede desde cualquier computador o celular.
+        - list [ref=e178]:
+          - listitem [ref=e179]:
+            - img [ref=e181]
+            - generic [ref=e183]:
+              - paragraph [ref=e184]: Histórico completo de cada vehículo
+              - paragraph [ref=e185]: Accede al registro de todas las visitas y trabajos realizados a cada auto al instante.
+          - listitem [ref=e186]:
+            - img [ref=e188]
+            - generic [ref=e190]:
+              - paragraph [ref=e191]: Notificaciones en tiempo real
+              - paragraph [ref=e192]: Tu equipo se entera al instante cuando cambia el estado de una orden de trabajo.
+          - listitem [ref=e193]:
+            - img [ref=e195]
+            - generic [ref=e197]:
+              - paragraph [ref=e198]: Multi-sucursal desde el día uno
+              - paragraph [ref=e199]: Cada taller tiene su propio espacio aislado y seguro. Escala sin límites.
+      - generic [ref=e200]:
+        - generic [ref=e201]:
+          - paragraph [ref=e202]: 3×
+          - paragraph [ref=e203]: más rápido en recibir un vehículo
+        - generic [ref=e204]:
+          - paragraph [ref=e205]: "0"
+          - paragraph [ref=e206]: instalaciones requeridas
+        - generic [ref=e207]:
+          - paragraph [ref=e208]: "+200"
+          - paragraph [ref=e209]: talleres mecánicos ya confían en Taller Flow
+    - generic [ref=e211]:
+      - generic [ref=e212]:
+        - generic [ref=e213]: Nuestra Red
+        - heading "Visita nuestros clientes" [level=2] [ref=e214]:
+          - text: Visita nuestros
+          - emphasis [ref=e215]: clientes
+        - paragraph [ref=e216]: Conoce a los talleres mecánicos con más actividad que confían en TallerFlow para optimizar su gestión diaria.
+      - generic [ref=e217]:
+        - generic [ref=e218]:
+          - generic [ref=e219]:
+            - heading "Taller perez" [level=3] [ref=e220]:
+              - link "Taller perez" [ref=e221] [cursor=pointer]:
+                - /url: https://tallerflow.cl/taller/taller-perez
+            - paragraph [ref=e222]: Agenda tu hora directamente en la landing page del taller para recibir una atención inteligente y sin esperas.
+          - link "Agendar Hora" [ref=e224] [cursor=pointer]:
+            - /url: https://tallerflow.cl/taller/taller-perez
+            - text: Agendar Hora
+            - img [ref=e225]
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - generic [ref=e229]:
+              - img [ref=e230]
+              - text: San Felipe
+            - heading "Auto Okey" [level=3] [ref=e233]:
+              - link "Auto Okey" [ref=e234] [cursor=pointer]:
+                - /url: https://tallerflow.cl/taller/auto-okey
+            - paragraph [ref=e235]: Agenda tu hora directamente en la landing page del taller para recibir una atención inteligente y sin esperas.
+          - link "Agendar Hora" [ref=e237] [cursor=pointer]:
+            - /url: https://tallerflow.cl/taller/auto-okey
+            - text: Agendar Hora
+            - img [ref=e238]
+    - generic [ref=e241]:
+      - generic [ref=e242]:
+        - generic [ref=e243]: Recursos y Aprendizaje
+        - heading "Consejos y guías para potenciar tu taller." [level=2] [ref=e244]:
+          - text: Consejos y guías para
+          - emphasis [ref=e245]: potenciar tu taller.
+        - paragraph [ref=e246]: Aprende prácticas de optimización de procesos, marketing para talleres y fidelización de clientes con nuestro blog oficial.
+      - generic [ref=e247]:
+        - generic [ref=e248]:
+          - generic [ref=e249]:
+            - img "Cómo TallerFlow y WhatsApp acaban con las llamadas ansiosas en tu taller" [ref=e250]
+            - generic [ref=e251]: Artículo
+          - generic [ref=e252]:
+            - paragraph [ref=e253]: 14/06/2026
+            - heading "Cómo TallerFlow y WhatsApp acaban con las llamadas ansiosas en tu taller" [level=3] [ref=e254]:
+              - link "Cómo TallerFlow y WhatsApp acaban con las llamadas ansiosas en tu taller" [ref=e255] [cursor=pointer]:
+                - /url: https://tallerflow.cl/blog/como-tallerflow-y-whatsapp-acaban-con-las-llamadas-ansiosas-en-tu-taller
+            - paragraph [ref=e256]: "Uno de los dolores más grandes de un mecánico es pasar el día respondiendo la misma pregunta por WhatsApp: \"Hola, ¿cómo va mi auto?\". Esto interrumpe el trabajo y quita horas valiosas de taller. Si alguna vez has tenido que dejar la llave inglesa para calmar a un cliente desesperado por saber si llegaron sus repuestos, sabes exactamente de lo que hablamos."
+            - link "Leer artículo" [ref=e258] [cursor=pointer]:
+              - /url: https://tallerflow.cl/blog/como-tallerflow-y-whatsapp-acaban-con-las-llamadas-ansiosas-en-tu-taller
+              - text: Leer artículo
+              - img [ref=e259]
+        - generic [ref=e261]:
+          - generic [ref=e262]:
+            - img "Cómo gestionar Cotizaciones, OT y Clientes en tu Taller mecánico" [ref=e263]
+            - generic [ref=e264]: Artículo
+          - generic [ref=e265]:
+            - paragraph [ref=e266]: 08/06/2026
+            - heading "Cómo gestionar Cotizaciones, OT y Clientes en tu Taller mecánico" [level=3] [ref=e267]:
+              - link "Cómo gestionar Cotizaciones, OT y Clientes en tu Taller mecánico" [ref=e268] [cursor=pointer]:
+                - /url: https://tallerflow.cl/blog/como-gestionar-cotizaciones-ot-y-clientes-en-tu-taller-mecanico
+            - paragraph [ref=e269]: "Si eres dueño o administras un taller mecánico en Chile, seguro conoces esta historia: un cliente llama enojado porque su auto \"estaba listo ayer\", buscas la Orden de Trabajo (OT) y está traspapelada bajo una torre de repuestos, y para colmo, tienes tres presupuestos pendientes de enviar por WhatsApp mientras intentas coordinar a los mecánicos en la fosa."
+            - link "Leer artículo" [ref=e271] [cursor=pointer]:
+              - /url: https://tallerflow.cl/blog/como-gestionar-cotizaciones-ot-y-clientes-en-tu-taller-mecanico
+              - text: Leer artículo
+              - img [ref=e272]
+        - generic [ref=e274]:
+          - generic [ref=e275]:
+            - img "Cómo organizar las órdenes de trabajo en un taller mecánico" [ref=e276]
+            - generic [ref=e277]: Artículo
+          - generic [ref=e278]:
+            - paragraph [ref=e279]: 03/06/2026
+            - heading "Cómo organizar las órdenes de trabajo en un taller mecánico" [level=3] [ref=e280]:
+              - link "Cómo organizar las órdenes de trabajo en un taller mecánico" [ref=e281] [cursor=pointer]:
+                - /url: https://tallerflow.cl/blog/como-organizar-las-ordenes-de-trabajo-en-un-taller-mecanico
+            - paragraph [ref=e282]: "Aprende cómo organizar las órdenes de trabajo en tu taller mecánico: qué datos incluir, cómo llevar el flujo de cada auto y por qué el papel ya no da abasto."
+            - link "Leer artículo" [ref=e284] [cursor=pointer]:
+              - /url: https://tallerflow.cl/blog/como-organizar-las-ordenes-de-trabajo-en-un-taller-mecanico
+              - text: Leer artículo
+              - img [ref=e285]
+      - link "Explorar todo el blog" [ref=e288] [cursor=pointer]:
+        - /url: https://tallerflow.cl/blog
+        - text: Explorar todo el blog
+        - img [ref=e289]
+    - generic [ref=e292]:
+      - generic [ref=e293]:
+        - generic [ref=e294]:
+          - img [ref=e296]
+          - generic [ref=e298]:
+            - heading "Soporte Humano Real" [level=3] [ref=e299]
+            - paragraph [ref=e300]: Habla con personas reales en español. Sin bots, sin tickets que duermen meses.
+        - generic [ref=e301]:
+          - img [ref=e303]
+          - generic [ref=e305]:
+            - heading "Seguridad en la Nube" [level=3] [ref=e306]
+            - paragraph [ref=e307]: Tus datos siempre respaldados. Cumplimiento con estándares internacionales de privacidad.
+        - generic [ref=e308]:
+          - img [ref=e310]
+          - generic [ref=e312]:
+            - heading "Sin Instalaciones Complejas" [level=3] [ref=e313]
+            - paragraph [ref=e314]: Abre el navegador y empieza. Nada que instalar, configurar ni mantener.
+      - generic [ref=e315]:
+        - generic [ref=e316]:
+          - heading "¿Listo para digitalizar tu taller?" [level=3] [ref=e317]
+          - paragraph [ref=e318]: 14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.
+        - link "Empezar Gratis Ahora" [ref=e319] [cursor=pointer]:
+          - /url: https://tallerflow.cl/trial
+          - text: Empezar Gratis Ahora
+          - img [ref=e320]
+    - contentinfo [ref=e322]:
+      - generic [ref=e323]:
+        - generic [ref=e324]:
+          - img "Taller Flow" [ref=e325]
+          - generic [ref=e326]: Taller Flow
+        - navigation [ref=e327]:
+          - link "Términos de Servicio" [ref=e328] [cursor=pointer]:
+            - /url: "#"
+          - link "Política de Privacidad" [ref=e329] [cursor=pointer]:
+            - /url: "#"
+          - link "Talleres" [ref=e330] [cursor=pointer]:
+            - /url: https://tallerflow.cl/talleres
+          - link "Contacto" [ref=e331] [cursor=pointer]:
+            - /url: "#"
+          - 'link "WhatsApp: +56989020072" [ref=e332] [cursor=pointer]':
+            - /url: https://wa.me/56989020072?text=Hola%2C%20vi%20TallerFlow%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.
+            - img [ref=e333]
+            - text: "WhatsApp: +56989020072"
+        - paragraph [ref=e335]: © 2026 Taller Flow. Todos los derechos reservados.

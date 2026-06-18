@@ -80,6 +80,7 @@ return [
             'quotes.search-plate',
             'quotes.store-client',
             'quotes.store',
+            'vehicle-catalog.models',
             'quotes.show',
             'quotes.items.store',
             'quotes.items.destroy',
