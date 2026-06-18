@@ -36,6 +36,7 @@ use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicCheckoutController;
 use App\Http\Controllers\PublicPricingController;
+use App\Http\Controllers\PublicServicesController;
 use App\Http\Controllers\PublicTenantDirectoryController;
 use App\Http\Controllers\PublicWhatsAppInquiryController;
 use App\Http\Controllers\QuoteController;
@@ -85,6 +86,7 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/precios', PublicPricingController::class)->name('pricing');
+Route::get('/servicios', PublicServicesController::class)->name('servicios');
 
 // Blog Público
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');

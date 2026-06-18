@@ -5,6 +5,7 @@ return [
         'public' => [
             'home',
             'pricing',
+            'servicios',
             'blog.index',
             'blog.category',
             'blog.show',
@@ -34,6 +35,7 @@ return [
         'tenant' => [
             'home',
             'pricing',
+            'servicios',
             'blog.index',
             'blog.category',
             'blog.show',

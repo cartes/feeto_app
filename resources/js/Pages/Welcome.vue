@@ -265,6 +265,20 @@ onUnmounted(() => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Button to link to full services page (delicate pill outline style) -->
+                    <div class="mt-12 flex justify-center">
+                        <Link
+                            :href="route('servicios')"
+                            class="inline-flex items-center gap-2 px-6 py-3 border border-white/10 hover:border-[#FF7A00]/40 bg-white/[0.02] hover:bg-[#FF7A00]/5 text-slate-300 hover:text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 active:scale-[0.98]"
+                        >
+                            <span>Mostrar todas las características</span>
+                            <svg class="text-[#FF7A00]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg>
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>
