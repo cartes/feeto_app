@@ -212,6 +212,12 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/quotes/create', [ManualQuoteController::class, 'create'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('quotes.create');
+        Route::get('/quotes/search-plate', [ManualQuoteController::class, 'searchByPlate'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.search-plate');
+        Route::post('/quotes/store-client', [ManualQuoteController::class, 'storeClientWithVehicle'])
+            ->middleware('permission:work-orders.view|work-orders.view-own')
+            ->name('quotes.store-client');
         Route::post('/quotes', [ManualQuoteController::class, 'store'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('quotes.store');

@@ -18,7 +18,9 @@ class Client extends Model
         'rut',
         'name',
         'phone',
+        'secondary_phone',
         'email',
+        'address',
         'max_credit_limit',
     ];
 

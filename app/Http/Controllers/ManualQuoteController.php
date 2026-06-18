@@ -15,6 +15,7 @@ use App\Models\QuoteItem;
 use App\Models\Service;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Services\ManualQuoteService;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
@@ -217,6 +218,82 @@ class ManualQuoteController extends Controller
         return back()->with('success', $decision === 'accepted'
             ? 'Cotización aceptada.'
             : 'Cotización rechazada.');
+    }
+
+    public function searchByPlate(Request $request): JsonResponse
+    {
+        $this->ensureCommercialQuotesEnabled();
+
+        $raw = $request->input('plate', '');
+        $plate = strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $raw));
+
+        if (strlen($plate) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $escaped = addcslashes($plate, '%_');
+
+        $vehicles = Vehicle::query()
+            ->where('plate', 'like', "%{$escaped}%")
+            ->with('client:id,name,rut,phone,email')
+            ->limit(8)
+            ->get(['id', 'client_id', 'plate', 'brand', 'model']);
+
+        return response()->json(['results' => $vehicles]);
+    }
+
+    public function storeClientWithVehicle(Request $request): JsonResponse
+    {
+        $this->ensureCommercialQuotesEnabled();
+
+        $validated = $request->validate([
+            'plate' => ['required', 'string', 'max:10'],
+            'vehicle_model' => ['nullable', 'string', 'max:100'],
+            'vehicle_brand' => ['nullable', 'string', 'max:100'],
+            'rut' => ['required', 'string', 'max:20'],
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
+            'secondary_phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $normalizedPlate = strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $validated['plate']));
+
+        $tenantId = Tenant::current()?->id;
+
+        $existingVehicle = Vehicle::withoutGlobalScope('tenant')
+            ->where('tenant_id', $tenantId)
+            ->where('plate', $normalizedPlate)
+            ->first();
+
+        if ($existingVehicle) {
+            return response()->json([
+                'errors' => ['plate' => ['Ya existe un vehículo con esta patente en el sistema.']],
+            ], 422);
+        }
+
+        $client = Client::firstOrCreate(
+            ['rut' => $validated['rut']],
+            [
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'secondary_phone' => $validated['secondary_phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+            ]
+        );
+
+        $vehicle = $client->vehicles()->create([
+            'plate' => $normalizedPlate,
+            'brand' => $validated['vehicle_brand'] ?? null,
+            'model' => $validated['vehicle_model'] ?? null,
+        ]);
+
+        $vehicle->load('client:id,name,rut,phone,email');
+
+        return response()->json([
+            'client' => $client->only(['id', 'name', 'rut', 'phone', 'email']),
+            'vehicle' => $vehicle->only(['id', 'plate', 'brand', 'model', 'client_id']),
+        ]);
     }
 
     /**
