@@ -87,6 +87,7 @@ class SeoBlogTest extends TestCase
         // Debe contener páginas estáticas
         $response->assertSee(route('home'), false);
         $response->assertSee(route('pricing'), false);
+        $response->assertSee(route('servicios'), false);
         $response->assertSee(route('trial.create'), false);
         $response->assertSee(route('blog.index'), false);
 
