@@ -77,6 +77,8 @@ return [
             'work-orders.destroy',
             'quotes.index',
             'quotes.create',
+            'quotes.search-plate',
+            'quotes.store-client',
             'quotes.store',
             'quotes.show',
             'quotes.items.store',
