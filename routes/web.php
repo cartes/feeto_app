@@ -87,6 +87,11 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/precios', PublicPricingController::class)->name('pricing');
 Route::get('/servicios', PublicServicesController::class)->name('servicios');
+Route::get('/orden-de-trabajo-taller-mecanico', function () {
+    return Inertia::render('Blog/OrdenDeTrabajo', [
+        'canLogin' => Route::has('login'),
+    ]);
+})->name('orden-de-trabajo-taller-mecanico');
 
 // Blog Público
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');

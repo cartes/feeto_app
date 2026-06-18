@@ -46,6 +46,12 @@ class SeoController extends Controller
                 'priority' => '0.8',
             ],
             [
+                'loc' => route('orden-de-trabajo-taller-mecanico'),
+                'lastmod' => now()->startOfWeek()->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ],
+            [
                 'loc' => route('trial.create'),
                 'lastmod' => now()->startOfWeek()->toAtomString(),
                 'changefreq' => 'weekly',

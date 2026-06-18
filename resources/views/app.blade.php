@@ -66,7 +66,7 @@
         <!-- Scripts -->
         @if (request()->routeIs('admin.*'))
             @routes('admin')
-        @elseif (request()->routeIs('home') || request()->routeIs('pricing') || request()->routeIs('servicios') || request()->routeIs('blog.*') || request()->routeIs('trial.*') || request()->routeIs('tracking.*') || request()->routeIs('talleres.*') || request()->routeIs('taller.landing') || request()->routeIs('taller.booking.store') || request()->routeIs('taller.whatsapp.inquiry') || request()->routeIs('checkout.*') || request()->routeIs('login') || request()->routeIs('logout') || request()->routeIs('register') || request()->routeIs('password.*') || request()->routeIs('verification.*'))
+        @elseif (request()->routeIs('home') || request()->routeIs('pricing') || request()->routeIs('servicios') || request()->routeIs('orden-de-trabajo-taller-mecanico') || request()->routeIs('blog.*') || request()->routeIs('trial.*') || request()->routeIs('tracking.*') || request()->routeIs('talleres.*') || request()->routeIs('taller.landing') || request()->routeIs('taller.booking.store') || request()->routeIs('taller.whatsapp.inquiry') || request()->routeIs('checkout.*') || request()->routeIs('login') || request()->routeIs('logout') || request()->routeIs('register') || request()->routeIs('password.*') || request()->routeIs('verification.*'))
             @routes('public')
         @else
             @routes('tenant')

@@ -88,6 +88,7 @@ class SeoBlogTest extends TestCase
         $response->assertSee(route('home'), false);
         $response->assertSee(route('pricing'), false);
         $response->assertSee(route('servicios'), false);
+        $response->assertSee(route('orden-de-trabajo-taller-mecanico'), false);
         $response->assertSee(route('trial.create'), false);
         $response->assertSee(route('blog.index'), false);
 
