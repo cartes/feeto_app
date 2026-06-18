@@ -57,7 +57,34 @@ class VehicleCatalogSeeder extends Seeder
     /**
      * @return array<int, array{name: string, code: string, models: array<int, array{name: string, code: string}>}>
      */
-    private function catalog(): array
+    protected function catalog(): array
+    {
+        return array_map(function (array $brand): array {
+            $models = [];
+
+            foreach ($brand['models'] as $modelName) {
+                $code = $this->normalizeCode($modelName);
+
+                if (! isset($models[$code]) || strlen($modelName) > strlen($models[$code]['name'])) {
+                    $models[$code] = [
+                        'name' => $modelName,
+                        'code' => $code,
+                    ];
+                }
+            }
+
+            return [
+                'name' => $brand['name'],
+                'code' => $this->normalizeCode($brand['name']),
+                'models' => array_values($models),
+            ];
+        }, $this->rawCatalog());
+    }
+
+    /**
+     * @return array<int, array{name: string, models: array<int, string>}>
+     */
+    protected function rawCatalog(): array
     {
         try {
             /** @var array<int, array{name: string, models: array<int, string>}> $catalog */
@@ -71,22 +98,14 @@ class VehicleCatalogSeeder extends Seeder
             throw new \RuntimeException('No se pudo leer el catálogo global de vehículos.', previous: $exception);
         }
 
-        return array_map(function (array $brand): array {
-            return [
-                'name' => $brand['name'],
-                'code' => $this->normalizeCode($brand['name']),
-                'models' => array_map(fn (string $model): array => [
-                    'name' => $model,
-                    'code' => $this->normalizeCode($model),
-                ], $brand['models']),
-            ];
-        }, $catalog);
+        return $catalog;
     }
 
-    private function normalizeCode(string $value): string
+    protected function normalizeCode(string $value): string
     {
         $normalized = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) ?: $value;
-        $normalized = strtoupper((string) preg_replace('/[^A-Z0-9]+/i', '', $normalized));
+        $normalized = strtoupper((string) preg_replace('/[^A-Z0-9]+/i', '-', trim($normalized)));
+        $normalized = trim($normalized, '-');
 
         return $normalized !== '' ? $normalized : 'CATALOG';
     }
