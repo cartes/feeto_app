@@ -11,9 +11,12 @@ use App\Models\Quote;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehicleBrand;
+use App\Models\VehicleModel;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;
 
@@ -95,6 +98,47 @@ class ManualQuoteControllerTest extends TestCase
         $this->assertSame($this->client->id, $quote->client_id);
         $this->assertSame($this->vehicle->id, $quote->vehicle_id);
         $this->assertNull($quote->work_order_id);
+    }
+
+    public function test_create_page_exposes_vehicle_catalog_brands(): void
+    {
+        VehicleBrand::query()->create(['name' => 'Toyota', 'code' => 'TOYOTA']);
+
+        $this->actingAs($this->admin)
+            ->get(route('quotes.create'))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('Quotes/Create')
+                ->has('vehicleCatalogBrands', 1)
+                ->where('vehicleCatalogBrands.0.name', 'Toyota')
+            );
+    }
+
+    public function test_store_client_with_vehicle_uses_catalog_names_when_ids_are_sent(): void
+    {
+        $brand = VehicleBrand::query()->create(['name' => 'Toyota', 'code' => 'TOYOTA']);
+        $model = VehicleModel::query()->create([
+            'vehicle_brand_id' => $brand->id,
+            'name' => 'Yaris',
+            'code' => 'YARIS',
+        ]);
+
+        $this->actingAs($this->admin)
+            ->post(route('quotes.store-client'), [
+                'plate' => 'BBFL45',
+                'vehicle_brand_id' => $brand->id,
+                'vehicle_model_id' => $model->id,
+                'vehicle_brand' => 'marca alterada',
+                'vehicle_model' => 'modelo alterado',
+                'rut' => '11111111-1',
+                'name' => 'Cliente nuevo',
+                'phone' => '+56911111111',
+                'secondary_phone' => '',
+                'address' => '',
+            ])
+            ->assertOk()
+            ->assertJsonPath('vehicle.brand', 'Toyota')
+            ->assertJsonPath('vehicle.model', 'Yaris');
     }
 
     public function test_admin_can_add_and_remove_items_from_a_manual_quote(): void

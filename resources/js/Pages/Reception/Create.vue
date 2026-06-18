@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { usePage, useForm } from '@inertiajs/vue3';
+import { Head, usePage, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
+import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 
 const page = usePage();
 const tenantId = page.props.tenantId;
@@ -16,6 +17,7 @@ const { debounce } = useDebounce();
 const planAccess = computed(() => page.props.planAccess ?? {});
 const aiReceptionEnabled = computed(() => planAccess.value?.ai_reception ?? false);
 const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
+const vehicleCatalogBrands = computed(() => page.props.vehicleCatalogBrands ?? []);
 
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
@@ -65,6 +67,8 @@ const revokePreviewImage = () => {
 
 const form = useForm({
     plate: '',
+    vehicle_brand_id: null,
+    vehicle_model_id: null,
     brand: '',
     model: '',
     client_name: '',
@@ -74,6 +78,16 @@ const form = useForm({
     selected_client_id: null,
     reassign_vehicle_owner: false,
     appointment_id: null,
+});
+
+const vehicleCatalog = useVehicleCatalog({
+    form,
+    brands: vehicleCatalogBrands,
+    tenantRouteParams,
+    brandField: 'brand',
+    modelField: 'model',
+    brandIdField: 'vehicle_brand_id',
+    modelIdField: 'vehicle_model_id',
 });
 
 const formattedPlate = computed(() => {
@@ -140,6 +154,7 @@ const resetReceptionState = () => {
     form.reset();
     form.clearErrors();
     form.reassign_vehicle_owner = false;
+    vehicleCatalog.reset();
 };
 
 const closeModal = () => {
@@ -194,6 +209,7 @@ const fetchVehicleData = async (ppu) => {
         form.model = placeholder.includes(previewModel) && aiModel && aiModel !== 'SIN DATO'
             ? aiModel
             : previewModel;
+        await vehicleCatalog.hydrateFromCurrentValues();
 
         applyClientData(defaultClient.value);
         form.reassign_vehicle_owner = false;
@@ -426,6 +442,8 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <Head title="Recepción" />
+
     <TallerLayout>
         <!-- Overlay de carga durante búsqueda en BD/API -->
         <div v-if="isSearching"
@@ -604,20 +622,66 @@ onUnmounted(() => {
                             <div class="space-y-1.5">
                                 <label
                                     class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Marca</label>
-                                <input v-model="form.brand" type="text"
+                                <select
+                                    :value="vehicleCatalog.brandSelection"
+                                    @change="vehicleCatalog.applyBrandSelection($event.target.value)"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-base font-bold rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
+                                >
+                                    <option value="">Selecciona una marca</option>
+                                    <option
+                                        v-for="brand in vehicleCatalogBrands"
+                                        :key="brand.id"
+                                        :value="String(brand.id)"
+                                    >
+                                        {{ brand.name }}
+                                    </option>
+                                    <option :value="MANUAL_SELECTION">Otra marca</option>
+                                </select>
+                                <input
+                                    v-if="vehicleCatalog.isManualBrand"
+                                    v-model="form.brand"
+                                    type="text"
                                     class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
-                                    placeholder="Ej: TOYOTA" />
+                                    placeholder="Ej: TOYOTA"
+                                />
                                 <p v-if="form.errors.brand" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.brand }}</p>
+                                <p v-if="form.errors.vehicle_brand_id" class="text-red-500 text-[10px] font-medium ml-1">{{
+                                    form.errors.vehicle_brand_id }}</p>
                             </div>
                             <div class="space-y-1.5">
                                 <label
                                     class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Modelo</label>
-                                <input v-model="form.model" type="text"
+                                <select
+                                    v-if="!vehicleCatalog.isManualBrand"
+                                    :value="vehicleCatalog.modelSelection"
+                                    @change="vehicleCatalog.applyModelSelection($event.target.value)"
+                                    :disabled="vehicleCatalog.loadingModels || !vehicleCatalog.brandSelection"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-base font-bold rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm disabled:bg-gray-50 disabled:text-gray-400"
+                                >
+                                    <option value="">
+                                        {{ vehicleCatalog.loadingModels ? 'Cargando modelos...' : 'Selecciona un modelo' }}
+                                    </option>
+                                    <option
+                                        v-for="model in vehicleCatalog.modelOptions"
+                                        :key="model.id"
+                                        :value="String(model.id)"
+                                    >
+                                        {{ model.name }}
+                                    </option>
+                                    <option :value="MANUAL_SELECTION">Otro modelo</option>
+                                </select>
+                                <input
+                                    v-if="vehicleCatalog.isManualBrand || vehicleCatalog.isManualModel"
+                                    v-model="form.model"
+                                    type="text"
                                     class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
-                                    placeholder="Ej: HILUX" />
+                                    placeholder="Ej: HILUX"
+                                />
                                 <p v-if="form.errors.model" class="text-red-500 text-[10px] font-medium ml-1">{{
                                     form.errors.model }}</p>
+                                <p v-if="form.errors.vehicle_model_id" class="text-red-500 text-[10px] font-medium ml-1">{{
+                                    form.errors.vehicle_model_id }}</p>
                             </div>
                         </div>
                     </div>

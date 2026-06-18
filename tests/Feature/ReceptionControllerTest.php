@@ -9,6 +9,8 @@ use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehicleBrand;
+use App\Models\VehicleModel;
 use App\Models\WorkOrder;
 use App\Services\BoostrService;
 use App\Services\TenantSetupService;
@@ -286,6 +288,12 @@ class ReceptionControllerTest extends TestCase
 
         $tenant = $this->setUpTenant();
         $admin = $this->createAdmin($tenant);
+        $brand = VehicleBrand::query()->create(['name' => 'Toyota', 'code' => 'TOYOTA']);
+        VehicleModel::query()->create([
+            'vehicle_brand_id' => $brand->id,
+            'name' => 'Corolla',
+            'code' => 'COROLLA',
+        ]);
 
         $this->actingAs($admin)
             ->get(route('receptions.create', [
@@ -295,7 +303,43 @@ class ReceptionControllerTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Reception/Create')
                 ->where('maxImageUploadBytes', 4096 * 1024)
+                ->has('vehicleCatalogBrands', 1)
+                ->where('vehicleCatalogBrands.0.name', 'Toyota')
             );
+    }
+
+    public function test_store_order_uses_catalog_names_when_brand_and_model_ids_are_sent(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+        $brand = VehicleBrand::query()->create(['name' => 'Toyota', 'code' => 'TOYOTA']);
+        $model = VehicleModel::query()->create([
+            'vehicle_brand_id' => $brand->id,
+            'name' => 'Corolla',
+            'code' => 'COROLLA',
+        ]);
+
+        $this->actingAs($admin)->post(route('receptions.store_order', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'plate' => 'cc3333',
+            'vehicle_brand_id' => $brand->id,
+            'vehicle_model_id' => $model->id,
+            'brand' => 'toyota manipulada',
+            'model' => 'corolla manipulada',
+            'client_name' => 'Juan Cliente',
+            'client_rut' => '12345678-9',
+            'client_email' => '',
+            'client_phone' => '',
+            'selected_client_id' => null,
+            'reassign_vehicle_owner' => false,
+        ])->assertRedirect(route('work-orders.index', ['tenantBySlug' => $tenant->slug]));
+
+        $this->assertDatabaseHas('vehicles', [
+            'plate' => 'CC3333',
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
+        ]);
     }
 
     public function test_store_validates_the_configured_max_image_size(): void

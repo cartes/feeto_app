@@ -1,10 +1,18 @@
 <script setup>
-import { computed, ref, watch, nextTick } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
+import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 import axios from 'axios';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+
+const props = defineProps({
+    vehicleCatalogBrands: {
+        type: Array,
+        default: () => [],
+    },
+});
 
 const { tenantRouteParams } = useTenantRouting();
 const { debounce } = useDebounce();
@@ -29,8 +37,10 @@ const hasSearched = ref(false);
 const showCreateModal = ref(false);
 const isCreatingClient = ref(false);
 const createErrors = ref({});
-const createForm = ref({
+const createForm = reactive({
     plate: '',
+    vehicle_brand_id: null,
+    vehicle_model_id: null,
     vehicle_brand: '',
     vehicle_model: '',
     rut: '',
@@ -38,6 +48,16 @@ const createForm = ref({
     phone: '',
     secondary_phone: '',
     address: '',
+});
+
+const vehicleCatalog = useVehicleCatalog({
+    form: createForm,
+    brands: props.vehicleCatalogBrands,
+    tenantRouteParams,
+    brandField: 'vehicle_brand',
+    modelField: 'vehicle_model',
+    brandIdField: 'vehicle_brand_id',
+    modelIdField: 'vehicle_model_id',
 });
 
 const fetchPlateMatches = async (search) => {
@@ -100,15 +120,18 @@ const noResultsAndSearched = computed(() => {
 
 // Modal logic
 const openCreateModal = () => {
-    createForm.value.plate = plateSearch.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    createForm.value.vehicle_brand = '';
-    createForm.value.vehicle_model = '';
-    createForm.value.rut = '';
-    createForm.value.name = '';
-    createForm.value.phone = '';
-    createForm.value.secondary_phone = '';
-    createForm.value.address = '';
+    createForm.plate = plateSearch.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    createForm.vehicle_brand_id = null;
+    createForm.vehicle_model_id = null;
+    createForm.vehicle_brand = '';
+    createForm.vehicle_model = '';
+    createForm.rut = '';
+    createForm.name = '';
+    createForm.phone = '';
+    createForm.secondary_phone = '';
+    createForm.address = '';
     createErrors.value = {};
+    vehicleCatalog.reset();
     showCreateModal.value = true;
 };
 
@@ -121,7 +144,7 @@ const submitCreateClient = async () => {
     createErrors.value = {};
 
     try {
-        const response = await axios.post(route('quotes.store-client', tenantRouteParams.value), createForm.value);
+        const response = await axios.post(route('quotes.store-client', tenantRouteParams.value), createForm);
         const { client, vehicle } = response.data;
 
         selectedClient.value = client;
@@ -456,15 +479,61 @@ const submit = () => {
                                     </div>
                                     <div>
                                         <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Marca</label>
-                                        <input v-model="createForm.vehicle_brand" type="text"
-                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
-                                            placeholder="Toyota" />
+                                        <select
+                                            :value="vehicleCatalog.brandSelection"
+                                            @change="vehicleCatalog.applyBrandSelection($event.target.value)"
+                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
+                                        >
+                                            <option value="">Selecciona una marca</option>
+                                            <option
+                                                v-for="brand in props.vehicleCatalogBrands"
+                                                :key="brand.id"
+                                                :value="String(brand.id)"
+                                            >
+                                                {{ brand.name }}
+                                            </option>
+                                            <option :value="MANUAL_SELECTION">Otra marca</option>
+                                        </select>
+                                        <input
+                                            v-if="vehicleCatalog.isManualBrand"
+                                            v-model="createForm.vehicle_brand"
+                                            type="text"
+                                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
+                                            placeholder="Toyota"
+                                        />
+                                        <p v-if="createErrors.vehicle_brand_id" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.vehicle_brand_id[0] }}</p>
+                                        <p v-if="createErrors.vehicle_brand" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.vehicle_brand[0] }}</p>
                                     </div>
                                     <div>
                                         <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Modelo</label>
-                                        <input v-model="createForm.vehicle_model" type="text"
-                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
-                                            placeholder="Corolla" />
+                                        <select
+                                            v-if="!vehicleCatalog.isManualBrand"
+                                            :value="vehicleCatalog.modelSelection"
+                                            @change="vehicleCatalog.applyModelSelection($event.target.value)"
+                                            :disabled="vehicleCatalog.loadingModels || !vehicleCatalog.brandSelection"
+                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00] disabled:bg-gray-50 disabled:text-gray-400"
+                                        >
+                                            <option value="">
+                                                {{ vehicleCatalog.loadingModels ? 'Cargando modelos...' : 'Selecciona un modelo' }}
+                                            </option>
+                                            <option
+                                                v-for="model in vehicleCatalog.modelOptions"
+                                                :key="model.id"
+                                                :value="String(model.id)"
+                                            >
+                                                {{ model.name }}
+                                            </option>
+                                            <option :value="MANUAL_SELECTION">Otro modelo</option>
+                                        </select>
+                                        <input
+                                            v-if="vehicleCatalog.isManualBrand || vehicleCatalog.isManualModel"
+                                            v-model="createForm.vehicle_model"
+                                            type="text"
+                                            class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
+                                            placeholder="Corolla"
+                                        />
+                                        <p v-if="createErrors.vehicle_model_id" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.vehicle_model_id[0] }}</p>
+                                        <p v-if="createErrors.vehicle_model" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.vehicle_model[0] }}</p>
                                     </div>
                                 </div>
                             </div>

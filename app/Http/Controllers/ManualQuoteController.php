@@ -19,10 +19,12 @@ use App\Models\Vehicle;
 use App\Services\ManualQuoteService;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
+use App\Services\VehicleCatalogService;
 use App\Services\WorkOrderQuoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,6 +36,7 @@ class ManualQuoteController extends Controller
         protected WorkOrderQuoteService $workOrderQuoteService,
         protected PlanFeatureService $planFeatureService,
         protected UfService $ufService,
+        protected VehicleCatalogService $vehicleCatalogService,
     ) {}
 
     public function index(Request $request): Response
@@ -69,7 +72,9 @@ class ManualQuoteController extends Controller
     {
         $this->ensureCommercialQuotesEnabled();
 
-        return Inertia::render('Quotes/Create');
+        return Inertia::render('Quotes/Create', [
+            'vehicleCatalogBrands' => $this->vehicleCatalogService->brandOptions(),
+        ]);
     }
 
     public function store(StoreManualQuoteRequest $request): RedirectResponse
@@ -248,6 +253,18 @@ class ManualQuoteController extends Controller
 
         $validated = $request->validate([
             'plate' => ['required', 'string', 'max:10'],
+            'vehicle_brand_id' => ['nullable', 'integer', Rule::exists('vehicle_brands', 'id')],
+            'vehicle_model_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('vehicle_models', 'id')->where(static function ($query) use ($request): void {
+                    $brandId = $request->integer('vehicle_brand_id');
+
+                    if ($brandId > 0) {
+                        $query->where('vehicle_brand_id', $brandId);
+                    }
+                }),
+            ],
             'vehicle_model' => ['nullable', 'string', 'max:100'],
             'vehicle_brand' => ['nullable', 'string', 'max:100'],
             'rut' => ['required', 'string', 'max:20'],
@@ -256,6 +273,12 @@ class ManualQuoteController extends Controller
             'secondary_phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
         ]);
+        $vehicleNames = $this->vehicleCatalogService->resolveVehicleNames(
+            $request->integer('vehicle_brand_id') ?: null,
+            $request->integer('vehicle_model_id') ?: null,
+            $validated['vehicle_brand'] ?? null,
+            $validated['vehicle_model'] ?? null,
+        );
 
         $normalizedPlate = strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $validated['plate']));
 
@@ -284,8 +307,8 @@ class ManualQuoteController extends Controller
 
         $vehicle = $client->vehicles()->create([
             'plate' => $normalizedPlate,
-            'brand' => $validated['vehicle_brand'] ?? null,
-            'model' => $validated['vehicle_model'] ?? null,
+            'brand' => $vehicleNames['brand'] !== '' ? $vehicleNames['brand'] : null,
+            'model' => $vehicleNames['model'] !== '' ? $vehicleNames['model'] : null,
         ]);
 
         $vehicle->load('client:id,name,rut,phone,email');

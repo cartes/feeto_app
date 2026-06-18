@@ -58,6 +58,7 @@ use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\TrialRequestController;
+use App\Http\Controllers\VehicleCatalogController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
@@ -162,6 +163,8 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/receptions/create', [ReceptionController::class, 'create'])
             ->middleware('permission:appointments.manage')
             ->name('receptions.create');
+        Route::get('/vehicle-catalog/brands/{vehicleBrand}/models', [VehicleCatalogController::class, 'models'])
+            ->name('vehicle-catalog.models');
         Route::post('/receptions', [ReceptionController::class, 'store'])
             ->middleware(['throttle:20,1', 'permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('receptions.store');

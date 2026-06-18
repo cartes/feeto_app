@@ -14,6 +14,7 @@ use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Services\BoostrService;
+use App\Services\VehicleCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class ReceptionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create(VehicleCatalogService $vehicleCatalogService): Response
     {
         $tenant = Tenant::current();
         $maxImageUploadKb = (int) config('reception.image_upload_max_kb', 5120);
@@ -36,6 +37,7 @@ class ReceptionController extends Controller
             'tenantId' => $tenant?->id,
             'planType' => $tenant?->currentPlan()->value ?? 'gratuito',
             'maxImageUploadBytes' => $maxImageUploadKb * 1024,
+            'vehicleCatalogBrands' => $vehicleCatalogService->brandOptions(),
         ]);
     }
 
@@ -142,16 +144,22 @@ class ReceptionController extends Controller
     /**
      * Guarda definitivamente la Orden de Trabajo desde la Previsualización.
      */
-    public function storeOrder(StoreReceptionOrderRequest $request): RedirectResponse
+    public function storeOrder(StoreReceptionOrderRequest $request, VehicleCatalogService $vehicleCatalogService): RedirectResponse
     {
         $plate = $this->normalizePlate($request->validated('plate'));
+        $vehicleNames = $vehicleCatalogService->resolveVehicleNames(
+            $request->integer('vehicle_brand_id') ?: null,
+            $request->integer('vehicle_model_id') ?: null,
+            $request->validated('brand'),
+            $request->validated('model'),
+        );
         $vehicle = Vehicle::query()->with('client')->firstOrNew(['plate' => $plate]);
         $vehicleAlreadyExists = $vehicle->exists;
 
         $vehicle->fill([
             'plate' => $plate,
-            'brand' => $request->validated('brand'),
-            'model' => $request->validated('model'),
+            'brand' => $vehicleNames['brand'],
+            'model' => $vehicleNames['model'],
         ]);
 
         if ($vehicleAlreadyExists && ! $request->boolean('reassign_vehicle_owner')) {

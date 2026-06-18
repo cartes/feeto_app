@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { router, Link } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
@@ -491,6 +491,8 @@ const submitDeleteWorkOrder = () => {
 </script>
 
 <template>
+    <Head :title="viewMode === 'list' ? 'Listado de Órdenes' : 'Tablero de Órdenes'" />
+
     <TallerLayout>
 
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
