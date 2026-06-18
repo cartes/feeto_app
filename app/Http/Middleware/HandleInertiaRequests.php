@@ -9,7 +9,7 @@ use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\PermissionRegistrar;
-use Tightenco\Ziggy\Ziggy;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
