@@ -97,6 +97,7 @@ return [
             'api.work-orders.items.destroy',
             'api.products.index',
             'inventory.*',
+            'product-categories.*',
             'services.*',
             'branches.*',
             'clients.index',

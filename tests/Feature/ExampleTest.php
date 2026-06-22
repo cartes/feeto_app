@@ -70,6 +70,12 @@ class ExampleTest extends TestCase
         $this->assertContains('dashboard', $publicGroup);
     }
 
+    public function test_ziggy_tenant_group_includes_product_categories(): void
+    {
+        $tenantGroup = config('ziggy.groups.tenant', []);
+        $this->assertContains('product-categories.*', $tenantGroup);
+    }
+
     public function test_homepage_lists_top_6_active_tenants_by_activity(): void
     {
         $tenant1 = Tenant::factory()->create([
