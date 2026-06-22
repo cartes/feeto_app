@@ -32,6 +32,12 @@ class UpsertProductRequest extends FormRequest
                     ->where(fn ($query) => $query->where('tenant_id', $this->user()?->tenant_id))
                     ->ignore($productId),
             ],
+            'category_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('product_categories', 'id')
+                    ->where(fn ($q) => $q->where('tenant_id', $this->user()?->tenant_id)),
+            ],
             'type' => ['nullable', 'string', 'in:repuesto_nacional,repuesto_internacional,insumo'],
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],

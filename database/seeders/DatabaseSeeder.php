@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             VehicleCatalogSeeder::class,
             PlanSeeder::class,
             TenantSeeder::class,
+            ProductCategorySeeder::class,
             ProductSeeder::class,
         ]);
 

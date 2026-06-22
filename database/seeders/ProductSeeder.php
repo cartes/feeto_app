@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    /** @var list<array{name: string, sku: string, description: string, cost_price: int, selling_price: int, physical_stock: int, reserved_stock: int, min_stock: int}> */
     private const PRODUCTS = [
         [
             'name' => 'Aceite Motor Liqui Moly 10W40',
@@ -21,6 +21,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 50,
             'reserved_stock' => 0,
             'min_stock' => 10,
+            'category_slug' => 'aceites-y-lubricantes',
         ],
         [
             'name' => 'Aceite Motor Shell Helix 5W30',
@@ -31,6 +32,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 40,
             'reserved_stock' => 0,
             'min_stock' => 10,
+            'category_slug' => 'aceites-y-lubricantes',
         ],
         [
             'name' => 'Filtro de Polen Acondicionado',
@@ -41,6 +43,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 25,
             'reserved_stock' => 0,
             'min_stock' => 5,
+            'category_slug' => 'filtros',
         ],
         [
             'name' => 'Filtro de Combustible Diesel',
@@ -51,6 +54,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 15,
             'reserved_stock' => 0,
             'min_stock' => 3,
+            'category_slug' => 'filtros',
         ],
         [
             'name' => 'Neumático Goodyear 205/55 R16',
@@ -61,6 +65,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 40,
             'reserved_stock' => 0,
             'min_stock' => 4,
+            'category_slug' => 'neumaticos-y-llantas',
         ],
         [
             'name' => 'Pastillas de Freno Delanteras',
@@ -71,6 +76,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 30,
             'reserved_stock' => 0,
             'min_stock' => 5,
+            'category_slug' => 'frenos',
         ],
         [
             'name' => 'Batería 55 Amperes',
@@ -81,6 +87,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 10,
             'reserved_stock' => 0,
             'min_stock' => 2,
+            'category_slug' => 'baterias',
         ],
         [
             'name' => 'Líquido Limpiaparabrisas 1L',
@@ -91,6 +98,7 @@ class ProductSeeder extends Seeder
             'physical_stock' => 100,
             'reserved_stock' => 0,
             'min_stock' => 20,
+            'category_slug' => 'liquidos-y-quimicos',
         ],
     ];
 
@@ -101,8 +109,16 @@ class ProductSeeder extends Seeder
         foreach ($tenants as $tenant) {
             $tenant->makeCurrent();
 
+            $categories = ProductCategory::pluck('id', 'slug');
+
             foreach (self::PRODUCTS as $productData) {
-                Product::create(array_merge($productData, ['tenant_id' => $tenant->id]));
+                $categorySlug = $productData['category_slug'] ?? null;
+                unset($productData['category_slug']);
+
+                Product::create(array_merge($productData, [
+                    'tenant_id' => $tenant->id,
+                    'category_id' => $categorySlug ? ($categories[$categorySlug] ?? null) : null,
+                ]));
             }
         }
 

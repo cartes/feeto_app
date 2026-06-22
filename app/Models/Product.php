@@ -8,6 +8,7 @@ use App\Traits\BelongsToTenantAndSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -16,6 +17,7 @@ class Product extends Model
     protected $fillable = [
         'tenant_id',
         'branch_id',
+        'category_id',
         'type',
         'name',
         'sku',
@@ -54,9 +56,16 @@ class Product extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    /**
-     * Determina si el stock está en nivel critico.
-     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class)->latest();
+    }
+
     public function isLowStock(): bool
     {
         return $this->physical_stock <= $this->min_stock;

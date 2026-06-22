@@ -28,6 +28,7 @@ use App\Http\Controllers\CustomerReportController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ManualQuoteController;
 use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\OcrController;
@@ -265,6 +266,15 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::resource('inventory', InventoryController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy'])
             ->parameters(['inventory' => 'product'])
+            ->middleware('permission:inventory.manage');
+
+        Route::get('/inventory/{product}/movements', [InventoryController::class, 'movements'])
+            ->middleware('permission:inventory.manage')
+            ->name('inventory.movements');
+
+        Route::resource('product-categories', ProductCategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['product-categories' => 'productCategory'])
             ->middleware('permission:inventory.manage');
 
         Route::resource('services', ServiceController::class)
