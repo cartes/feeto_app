@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Ai\Agents\FastPlateRecognitionAgent;
 use App\Ai\Agents\PatentRecognitionAgent;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
@@ -12,8 +13,11 @@ use Illuminate\Http\Request;
 
 class SmartReceptionController extends Controller
 {
-    public function scanPlate(Request $request): JsonResponse
-    {
+    public function scanPlate(
+        Request $request,
+        FastPlateRecognitionAgent $fastPlateAgent,
+        PatentRecognitionAgent $patentRecognitionAgent
+    ): JsonResponse {
         $request->validate([
             'image' => ['required', 'image', 'max:15360'],
         ]);
@@ -21,55 +25,45 @@ class SmartReceptionController extends Controller
         $imageFile = $request->file('image');
         $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
 
-        // Prompt Gemini with the uploaded image directly from PHP's temp buffer.
-        // The file is NEVER written to a permanent disk (cumplimiento Ley 19.628).
-        $aiResult = (new PatentRecognitionAgent)->prompt(
-            'Lee la patente de este vehículo chileno. Devuelve ÚNICAMENTE los 6 caracteres alfanuméricos, sin guiones, sin espacios, sin texto adicional.',
+        $aiResult = $fastPlateAgent->prompt(
+            'Extrae unicamente la patente chilena visible en esta imagen.',
             provider: $provider,
             attachments: [$imageFile],
         );
 
-        // Sanitize: strip anything that isn't A-Z or 0-9, cap at 8 chars
-        $rawPlate = strtoupper((string) ($aiResult['plate'] ?? ''));
-        $plate = substr(preg_replace('/[^A-Z0-9]/', '', $rawPlate), 0, 8);
+        $plate = $this->sanitizePlate($aiResult['plate'] ?? null);
+        $appointment = $this->findTodayAppointmentByPlate($plate);
+        $vehiclePayload = $this->vehiclePayloadFromAppointment($appointment);
+        $detailedAiResult = null;
 
-        // Cross-check with today's agenda
-        $appointment = null;
+        if ($plate === '' || ! $this->hasCompleteVehicleIdentity($vehiclePayload)) {
+            $detailedAiResult = $patentRecognitionAgent->prompt(
+                'Lee la patente de este vehiculo chileno e identifica marca, modelo y color. Devuelve la respuesta estructurada.',
+                provider: $provider,
+                attachments: [$imageFile],
+            );
 
-        if ($plate !== '') {
-            $appointment = Appointment::with(['client', 'vehicle'])
-                ->where('plate', $plate)
-                ->whereDate('appointment_date', today())
-                ->first();
+            $detailedPlate = $this->sanitizePlate($detailedAiResult['plate'] ?? null);
+
+            if ($detailedPlate !== '' && $detailedPlate !== $plate) {
+                $plate = $detailedPlate;
+                $appointment = $this->findTodayAppointmentByPlate($plate);
+                $vehiclePayload = $this->vehiclePayloadFromAppointment($appointment);
+            }
+
+            if (! $this->hasCompleteVehicleIdentity($vehiclePayload)) {
+                $vehiclePayload = [
+                    'brand' => $vehiclePayload['brand'] ?? $this->normalizeVehicleValue($detailedAiResult['brand'] ?? null),
+                    'model' => $vehiclePayload['model'] ?? $this->normalizeVehicleValue($detailedAiResult['model'] ?? null),
+                    'color' => $vehiclePayload['color'] ?? $this->normalizeVehicleValue($detailedAiResult['color'] ?? null),
+                ];
+            }
         }
-
-        /*
-        |----------------------------------------------------------------------
-        | Boostr API – fetch owner data for vehicles not yet in the system
-        |----------------------------------------------------------------------
-        | Uncomment to enable external plate lookup for new clients.
-        |
-        | $ownerData = null;
-        | if (! $appointment && $plate !== '') {
-        |     $res = \Illuminate\Support\Facades\Http::withHeaders([
-        |         'Authorization' => 'Bearer ' . config('services.boostr.token'),
-        |     ])->get("https://api.boostr.cl/patentes/{$plate}");
-        |
-        |     if ($res->ok()) {
-        |         $ownerData = $res->json();
-        |         // Returns: name, rut, brand, model, year, color, fuel_type
-        |     }
-        | }
-        */
 
         return response()->json([
             'plate' => $plate,
-            'confidence' => $aiResult['confidence'] ?? null,
-            'vehicle' => [
-                'brand' => $aiResult['brand'] ?? null,
-                'model' => $aiResult['model'] ?? null,
-                'color' => $aiResult['color'] ?? null,
-            ],
+            'confidence' => $detailedAiResult['confidence'] ?? null,
+            'vehicle' => $vehiclePayload,
             'appointment' => $appointment ? [
                 'id' => $appointment->id,
                 'time' => $appointment->appointment_date->format('H:i'),
@@ -87,5 +81,66 @@ class SmartReceptionController extends Controller
                 ] : null,
             ] : null,
         ]);
+    }
+
+    private function findTodayAppointmentByPlate(string $plate): ?Appointment
+    {
+        if ($plate === '') {
+            return null;
+        }
+
+        return Appointment::query()
+            ->select([
+                'id',
+                'client_id',
+                'vehicle_id',
+                'appointment_date',
+                'status',
+                'notes',
+                'plate',
+            ])
+            ->with([
+                'client:id,name,rut,phone',
+                'vehicle:id,brand,model,color',
+            ])
+            ->where('plate', $plate)
+            ->whereDate('appointment_date', today())
+            ->first();
+    }
+
+    /**
+     * @return array{brand: ?string, model: ?string, color: ?string}
+     */
+    private function vehiclePayloadFromAppointment(?Appointment $appointment): array
+    {
+        return [
+            'brand' => $appointment?->vehicle?->brand,
+            'model' => $appointment?->vehicle?->model,
+            'color' => $appointment?->vehicle?->color,
+        ];
+    }
+
+    /**
+     * @param  array{brand: ?string, model: ?string, color: ?string}  $vehiclePayload
+     */
+    private function hasCompleteVehicleIdentity(array $vehiclePayload): bool
+    {
+        return filled($vehiclePayload['brand']) && filled($vehiclePayload['model']);
+    }
+
+    private function sanitizePlate(mixed $plate): string
+    {
+        return substr(preg_replace('/[^A-Z0-9]/', '', strtoupper((string) $plate)), 0, 8);
+    }
+
+    private function normalizeVehicleValue(mixed $value): ?string
+    {
+        $normalized = trim((string) $value);
+
+        if ($normalized === '' || strcasecmp($normalized, 'desconocido') === 0) {
+            return null;
+        }
+
+        return $normalized;
     }
 }

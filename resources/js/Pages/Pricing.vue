@@ -59,6 +59,7 @@ const jsonLd = computed(() => JSON.stringify({
 </script>
 
 <template>
+
     <Head>
         <title>{{ seo.title ?? 'Planes y Precios · TallerFlow' }}</title>
     </Head>
@@ -82,20 +83,17 @@ const jsonLd = computed(() => JSON.stringify({
                         Planes para cada etapa<br><em>de tu taller.</em>
                     </h1>
                     <p class="pricing-sub">
-                        Sin contratos. Sin sorpresas. {{ plans[0]?.trial_days ?? 14 }} días de prueba gratis en todos los planes.
+                        Sin contratos. Sin sorpresas. {{ plans[0]?.trial_days ?? 14 }} días de prueba gratis en todos
+                        los planes.
                     </p>
 
                     <!-- Billing toggle -->
                     <div class="billing-toggle-wrap">
                         <div class="billing-toggle">
-                            <button
-                                :class="['billing-btn', { 'billing-btn-active': billing === 'monthly' }]"
-                                @click="toggleBilling('monthly')"
-                            >Mensual</button>
-                            <button
-                                :class="['billing-btn', { 'billing-btn-active': billing === 'annual' }]"
-                                @click="toggleBilling('annual')"
-                            >
+                            <button :class="['billing-btn', { 'billing-btn-active': billing === 'monthly' }]"
+                                @click="toggleBilling('monthly')">Mensual</button>
+                            <button :class="['billing-btn', { 'billing-btn-active': billing === 'annual' }]"
+                                @click="toggleBilling('annual')">
                                 Anual
                                 <span class="billing-save-badge">Ahorra hasta 17%</span>
                             </button>
@@ -109,11 +107,8 @@ const jsonLd = computed(() => JSON.stringify({
         <section class="plans-section">
             <div class="plans-inner">
                 <div class="plans-grid" :class="`plans-grid-${plans.length}`">
-                    <div
-                        v-for="plan in plans"
-                        :key="plan.id"
-                        :class="['plan-card', { 'plan-card-popular': plan.is_popular }]"
-                    >
+                    <div v-for="plan in plans" :key="plan.id"
+                        :class="['plan-card', { 'plan-card-popular': plan.is_popular }]">
                         <!-- Popular badge -->
                         <div v-if="plan.is_popular" class="popular-badge">Más popular</div>
 
@@ -127,7 +122,8 @@ const jsonLd = computed(() => JSON.stringify({
                         <div class="plan-price-block">
                             <div class="plan-price-row">
                                 <span class="plan-currency">$</span>
-                                <span class="plan-amount">{{ new Intl.NumberFormat('es-CL').format(displayPrice(plan)) }}</span>
+                                <span class="plan-amount">{{ new Intl.NumberFormat('es-CL').format(displayPrice(plan))
+                                    }}</span>
                                 <span class="plan-period">/mes</span>
                             </div>
                             <p v-if="billing === 'annual'" class="plan-annual-note">
@@ -144,13 +140,23 @@ const jsonLd = computed(() => JSON.stringify({
                         </div>
 
                         <!-- CTA -->
-                        <Link v-if="$page.props.auth?.user" :href="route('dashboard')" :class="['plan-cta', plan.is_popular ? 'plan-cta-popular' : 'plan-cta-default']">
+                        <Link v-if="$page.props.auth?.user" :href="route('dashboard')"
+                            :class="['plan-cta', plan.is_popular ? 'plan-cta-popular' : 'plan-cta-default']">
                             Ir al Dashboard
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
                         </Link>
-                        <Link v-else :href="route('trial.create')" :class="['plan-cta', plan.is_popular ? 'plan-cta-popular' : 'plan-cta-default']">
+                        <Link v-else :href="route('trial.create')"
+                            :class="['plan-cta', plan.is_popular ? 'plan-cta-popular' : 'plan-cta-default']">
                             Empezar prueba gratis
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
                         </Link>
 
                         <p class="plan-cta-note">{{ plan.trial_days }} días gratis · Sin tarjeta de crédito</p>
@@ -162,7 +168,11 @@ const jsonLd = computed(() => JSON.stringify({
                         <ul class="plan-features">
                             <li v-for="feature in plan.features" :key="feature" class="plan-feature">
                                 <span :class="['plan-feature-ico', plan.is_popular ? 'plan-feature-ico-popular' : '']">
-                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
                                 </span>
                                 <span>{{ feature }}</span>
                             </li>
@@ -171,7 +181,11 @@ const jsonLd = computed(() => JSON.stringify({
                         <!-- Footer meta -->
                         <div class="plan-meta">
                             <span class="plan-meta-tag">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" />
+                                </svg>
                                 Hasta {{ plan.max_users }} usuario{{ plan.max_users !== 1 ? 's' : '' }}
                             </span>
                         </div>
@@ -192,27 +206,33 @@ const jsonLd = computed(() => JSON.stringify({
                 <div class="faq-grid">
                     <div class="faq-item">
                         <h3 class="faq-q">¿Necesito tarjeta de crédito para la prueba?</h3>
-                        <p class="faq-a">No. Activas tu prueba gratuita de 14 días sin ingresar datos de pago. Solo necesitas tu correo y el nombre de tu taller.</p>
+                        <p class="faq-a">No. Activas tu prueba gratuita de 14 días sin ingresar datos de pago. Solo
+                            necesitas tu correo y el nombre de tu taller.</p>
                     </div>
                     <div class="faq-item">
                         <h3 class="faq-q">¿Puedo cancelar cuando quiera?</h3>
-                        <p class="faq-a">Sí. No hay contratos de permanencia. Puedes cancelar tu suscripción en cualquier momento desde tu panel de configuración.</p>
+                        <p class="faq-a">Sí. No hay contratos de permanencia. Puedes cancelar tu suscripción en
+                            cualquier momento desde tu panel de configuración.</p>
                     </div>
                     <div class="faq-item">
                         <h3 class="faq-q">¿Qué pasa al terminar la prueba?</h3>
-                        <p class="faq-a">Te contactamos antes de que venza el período. Si decides continuar, eliges un plan y activas el pago. Si no, tu acceso se suspende sin cargos.</p>
+                        <p class="faq-a">Te contactamos antes de que venza el período. Si decides continuar, eliges un
+                            plan y activas el pago. Si no, tu acceso se suspende sin cargos.</p>
                     </div>
                     <div class="faq-item">
                         <h3 class="faq-q">¿Puedo cambiar de plan?</h3>
-                        <p class="faq-a">Sí. Puedes actualizar o bajar de plan en cualquier momento desde la sección de suscripción en tu taller.</p>
+                        <p class="faq-a">Sí. Puedes actualizar o bajar de plan en cualquier momento desde la sección de
+                            suscripción en tu taller.</p>
                     </div>
                     <div class="faq-item">
                         <h3 class="faq-q">¿Los precios incluyen IVA?</h3>
-                        <p class="faq-a">Los precios mostrados son en CLP y no incluyen IVA. El cobro final puede incluir impuestos según tu situación tributaria.</p>
+                        <p class="faq-a">Los precios mostrados son en CLP y no incluyen IVA. El cobro final puede
+                            incluir impuestos según tu situación tributaria.</p>
                     </div>
                     <div class="faq-item">
                         <h3 class="faq-q">¿Qué métodos de pago aceptan?</h3>
-                        <p class="faq-a">Aceptamos tarjetas de crédito y débito a través de Mercado Pago. Próximamente transferencia bancaria directa.</p>
+                        <p class="faq-a">Aceptamos tarjetas de crédito y débito a través de Mercado Pago. Próximamente
+                            transferencia bancaria directa.</p>
                     </div>
                 </div>
             </div>
@@ -228,11 +248,17 @@ const jsonLd = computed(() => JSON.stringify({
                     </div>
                     <Link v-if="$page.props.auth?.user" :href="route('dashboard')" class="bottom-cta-btn">
                         Ir al Dashboard
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
                     </Link>
                     <Link v-else :href="route('trial.create')" class="bottom-cta-btn">
                         Empezar ahora gratis
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
                     </Link>
                 </div>
             </div>
@@ -246,14 +272,30 @@ const jsonLd = computed(() => JSON.stringify({
                     <span class="font-black text-gray-900 text-base">Taller Flow</span>
                 </div>
                 <nav class="flex items-center gap-6 flex-wrap justify-center">
-                    <Link :href="route('home')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Inicio</Link>
-                    <Link :href="route('pricing')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Precios</Link>
-                    <Link :href="route('trial.create')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Prueba gratis</Link>
-                    <Link :href="route('talleres.index')" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Talleres</Link>
-                    <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Términos</a>
-                    <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Privacidad</a>
+                    <Link :href="route('home')"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Inicio</Link>
+                    <Link :href="route('pricing')"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Precios</Link>
+                    <Link :href="route('trial.create')"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Prueba gratis
+                    </Link>
+                    <Link :href="route('talleres.index')"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Talleres</Link>
+                    <a href="#"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Términos</a>
+                    <a href="#"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">Privacidad</a>
+                    <a href="https://www.instagram.com/tallerflow_app/" target="_blank" rel="noopener noreferrer"
+                        class="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium flex items-center gap-1.5">
+                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                        </svg>
+                        <span>Instagram</span>
+                    </a>
                 </nav>
-                <p class="text-xs text-gray-400 font-medium">&copy; {{ new Date().getFullYear() }} Taller Flow. Todos los derechos reservados.</p>
+                <p class="text-xs text-gray-400 font-medium">&copy; {{ new Date().getFullYear() }} Taller Flow. Todos
+                    los derechos reservados.</p>
             </div>
         </footer>
     </div>
@@ -278,6 +320,7 @@ const jsonLd = computed(() => JSON.stringify({
 .pricing-hero {
     padding: 118px 18px 80px;
 }
+
 .pricing-hero-inner {
     max-width: 760px;
     margin: 0 auto;
@@ -289,9 +332,9 @@ const jsonLd = computed(() => JSON.stringify({
     align-items: center;
     gap: 8px;
     padding: 7px 14px;
-    border: 1px solid rgba(255,181,71,0.28);
+    border: 1px solid rgba(255, 181, 71, 0.28);
     border-radius: 999px;
-    background: rgba(255,181,71,0.10);
+    background: rgba(255, 181, 71, 0.10);
     color: #FF7A00;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -300,8 +343,10 @@ const jsonLd = computed(() => JSON.stringify({
     text-transform: uppercase;
     margin-bottom: 24px;
 }
+
 .pricing-eyebrow .dot {
-    width: 6px; height: 6px;
+    width: 6px;
+    height: 6px;
     border-radius: 999px;
     background: #FF7A00;
     box-shadow: 0 0 10px #FF7A00;
@@ -315,10 +360,14 @@ const jsonLd = computed(() => JSON.stringify({
     line-height: 1.05;
     letter-spacing: -0.03em;
 }
-.pricing-headline em { color: #FF7A00; font-style: normal; }
+
+.pricing-headline em {
+    color: #FF7A00;
+    font-style: normal;
+}
 
 .pricing-sub {
-    color: rgba(255,255,255,0.56);
+    color: rgba(255, 255, 255, 0.56);
     font-size: 17px;
     line-height: 1.6;
     margin: 0 0 40px;
@@ -329,14 +378,16 @@ const jsonLd = computed(() => JSON.stringify({
     display: flex;
     justify-content: center;
 }
+
 .billing-toggle {
     display: inline-flex;
     padding: 4px;
-    border: 1px solid rgba(255,255,255,0.14);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 999px;
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
     gap: 2px;
 }
+
 .billing-btn {
     display: inline-flex;
     align-items: center;
@@ -345,7 +396,7 @@ const jsonLd = computed(() => JSON.stringify({
     border: none;
     border-radius: 999px;
     background: transparent;
-    color: rgba(255,255,255,0.65);
+    color: rgba(255, 255, 255, 0.65);
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
@@ -353,12 +404,14 @@ const jsonLd = computed(() => JSON.stringify({
     transition: all 0.2s ease;
     white-space: nowrap;
 }
+
 .billing-btn-active {
     background: #fff;
     color: #1a0e00;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
 .billing-save-badge {
     display: inline-block;
     padding: 2px 8px;
@@ -370,6 +423,7 @@ const jsonLd = computed(() => JSON.stringify({
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }
+
 .billing-btn-active .billing-save-badge {
     background: #FF7A00;
     color: #fff;
@@ -380,6 +434,7 @@ const jsonLd = computed(() => JSON.stringify({
     background: #f8f9fb;
     padding: 60px 18px 80px;
 }
+
 .plans-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -390,9 +445,20 @@ const jsonLd = computed(() => JSON.stringify({
     gap: 24px;
     align-items: start;
 }
-.plans-grid-1 { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-.plans-grid-2 { grid-template-columns: repeat(2, 1fr); }
-.plans-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.plans-grid-1 {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.plans-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.plans-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
 
 .plan-card {
     position: relative;
@@ -405,8 +471,9 @@ const jsonLd = computed(() => JSON.stringify({
     gap: 0;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+
 .plan-card:hover {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
     transform: translateY(-2px);
 }
 
@@ -414,10 +481,11 @@ const jsonLd = computed(() => JSON.stringify({
     border-color: #FF7A00;
     border-width: 2px;
     background: #fff;
-    box-shadow: 0 8px 32px rgba(255,181,71,0.18), 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 32px rgba(255, 181, 71, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
+
 .plan-card-popular:hover {
-    box-shadow: 0 16px 48px rgba(255,181,71,0.24), 0 4px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 16px 48px rgba(255, 181, 71, 0.24), 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .popular-badge {
@@ -434,10 +502,13 @@ const jsonLd = computed(() => JSON.stringify({
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(255,181,71,0.40);
+    box-shadow: 0 4px 12px rgba(255, 181, 71, 0.40);
 }
 
-.plan-header { margin-bottom: 24px; }
+.plan-header {
+    margin-bottom: 24px;
+}
+
 .plan-name {
     font-size: 22px;
     font-weight: 800;
@@ -445,6 +516,7 @@ const jsonLd = computed(() => JSON.stringify({
     letter-spacing: -0.02em;
     margin: 0 0 8px;
 }
+
 .plan-desc {
     font-size: 14px;
     color: #6b7280;
@@ -452,18 +524,24 @@ const jsonLd = computed(() => JSON.stringify({
     line-height: 1.5;
 }
 
-.plan-price-block { margin-bottom: 24px; min-height: 80px; }
+.plan-price-block {
+    margin-bottom: 24px;
+    min-height: 80px;
+}
+
 .plan-price-row {
     display: flex;
     align-items: baseline;
     gap: 2px;
 }
+
 .plan-currency {
     font-size: 20px;
     font-weight: 700;
     color: #111827;
     margin-top: 6px;
 }
+
 .plan-amount {
     font-size: 52px;
     font-weight: 900;
@@ -471,17 +549,20 @@ const jsonLd = computed(() => JSON.stringify({
     letter-spacing: -0.04em;
     line-height: 1;
 }
+
 .plan-period {
     font-size: 16px;
     color: #9ca3af;
     font-weight: 500;
     margin-left: 4px;
 }
+
 .plan-annual-note {
     margin: 6px 0 0;
     font-size: 12px;
     color: #6b7280;
 }
+
 .plan-discount-note {
     margin: 6px 0 0;
     font-size: 13px;
@@ -489,6 +570,7 @@ const jsonLd = computed(() => JSON.stringify({
     align-items: center;
     gap: 4px;
 }
+
 .plan-savings-pill {
     display: inline-block;
     margin-top: 8px;
@@ -513,20 +595,24 @@ const jsonLd = computed(() => JSON.stringify({
     transition: all 0.2s ease;
     margin-bottom: 8px;
 }
+
 .plan-cta-popular {
     background: #FF7A00;
     color: #1a0e00;
-    box-shadow: 0 4px 16px rgba(255,181,71,0.35);
+    box-shadow: 0 4px 16px rgba(255, 181, 71, 0.35);
 }
+
 .plan-cta-popular:hover {
     background: #CC6200;
-    box-shadow: 0 6px 20px rgba(255,181,71,0.45);
+    box-shadow: 0 6px 20px rgba(255, 181, 71, 0.45);
     transform: translateY(-1px);
 }
+
 .plan-cta-default {
     background: #111827;
     color: #fff;
 }
+
 .plan-cta-default:hover {
     background: #1f2937;
     transform: translateY(-1px);
@@ -554,6 +640,7 @@ const jsonLd = computed(() => JSON.stringify({
     gap: 10px;
     flex: 1;
 }
+
 .plan-feature {
     display: flex;
     align-items: flex-start;
@@ -562,6 +649,7 @@ const jsonLd = computed(() => JSON.stringify({
     color: #374151;
     line-height: 1.4;
 }
+
 .plan-feature-ico {
     flex-shrink: 0;
     display: grid;
@@ -573,6 +661,7 @@ const jsonLd = computed(() => JSON.stringify({
     color: #16a34a;
     margin-top: 1px;
 }
+
 .plan-feature-ico-popular {
     background: #fffbeb;
     color: #CC6200;
@@ -586,6 +675,7 @@ const jsonLd = computed(() => JSON.stringify({
     padding-top: 16px;
     border-top: 1px solid #f3f4f6;
 }
+
 .plan-meta-tag {
     display: inline-flex;
     align-items: center;
@@ -610,10 +700,12 @@ const jsonLd = computed(() => JSON.stringify({
     padding: 72px 18px;
     border-top: 1px solid #f3f4f6;
 }
+
 .guarantee-inner {
     max-width: 960px;
     margin: 0 auto;
 }
+
 .guarantee-title {
     font-size: 28px;
     font-weight: 800;
@@ -622,11 +714,13 @@ const jsonLd = computed(() => JSON.stringify({
     margin: 0 0 48px;
     text-align: center;
 }
+
 .faq-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 32px 48px;
 }
+
 .faq-q {
     font-size: 15px;
     font-weight: 700;
@@ -634,6 +728,7 @@ const jsonLd = computed(() => JSON.stringify({
     margin: 0 0 8px;
     line-height: 1.3;
 }
+
 .faq-a {
     font-size: 14px;
     color: #6b7280;
@@ -646,7 +741,12 @@ const jsonLd = computed(() => JSON.stringify({
     background: #f8f9fb;
     padding: 60px 18px;
 }
-.bottom-cta-inner { max-width: 1200px; margin: 0 auto; }
+
+.bottom-cta-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .bottom-cta-card {
     background: #111827;
     border-radius: 28px;
@@ -657,6 +757,7 @@ const jsonLd = computed(() => JSON.stringify({
     gap: 24px;
     flex-wrap: wrap;
 }
+
 .bottom-cta-title {
     font-size: 28px;
     font-weight: 900;
@@ -664,11 +765,13 @@ const jsonLd = computed(() => JSON.stringify({
     margin: 0 0 8px;
     line-height: 1.2;
 }
+
 .bottom-cta-sub {
     font-size: 14px;
     color: #9ca3af;
     margin: 0;
 }
+
 .bottom-cta-btn {
     display: inline-flex;
     align-items: center;
@@ -681,13 +784,14 @@ const jsonLd = computed(() => JSON.stringify({
     font-size: 15px;
     font-weight: 800;
     text-decoration: none;
-    box-shadow: 0 4px 16px rgba(255,181,71,0.35);
+    box-shadow: 0 4px 16px rgba(255, 181, 71, 0.35);
     transition: all 0.2s ease;
     white-space: nowrap;
 }
+
 .bottom-cta-btn:hover {
     background: #CC6200;
-    box-shadow: 0 6px 24px rgba(255,181,71,0.45);
+    box-shadow: 0 6px 24px rgba(255, 181, 71, 0.45);
     transform: translateY(-1px);
 }
 
@@ -697,6 +801,7 @@ const jsonLd = computed(() => JSON.stringify({
     border-top: 1px solid #f3f4f6;
     padding: 32px 18px;
 }
+
 .pricing-footer-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -709,29 +814,61 @@ const jsonLd = computed(() => JSON.stringify({
 
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 900px) {
-    .pricing-nav-links { display: none; }
-    .btn-ghost-dark, .btn-accent-dark { display: none; }
-    .mobile-toggle { display: flex; }
-    .pricing-nav-wrap { padding: 12px 12px 0; }
+    .pricing-nav-links {
+        display: none;
+    }
+
+    .btn-ghost-dark,
+    .btn-accent-dark {
+        display: none;
+    }
+
+    .mobile-toggle {
+        display: flex;
+    }
+
+    .pricing-nav-wrap {
+        padding: 12px 12px 0;
+    }
 
     .plans-grid-2,
-    .plans-grid-3 { grid-template-columns: 1fr; }
+    .plans-grid-3 {
+        grid-template-columns: 1fr;
+    }
 
-    .faq-grid { grid-template-columns: 1fr; gap: 24px; }
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
 
     .bottom-cta-card {
         padding: 32px 24px;
         flex-direction: column;
         text-align: center;
     }
-    .bottom-cta-btn { width: 100%; justify-content: center; }
 
-    .plan-amount { font-size: 42px; }
+    .bottom-cta-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .plan-amount {
+        font-size: 42px;
+    }
 }
 
 @media (max-width: 640px) {
-    .pricing-hero { padding: 60px 0 60px; }
-    .pricing-headline { font-size: 36px; }
-    .pricing-footer-inner { flex-direction: column; text-align: center; }
+    .pricing-hero {
+        padding: 60px 0 60px;
+    }
+
+    .pricing-headline {
+        font-size: 36px;
+    }
+
+    .pricing-footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 </style>
