@@ -18,13 +18,15 @@ RUN apt-get update && apt-get install -y \
 
 COPY composer.json composer.lock ./
 # Instalamos sin ejecutar scripts para evitar errores con 'artisan' ausente
+# Ignoramos el requisito de versión de PHP para evitar problemas con librerías no actualizadas para PHP 8.5
 RUN composer install \
     --no-dev \
     --no-interaction \
     --no-progress \
     --prefer-dist \
     --optimize-autoloader \
-    --no-scripts
+    --no-scripts \
+    --ignore-platform-req=php
 
 COPY . .
 # Ahora que los archivos están presentes, generamos el autoload
