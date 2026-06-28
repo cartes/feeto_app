@@ -5,7 +5,6 @@ FROM composer:2 AS composer
 FROM php:8.5-cli-bookworm AS vendor
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
-ARG COMPOSER_AUTH
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_CACHE_DIR=/tmp/composer-cache
 
@@ -22,9 +21,10 @@ RUN apt-get update && apt-get install -y \
 COPY composer.json composer.lock ./
 # Instalamos sin ejecutar scripts para evitar errores con 'artisan' ausente
 # Ignoramos los requisitos de plataforma para evitar problemas con la versión de PHP 8.5.
-# COMPOSER_AUTH permite autenticar descargas de GitHub y la caché reduce fallos en builds fríos.
+# La credencial se monta como secret de BuildKit para no dejarla en ARG/ENV o en capas de imagen.
 RUN --mount=type=cache,target=/tmp/composer-cache \
-    COMPOSER_AUTH="${COMPOSER_AUTH}" composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv
+    --mount=type=secret,id=composer_auth \
+    sh -eu -c 'if [ -s /run/secrets/composer_auth ]; then export COMPOSER_AUTH="$(cat /run/secrets/composer_auth)"; fi; composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv'
 
 COPY . .
 # Ahora que los archivos están presentes, generamos el autoload

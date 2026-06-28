@@ -3,8 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
+      secrets:
+        - source: composer_auth
+          target: composer_auth
     env_file:
       - .env
     environment:
@@ -51,8 +52,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
+      secrets:
+        - source: composer_auth
+          target: composer_auth
     env_file:
       - .env
     environment:
@@ -91,8 +93,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
+      secrets:
+        - source: composer_auth
+          target: composer_auth
     env_file:
       - .env
     environment:
@@ -157,3 +160,7 @@ volumes:
   app_storage:
   mysql_data:
   redis_data:
+
+secrets:
+  composer_auth:
+    environment: COMPOSER_AUTH
