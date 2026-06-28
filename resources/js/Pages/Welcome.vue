@@ -25,21 +25,24 @@ const slides = [
         description: 'Controla citas, asigna mecánicos y programa servicios con un calendario interactivo en tiempo real.',
         tag: 'Calendario',
         tagClass: 'bg-blue-50 text-blue-600 border border-blue-100',
-        image: '/images/dashboard_agenda.png'
+        image: '/images/dashboard_agenda.png',
+        imageWebp: '/images/dashboard_agenda.webp'
     },
     {
         title: 'Tablero Kanban de Órdenes',
         description: 'Mueve órdenes de trabajo entre etapas (Recepción, Diagnóstico, Listo) arrastrándolas con un clic en tiempo real.',
         tag: 'Tablero Kanban',
         tagClass: 'bg-orange-50 text-orange-600 border border-orange-100',
-        image: '/images/dashboard_kanban.png'
+        image: '/images/dashboard_kanban.png',
+        imageWebp: '/images/dashboard_kanban.webp'
     },
     {
         title: 'Recepción con IA móvil',
         description: 'Escanea la patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.',
         tag: 'Recepción IA',
         tagClass: 'bg-purple-50 text-purple-600 border border-purple-100',
-        image: '/images/recepcion_ia.png'
+        image: '/images/recepcion_ia.png',
+        imageWebp: '/images/recepcion_ia.webp'
     }
 ];
 
@@ -303,7 +306,10 @@ onUnmounted(() => {
                             <div v-for="(slide, index) in slides" :key="slide.image" 
                                  class="absolute inset-0 transition-all duration-500 ease-in-out"
                                  :class="currentSlide === index ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'">
-                                <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover object-top" />
+                                <picture>
+                                    <source :srcset="slide.imageWebp" type="image/webp" />
+                                    <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover object-top" />
+                                </picture>
                             </div>
                         </div>
                     </div>
@@ -639,7 +645,7 @@ onUnmounted(() => {
 .hero-page {
     background: var(--bg);
     padding: 18px;
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -656,7 +662,7 @@ onUnmounted(() => {
     position: absolute;
     inset: 0;
     z-index: 0;
-    background-image: url('/images/car-hero.jpg');
+    background-image: image-set(url('/images/car-hero.webp') type('image/webp'), url('/images/car-hero.jpg') type('image/jpeg'));
     background-repeat: no-repeat;
     background-position: -8% 65%;
     background-size: 95%;
@@ -892,7 +898,7 @@ onUnmounted(() => {
 .feat-section {
     padding: 0 18px 18px;
     background: var(--bg, #0a0a0b);
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 

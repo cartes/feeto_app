@@ -25,6 +25,10 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@fontsource-variable/figtree": "^5.2.10",
+        "@fontsource-variable/inter": "^5.2.8",
+        "@fontsource-variable/jetbrains-mono": "^5.2.8",
+        "@fontsource/archivo-narrow": "^5.2.8",
         "@tiptap/extension-character-count": "^3.23.6",
         "@tiptap/extension-color": "^3.23.6",
         "@tiptap/extension-image": "^3.23.6",

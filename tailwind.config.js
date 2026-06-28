@@ -28,7 +28,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                sans: ["Figtree Variable", "Figtree", ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 "--ink": "#fff",

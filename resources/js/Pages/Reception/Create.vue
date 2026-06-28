@@ -882,7 +882,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&display=swap');
+@import '@fontsource/archivo-narrow/700.css';
 
 .plate-font {
     font-family: 'Archivo Narrow', sans-serif;
