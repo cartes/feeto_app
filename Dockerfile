@@ -25,7 +25,7 @@ COPY composer.json composer.lock ./
 # Acepta el secret como JSON de COMPOSER_AUTH o como token plano de GitHub.
 RUN --mount=type=cache,target=/tmp/composer-cache \
     --mount=type=secret,id=composer_auth \
-    sh -eu -c 'if [ -s /run/secrets/composer_auth ]; then secret="$(tr -d "\r\n\t " < /run/secrets/composer_auth)"; if [ -n "$secret" ]; then case "$secret" in \{*) export COMPOSER_AUTH="$secret" ;; *) export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$secret\"}}" ;; esac; fi; fi; composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv'
+    sh -eu -c 'if [ -s /run/secrets/composer_auth ]; then secret="$(tr -d "\r\n\t " < /run/secrets/composer_auth | sed -e "s/^[\\\"'\''\\\\]*//" -e "s/[\\\"'\''\\\\]*$//")"; if [ -n "$secret" ]; then case "$secret" in \{*) export COMPOSER_AUTH="$secret" ;; *) export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$secret\"}}" ;; esac; fi; fi; composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv'
 
 COPY . .
 # Ahora que los archivos están presentes, generamos el autoload
