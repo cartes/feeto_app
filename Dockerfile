@@ -22,9 +22,10 @@ COPY composer.json composer.lock ./
 # Instalamos sin ejecutar scripts para evitar errores con 'artisan' ausente
 # Ignoramos los requisitos de plataforma para evitar problemas con la versión de PHP 8.5.
 # La credencial se monta como secret de BuildKit para no dejarla en ARG/ENV o en capas de imagen.
+# Acepta el secret como JSON de COMPOSER_AUTH o como token plano de GitHub.
 RUN --mount=type=cache,target=/tmp/composer-cache \
     --mount=type=secret,id=composer_auth \
-    sh -eu -c 'if [ -s /run/secrets/composer_auth ]; then export COMPOSER_AUTH="$(cat /run/secrets/composer_auth)"; fi; composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv'
+    sh -eu -c 'if [ -s /run/secrets/composer_auth ]; then secret="$(tr -d "\r" < /run/secrets/composer_auth)"; case "$secret" in \{*) export COMPOSER_AUTH="$secret" ;; *) composer config --global github-oauth.github.com "$secret" ;; esac; fi; composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv'
 
 COPY . .
 # Ahora que los archivos están presentes, generamos el autoload
