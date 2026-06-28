@@ -5,6 +5,9 @@ FROM composer:2 AS composer
 FROM php:8.5-cli-bookworm AS vendor
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+ARG COMPOSER_AUTH
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_CACHE_DIR=/tmp/composer-cache
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
@@ -18,8 +21,10 @@ RUN apt-get update && apt-get install -y \
 
 COPY composer.json composer.lock ./
 # Instalamos sin ejecutar scripts para evitar errores con 'artisan' ausente
-# Ignoramos los requisitos de plataforma para evitar problemas con la versión de PHP 8.5, y agregamos -vvv para depuración en caso de fallar
-RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv
+# Ignoramos los requisitos de plataforma para evitar problemas con la versión de PHP 8.5.
+# COMPOSER_AUTH permite autenticar descargas de GitHub y la caché reduce fallos en builds fríos.
+RUN --mount=type=cache,target=/tmp/composer-cache \
+    COMPOSER_AUTH="${COMPOSER_AUTH}" composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs -vvv
 
 COPY . .
 # Ahora que los archivos están presentes, generamos el autoload

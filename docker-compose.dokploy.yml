@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
     env_file:
       - .env
     environment:
@@ -49,6 +51,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
     env_file:
       - .env
     environment:
@@ -87,6 +91,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        COMPOSER_AUTH: ${COMPOSER_AUTH:-}
     env_file:
       - .env
     environment:
