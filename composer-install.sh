@@ -24,7 +24,6 @@ exec composer install \
     --no-dev \
     --no-interaction \
     --no-progress \
-    --prefer-dist \
     --optimize-autoloader \
     --no-scripts \
     --ignore-platform-reqs
