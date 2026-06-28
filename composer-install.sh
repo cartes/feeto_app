@@ -27,5 +27,4 @@ exec composer install \
     --prefer-dist \
     --optimize-autoloader \
     --no-scripts \
-    --ignore-platform-reqs \
-    -vvv
+    --ignore-platform-reqs
