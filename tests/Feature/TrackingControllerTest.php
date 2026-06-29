@@ -17,6 +17,8 @@ class TrackingControllerTest extends TestCase
     {
         $this->setUpTenant();
 
+        $this->withoutVite();
+
         $response = $this->get('/');
 
         $response->assertStatus(200);
