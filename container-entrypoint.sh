@@ -16,6 +16,7 @@ chmod -R 777 storage bootstrap/cache || true
 
 rm -rf public/storage
 php artisan storage:link || true
+find bootstrap/cache -maxdepth 1 -type f -name '*.php' -delete
 php artisan optimize
 
 exec "$@"
