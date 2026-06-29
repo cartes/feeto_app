@@ -50,6 +50,18 @@ class RealtimeBootstrapTest extends TestCase
         $response->assertSee('reverb-key', false);
     }
 
+    public function test_reverb_config_is_disabled_on_public_pages_even_when_broadcasting_is_active(): void
+    {
+        Config::set('broadcasting.default', 'reverb');
+        Config::set('broadcasting.connections.reverb.key', 'reverb-key');
+
+        $response = $this->get(route('home'));
+
+        $response->assertOk();
+        $response->assertSee('enabled: false', false);
+        $response->assertDontSee('reverb-key', false);
+    }
+
     private function setUpTenant(): Tenant
     {
         $tenant = Tenant::firstOrCreate(

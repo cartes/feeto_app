@@ -28,6 +28,24 @@ class MarketingSeoTest extends TestCase
         $response->assertSee('name="twitter:image"', false);
     }
 
+    public function test_home_page_preloads_the_lcp_hero_image(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('rel="preload"', false);
+        $response->assertSee('as="image"', false);
+        $response->assertSee(url('/images/car-hero.webp'), false);
+    }
+
+    public function test_non_home_public_pages_do_not_preload_the_home_hero_image(): void
+    {
+        $response = $this->get('/servicios');
+
+        $response->assertOk();
+        $response->assertDontSee(url('/images/car-hero.webp'), false);
+    }
+
     public function test_home_page_uses_configured_social_image_when_available(): void
     {
         Setting::set('seo_home_og_image', 'https://cdn.example.com/tallerflow-social-share.png');

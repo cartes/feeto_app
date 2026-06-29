@@ -5,8 +5,10 @@ import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { route as ziggyRoute, ZiggyVue } from '../../vendor/tightenco/ziggy';
+import Welcome from './Pages/Welcome.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'TallerFlow';
+const pageComponents = import.meta.glob(['./Pages/**/*.vue', '!./Pages/Welcome.vue']);
 let rememberedTenantSlug = window.history.state?.page?.props?.tenant?.slug || null;
 
 const routeParameterNames = (routeName) => {
@@ -89,10 +91,12 @@ router.on('navigate', (event) => {
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
-        resolvePageComponent(
-            `./Pages/${name}.vue`,
-            import.meta.glob('./Pages/**/*.vue'),
-        ),
+        name === 'Welcome'
+            ? Welcome
+            : resolvePageComponent(
+                `./Pages/${name}.vue`,
+                pageComponents,
+            ),
     setup({ el, App, props, plugin }) {
         const vueApp = createApp({ render: () => h(App, props) })
             .use(plugin)

@@ -53,9 +53,12 @@
             @endif
         @endforeach
 
-<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+        @if (($page['component'] ?? null) === 'Welcome')
+            <link rel="preload" as="image" href="{{ asset('images/car-hero.webp') }}" fetchpriority="high">
+        @endif
 
         <!-- Scripts -->
         @if (request()->routeIs('admin.*'))
@@ -66,7 +69,10 @@
             @routes('tenant')
         @endif
         @php
-            $reverbEnabled = config('broadcasting.default') === 'reverb' && filled(config('broadcasting.connections.reverb.key'));
+            $realtimeComponents = ['Dashboard', 'Reception/Create', 'WorkOrders/Index'];
+            $reverbEnabled = config('broadcasting.default') === 'reverb'
+                && filled(config('broadcasting.connections.reverb.key'))
+                && in_array($page['component'] ?? null, $realtimeComponents, true);
         @endphp
         <script>
             window.laravelReverbConfig = {
