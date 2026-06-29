@@ -24,6 +24,8 @@ class RealtimeBootstrapTest extends TestCase
         $tenant = $this->setUpTenant();
         $admin = $this->createAdmin($tenant);
 
+        $this->withoutVite();
+
         $response = $this->actingAs($admin)->get(route('receptions.create', [
             'tenantBySlug' => $tenant->slug,
         ]));
@@ -41,6 +43,8 @@ class RealtimeBootstrapTest extends TestCase
         $tenant = $this->setUpTenant();
         $admin = $this->createAdmin($tenant);
 
+        $this->withoutVite();
+
         $response = $this->actingAs($admin)->get(route('receptions.create', [
             'tenantBySlug' => $tenant->slug,
         ]));
@@ -54,6 +58,8 @@ class RealtimeBootstrapTest extends TestCase
     {
         Config::set('broadcasting.default', 'reverb');
         Config::set('broadcasting.connections.reverb.key', 'reverb-key');
+
+        $this->withoutVite();
 
         $response = $this->get(route('home'));
 
