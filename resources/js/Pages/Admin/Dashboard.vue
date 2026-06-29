@@ -1,8 +1,9 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, defineAsyncComponent } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import VueApexCharts from 'vue3-apexcharts';
+
+const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
 
 const props = defineProps({
     stats: Object,

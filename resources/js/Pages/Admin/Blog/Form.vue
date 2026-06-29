@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import TipTapEditor from '@/Components/TipTapEditor.vue';
+
+const TipTapEditor = defineAsyncComponent(() => import('@/Components/TipTapEditor.vue'));
 import MediaPickerModal from '@/Components/MediaPickerModal.vue';
 
 const props = defineProps({

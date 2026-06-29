@@ -16,15 +16,6 @@
             : [];
     @endphp
     <head>
-        <!-- Google Search Console -->
-        @if (filled($googleSearchConsoleCode = \App\Models\Setting::get('analytics_google_search_console_code')))
-            {!! $googleSearchConsoleCode !!}
-        @endif
-
-        <!-- Google Analytics -->
-        @if (filled($googleAnalyticsCode = \App\Models\Setting::get('analytics_google_analytics_code')))
-            {!! $googleAnalyticsCode !!}
-        @endif
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -85,6 +76,16 @@
         </script>
         @vite('resources/js/app.js')
         @inertiaHead
+
+        <!-- Google Search Console -->
+        @if (filled($googleSearchConsoleCode = \App\Models\Setting::get('analytics_google_search_console_code')))
+            {!! $googleSearchConsoleCode !!}
+        @endif
+
+        <!-- Google Analytics -->
+        @if (filled($googleAnalyticsCode = \App\Models\Setting::get('analytics_google_analytics_code')))
+            {!! $googleAnalyticsCode !!}
+        @endif
     </head>
     <body class="font-sans antialiased">
         @inertia

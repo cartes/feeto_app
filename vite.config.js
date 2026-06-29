@@ -18,4 +18,19 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('@tiptap') || id.includes('prosemirror')) {
+                        return 'vendor-tiptap';
+                    }
+
+                    if (id.includes('apexcharts') || id.includes('vue3-apexcharts')) {
+                        return 'vendor-charts';
+                    }
+                },
+            },
+        },
+    },
 });

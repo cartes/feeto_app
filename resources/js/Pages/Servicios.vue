@@ -21,7 +21,7 @@ const features = [
         subtitle: 'ESCÁNER DE PATENTES',
         description: 'Apunta la cámara a la patente del vehículo y el sistema la reconoce en segundos. Cruza automáticamente con la agenda y muestra el historial del cliente sin escribir nada.',
         tags: ['Reconocimiento OCR', 'Ingreso Manual', 'Historial Automático'],
-        image: '/images/screenshots/recepcion.png',
+        image: '/images/screenshots/recepcion.webp',
         accent: 'from-tech-orange/5 to-amber-50/30',
     },
     {
@@ -33,7 +33,7 @@ const features = [
         subtitle: 'FLUJO DE TRABAJO',
         description: 'Visualiza todas las órdenes en un tablero Kanban con columnas por estado. Arrastra las tarjetas entre etapas y lleva el control del taller en tiempo real desde cualquier pantalla.',
         tags: ['Recepción', 'Diagnóstico', 'En Reparación', 'Control de Calidad', 'Entregado'],
-        image: '/images/screenshots/ordenes.png',
+        image: '/images/screenshots/ordenes.webp',
         accent: 'from-slate-50 to-gray-50/50',
     },
     {
@@ -45,7 +45,7 @@ const features = [
         subtitle: 'AGENDAMIENTO',
         description: 'Calendario interactivo con vista diaria, semanal y mensual. Gestiona citas con confirmación automática y vincula cada reserva con el historial del cliente y su vehículo.',
         tags: ['Vista Mensual', 'Detalle del Día', 'Citas por Patente', 'Calendario Activo'],
-        image: '/images/screenshots/dashboard.png',
+        image: '/images/screenshots/dashboard.webp',
         accent: 'from-emerald-50/30 to-green-50/20',
     },
     {
@@ -57,7 +57,7 @@ const features = [
         subtitle: 'PRESUPUESTOS',
         description: 'Genera cotizaciones profesionales en segundos. Agrega servicios, repuestos desde el inventario y envía el presupuesto al cliente por WhatsApp o email con un solo clic.',
         tags: ['Servicios y Repuestos', 'Envío por WhatsApp', 'Conversión a OT', 'Historial de Cotizaciones'],
-        image: '/images/screenshots/cotizaciones.png',
+        image: '/images/screenshots/cotizaciones.webp',
         accent: 'from-blue-50/30 to-indigo-50/20',
     },
     {
@@ -69,7 +69,7 @@ const features = [
         subtitle: 'REPUESTOS E INSUMOS',
         description: 'Gestiona repuestos e insumos del taller con control de stock en tiempo real. Recibe alertas de stock mínimo y mantén la rentabilidad con el margen de cada producto siempre visible.',
         tags: ['SKU y Código', 'Precio de Costo / Venta', 'Alerta Stock Mínimo', 'Búsqueda Rápida'],
-        image: '/images/screenshots/inventario.png',
+        image: '/images/screenshots/inventario.webp',
         accent: 'from-violet-50/30 to-purple-50/20',
     },
     {
@@ -81,7 +81,7 @@ const features = [
         subtitle: 'GESTIÓN CRM',
         description: 'Base de datos completa con historial de visitas, gasto acumulado y vehículos por cliente. Identifica a tus mejores clientes y activa acciones comerciales con datos reales.',
         tags: ['Historial de Visitas', 'Gasto Acumulado', 'Múltiples Vehículos', 'Notas Comerciales'],
-        image: '/images/screenshots/clientes.png',
+        image: '/images/screenshots/clientes.webp',
         accent: 'from-rose-50/30 to-pink-50/20',
     },
     {
@@ -93,10 +93,11 @@ const features = [
         subtitle: 'CENTRO DE MANDO',
         description: 'Panel de control con ventas, cobranza, supervisión de descuentos y análisis CRM desde un solo lugar. Toma decisiones con datos actualizados en tiempo real, no a fin de mes.',
         tags: ['Ventas', 'Supervisión', 'Existencias', 'Cobranza', 'Adquisición'],
-        image: '/images/screenshots/reportes.png',
+        image: '/images/screenshots/reportes.webp',
         accent: 'from-amber-50/30 to-yellow-50/20',
     },
 ];
+
 </script>
 
 <template>
@@ -105,6 +106,15 @@ const features = [
         <meta name="description" :content="seo.description || 'Conoce todas las características de TallerFlow. Recepción inteligente de patentes con IA, tablero Kanban, agenda integrada, inventario, cotizaciones por WhatsApp y reportes.'" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" :href="seo.canonical_url" v-if="seo.canonical_url" />
+
+        <!-- Preload all screenshot images so they're ready before the user clicks a tab -->
+        <link
+            v-for="feature in features"
+            :key="feature.id"
+            rel="preload"
+            as="image"
+            :href="feature.image"
+        />
 
         <!-- Open Graph -->
         <meta property="og:type" content="website" />
@@ -262,35 +272,38 @@ const features = [
                                 </div>
                             </div>
 
-                            <!-- Showcase Image with smooth transition -->
+                            <!-- Showcase Image — todas pre-renderizadas, sólo se muestra la activa -->
                             <div class="relative bg-slate-950 overflow-hidden aspect-[16/10]">
-                                <transition
-                                    enter-active-class="transition duration-300 ease-out"
-                                    enter-from-class="opacity-0 scale-98"
-                                    enter-to-class="opacity-100 scale-100"
-                                    leave-active-class="transition duration-200 ease-in"
-                                    leave-from-class="opacity-100 scale-100"
-                                    leave-to-class="opacity-0 scale-98"
-                                    mode="out-in"
-                                >
-                                    <div :key="activeTab" class="w-full h-full relative">
-                                        <img
-                                            :src="features[activeTab].image"
-                                            :alt="`Módulo ${features[activeTab].title}`"
-                                            class="w-full h-full object-cover object-left-top"
-                                            @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
-                                        />
-                                        <!-- Mockup fallback when image fails -->
-                                        <div class="absolute inset-0 hidden items-center justify-center bg-slate-900">
-                                            <div class="text-center">
-                                                <div class="w-16 h-16 rounded-2xl bg-[#FF7A00]/10 flex items-center justify-center mx-auto mb-3 border border-[#FF7A00]/20">
-                                                    <svg class="w-8 h-8 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" v-html="features[activeTab].icon" />
+                                <template v-for="(feature, index) in features" :key="feature.id">
+                                    <transition
+                                        enter-active-class="transition duration-300 ease-out"
+                                        enter-from-class="opacity-0 scale-98"
+                                        enter-to-class="opacity-100 scale-100"
+                                        leave-active-class="transition duration-200 ease-in"
+                                        leave-from-class="opacity-100 scale-100"
+                                        leave-to-class="opacity-0 scale-98"
+                                        mode="out-in"
+                                    >
+                                        <div v-show="activeTab === index" class="absolute inset-0">
+                                            <img
+                                                :src="feature.image"
+                                                :alt="`Módulo ${feature.title}`"
+                                                class="w-full h-full object-cover object-left-top"
+                                                :loading="index === 0 ? 'eager' : 'lazy'"
+                                                @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
+                                            />
+                                            <!-- Mockup fallback when image fails -->
+                                            <div class="absolute inset-0 hidden items-center justify-center bg-slate-900">
+                                                <div class="text-center">
+                                                    <div class="w-16 h-16 rounded-2xl bg-[#FF7A00]/10 flex items-center justify-center mx-auto mb-3 border border-[#FF7A00]/20">
+                                                        <svg class="w-8 h-8 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" v-html="feature.icon" />
+                                                    </div>
+                                                    <p class="text-sm font-bold text-slate-400">{{ feature.title }}</p>
                                                 </div>
-                                                <p class="text-sm font-bold text-slate-400">{{ features[activeTab].title }}</p>
                                             </div>
                                         </div>
-                                    </div>
-                                </transition>
+                                    </transition>
+                                </template>
                             </div>
                         </div>
 
