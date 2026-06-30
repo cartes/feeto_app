@@ -1,8 +1,9 @@
 <?php
 
 use App\Jobs\NotifyExpiringSubscriptions;
-use App\Jobs\SendRenewalReminders;
 use App\Jobs\QueueOverdueInvoiceWhatsAppReminders;
+use App\Jobs\SendRenewalReminders;
+use App\Jobs\SendWeeklyActivityReport;
 use App\Jobs\SuspendExpiredTenants;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -16,3 +17,4 @@ Schedule::job(new SuspendExpiredTenants)->daily();
 Schedule::job(new NotifyExpiringSubscriptions)->dailyAt('08:00');
 Schedule::job(new QueueOverdueInvoiceWhatsAppReminders)->dailyAt('09:00');
 Schedule::job(new SendRenewalReminders)->dailyAt('09:30');
+Schedule::job(new SendWeeklyActivityReport)->weeklyOn(6, '12:00');

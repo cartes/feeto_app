@@ -20,6 +20,7 @@ class Appointment extends Model
         'plate',
         'customer_name',
         'phone',
+        'email',
         'appointment_date',
         'status',
         'notes',

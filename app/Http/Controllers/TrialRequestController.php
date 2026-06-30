@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\TrialRequestSubmitted;
 use App\Models\TrialRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,9 @@ class TrialRequestController extends Controller
 
         unset($validated['terms']);
 
-        TrialRequest::create($validated);
+        $trialRequest = TrialRequest::create($validated);
+
+        TrialRequestSubmitted::dispatch($trialRequest);
 
         return redirect()->route('trial.success');
     }

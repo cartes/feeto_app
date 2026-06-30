@@ -30,6 +30,12 @@ class SendRenewalReminders implements ShouldQueue
                 Tenant::forgetCurrent();
 
                 if (! $admin) {
+                    AuditLog::record(
+                        'subscription.renewal_reminder_skipped',
+                        "No se encontró usuario Admin para '{$tenant->name}'. Recordatorio de renovación no enviado.",
+                        $tenant
+                    );
+
                     return;
                 }
 

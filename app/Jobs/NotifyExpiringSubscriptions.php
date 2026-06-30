@@ -6,9 +6,10 @@ namespace App\Jobs;
 
 use App\Models\Tenant;
 use App\Models\User;
+use App\Notifications\ExpiringSubscriptionsDigestNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 class NotifyExpiringSubscriptions implements ShouldQueue
 {
@@ -31,15 +32,7 @@ class NotifyExpiringSubscriptions implements ShouldQueue
             return;
         }
 
-        $body = "Los siguientes talleres tienen suscripciones próximas a vencer:\n\n";
-
-        foreach ($expiringTenants as $tenant) {
-            $body .= "- {$tenant->name} (vence el {$tenant->subscription_ends_at->format('d/m/Y')})\n";
-        }
-
-        Mail::raw($body, function ($message) use ($superAdmin, $expiringTenants) {
-            $message->to($superAdmin->email)
-                ->subject("[Feeto] {$expiringTenants->count()} suscripción(es) próximas a vencer");
-        });
+        Notification::route('mail', $superAdmin->email)
+            ->notify(new ExpiringSubscriptionsDigestNotification($expiringTenants));
     }
 }

@@ -2,7 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\MinimumMarginWarning;
+use App\Events\SafetyStockReached;
+use App\Events\StockDepleted;
+use App\Events\TrialRequestSubmitted;
+use App\Events\WorkOrderDraftCreated;
 use App\Events\WorkOrderStatusUpdated;
+use App\Listeners\NotifySuperAdminOfTrialRequest;
+use App\Listeners\PersistMarginAlertNotification;
+use App\Listeners\PersistStockAlertNotification;
+use App\Listeners\PersistWorkOrderCreatedNotification;
 use App\Listeners\RecordLoginLog;
 use App\Listeners\SendWorkOrderStatusChangedEmail;
 use App\Models\Order;
@@ -44,6 +53,11 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Login::class, RecordLoginLog::class);
         Event::listen(WorkOrderStatusUpdated::class, SendWorkOrderStatusChangedEmail::class);
+        Event::listen(TrialRequestSubmitted::class, NotifySuperAdminOfTrialRequest::class);
+        Event::listen(StockDepleted::class, PersistStockAlertNotification::class);
+        Event::listen(SafetyStockReached::class, PersistStockAlertNotification::class);
+        Event::listen(MinimumMarginWarning::class, PersistMarginAlertNotification::class);
+        Event::listen(WorkOrderDraftCreated::class, PersistWorkOrderCreatedNotification::class);
 
         Route::bind('tenantBySlug', fn (string $value) => Tenant::where('slug', $value)->firstOrFail());
     }

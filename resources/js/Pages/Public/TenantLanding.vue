@@ -32,6 +32,7 @@ function showToast(message, type = 'success') {
 const form = useForm({
     customer_name: '',
     phone: '',
+    email: '',
     plate: '',
     appointment_date: '',
     pre_check_notes: '',
@@ -489,6 +490,23 @@ const trackWhatsAppClick = () => {
                                             />
                                             <p v-if="form.errors.phone" class="mt-1 text-xs text-red-500">{{ form.errors.phone }}</p>
                                         </div>
+                                        <div>
+                                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                                Correo electrónico
+                                                <span class="text-gray-400 font-normal">(para confirmación)</span>
+                                            </label>
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                v-model="form.email"
+                                                autocomplete="email"
+                                                placeholder="tucorreo@ejemplo.com"
+                                                class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm"
+                                            />
+                                            <p v-if="form.errors.email" class="mt-1 text-xs text-red-500">{{ form.errors.email }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label for="plate" class="block text-sm font-semibold text-gray-700 mb-1.5">
                                                 Patente del Vehículo

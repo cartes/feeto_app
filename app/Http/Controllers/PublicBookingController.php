@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentConfirmationMail;
 use App\Mail\AppointmentScheduledMail;
 use App\Mail\TenantContactMail;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\TenantLead;
+use App\Models\TenantNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -72,6 +74,7 @@ class PublicBookingController extends Controller
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:255'],
             'plate' => ['required', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
             'appointment_date' => ['required', 'date', 'after:now'],
             'pre_check_notes' => ['nullable', 'string', 'max:1000'],
@@ -98,13 +101,25 @@ class PublicBookingController extends Controller
             'plate' => strtoupper($validated['plate']),
             'customer_name' => $validated['customer_name'],
             'phone' => $validated['phone'],
+            'email' => $validated['email'] ?? null,
             'appointment_date' => $validated['appointment_date'],
             'pre_check_notes' => $validated['pre_check_notes'] ?? null,
             'status' => 'pending',
         ]);
 
-        $recipientEmail = $tenantBySlug->getNotificationEmail();
-        Mail::to($recipientEmail)->send(new AppointmentScheduledMail($appointment));
+        Mail::to($tenantBySlug->getNotificationEmail())->send(new AppointmentScheduledMail($appointment));
+
+        if (filled($appointment->email)) {
+            Mail::to($appointment->email)->send(new AppointmentConfirmationMail($appointment, $tenantBySlug));
+        }
+
+        TenantNotification::create([
+            'tenant_id' => $tenantBySlug->id,
+            'type' => 'new_appointment',
+            'title' => 'Nueva cita agendada',
+            'body' => "{$appointment->customer_name} — {$appointment->appointment_date->format('d/m/Y H:i')} hrs.",
+            'data' => ['appointment_id' => $appointment->id],
+        ]);
 
         return back()->with('booking_success', true);
     }
