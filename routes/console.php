@@ -13,8 +13,16 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new SuspendExpiredTenants)->daily();
-Schedule::job(new NotifyExpiringSubscriptions)->dailyAt('08:00');
+Schedule::call(static fn () => app(SuspendExpiredTenants::class)->handle())
+    ->name('SuspendExpiredTenants')
+    ->daily();
+Schedule::call(static fn () => app(NotifyExpiringSubscriptions::class)->handle())
+    ->name('NotifyExpiringSubscriptions')
+    ->dailyAt('08:00');
 Schedule::job(new QueueOverdueInvoiceWhatsAppReminders)->dailyAt('09:00');
-Schedule::job(new SendRenewalReminders)->dailyAt('09:30');
-Schedule::job(new SendWeeklyActivityReport)->weeklyOn(6, '12:00');
+Schedule::call(static fn () => app(SendRenewalReminders::class)->handle())
+    ->name('SendRenewalReminders')
+    ->dailyAt('09:30');
+Schedule::call(static fn () => app(SendWeeklyActivityReport::class)->handle())
+    ->name('SendWeeklyActivityReport')
+    ->weeklyOn(6, '12:00');

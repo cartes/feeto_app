@@ -7,14 +7,11 @@ namespace App\Listeners;
 use App\Events\WorkOrderStatusUpdated;
 use App\Models\WorkOrder;
 use App\Notifications\WorkOrderStatusChangedNotification;
-use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\Notification;
 
-class SendWorkOrderStatusChangedEmail implements ShouldQueueAfterCommit
+class SendWorkOrderStatusChangedEmail implements ShouldHandleEventsAfterCommit
 {
-    use InteractsWithQueue;
-
     public function handle(WorkOrderStatusUpdated $event): void
     {
         if ($event->oldStatus === $event->newStatus) {
