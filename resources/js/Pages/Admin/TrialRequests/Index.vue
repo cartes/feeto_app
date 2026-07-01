@@ -50,6 +50,10 @@ const confirmDelete = (id) => {
     });
 };
 
+const canDeleteRequest = (req) => {
+    return req.status === 'rejected' || isTrialExpired(req);
+};
+
 const isTrialExpired = (req) => {
     if (req.status !== 'approved' || !req.tenant) return false;
     if (!req.tenant.subscription_ends_at) return false;
@@ -188,11 +192,11 @@ const formatDate = (date) => {
                                         </button>
                                     </template>
                                     <button
-                                        v-if="isTrialExpired(req)"
+                                        v-if="canDeleteRequest(req)"
                                         @click="startDelete(req.id)"
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 text-xs font-semibold rounded-lg ring-1 ring-rose-300 transition-colors"
                                     >
-                                        Eliminar definitivamente
+                                        {{ req.tenant ? 'Eliminar definitivamente' : 'Eliminar solicitud' }}
                                     </button>
                                 </td>
                             </tr>
@@ -267,10 +271,17 @@ const formatDate = (date) => {
                                 <td colspan="7" class="px-6 py-4">
                                     <div class="flex items-center gap-4 flex-wrap">
                                         <div class="flex-1">
-                                            <p class="text-sm font-semibold text-rose-800 mb-1">Eliminar definitivamente a <strong>{{ req.name }}</strong></p>
-                                            <p class="text-xs text-rose-700">
+                                            <p class="text-sm font-semibold text-rose-800 mb-1">
+                                                {{ req.tenant ? 'Eliminar definitivamente a' : 'Eliminar solicitud de' }}
+                                                <strong>{{ req.name }}</strong>
+                                            </p>
+                                            <p v-if="req.tenant" class="text-xs text-rose-700">
                                                 Se borrará el taller "<strong>{{ req.tenant?.name }}</strong>", su usuario ({{ req.email }}) y todos sus datos.
                                                 El correo quedará libre para una nueva solicitud de prueba. Esta acción no se puede deshacer.
+                                            </p>
+                                            <p v-else class="text-xs text-rose-700">
+                                                Se borrará esta solicitud rechazada y el correo <strong>{{ req.email }}</strong> quedará libre para una nueva solicitud de prueba.
+                                                Esta acción no se puede deshacer.
                                             </p>
                                         </div>
                                         <div class="flex items-center gap-2">

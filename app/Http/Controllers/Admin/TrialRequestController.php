@@ -106,7 +106,7 @@ class TrialRequestController extends Controller
 
         $message = $tenantName
             ? "Eliminado: el taller \"{$tenantName}\" y su usuario han sido borrados definitivamente. El correo queda libre para una nueva solicitud."
-            : 'Solicitud eliminada definitivamente.';
+            : 'Solicitud eliminada definitivamente. El correo queda libre para una nueva solicitud.';
 
         return back()->with('success', $message);
     }
