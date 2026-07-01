@@ -390,6 +390,51 @@ class ReceptionControllerTest extends TestCase
         $this->assertSame('+56912345678', $newOwner->phone);
     }
 
+    public function test_preview_returns_existing_vehicle_data_for_internal_owner_lookup(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+        $client = $this->createClient([
+            'tenant_id' => $tenant->id,
+            'rut' => '22222222-2',
+            'name' => 'Cliente Interno',
+        ]);
+
+        Vehicle::create([
+            'client_id' => $client->id,
+            'plate' => 'CC3333',
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
+            'vin' => 'VIN123456789',
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('receptions.preview', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'patente' => 'CC3333',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'is_new' => false,
+                'vehicle_exists' => true,
+                'owner_source' => 'internal',
+                'vehicle' => [
+                    'brand' => 'Toyota',
+                    'model' => 'Corolla',
+                    'vin' => 'VIN123456789',
+                    'plate' => 'CC3333',
+                ],
+                'client' => [
+                    'id' => $client->id,
+                    'name' => 'Cliente Interno',
+                    'rut' => '22222222-2',
+                    'email' => null,
+                    'phone' => null,
+                ],
+            ]);
+    }
+
     public function test_search_clients_only_returns_matches_from_the_current_tenant(): void
     {
         $tenantA = $this->setUpTenant();

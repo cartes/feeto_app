@@ -13,6 +13,7 @@ use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
+use App\Services\BoostrService;
 use App\Services\VehicleCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -212,10 +213,10 @@ class ReceptionController extends Controller
                 ],
                 'client' => [
                     'id' => $vehicle->client?->id,
-                    'name' => $vehicle->client->name,
-                    'rut' => $vehicle->client->rut,
-                    'email' => $vehicle->client->email,
-                    'phone' => $vehicle->client->phone,
+                    'name' => $vehicle->client?->name,
+                    'rut' => $vehicle->client?->rut,
+                    'email' => $vehicle->client?->email,
+                    'phone' => $vehicle->client?->phone,
                 ],
             ]);
         }
