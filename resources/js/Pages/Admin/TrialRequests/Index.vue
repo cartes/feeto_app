@@ -12,6 +12,7 @@ const props = defineProps({
 
 const approvingId = ref(null);
 const rejectingId = ref(null);
+const deletingId = ref(null);
 
 const approveForm = useForm({
     admin_password: '',
@@ -20,6 +21,8 @@ const approveForm = useForm({
 const rejectForm = useForm({
     rejection_reason: '',
 });
+
+const deleteForm = useForm({});
 
 const startApprove = (id) => {
     approvingId.value = id;
@@ -31,9 +34,26 @@ const startReject = (id) => {
     rejectForm.reset();
 };
 
+const startDelete = (id) => {
+    deletingId.value = id;
+};
+
 const cancelAction = () => {
     approvingId.value = null;
     rejectingId.value = null;
+    deletingId.value = null;
+};
+
+const confirmDelete = (id) => {
+    deleteForm.delete(route('admin.trial-requests.destroy', id), {
+        onSuccess: () => { deletingId.value = null; },
+    });
+};
+
+const isTrialExpired = (req) => {
+    if (req.status !== 'approved' || !req.tenant) return false;
+    if (!req.tenant.subscription_ends_at) return false;
+    return new Date(req.tenant.subscription_ends_at) < new Date();
 };
 
 const approve = (id) => {
@@ -119,7 +139,7 @@ const formatDate = (date) => {
                             <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Plan</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Estado</th>
                             <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Fecha</th>
-                            <th v-if="current_status === 'pending'" class="py-3 pl-3 pr-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acciones</th>
+                            <th class="py-3 pl-3 pr-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -152,18 +172,27 @@ const formatDate = (date) => {
                                     </div>
                                 </td>
                                 <td class="px-3 py-4 text-xs text-slate-500 whitespace-nowrap">{{ formatDate(req.created_at) }}</td>
-                                <td v-if="current_status === 'pending'" class="py-4 pl-3 pr-6 text-right space-x-2 whitespace-nowrap">
+                                <td class="py-4 pl-3 pr-6 text-right space-x-2 whitespace-nowrap">
+                                    <template v-if="current_status === 'pending'">
+                                        <button
+                                            @click="startApprove(req.id)"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors"
+                                        >
+                                            Aprobar
+                                        </button>
+                                        <button
+                                            @click="startReject(req.id)"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-lg ring-1 ring-rose-200 transition-colors"
+                                        >
+                                            Rechazar
+                                        </button>
+                                    </template>
                                     <button
-                                        @click="startApprove(req.id)"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors"
+                                        v-if="isTrialExpired(req)"
+                                        @click="startDelete(req.id)"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 text-xs font-semibold rounded-lg ring-1 ring-rose-300 transition-colors"
                                     >
-                                        Aprobar
-                                    </button>
-                                    <button
-                                        @click="startReject(req.id)"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-lg ring-1 ring-rose-200 transition-colors"
-                                    >
-                                        Rechazar
+                                        Eliminar definitivamente
                                     </button>
                                 </td>
                             </tr>
@@ -224,6 +253,33 @@ const formatDate = (date) => {
                                                 class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60"
                                             >
                                                 {{ rejectForm.processing ? 'Rechazando…' : 'Confirmar rechazo' }}
+                                            </button>
+                                            <button @click="cancelAction" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Panel de eliminación definitiva -->
+                            <tr v-if="deletingId === req.id" class="bg-rose-50">
+                                <td colspan="7" class="px-6 py-4">
+                                    <div class="flex items-center gap-4 flex-wrap">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-semibold text-rose-800 mb-1">Eliminar definitivamente a <strong>{{ req.name }}</strong></p>
+                                            <p class="text-xs text-rose-700">
+                                                Se borrará el taller "<strong>{{ req.tenant?.name }}</strong>", su usuario ({{ req.email }}) y todos sus datos.
+                                                El correo quedará libre para una nueva solicitud de prueba. Esta acción no se puede deshacer.
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button
+                                                @click="confirmDelete(req.id)"
+                                                :disabled="deleteForm.processing"
+                                                class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60"
+                                            >
+                                                {{ deleteForm.processing ? 'Eliminando…' : 'Sí, eliminar' }}
                                             </button>
                                             <button @click="cancelAction" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors">
                                                 Cancelar

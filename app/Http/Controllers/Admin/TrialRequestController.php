@@ -24,7 +24,7 @@ class TrialRequestController extends Controller
         $status = $request->get('status', 'pending');
 
         $query = TrialRequest::query()
-            ->with(['approver:id,name', 'tenant:id,name,slug'])
+            ->with(['approver:id,name', 'tenant:id,name,slug,subscription_ends_at'])
             ->latest();
 
         if (in_array($status, ['pending', 'approved', 'rejected'], true)) {
@@ -89,6 +89,26 @@ class TrialRequestController extends Controller
         ]);
 
         return back()->with('success', "Solicitud aprobada. Taller \"{$tenant->name}\" creado con acceso trial de 14 días.");
+    }
+
+    public function destroy(TrialRequest $trialRequest): RedirectResponse
+    {
+        $tenant = $trialRequest->tenant_id ? $trialRequest->tenant : null;
+
+        if ($tenant && $tenant->subscription_ends_at?->isFuture()) {
+            return back()->with('error', 'No se puede eliminar un taller con prueba activa.');
+        }
+
+        $tenantName = $tenant?->name;
+        $tenant?->delete();
+
+        $trialRequest->delete();
+
+        $message = $tenantName
+            ? "Eliminado: el taller \"{$tenantName}\" y su usuario han sido borrados definitivamente. El correo queda libre para una nueva solicitud."
+            : 'Solicitud eliminada definitivamente.';
+
+        return back()->with('success', $message);
     }
 
     private function generateUniqueDomain(string $slug): string

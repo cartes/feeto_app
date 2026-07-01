@@ -511,6 +511,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::get('/trial-requests', [AdminTrialRequestController::class, 'index'])->name('trial-requests.index');
         Route::post('/trial-requests/{trialRequest}/approve', [AdminTrialRequestController::class, 'approve'])->name('trial-requests.approve');
         Route::post('/trial-requests/{trialRequest}/reject', [AdminTrialRequestController::class, 'reject'])->name('trial-requests.reject');
+        Route::delete('/trial-requests/{trialRequest}', [AdminTrialRequestController::class, 'destroy'])->name('trial-requests.destroy');
 
         // Pagos
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
