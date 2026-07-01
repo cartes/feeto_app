@@ -78,6 +78,24 @@ class AdminProfileControllerTest extends TestCase
         $this->assertEquals('test-gemini-key-12345', Setting::get('gemini_api_key'));
     }
 
+    public function test_profile_page_reflects_runtime_ai_configuration_when_settings_are_missing(): void
+    {
+        config([
+            'ai.default' => 'gemini',
+            'ai.default_for_images' => 'gemini',
+            'ai.providers.gemini.key' => 'runtime-gemini-key',
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.profile'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('ai_settings.ai_provider.value', 'gemini')
+            ->where('ai_settings.ai_image_provider.value', 'gemini')
+            ->where('ai_settings.gemini_api_key.has_value', true)
+        );
+    }
+
     public function test_profile_page_returns_analytics_settings_props_to_super_admin(): void
     {
         $response = $this->actingAs($this->superAdmin)->get(route('admin.profile'));
@@ -124,5 +142,16 @@ class AdminProfileControllerTest extends TestCase
         $method->invoke($appServiceProvider);
 
         $this->assertEquals(0.15, config('billing.vat_rate'));
+    }
+
+    public function test_mp_sandbox_can_be_updated_from_profile_with_boolean_payload(): void
+    {
+        $response = $this->actingAs($this->superAdmin)
+            ->put(route('admin.profile.api-keys'), [
+                'mp_sandbox' => false,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertSame('false', Setting::get('mp_sandbox'));
     }
 }

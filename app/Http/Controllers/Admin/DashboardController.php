@@ -131,9 +131,11 @@ class DashboardController extends Controller
             ]);
 
         // Nuevos tenants por mes (últimos 6 meses)
+        $tenantMonthExpression = $this->monthGroupingExpression('created_at');
+
         $newTenantsByMonth = Tenant::query()
             ->where('created_at', '>=', $now->copy()->subMonths(6))
-            ->select(DB::raw("to_char(created_at, 'YYYY-MM') as month"), DB::raw('count(*) as total'))
+            ->select(DB::raw("{$tenantMonthExpression} as month"), DB::raw('count(*) as total'))
             ->groupBy('month')
             ->orderBy('month')
             ->get()
@@ -204,5 +206,14 @@ class DashboardController extends Controller
             'tenant_scatter' => $tenantScatter,
             'scatter_medians' => ['users' => $medianUsers, 'logins' => $medianLogins],
         ]);
+    }
+
+    private function monthGroupingExpression(string $column): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'pgsql' => "TO_CHAR({$column}, 'YYYY-MM')",
+            'sqlite' => "strftime('%Y-%m', {$column})",
+            default => "DATE_FORMAT({$column}, '%Y-%m')",
+        };
     }
 }
