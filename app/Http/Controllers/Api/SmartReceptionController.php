@@ -36,7 +36,7 @@ class SmartReceptionController extends Controller
         $vehiclePayload = $this->vehiclePayloadFromAppointment($appointment);
         $detailedAiResult = null;
 
-        if ($plate === '' || ! $this->hasCompleteVehicleIdentity($vehiclePayload)) {
+        if ($plate === '' || ! $appointment) {
             $detailedAiResult = $patentRecognitionAgent->prompt(
                 'Lee la patente de este vehiculo chileno e identifica marca, modelo y color. Devuelve la respuesta estructurada.',
                 provider: $provider,

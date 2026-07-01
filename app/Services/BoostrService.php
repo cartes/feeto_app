@@ -22,12 +22,15 @@ class BoostrService
         try {
             $baseUrl = rtrim((string) config('services.boostr.base_url', 'https://api.boostr.cl'), '/');
             $apiKey = config('services.boostr.key');
+            $connectTimeout = (int) config('services.boostr.connect_timeout', 2);
+            $timeout = (int) config('services.boostr.timeout', 5);
             $apiUrl = str_contains($baseUrl, '{patente}')
                 ? str_replace('{patente}', urlencode($patente), $baseUrl)
                 : $baseUrl.'/vehiculo/'.urlencode($patente);
 
             $response = Http::withToken($apiKey ?? '')
-                ->timeout(10)
+                ->connectTimeout($connectTimeout)
+                ->timeout($timeout)
                 ->get($apiUrl);
 
             if ($response->successful()) {

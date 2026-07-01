@@ -38,6 +38,8 @@ return [
     'boostr' => [
         'key' => env('BOOSTR_API_KEY'),
         'base_url' => env('BOOSTR_BASE_URL', 'https://api.boostr.cl'),
+        'connect_timeout' => (int) env('BOOSTR_CONNECT_TIMEOUT', 2),
+        'timeout' => (int) env('BOOSTR_TIMEOUT', 5),
     ],
 
 ];

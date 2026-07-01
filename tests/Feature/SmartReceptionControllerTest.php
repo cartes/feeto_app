@@ -110,7 +110,74 @@ class SmartReceptionControllerTest extends TestCase
         );
     }
 
-    public function test_scan_plate_falls_back_to_detailed_recognition_when_local_vehicle_data_is_missing(): void
+    public function test_scan_plate_does_not_fallback_to_detailed_recognition_when_the_appointment_is_found(): void
+    {
+        $tenant = $this->setUpTenant();
+        $tenant->forceFill([
+            'plan' => 'profesional',
+            'plan_type' => 'profesional',
+        ])->save();
+
+        $admin = $this->createAdmin($tenant);
+
+        $client = Client::factory()->create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Pedro Cliente',
+            'rut' => '11111111-1',
+            'phone' => '+56911111111',
+        ]);
+
+        Appointment::factory()->create([
+            'tenant_id' => $tenant->id,
+            'client_id' => $client->id,
+            'vehicle_id' => null,
+            'plate' => 'GKSB78',
+            'customer_name' => $client->name,
+            'phone' => $client->phone,
+            'appointment_date' => now()->setTime(10, 30),
+            'status' => 'pending',
+            'notes' => 'Cambio de aceite',
+        ]);
+
+        FastPlateRecognitionAgent::fake([
+            [
+                'plate' => 'GKSB78',
+            ],
+        ])->preventStrayPrompts();
+
+        $response = $this->actingAs($admin)->postJson(route('api.appointments.scan-plate', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'image' => UploadedFile::fake()->image('plate.jpg'),
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'plate' => 'GKSB78',
+                'confidence' => null,
+                'vehicle' => [
+                    'brand' => null,
+                    'model' => null,
+                    'color' => null,
+                ],
+                'appointment' => [
+                    'status' => 'pending',
+                    'notes' => 'Cambio de aceite',
+                    'client' => [
+                        'name' => 'Pedro Cliente',
+                        'rut' => '11111111-1',
+                        'phone' => '+56911111111',
+                    ],
+                    'vehicle' => null,
+                ],
+            ]);
+
+        PatentRecognitionAgent::assertNotPrompted(
+            'Lee la patente de este vehiculo chileno e identifica marca, modelo y color. Devuelve la respuesta estructurada.'
+        );
+    }
+
+    public function test_scan_plate_falls_back_to_detailed_recognition_when_fast_recognition_cannot_extract_a_plate(): void
     {
         $tenant = $this->setUpTenant();
         $tenant->forceFill([

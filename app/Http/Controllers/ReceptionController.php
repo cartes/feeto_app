@@ -13,7 +13,6 @@ use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
-use App\Services\BoostrService;
 use App\Services\VehicleCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -44,7 +43,7 @@ class ReceptionController extends Controller
     /**
      * Procesamiento OCR y obtención de datos automáticos.
      */
-    public function store(Request $request, PatentReaderAgent $agent, BoostrService $boostr): JsonResponse
+    public function store(Request $request, PatentReaderAgent $agent): JsonResponse
     {
         $request->validate([
             'image' => ['required', 'image', 'max:'.config('reception.image_upload_max_kb', 5120)],
@@ -69,6 +68,7 @@ class ReceptionController extends Controller
                 'Extrae la patente chilena',
                 attachments: [Image::fromPath(storage_path('app/public/'.$imagePath))],
                 provider: $provider,
+                timeout: (int) config('reception.ai_timeout_seconds', 20),
             );
 
             $patenteLimpia = $this->normalizePlate((string) ($response['patente'] ?? ''));
@@ -92,34 +92,15 @@ class ReceptionController extends Controller
                 ], 422);
             }
 
-            $vehicleData = $boostr->getVehicleData($patenteLimpia);
-
-            if (! $vehicleData) {
-                Log::info('Reception OCR falling back to AI vehicle data because Boostr returned no data.', [
-                    'tenant_id' => $tenant?->id,
-                    'user_id' => $request->user()?->id,
-                    'provider' => $provider,
-                    'plate' => $patenteLimpia,
-                ]);
-
-                $vehicleData = [
-                    'rut_dueno' => 'PROVISORIO',
-                    'nombre_dueno' => 'CLIENTE NUEVO (SIN API)',
-                    'marca' => $response['marca'] ?? 'GENÉRICO',
-                    'modelo' => $response['modelo'] ?? 'GENÉRICO',
-                    'vin' => null,
-                ];
-            }
-
             return response()->json([
                 'valid' => true,
                 'patente' => $patenteLimpia,
                 'vehicle' => [
-                    'brand' => $vehicleData['marca'] ?? ($response['marca'] ?? 'N/A'),
-                    'model' => $vehicleData['modelo'] ?? ($response['modelo'] ?? 'N/A'),
-                    'color' => $vehicleData['color'] ?? 'SIN DATO',
-                    'client' => $vehicleData['nombre_dueno'] ?? 'SIN DATO',
-                    'rut' => $vehicleData['rut_dueno'] ?? 'SIN DATO',
+                    'brand' => $response['marca'] ?? 'SIN DATO',
+                    'model' => $response['modelo'] ?? 'SIN DATO',
+                    'color' => 'SIN DATO',
+                    'client' => 'SIN DATO',
+                    'rut' => 'SIN DATO',
                 ],
             ]);
         } catch (\Throwable $e) {

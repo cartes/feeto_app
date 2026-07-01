@@ -160,16 +160,7 @@ class ReceptionControllerTest extends TestCase
         ])->preventStrayPrompts();
 
         $this->mock(BoostrService::class, function (MockInterface $mock): void {
-            $mock->shouldReceive('getVehicleData')
-                ->once()
-                ->with('GKSB78')
-                ->andReturn([
-                    'marca' => 'Toyota',
-                    'modelo' => 'Hilux',
-                    'color' => 'Blanco',
-                    'nombre_dueno' => 'Pedro Cliente',
-                    'rut_dueno' => '11111111-1',
-                ]);
+            $mock->shouldNotReceive('getVehicleData');
         });
 
         $response = $this->actingAs($admin)->post(route('receptions.store', [
@@ -185,9 +176,9 @@ class ReceptionControllerTest extends TestCase
                 'vehicle' => [
                     'brand' => 'Toyota',
                     'model' => 'Hilux',
-                    'color' => 'Blanco',
-                    'client' => 'Pedro Cliente',
-                    'rut' => '11111111-1',
+                    'color' => 'SIN DATO',
+                    'client' => 'SIN DATO',
+                    'rut' => 'SIN DATO',
                 ],
             ])
             ->assertJsonMissing(['queue' => true]);
@@ -215,16 +206,7 @@ class ReceptionControllerTest extends TestCase
         ])->preventStrayPrompts();
 
         $this->mock(BoostrService::class, function (MockInterface $mock): void {
-            $mock->shouldReceive('getVehicleData')
-                ->once()
-                ->with('GKSB78')
-                ->andReturn([
-                    'marca' => 'Toyota',
-                    'modelo' => 'Hilux',
-                    'color' => 'Blanco',
-                    'nombre_dueno' => 'Pedro Cliente',
-                    'rut_dueno' => '11111111-1',
-                ]);
+            $mock->shouldNotReceive('getVehicleData');
         });
 
         $response = $this->actingAs($admin)->post(route('receptions.store', [
