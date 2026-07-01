@@ -20,7 +20,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Response;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Laravel\Facades\Image as InterventionImage;
 use Laravel\Ai\Files\Image;
 
 class ReceptionController extends Controller
@@ -51,7 +54,21 @@ class ReceptionController extends Controller
         ]);
 
         $uploadedImage = $request->file('image');
-        $imagePath = $uploadedImage->store('reception/temp', 'public');
+
+        try {
+            $image = InterventionImage::decode($uploadedImage->getRealPath());
+
+            if ($image->width() > 1280) {
+                $image->scaleDown(width: 1280);
+            }
+
+            $imagePath = 'reception/temp/'.Str::uuid().'.jpg';
+            Storage::disk('public')->put($imagePath, $image->encode(new JpegEncoder(quality: 80))->toString());
+        } catch (\Throwable $e) {
+            Log::warning('Reception OCR image resize failed, falling back to raw upload: '.$e->getMessage());
+            $imagePath = $uploadedImage->store('reception/temp', 'public');
+        }
+
         $provider = (string) config('ai.default_for_images', config('ai.default', 'gemini'));
         $tenant = Tenant::current();
 
