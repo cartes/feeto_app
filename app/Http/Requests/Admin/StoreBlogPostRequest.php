@@ -18,6 +18,7 @@ class StoreBlogPostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
             'meta_title' => ['nullable', 'string', 'max:70'],
             'summary' => ['nullable', 'string', 'max:500'],
             'meta_description' => ['nullable', 'string', 'max:160'],

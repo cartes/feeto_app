@@ -16,6 +16,7 @@ const isEditing = computed(() => !!props.post);
 
 const form = useForm({
     title: props.post?.title || '',
+    slug: props.post?.slug || '',
     meta_title: props.post?.meta_title || '',
     summary: props.post?.summary || '',
     meta_description: props.post?.meta_description || '',
@@ -29,6 +30,16 @@ const page = usePage();
 const appUrl = computed(() => page.props.ziggy?.url || 'https://tallerflow.cl');
 const seoTitleLength = computed(() => form.meta_title.length);
 const seoDescLength = computed(() => form.meta_description.length);
+
+const slugPreview = computed(() => {
+    if (form.slug) {
+        return form.slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+    if (form.title) {
+        return form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+    return 'slug-del-articulo';
+});
 
 const mediaFiles = ref([]);
 const showMediaPicker = ref(false);
@@ -137,6 +148,24 @@ const submit = () => {
                             class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
                         />
                         <div v-if="form.errors.title" class="mt-1 text-sm text-red-600">{{ form.errors.title }}</div>
+                    </div>
+
+                    <div>
+                        <label for="slug" class="block text-sm font-medium text-gray-700">Enlace permanente (Slug)</label>
+                        <div class="mt-2 flex rounded-md shadow-sm">
+                            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-200 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                                blog/
+                            </span>
+                            <input
+                                type="text"
+                                id="slug"
+                                v-model="form.slug"
+                                placeholder="ej-titulo-del-articulo"
+                                class="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                            />
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400">Si se deja vacío, se generará automáticamente a partir del título.</p>
+                        <div v-if="form.errors.slug" class="mt-1 text-sm text-red-600">{{ form.errors.slug }}</div>
                     </div>
 
                     <div>
@@ -285,7 +314,7 @@ const submit = () => {
                     {{ form.meta_title || form.title || 'Título del artículo' }}
                 </p>
                 <p class="text-[#006621] text-xs truncate">
-                    {{ appUrl }}/blog/{{ post?.slug || 'slug-del-articulo' }}
+                    {{ appUrl }}/blog/{{ slugPreview }}
                 </p>
                 <p class="text-[#545454] text-sm line-clamp-2 mt-0.5">
                     {{ form.meta_description || form.summary || 'Descripción que aparecerá en los resultados de búsqueda de Google...' }}

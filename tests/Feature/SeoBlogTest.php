@@ -160,11 +160,58 @@ class SeoBlogTest extends TestCase
             'is_published' => false,
         ]);
 
-        $response->assertRedirect(route('admin.blog.index'));
         $this->assertDatabaseHas('blog_posts', [
             'title' => 'Mi Primer Articulo Modificado',
             'slug' => 'mi-primer-articulo-modificado',
             'is_published' => false,
+        ]);
+    }
+
+    public function test_super_admin_can_create_and_update_blog_posts_with_custom_slug(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->post(route('admin.blog.store'), [
+            'title' => 'Mi Articulo con Slug',
+            'slug' => 'custom-slug-articulo',
+            'summary' => 'Resumen del post',
+            'content' => '<p>Contenido del post</p>',
+            'is_published' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.blog.index'));
+        $this->assertDatabaseHas('blog_posts', [
+            'title' => 'Mi Articulo con Slug',
+            'slug' => 'custom-slug-articulo',
+            'is_published' => true,
+        ]);
+
+        $post = BlogPost::where('title', 'Mi Articulo con Slug')->firstOrFail();
+
+        $response = $this->actingAs($this->superAdmin)->put(route('admin.blog.update', $post->id), [
+            'title' => 'Mi Articulo con Slug',
+            'slug' => 'otro-slug-diferente',
+            'summary' => 'Resumen editado',
+            'content' => '<p>Contenido editado</p>',
+            'is_published' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.blog.index'));
+        $this->assertDatabaseHas('blog_posts', [
+            'id' => $post->id,
+            'slug' => 'otro-slug-diferente',
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->put(route('admin.blog.update', $post->id), [
+            'title' => 'Titulo Nuevo Para Fallback',
+            'slug' => '',
+            'summary' => 'Resumen editado',
+            'content' => '<p>Contenido editado</p>',
+            'is_published' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.blog.index'));
+        $this->assertDatabaseHas('blog_posts', [
+            'id' => $post->id,
+            'slug' => 'titulo-nuevo-para-fallback',
         ]);
     }
 

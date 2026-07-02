@@ -41,7 +41,11 @@ class BlogPostController extends Controller
         $categoryIds = $data['category_ids'] ?? [];
         unset($data['category_ids']);
 
-        $data['slug'] = BlogPost::generateUniqueSlug($data['title']);
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = BlogPost::generateUniqueSlug($data['slug']);
+        } else {
+            $data['slug'] = BlogPost::generateUniqueSlug($data['title']);
+        }
 
         if ($data['is_published']) {
             $data['published_at'] = now();
@@ -74,7 +78,9 @@ class BlogPostController extends Controller
         $categoryIds = $data['category_ids'] ?? [];
         unset($data['category_ids']);
 
-        if ($data['title'] !== $blog->title) {
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = BlogPost::generateUniqueSlug($data['slug'], $blog->id);
+        } else {
             $data['slug'] = BlogPost::generateUniqueSlug($data['title'], $blog->id);
         }
 
