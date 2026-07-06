@@ -9,6 +9,7 @@ const props = defineProps({
     integration_settings: Object,
     payment_settings: Object,
     analytics_settings: Object,
+    inactivity_settings: Object,
 });
 
 const user = computed(() => usePage().props.auth.user);
@@ -55,6 +56,8 @@ const apiForm = useForm({
     mp_public_key: '',
     mp_webhook_secret: '',
     vat_rate: props.payment_settings?.vat_rate?.value || '0.19',
+    inactivity_days: props.inactivity_settings?.inactivity_days?.value || '10',
+    inactivity_spam_days: props.inactivity_settings?.inactivity_spam_days?.value || '7',
 });
 
 const submitApiKeys = () => {
@@ -402,6 +405,44 @@ const hasSetting = (group, key) => group?.[key]?.has_value ?? false;
                                     />
                                     <p class="mt-1 text-xs text-slate-400">Porcentaje expresado en decimales (ej: 0.19 para el 19%).</p>
                                     <div v-if="apiForm.errors.vat_rate" class="mt-1 text-sm text-red-600">{{ apiForm.errors.vat_rate }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100"></div>
+
+                        <!-- Sub-group: Recordatorios de Inactividad -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-1">Recordatorio de Inactividad de Talleres (CRON)</h3>
+                            <p class="text-xs text-slate-500 mb-4">Configura las reglas para alertar a los administradores de talleres inactivos.</p>
+                            <div class="space-y-5 max-w-lg">
+                                <div>
+                                    <label for="inactivity_days" class="block text-sm font-medium text-gray-700">Días de inactividad tolerados</label>
+                                    <input
+                                        type="number"
+                                        id="inactivity_days"
+                                        v-model="apiForm.inactivity_days"
+                                        min="1"
+                                        max="365"
+                                        placeholder="10"
+                                        class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                                    />
+                                    <p class="mt-1 text-xs text-slate-400">Cantidad de días desde el último acceso antes de enviar el recordatorio.</p>
+                                    <div v-if="apiForm.errors.inactivity_days" class="mt-1 text-sm text-red-600">{{ apiForm.errors.inactivity_days }}</div>
+                                </div>
+                                <div>
+                                    <label for="inactivity_spam_days" class="block text-sm font-medium text-gray-700">Días para no repetir correo (Prevención de Spam)</label>
+                                    <input
+                                        type="number"
+                                        id="inactivity_spam_days"
+                                        v-model="apiForm.inactivity_spam_days"
+                                        min="1"
+                                        max="365"
+                                        placeholder="7"
+                                        class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                                    />
+                                    <p class="mt-1 text-xs text-slate-400">Intervalo mínimo de días antes de volver a enviar un correo de inactividad al mismo taller.</p>
+                                    <div v-if="apiForm.errors.inactivity_spam_days" class="mt-1 text-sm text-red-600">{{ apiForm.errors.inactivity_spam_days }}</div>
                                 </div>
                             </div>
                         </div>

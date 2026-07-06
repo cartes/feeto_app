@@ -29,6 +29,8 @@ class UpdateApiKeysRequest extends FormRequest
             'mp_webhook_secret' => ['nullable', 'string', 'max:500'],
             'mp_sandbox' => ['nullable', 'boolean'],
             'vat_rate' => ['nullable', 'numeric', 'min:0', 'max:1'],
+            'inactivity_days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'inactivity_spam_days' => ['nullable', 'integer', 'min:1', 'max:365'],
         ];
     }
 }

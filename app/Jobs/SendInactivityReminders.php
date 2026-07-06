@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Models\AuditLog;
 use App\Models\LoginLog;
+use App\Models\Setting;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\TenantInactivityReminder;
@@ -19,23 +20,26 @@ class SendInactivityReminders implements ShouldQueue
 
     public function handle(): void
     {
+        $inactivityDays = (int) Setting::get('inactivity_days', config('services.inactivity.days', 10));
+        $spamDays = (int) Setting::get('inactivity_spam_days', config('services.inactivity.spam_days', 7));
+
         Tenant::query()
             ->where('is_active', true)
-            ->each(function (Tenant $tenant): void {
+            ->each(function (Tenant $tenant) use ($inactivityDays, $spamDays): void {
                 $lastLoginDate = LoginLog::where('tenant_id', $tenant->id)->max('created_at');
                 $referenceDate = $lastLoginDate ? Carbon::parse($lastLoginDate) : $tenant->created_at;
 
-                // Si ha ingresado o se creó hace menos de 10 días, no es inactivo
-                if ($referenceDate->greaterThanOrEqualTo(now()->subDays(10))) {
+                // Si ha ingresado o se creó hace menos de los días indicados, no es inactivo
+                if ($referenceDate->greaterThanOrEqualTo(now()->subDays($inactivityDays))) {
                     return;
                 }
 
-                // Evitar spam: no enviar más de una vez cada 7 días
+                // Evitar spam: no enviar más de una vez en el intervalo especificado
                 $alreadySentRecently = AuditLog::query()
                     ->where('action', 'tenant.inactivity_reminder_sent')
                     ->where('model_type', Tenant::class)
                     ->where('model_id', $tenant->id)
-                    ->where('created_at', '>=', now()->subDays(7))
+                    ->where('created_at', '>=', now()->subDays($spamDays))
                     ->exists();
 
                 if ($alreadySentRecently) {

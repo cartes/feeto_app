@@ -42,4 +42,9 @@ return [
         'timeout' => (int) env('BOOSTR_TIMEOUT', 5),
     ],
 
+    'inactivity' => [
+        'days' => (int) env('INACTIVITY_REMINDER_DAYS', 10),
+        'spam_days' => (int) env('INACTIVITY_REMINDER_SPAM_DAYS', 7),
+    ],
+
 ];

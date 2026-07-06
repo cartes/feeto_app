@@ -101,11 +101,27 @@ class AdminProfileController extends Controller
             ],
         ]);
 
+        $inactivitySettings = $this->buildSettingsPayload('inactivity', [
+            'inactivity_days' => [
+                'config' => 'services.inactivity.days',
+                'default' => '10',
+                'description' => 'Días de inactividad tolerados antes del recordatorio',
+                'is_secret' => false,
+            ],
+            'inactivity_spam_days' => [
+                'config' => 'services.inactivity.spam_days',
+                'default' => '7',
+                'description' => 'Días mínimos para no repetir el recordatorio de inactividad',
+                'is_secret' => false,
+            ],
+        ]);
+
         return Inertia::render('Admin/Profile', [
             'ai_settings' => $aiSettings,
             'integration_settings' => $integrationSettings,
             'payment_settings' => $paymentSettings,
             'analytics_settings' => $analyticsSettings,
+            'inactivity_settings' => $inactivitySettings,
         ]);
     }
 

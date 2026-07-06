@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Jobs\SendInactivityReminders;
 use App\Models\AuditLog;
 use App\Models\LoginLog;
+use App\Models\Setting;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\TenantInactivityReminder;
@@ -186,5 +187,33 @@ class SendInactivityRemindersTest extends TestCase
         (new SendInactivityReminders)->handle();
 
         Notification::assertNotSentTo($admin, TenantInactivityReminder::class);
+    }
+
+    /** @test */
+    public function test_settings_db_override_changes_inactivity_days(): void
+    {
+        Notification::fake();
+
+        Setting::set('inactivity_days', 5);
+        Setting::set('inactivity_spam_days', 3);
+
+        $tenant = $this->createProvisionedTenant([
+            'is_active' => true,
+        ]);
+        $admin = User::factory()->create(['tenant_id' => $tenant->id]);
+        $tenant->makeCurrent();
+        $admin->assignRole('Admin');
+        Tenant::forgetCurrent();
+
+        // Login log de hace 6 días (mayor que 5 días de la configuración dinámica)
+        LoginLog::forceCreate([
+            'user_id' => $admin->id,
+            'tenant_id' => $tenant->id,
+            'created_at' => now()->subDays(6),
+        ]);
+
+        (new SendInactivityReminders)->handle();
+
+        Notification::assertSentTo($admin, TenantInactivityReminder::class);
     }
 }
