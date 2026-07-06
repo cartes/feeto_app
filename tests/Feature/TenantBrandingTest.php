@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Mail\AppointmentConfirmationMail;
+use App\Models\Appointment;
+use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Vehicle;
+use App\Models\WorkOrder;
+use App\Notifications\WorkOrderStatusChangedNotification;
 use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -138,6 +144,71 @@ class TenantBrandingTest extends TestCase
         $tenant->refresh();
         $this->assertNull($tenant->logo_path);
         Storage::disk('public')->assertMissing($logoPath);
+
+        Tenant::forgetCurrent();
+    }
+
+    /** @test */
+    public function test_client_emails_render_tenant_branding_when_tenant_is_current(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'name' => 'Taller Centrado',
+            'slug' => 'taller-centrado',
+            'logo_path' => 'tenants/1/logo.webp',
+            'primary_color' => '#E53E3E',
+        ]);
+
+        Storage::disk('public')->put('tenants/1/logo.webp', 'fake content');
+
+        $tenant->makeCurrent();
+
+        // 1. Test AppointmentConfirmationMail
+        $appointment = Appointment::factory()->create([
+            'tenant_id' => $tenant->id,
+            'customer_name' => 'Juan Perez',
+            'appointment_date' => now()->addDays(2),
+        ]);
+
+        $mailable = new AppointmentConfirmationMail($appointment, $tenant);
+        $html = $mailable->render();
+
+        $this->assertStringContainsString('Taller Centrado', $html);
+        $this->assertStringContainsString('tenants/1/logo.webp', $html);
+        $this->assertStringContainsString('#E53E3E', $html);
+
+        // 2. Test WorkOrderStatusChangedNotification
+        $client = Client::create([
+            'name' => 'Cliente Test',
+            'rut' => '11111111-1',
+            'phone' => '+56911111111',
+            'email' => 'test@example.com',
+        ]);
+
+        $vehicle = Vehicle::create([
+            'client_id' => $client->id,
+            'plate' => 'TEST01',
+            'brand' => 'Toyota',
+            'model' => 'Corolla',
+        ]);
+
+        $workOrder = WorkOrder::create([
+            'tenant_id' => $tenant->id,
+            'vehicle_id' => $vehicle->id,
+            'status' => WorkOrder::STATUS_RECEPCION,
+        ]);
+
+        $notification = new WorkOrderStatusChangedNotification(
+            $workOrder,
+            WorkOrder::STATUS_RECEPCION,
+            WorkOrder::STATUS_DIAGNOSTICO
+        );
+
+        $mailMessage = $notification->toMail((object) []);
+        $notificationHtml = (string) $mailMessage->render();
+
+        $this->assertStringContainsString('Taller Centrado', $notificationHtml);
+        $this->assertStringContainsString('tenants/1/logo.webp', $notificationHtml);
+        $this->assertStringContainsString('#E53E3E', $notificationHtml);
 
         Tenant::forgetCurrent();
     }

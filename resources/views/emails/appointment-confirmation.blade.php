@@ -1,3 +1,4 @@
+<x-mail::message>
 # ¡Tu cita está confirmada! ✅
 
 Hola **{{ $appointment->customer_name }}**,
@@ -28,3 +29,4 @@ Si necesitas reagendar o tienes alguna consulta, contáctanos directamente al ta
 
 ---
 Este correo fue enviado automáticamente por la plataforma Feeto.
+</x-mail::message>
