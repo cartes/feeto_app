@@ -75,6 +75,20 @@ const currentYear = new Date().getFullYear();
                             <span class="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">Instagram</span>
                         </a>
 
+                        <!-- Email Button -->
+                        <a 
+                            href="mailto:contacto@tallerflow.cl" 
+                            class="group flex items-center gap-3 w-fit text-sm text-slate-600 hover:text-slate-900 transition-colors duration-200"
+                        >
+                            <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:border-orange-300 group-hover:text-orange-600">
+                                <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </span>
+                            <span class="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">contacto@tallerflow.cl</span>
+                        </a>
+
                         <!-- WhatsApp Button -->
                         <a 
                             v-if="marketingWhatsApp.is_ready && marketingWhatsApp.href"
