@@ -28,10 +28,10 @@ use App\Http\Controllers\CustomerReportController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
-use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ManualQuoteController;
 use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\OcrController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\PublicBookingController;
@@ -63,6 +63,7 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\TrialRequestController;
 use App\Http\Controllers\VehicleCatalogController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\WorkbookImportController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Middleware\IsSuperAdmin;
 use App\Http\Middleware\SetTenantRouteDefaults;
@@ -268,6 +269,13 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->parameters(['inventory' => 'product'])
             ->middleware('permission:inventory.manage');
 
+        Route::get('/inventory/import/template', [WorkbookImportController::class, 'downloadProductsTemplate'])
+            ->middleware('permission:inventory.manage')
+            ->name('inventory.import.template');
+        Route::post('/inventory/import', [WorkbookImportController::class, 'importProducts'])
+            ->middleware('permission:inventory.manage')
+            ->name('inventory.import');
+
         Route::get('/inventory/{product}/movements', [InventoryController::class, 'movements'])
             ->middleware('permission:inventory.manage')
             ->name('inventory.movements');
@@ -292,6 +300,13 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::resource('clients', ClientController::class)
             ->only(['index', 'show', 'store'])
             ->middleware('permission:customers.manage');
+
+        Route::get('/clients/import/template', [WorkbookImportController::class, 'downloadClientsTemplate'])
+            ->middleware('permission:customers.manage')
+            ->name('clients.import.template');
+        Route::post('/clients/import', [WorkbookImportController::class, 'importClients'])
+            ->middleware('permission:customers.manage')
+            ->name('clients.import');
 
         Route::post('clients/{client}/notes', [InternalNoteController::class, 'store'])
             ->middleware('permission:customers.manage')

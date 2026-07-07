@@ -287,6 +287,162 @@ onUnmounted(() => {
             </section>
         </div>
 
+        <!-- Sección "Problemas que resolvemos" (dolores del taller mecánico) -->
+        <section id="problemas" class="py-24 bg-white border-b border-slate-100 font-sans antialiased">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Problemas que resolvemos</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                        ¿Tu taller sufre estos <em class="text-[#FF7A00] not-italic">dolores de cabeza?</em>
+                    </h2>
+                    <p class="text-slate-500 mt-4 text-base leading-relaxed">
+                        Sabemos cómo se siente el día a día de un taller mecánico. TallerFlow ataca de raíz los problemas
+                        que frenan tu operación, hacen perder clientes y proyectan una imagen informal.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Desorden operacional -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Desorden operacional</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            Autos sin estado claro, trabajos pendientes que nadie recuerda, repuestos que faltan y
+                            mecánicos preguntando constantemente <span class="font-semibold text-slate-600">“¿qué sigue?”</span>.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> tablero Kanban en vivo con el
+                                estado de cada auto, tareas asignadas e inventario conectado a cada orden.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Cotizaciones perdidas -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Cotizaciones perdidas</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            Se manda la cotización por WhatsApp, el cliente no responde y nadie hace seguimiento. Cada
+                            cotización olvidada es dinero que se va.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> cotizaciones registradas con
+                                seguimiento automático y recordatorios por WhatsApp para no perder ninguna venta.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Cliente impaciente -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Cliente impaciente</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            Llama una y otra vez porque no sabe si su auto está en diagnóstico, en reparación o listo para
+                            retirar. Cada llamada interrumpe el trabajo.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> portal de seguimiento para el
+                                cliente y avisos automáticos en cada cambio de estado del vehículo.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Historial pobre -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Historial pobre</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            No saben qué se hizo hace 6 meses, cuánto gastó ese cliente ni qué vehículo vuelve más seguido.
+                            Sin datos, no hay decisiones inteligentes.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> historial completo por vehículo
+                                y por cliente, con gasto acumulado y frecuencia de visitas a un clic.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Poca imagen profesional -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Poca imagen profesional</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            El taller puede ser excelente técnicamente, pero se ve informal sin trazabilidad, sin portal,
+                            sin tracking ni mensajes ordenados. La confianza se pierde antes de empezar.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> portal de marca, trazabilidad
+                                completa y comunicación ordenada que proyectan un taller profesional y confiable.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Dependencia del dueño -->
+                    <article class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col gap-4 transition-all duration-300 hover:border-[#FF7A00]/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                        <span class="flex-shrink-0 w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                            </svg>
+                        </span>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Dependencia del dueño</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            Si el jefe no está, nadie sabe qué pasa. La operación se paraliza y el negocio no puede crecer
+                            porque todo vive en la cabeza de una sola persona.
+                        </p>
+                        <div class="mt-auto pt-4 flex items-start gap-3 border-t border-slate-200/70">
+                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900">Con TallerFlow:</span> toda la información centralizada
+                                y accesible para tu equipo, para que el taller funcione con o sin el dueño presente.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
         <section id="preview-slider" class="py-24 bg-[#f8fafc] border-b border-slate-100 font-sans antialiased">
             <div class="max-w-6xl mx-auto px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">

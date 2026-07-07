@@ -58,6 +58,7 @@ class HandleInertiaRequests extends Middleware
                 'warning' => $request->session()->get('warning'),
                 'info' => $request->session()->get('info'),
                 'status' => $request->session()->get('status'),
+                'import_summary' => $request->session()->get('import_summary'),
                 'booking_success' => $request->session()->get('booking_success'),
             ],
             'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,

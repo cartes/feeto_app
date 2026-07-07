@@ -1,11 +1,12 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
 import { useDebounce } from '@/composables/useDebounce';
 
+const page = usePage();
 const props = defineProps({
     clients: Object,
     filters: Object,
@@ -16,6 +17,11 @@ const { formatCurrency, formatDate } = useFormatting();
 const { debounce } = useDebounce();
 const search = ref(props.filters.search || '');
 const isCreateModalOpen = ref(false);
+const isImportModalOpen = ref(false);
+const importInput = ref(null);
+const flash = computed(() => page.props.flash ?? {});
+const importSummary = computed(() => flash.value.import_summary?.kind === 'clients' ? flash.value.import_summary : null);
+const visibleImportErrors = computed(() => importSummary.value?.errors?.slice(0, 5) ?? []);
 
 const form = useForm({
     name: '',
@@ -23,6 +29,10 @@ const form = useForm({
     phone: '',
     email: '',
     max_credit_limit: '',
+});
+
+const importForm = useForm({
+    workbook: null,
 });
 
 watch(search, debounce((value) => {
@@ -38,6 +48,28 @@ const submit = () => {
             isCreateModalOpen.value = false;
             form.reset();
         },
+    });
+};
+
+const closeImportModal = () => {
+    isImportModalOpen.value = false;
+    importForm.reset();
+    importForm.clearErrors();
+
+    if (importInput.value) {
+        importInput.value.value = '';
+    }
+};
+
+const handleImportFileChange = (event) => {
+    importForm.workbook = event.target.files?.[0] ?? null;
+};
+
+const submitImport = () => {
+    importForm.post(route('clients.import', tenantRouteParams.value), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => closeImportModal(),
     });
 };
 </script>
@@ -65,6 +97,15 @@ const submit = () => {
                             class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50" />
                     </div>
 
+                    <button @click="isImportModalOpen = true"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 shadow-sm transition-colors hover:bg-gray-50">
+                        <svg class="h-5 w-5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Importar Excel
+                    </button>
+
                     <button @click="isCreateModalOpen = true"
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white shadow-sm transition-colors hover:bg-gray-800">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,6 +113,48 @@ const submit = () => {
                         </svg>
                         Nuevo Cliente
                     </button>
+                </div>
+            </div>
+
+            <div v-if="importSummary"
+                class="rounded-[2rem] border border-amber-200 bg-amber-50/70 p-6 shadow-sm">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Ultima importacion</p>
+                        <h2 class="mt-2 text-lg font-black uppercase tracking-tight text-gray-900">Clientes y vehiculos</h2>
+                        <p class="mt-1 text-sm font-medium text-gray-600">
+                            {{ importSummary.processed_rows }} filas procesadas, {{ importSummary.skipped_rows }} omitidas y {{ importSummary.error_rows }} con error.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <div class="rounded-2xl bg-white px-4 py-3">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Clientes nuevos</p>
+                            <p class="mt-1 text-2xl font-black text-gray-900">{{ importSummary.created_clients }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-white px-4 py-3">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Clientes actualizados</p>
+                            <p class="mt-1 text-2xl font-black text-gray-900">{{ importSummary.updated_clients }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-white px-4 py-3">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vehiculos nuevos</p>
+                            <p class="mt-1 text-2xl font-black text-gray-900">{{ importSummary.created_vehicles }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-white px-4 py-3">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vehiculos actualizados</p>
+                            <p class="mt-1 text-2xl font-black text-gray-900">{{ importSummary.updated_vehicles }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="visibleImportErrors.length" class="mt-5 rounded-2xl border border-amber-200 bg-white p-4">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-amber-600">Filas con observaciones</p>
+                    <div class="mt-3 space-y-2">
+                        <div v-for="error in visibleImportErrors" :key="`${error.row}-${error.message}`"
+                            class="rounded-xl bg-amber-50 px-3 py-2 text-sm font-medium text-gray-700">
+                            <span class="font-black text-amber-700">Fila {{ error.row }}:</span> {{ error.message }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -155,6 +238,78 @@ const submit = () => {
                             :class="link.active ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'" />
                         <span v-else v-html="link.label" class="px-3 py-1.5 text-sm font-medium text-gray-400"></span>
                     </template>
+                </div>
+            </div>
+
+            <div v-if="isImportModalOpen"
+                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/50 p-4 backdrop-blur-sm md:p-0">
+                <div class="relative w-full max-w-2xl rounded-[2.5rem] bg-white p-8 shadow-2xl">
+                    <button @click="closeImportModal"
+                        class="absolute right-6 top-6 text-gray-400 transition-colors hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-black uppercase tracking-tight text-gray-900">Importar clientes y vehiculos</h3>
+                            </div>
+                            <p class="mt-3 text-sm font-medium text-gray-500">
+                                Usa la plantilla para cargar clientes, patentes y datos del vehiculo. Si un RUT o patente ya existe en este taller, la importacion actualiza el registro.
+                            </p>
+                        </div>
+
+                        <div class="grid gap-4 rounded-[2rem] border border-gray-100 bg-gray-50/70 p-5 md:grid-cols-2">
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Plantilla sugerida</p>
+                                <p class="mt-2 text-sm font-medium text-gray-600">Incluye columnas para cliente, contacto y multiples patentes.</p>
+                                <a :href="route('clients.import.template', tenantRouteParams)"
+                                    class="mt-4 inline-flex items-center gap-2 rounded-2xl bg-gray-900 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-white transition-colors hover:bg-gray-800">
+                                    Descargar plantilla
+                                </a>
+                            </div>
+
+                            <div class="rounded-2xl bg-white p-4">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Campos esperados</p>
+                                <p class="mt-2 text-sm font-medium text-gray-600">Nombre, RUT, teléfono, email, dirección y patente. Marca, modelo, color y VIN son opcionales.</p>
+                            </div>
+                        </div>
+
+                        <form @submit.prevent="submitImport" class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Archivo Excel o CSV</label>
+                                <input ref="importInput" type="file" accept=".xlsx,.xls,.csv" @change="handleImportFileChange"
+                                    class="block w-full rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-sm font-medium text-gray-700 file:mr-4 file:rounded-xl file:border-0 file:bg-[#FF7A00] file:px-4 file:py-2 file:text-sm file:font-black file:text-white hover:file:bg-[#CC6200]" />
+                                <p class="text-xs font-medium text-gray-500">Acepta archivos .xlsx, .xls y .csv de hasta 10 MB.</p>
+                                <p v-if="importForm.errors.workbook" class="text-xs text-rose-500">{{ importForm.errors.workbook }}</p>
+                            </div>
+
+                            <div class="flex justify-end gap-3 border-t border-gray-100 pt-4">
+                                <button type="button" @click="closeImportModal"
+                                    class="rounded-2xl px-5 py-3 text-sm font-bold text-gray-500 transition-colors hover:bg-gray-100">
+                                    Cancelar
+                                </button>
+                                <button type="submit" :disabled="importForm.processing || !importForm.workbook"
+                                    class="inline-flex items-center justify-center rounded-2xl bg-[#FF7A00] px-6 py-3 text-sm font-black text-white transition-all hover:bg-[#CC6200] disabled:opacity-50">
+                                    <svg v-if="importForm.processing" class="mr-2 h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    {{ importForm.processing ? 'Importando...' : 'Importar archivo' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
