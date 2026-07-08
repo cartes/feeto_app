@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
+import OnboardingTour from '@/Components/OnboardingTour.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 import Toast from '@/Components/Toast.vue';
 
@@ -89,7 +90,7 @@ watch(
         <!-- SIDEBAR - Desktop Only -->
         <aside class="hidden lg:flex lg:flex-col lg:w-72 fixed inset-y-0 left-0 bg-white/60 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-50">
             <!-- Branding -->
-            <div class="px-8 py-8 flex items-center gap-3">
+            <div class="px-8 py-8 flex items-center gap-3" data-tour="tenant-brand">
                 <ApplicationLogo class="h-12 w-12 rounded-[14px] flex-shrink-0 shadow-sm" />
                 <div class="flex items-center gap-2 text-[2rem] font-bold tracking-tight leading-none">
                     <span class="text-slate-900">Taller</span>
@@ -98,7 +99,7 @@ watch(
             </div>
 
             <!-- Navegación Desktop -->
-            <nav class="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-3">
+            <nav class="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-3" data-tour="tenant-navigation">
                 <Link
                     v-for="(item, index) in navItems"
                     :key="index"
@@ -115,6 +116,7 @@ watch(
                 <Link
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
+                    data-tour="tenant-settings"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
                     :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
@@ -171,7 +173,7 @@ watch(
                     </div>
 
                     <!-- Buscador global en desktop -->
-                    <div class="hidden lg:flex relative w-96">
+                    <div class="hidden lg:flex relative w-96" data-tour="tenant-search">
                         <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -187,7 +189,9 @@ watch(
 
                 <!-- Botones Derecha -->
                 <div class="flex items-center gap-2">
-                    <NotificationBell />
+                    <div data-tour="tenant-notifications">
+                        <NotificationBell />
+                    </div>
                     <Link
                         :href="route('logout')"
                         method="post"
@@ -205,7 +209,7 @@ watch(
             <!-- MAIN CONTENT AREA -->
             <main class="flex-1 px-6 lg:px-10 pb-28 lg:pb-12 flex flex-col gap-6">
                 <!-- Search Bar (Mobile only) -->
-                <div class="relative lg:hidden">
+                <div class="relative lg:hidden" data-tour="tenant-mobile-search">
                     <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -222,7 +226,7 @@ watch(
             </main>
 
             <!-- ======== BOTTOM FLOATING NAV (SOLO MOBILE) ======== -->
-            <nav class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] h-16 bg-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-around px-2 z-50 border border-gray-100">
+            <nav class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] h-16 bg-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-around px-2 z-50 border border-gray-100" data-tour="tenant-mobile-navigation">
                 <Link
                     v-for="(item, index) in navItems"
                     :key="index"
@@ -239,6 +243,7 @@ watch(
                 <Link
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
+                    data-tour="tenant-mobile-settings"
                     class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
                     :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
                 >
@@ -252,6 +257,7 @@ watch(
         </div>
         <PasswordChangeModal v-if="user?.needs_password_change" />
         <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
+        <OnboardingTour variant="tenant" />
     </div>
 </template>
 

@@ -52,6 +52,10 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => $authorization['permissions'],
                 ]) : null,
             ],
+            'onboarding' => $user ? [
+                'show_tour' => $user->onboarding_tour_completed_at === null,
+                'completed_at' => $user->onboarding_tour_completed_at?->toIso8601String(),
+            ] : null,
             'flash' => fn (): array => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),

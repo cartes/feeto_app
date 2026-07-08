@@ -63,6 +63,7 @@ return [
             'password.*',
             'verification.*',
             'dashboard',
+            'onboarding-tour.complete',
             'taller.dashboard',
             'receptions.create',
             'receptions.store',

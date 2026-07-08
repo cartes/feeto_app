@@ -31,6 +31,7 @@ use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\ManualQuoteController;
 use App\Http\Controllers\ManualQuoteTrackingController;
 use App\Http\Controllers\OcrController;
+use App\Http\Controllers\OnboardingTourController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBlogController;
@@ -159,6 +160,10 @@ Route::get('/dashboard', function (Request $request): Response {
 
     abort(403, 'Este usuario no tiene un taller asignado.');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::post('/onboarding-tour/complete', OnboardingTourController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('onboarding-tour.complete');
 
 Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefaults::class])
     ->prefix('/taller/{tenantBySlug}')
