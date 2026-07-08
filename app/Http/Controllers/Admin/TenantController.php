@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTenantRequest;
+use App\Http\Requests\Admin\UpdateTenantRequest;
+use App\Models\Plan;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantSetupService;
@@ -12,7 +14,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -97,27 +98,74 @@ class TenantController extends Controller
 
     public function edit(Tenant $tenant): Response
     {
-        $tenant->load('users');
+        $tenant->load([
+            'plan:id,name,slug,max_users',
+            'users:id,tenant_id,name,email',
+        ]);
+
+        $plans = Plan::query()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug', 'max_users', 'is_active']);
 
         return Inertia::render('Admin/Tenants/Edit', [
-            'tenant' => $tenant,
+            'tenant' => [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'domain' => $tenant->domain,
+                'plan' => $tenant->plan,
+                'plan_id' => $tenant->plan_id,
+                'status' => $tenant->status,
+                'phone' => $tenant->phone,
+                'seo_address' => $tenant->seo_address,
+                'comuna' => $tenant->comuna,
+                'whatsapp_number' => $tenant->whatsapp_number,
+                'subscription_ends_at' => $tenant->subscription_ends_at?->toDateString(),
+                'users' => $tenant->users
+                    ->map(static fn (User $user): array => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ])
+                    ->values()
+                    ->all(),
+            ],
+            'plans' => $plans
+                ->map(static fn (Plan $plan): array => [
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'slug' => $plan->slug,
+                    'max_users' => $plan->max_users,
+                    'is_active' => (bool) $plan->is_active,
+                ])
+                ->values()
+                ->all(),
         ]);
     }
 
-    public function update(Request $request, Tenant $tenant): RedirectResponse
+    public function update(UpdateTenantRequest $request, Tenant $tenant): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'domain' => 'required|string|max:255|unique:tenants,domain,'.$tenant->id,
-            'plan' => ['required', Rule::enum(TenantPlan::class)],
-            'status' => 'required|in:active,suspended',
-            'phone' => ['nullable', 'string', 'max:20'],
-            'seo_address' => ['nullable', 'string', 'max:255'],
-            'comuna' => ['nullable', 'string', 'max:100'],
-            'whatsapp_number' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]{7,20}$/'],
-        ]);
+        $validated = $request->validated();
+        $plan = Plan::query()->findOrFail($validated['plan_id']);
+        $resolvedPlan = TenantPlan::fromPlanModel($plan)?->value ?? $plan->slug;
 
-        $tenant->update($validated);
+        $tenant->update([
+            'name' => $validated['name'],
+            'domain' => $validated['domain'],
+            'plan_id' => $plan->id,
+            'plan' => $resolvedPlan,
+            'plan_type' => $resolvedPlan,
+            'max_users' => $plan->max_users,
+            'status' => $validated['status'],
+            'is_active' => $validated['status'] === 'active',
+            'phone' => $validated['phone'],
+            'seo_address' => $validated['seo_address'],
+            'comuna' => $validated['comuna'],
+            'whatsapp_number' => $validated['whatsapp_number'],
+            'subscription_ends_at' => $validated['subscription_ends_at']
+                ? now()->parse($validated['subscription_ends_at'])
+                : null,
+        ]);
 
         return back()->with('success', 'Taller actualizado correctamente.');
     }

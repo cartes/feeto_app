@@ -1,26 +1,51 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import PasswordInput from '@/Components/PasswordInput.vue';
 
 const props = defineProps({
     tenant: Object,
+    plans: Array,
 });
 
 const activeTab = ref('details');
 
 const adminUser = props.tenant.users && props.tenant.users.length > 0 ? props.tenant.users[0] : null;
 
+const TRIAL_PERIOD_OPTIONS = [
+    { label: '3 meses', months: 3 },
+    { label: '6 meses', months: 6 },
+    { label: '1 año', months: 12 },
+];
+
+const formatDateInputValue = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+};
+
+const trialEndDateForMonths = (months) => {
+    const date = new Date();
+
+    date.setHours(12, 0, 0, 0);
+    date.setMonth(date.getMonth() + months);
+
+    return formatDateInputValue(date);
+};
+
 const tenantForm = useForm({
     name: props.tenant.name || '',
     domain: props.tenant.domain || '',
-    plan: props.tenant.plan || 'gratuito',
+    plan_id: props.tenant.plan_id ?? props.plans[0]?.id ?? null,
     status: props.tenant.status || 'active',
     phone: props.tenant.phone || '',
     seo_address: props.tenant.seo_address || '',
     comuna: props.tenant.comuna || '',
     whatsapp_number: props.tenant.whatsapp_number || '',
+    subscription_ends_at: props.tenant.subscription_ends_at || '',
 });
 
 const adminForm = useForm({
@@ -40,6 +65,22 @@ const submitAdmin = () => {
         preserveScroll: true,
         onSuccess: () => adminForm.reset('password'),
     });
+};
+
+const selectedTrialPeriod = computed(() => {
+    if (!tenantForm.subscription_ends_at) {
+        return null;
+    }
+
+    const activeOption = TRIAL_PERIOD_OPTIONS.find(({ months }) => {
+        return tenantForm.subscription_ends_at === trialEndDateForMonths(months);
+    });
+
+    return activeOption ? activeOption.months : null;
+});
+
+const setTrialPeriod = (months) => {
+    tenantForm.subscription_ends_at = trialEndDateForMonths(months);
 };
 </script>
 
@@ -103,13 +144,12 @@ const submitAdmin = () => {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label for="plan" class="block text-sm font-medium text-gray-700">Plan de Suscripción</label>
-                                <select id="plan" v-model="tenantForm.plan" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
-                                    <option value="gratuito">Gratuito</option>
-                                    <option value="basico">Básico</option>
-                                    <option value="profesional">Profesional</option>
-                                    <option value="empresa">Empresa</option>
+                                <select id="plan" v-model="tenantForm.plan_id" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                                    <option v-for="plan in plans" :key="plan.id" :value="plan.id">
+                                        {{ plan.name }}{{ plan.is_active ? '' : ' (inactivo)' }}
+                                    </option>
                                 </select>
-                                <div v-if="tenantForm.errors.plan" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.plan }}</div>
+                                <div v-if="tenantForm.errors.plan_id" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.plan_id }}</div>
                             </div>
                             <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700">Estado del Servicio</label>
@@ -119,6 +159,29 @@ const submitAdmin = () => {
                                 </select>
                                 <div v-if="tenantForm.errors.status" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.status }}</div>
                             </div>
+                        </div>
+
+                        <div>
+                            <label for="subscription_ends_at" class="block text-sm font-medium text-gray-700">Fecha término suscripción de prueba</label>
+                            <input type="date" id="subscription_ends_at" v-model="tenantForm.subscription_ends_at" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" />
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button
+                                    v-for="option in TRIAL_PERIOD_OPTIONS"
+                                    :key="option.months"
+                                    type="button"
+                                    @click="setTrialPeriod(option.months)"
+                                    :class="[
+                                        selectedTrialPeriod === option.months
+                                            ? 'border-orange-500 bg-orange-50 text-orange-700 ring-1 ring-orange-500/30'
+                                            : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50',
+                                        'inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium transition-colors',
+                                    ]"
+                                >
+                                    {{ option.label }}
+                                </button>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Estos botones completan la fecha automáticamente desde hoy.</p>
+                            <div v-if="tenantForm.errors.subscription_ends_at" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.subscription_ends_at }}</div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
