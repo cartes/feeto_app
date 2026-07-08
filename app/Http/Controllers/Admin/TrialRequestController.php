@@ -8,10 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\TrialRequest;
 use App\Models\User;
+use App\Notifications\TrialRequestApprovedNotification;
+use App\Notifications\TrialRequestRejectedNotification;
 use App\Services\TenantSetupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -88,6 +91,8 @@ class TrialRequestController extends Controller
             'tenant_id' => $tenant->id,
         ]);
 
+        $admin->notify(new TrialRequestApprovedNotification($trialRequest, $tenant, $validated['admin_password']));
+
         return back()->with('success', "Solicitud aprobada. Taller \"{$tenant->name}\" creado con acceso trial de 14 días.");
     }
 
@@ -139,6 +144,9 @@ class TrialRequestController extends Controller
             'status' => 'rejected',
             'rejection_reason' => $validated['rejection_reason'] ?? null,
         ]);
+
+        Notification::route('mail', $trialRequest->email)
+            ->notify(new TrialRequestRejectedNotification($trialRequest));
 
         return back()->with('success', 'Solicitud rechazada correctamente.');
     }
