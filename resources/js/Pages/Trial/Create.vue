@@ -97,8 +97,10 @@ const submit = () => {
                         type="email"
                         autocomplete="email"
                         inputmode="email"
+                        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                         required
                         placeholder="tu@taller.cl"
+                        title="Ingresa un correo válido, por ejemplo tu@taller.cl"
                         class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                         :class="{ 'border-rose-400 focus:ring-rose-400': form.errors.email }"
                     />

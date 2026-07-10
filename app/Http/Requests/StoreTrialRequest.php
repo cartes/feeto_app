@@ -21,7 +21,7 @@ class StoreTrialRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:trial_requests,email'],
+            'email' => ['required', 'email:filter', 'max:255', 'unique:trial_requests,email'],
             'phone' => ['required', 'string', 'max:30'],
             'business_name' => ['required', 'string', 'max:255'],
             'business_type' => ['required', 'string', 'max:100'],
