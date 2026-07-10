@@ -26,7 +26,10 @@ class ExampleTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Welcome')
                 ->has('canLogin')
-                ->has('canRegister'));
+                ->has('canRegister')
+                ->where('inventoryImportHighlight.eyebrow', 'Nuevo en inventario')
+                ->where('inventoryImportHighlight.tag', 'Importación masiva')
+                ->where('inventoryImportHighlight.bullets.0', 'Acepta archivos Excel y CSV.'));
     }
 
     public function test_authenticated_user_can_visit_homepage_without_redirection(): void

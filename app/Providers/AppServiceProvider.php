@@ -8,6 +8,7 @@ use App\Events\StockDepleted;
 use App\Events\TrialRequestSubmitted;
 use App\Events\WorkOrderDraftCreated;
 use App\Events\WorkOrderStatusUpdated;
+use App\Listeners\NotifyClientOfTrialRequest;
 use App\Listeners\NotifySuperAdminOfTrialRequest;
 use App\Listeners\PersistMarginAlertNotification;
 use App\Listeners\PersistStockAlertNotification;
@@ -54,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Login::class, RecordLoginLog::class);
         Event::listen(WorkOrderStatusUpdated::class, SendWorkOrderStatusChangedEmail::class);
         Event::listen(TrialRequestSubmitted::class, NotifySuperAdminOfTrialRequest::class);
+        Event::listen(TrialRequestSubmitted::class, NotifyClientOfTrialRequest::class);
         Event::listen(StockDepleted::class, PersistStockAlertNotification::class);
         Event::listen(SafetyStockReached::class, PersistStockAlertNotification::class);
         Event::listen(MinimumMarginWarning::class, PersistMarginAlertNotification::class);

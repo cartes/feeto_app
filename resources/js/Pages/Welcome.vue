@@ -12,6 +12,7 @@ const props = defineProps({
     seo: { type: Object, default: () => ({}) },
     posts: { type: Array, default: () => [] },
     tenants: { type: Array, default: () => [] },
+    inventoryImportHighlight: { type: Object, default: () => ({}) },
 });
 
 const showLoginModal = ref(false);
@@ -43,6 +44,14 @@ const slides = [
         tagClass: 'bg-purple-50 text-purple-600 border border-purple-100',
         image: '/images/recepcion_ia.png',
         imageWebp: '/images/recepcion_ia.webp'
+    },
+    {
+        title: props.inventoryImportHighlight.title || 'Importación de productos desde Excel',
+        description: props.inventoryImportHighlight.description || 'Carga tu inventario desde Excel o CSV para crear o actualizar productos en minutos.',
+        tag: props.inventoryImportHighlight.tag || 'Inventario',
+        tagClass: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+        image: props.inventoryImportHighlight.image || '/images/screenshots/inventario.png',
+        imageWebp: props.inventoryImportHighlight.imageWebp || '/images/screenshots/inventario.webp',
     }
 ];
 
@@ -239,11 +248,11 @@ onUnmounted(() => {
                                 </svg>
                             </span>
                             <h3>Inventario Inteligente</h3>
-                            <p>Stock al día con alertas de mínimos, control de proveedores y registro automático al
-                                cerrar cada
-                                orden.</p>
+                            <p>Stock al día con alertas de mínimos, control de proveedores, importación desde Excel y
+                                registro automático al cerrar cada orden.</p>
                             <div class="feat-tags">
                                 <span class="feat-tag feat-tag-green">Stock Mínimo</span>
+                                <span class="feat-tag feat-tag-green">Importación Excel</span>
                                 <span class="feat-tag feat-tag-dim">Alertas</span>
                             </div>
                         </div>
@@ -286,6 +295,77 @@ onUnmounted(() => {
                 </div>
             </section>
         </div>
+
+        <section id="inventory-import" class="border-b border-slate-100 bg-[#fff7ef] py-24 font-sans antialiased">
+            <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
+                <div>
+                    <span class="mb-3 block text-xs font-bold uppercase tracking-widest text-[#FF7A00]">
+                        {{ inventoryImportHighlight.eyebrow }}
+                    </span>
+                    <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl md:leading-tight">
+                        {{ inventoryImportHighlight.title }}
+                    </h2>
+                    <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
+                        {{ inventoryImportHighlight.description }}
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <span class="inline-flex items-center rounded-full border border-[#FF7A00]/20 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#FF7A00]">
+                            Excel + CSV
+                        </span>
+                        <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">
+                            SKU inteligente
+                        </span>
+                        <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
+                            Stock sincronizado
+                        </span>
+                    </div>
+
+                    <ul class="mt-8 space-y-4">
+                        <li
+                            v-for="bullet in inventoryImportHighlight.bullets"
+                            :key="bullet"
+                            class="flex items-start gap-4 rounded-2xl border border-white/80 bg-white/90 px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+                        >
+                            <span class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </span>
+                            <p class="text-sm font-semibold leading-relaxed text-slate-700">{{ bullet }}</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.18),_transparent_65%)] blur-2xl"></div>
+                    <div class="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+                        <div class="mb-4 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Inventario</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-700">Carga masiva de productos para tu taller</p>
+                            </div>
+                            <span class="rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white">
+                                {{ inventoryImportHighlight.tag }}
+                            </span>
+                        </div>
+
+                        <div class="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50">
+                            <picture>
+                                <source :srcset="inventoryImportHighlight.imageWebp" type="image/webp" />
+                                <img
+                                    :src="inventoryImportHighlight.image"
+                                    alt="Inventario TallerFlow con importación de productos desde Excel"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full object-cover object-top"
+                                />
+                            </picture>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Sección "Problemas que resolvemos" (dolores del taller mecánico) -->
         <section id="problemas" class="py-24 bg-white border-b border-slate-100 font-sans antialiased">

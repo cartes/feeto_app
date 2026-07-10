@@ -52,6 +52,19 @@ class WelcomeController extends Controller
             'canRegister' => Route::has('register'),
             'posts' => $posts,
             'tenants' => $tenants,
+            'inventoryImportHighlight' => [
+                'eyebrow' => 'Nuevo en inventario',
+                'title' => 'Importa tus productos desde Excel y pon tu stock al día en minutos.',
+                'description' => 'Sube el archivo que ya usa tu taller y TallerFlow crea o actualiza repuestos, SKU, precios, categorías y stock sin tener que cargar producto por producto.',
+                'bullets' => [
+                    'Acepta archivos Excel y CSV.',
+                    'Actualiza productos existentes por SKU.',
+                    'Registra el ajuste de stock al importar.',
+                ],
+                'tag' => 'Importación masiva',
+                'image' => '/images/screenshots/inventario.png',
+                'imageWebp' => '/images/screenshots/inventario.webp',
+            ],
             'seo' => $this->resolveMarketingSeo(
                 'home',
                 'TallerFlow · Software para Talleres Mecánicos en Chile',

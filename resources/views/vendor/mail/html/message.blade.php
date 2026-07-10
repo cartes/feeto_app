@@ -16,7 +16,7 @@
             </x-mail::header>
         @else
             <x-mail::header :url="config('app.url')">
-                {{ config('app.name') }}
+                <img src="{{ asset('images/taller-flow-isotipo.png') }}" class="logo" alt="{{ config('app.name') }}" style="max-height: 40px; width: auto; object-fit: contain;">
             </x-mail::header>
         @endif
     </x-slot:header>
