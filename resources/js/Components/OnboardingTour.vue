@@ -14,10 +14,13 @@ const isVisible = ref(false);
 const isSubmitting = ref(false);
 const currentStepIndex = ref(0);
 const activeSteps = ref([]);
-const spotlightStyle = ref({});
+const spotlightRect = ref(null);
 const cardStyle = ref({});
 const cardRef = ref(null);
 const viewportMode = ref('desktop');
+const vw = ref(0);
+const vh = ref(0);
+
 
 const TOUR_VARIANTS = {
     tenant: {
@@ -66,42 +69,6 @@ const TOUR_VARIANTS = {
             },
         ],
     },
-    admin: {
-        desktop: [
-            {
-                selectors: ['[data-tour="admin-navigation"]'],
-                title: 'Panel de administracion',
-                description: 'Este menu concentra el acceso a talleres, usuarios, planes, pagos, auditoria y SEO.',
-            },
-            {
-                selectors: ['[data-tour="admin-blog"]'],
-                title: 'Contenido y medios',
-                description: 'Desde Blog gestionas articulos, categorias y el banco de imagenes del sitio.',
-            },
-            {
-                selectors: ['[data-tour="admin-user-menu"]'],
-                title: 'Perfil y salida',
-                description: 'Aqui tienes tu perfil de administrador y la salida segura de la sesion.',
-            },
-        ],
-        mobile: [
-            {
-                selectors: ['[data-tour="admin-brand"]'],
-                title: 'Vista administrativa',
-                description: 'Estas dentro del panel maestro para operar la plataforma completa.',
-            },
-            {
-                selectors: ['[data-tour="admin-mobile-menu"]'],
-                title: 'Menu movil',
-                description: 'Abre este boton para navegar entre talleres, planes, pagos y el resto de modulos.',
-            },
-            {
-                selectors: ['[data-tour="admin-content"]'],
-                title: 'Zona de trabajo',
-                description: 'El contenido principal cambia segun el modulo, pero siempre se renderiza aqui.',
-            },
-        ],
-    },
 };
 
 const currentStep = computed(() => activeSteps.value[currentStepIndex.value] ?? null);
@@ -112,6 +79,8 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 const updateViewportMode = () => {
     viewportMode.value = window.innerWidth < 1024 ? 'mobile' : 'desktop';
+    vw.value = window.innerWidth;
+    vh.value = window.innerHeight;
 };
 
 const isElementVisible = (element) => {
@@ -145,53 +114,77 @@ const updateSpotlight = async () => {
     const element = resolveElement(step);
 
     if (!step || !element) {
-        spotlightStyle.value = {};
+        spotlightRect.value = null;
         cardStyle.value = {};
 
         return;
     }
 
-    element.scrollIntoView({
-        behavior: 'smooth',
-        block: viewportMode.value === 'mobile' ? 'center' : 'nearest',
-        inline: 'nearest',
-    });
-
     await nextTick();
 
-    const rect = element.getBoundingClientRect();
-    const padding = viewportMode.value === 'mobile' ? 10 : 12;
-    const cardWidth = viewportMode.value === 'mobile'
-        ? Math.min(window.innerWidth - 32, 360)
-        : 340;
-    const cardHeight = cardRef.value?.offsetHeight ?? 224;
+    vw.value = window.innerWidth;
+    vh.value = window.innerHeight;
 
-    spotlightStyle.value = {
-        top: `${Math.max(rect.top - padding, 8)}px`,
-        left: `${Math.max(rect.left - padding, 8)}px`,
-        width: `${rect.width + (padding * 2)}px`,
-        height: `${rect.height + (padding * 2)}px`,
+    const rect = element.getBoundingClientRect();
+    const padding = 12;
+
+    spotlightRect.value = {
+        x: Math.max(rect.left - padding, 0),
+        y: Math.max(rect.top - padding, 0),
+        w: rect.width + padding * 2,
+        h: rect.height + padding * 2,
+        rx: 14,
     };
 
-    if (viewportMode.value === 'mobile') {
+    const CARD_WIDTH = 340;
+    const cardHeight = cardRef.value?.offsetHeight ?? 200;
+    const MOBILE_BREAKPOINT = 1024;
+    const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+
+    if (isMobile) {
+        // En mobile: siempre bottom-sheet fijo, nunca encima del spotlight
         cardStyle.value = {
-            left: '16px',
-            right: '16px',
+            position: 'fixed',
+            left: '12px',
+            right: '12px',
             bottom: '16px',
         };
 
         return;
     }
 
-    const fitsBelow = rect.bottom + 28 + cardHeight < window.innerHeight - 16;
-    const preferredTop = fitsBelow
-        ? rect.bottom + 20
-        : rect.top - cardHeight - 20;
+    // Desktop: posicionar fuera del spotlight (abajo → arriba → derecha → izquierda)
+    const spotBottom = rect.bottom + padding;
+    const spotTop = rect.top - padding;
+    const spotLeft = rect.left - padding;
+    const spotRight = rect.right + padding;
+    const cardW = CARD_WIDTH;
+    const gap = 20;
+
+    let top, left;
+
+    if (spotBottom + cardHeight + gap < window.innerHeight - 16) {
+        // Debajo del elemento
+        top = spotBottom + gap;
+        left = clamp(rect.left + rect.width / 2 - cardW / 2, 16, window.innerWidth - cardW - 16);
+    } else if (spotTop - cardHeight - gap > 16) {
+        // Arriba del elemento
+        top = spotTop - cardHeight - gap;
+        left = clamp(rect.left + rect.width / 2 - cardW / 2, 16, window.innerWidth - cardW - 16);
+    } else if (spotRight + cardW + gap < window.innerWidth - 16) {
+        // A la derecha
+        top = clamp(rect.top + rect.height / 2 - cardHeight / 2, 16, window.innerHeight - cardHeight - 16);
+        left = spotRight + gap;
+    } else {
+        // A la izquierda
+        top = clamp(rect.top + rect.height / 2 - cardHeight / 2, 16, window.innerHeight - cardHeight - 16);
+        left = Math.max(spotLeft - cardW - gap, 16);
+    }
 
     cardStyle.value = {
-        top: `${clamp(preferredTop, 16, Math.max(window.innerHeight - cardHeight - 16, 16))}px`,
-        left: `${clamp(rect.left + (rect.width / 2) - (cardWidth / 2), 16, Math.max(window.innerWidth - cardWidth - 16, 16))}px`,
-        width: `${cardWidth}px`,
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${cardW}px`,
     };
 };
 
@@ -257,10 +250,7 @@ const handleLayoutChange = async () => {
     await rebuildSteps();
 };
 
-const lockScroll = (locked) => {
-    document.documentElement.style.overflow = locked ? 'hidden' : '';
-    document.body.style.overflow = locked ? 'hidden' : '';
-};
+
 
 onMounted(async () => {
     updateViewportMode();
@@ -271,12 +261,11 @@ onMounted(async () => {
 
     currentStepIndex.value = 0;
     isVisible.value = true;
-    lockScroll(true);
 
     await rebuildSteps();
 
     window.addEventListener('resize', handleLayoutChange);
-    window.addEventListener('scroll', updateSpotlight, true);
+    window.addEventListener('scroll', updateSpotlight, { passive: true, capture: true });
 });
 
 watch(shouldShowTour, async (value) => {
@@ -287,9 +276,7 @@ watch(shouldShowTour, async (value) => {
     isVisible.value = false;
 });
 
-watch(isVisible, (value) => {
-    lockScroll(value);
-});
+
 
 watch(currentStep, async () => {
     if (!isVisible.value) {
@@ -300,9 +287,8 @@ watch(currentStep, async () => {
 });
 
 onBeforeUnmount(() => {
-    lockScroll(false);
     window.removeEventListener('resize', handleLayoutChange);
-    window.removeEventListener('scroll', updateSpotlight, true);
+    window.removeEventListener('scroll', updateSpotlight, { capture: true });
 });
 </script>
 
@@ -315,59 +301,111 @@ onBeforeUnmount(() => {
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
     >
-        <div v-if="isVisible && currentStep" class="fixed inset-0 z-[120]">
-            <div class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]" />
+        <div v-if="isVisible && currentStep" class="pointer-events-none fixed inset-0 z-[120]">
 
+            <!-- Overlay SVG con recorte limpio del spotlight -->
+            <svg
+                class="absolute inset-0 h-full w-full"
+                :viewBox="`0 0 ${vw} ${vh}`"
+                preserveAspectRatio="none"
+            >
+                <defs>
+                    <mask id="tour-spotlight-mask">
+                        <!-- Fondo blanco = visible (área oscura del overlay) -->
+                        <rect width="100%" height="100%" fill="white" />
+                        <!-- Recorte negro = transparente (zona iluminada) -->
+                        <rect
+                            v-if="spotlightRect"
+                            :x="spotlightRect.x"
+                            :y="spotlightRect.y"
+                            :width="spotlightRect.w"
+                            :height="spotlightRect.h"
+                            :rx="spotlightRect.rx"
+                            fill="black"
+                        />
+                    </mask>
+                </defs>
+                <!-- Overlay oscuro con el recorte aplicado -->
+                <rect
+                    width="100%"
+                    height="100%"
+                    fill="rgba(2,6,23,0.72)"
+                    mask="url(#tour-spotlight-mask)"
+                />
+            </svg>
+
+            <!-- Borde naranja alrededor del elemento destacado -->
             <div
-                class="pointer-events-none absolute rounded-[2rem] border-2 border-[#FF7A00] bg-transparent shadow-[0_0_0_9999px_rgba(15,23,42,0.62)] transition-all duration-300"
-                :style="spotlightStyle"
+                v-if="spotlightRect"
+                class="pointer-events-none absolute rounded-2xl ring-2 ring-[#FF7A00] ring-offset-0 transition-all duration-300"
+                :style="{
+                    top: spotlightRect.y + 'px',
+                    left: spotlightRect.x + 'px',
+                    width: spotlightRect.w + 'px',
+                    height: spotlightRect.h + 'px',
+                }"
             />
 
+            <!-- Card: siempre encima, nunca se mezcla con el overlay -->
             <div
                 ref="cardRef"
-                class="absolute rounded-[2rem] border border-white/70 bg-white/96 p-6 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.28)]"
+                class="pointer-events-auto absolute z-10 rounded-2xl bg-white shadow-[0_20px_60px_rgba(2,6,23,0.30)] transition-all duration-300"
                 :style="cardStyle"
             >
-                <div class="flex items-center justify-between gap-4">
-                    <span class="rounded-full bg-[#FF7A00]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-[#FF7A00]">
-                        Paso {{ currentStepIndex + 1 }} / {{ activeSteps.length }}
-                    </span>
+                <!-- Cabecera -->
+                <div class="flex items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <span
+                            v-for="(_, index) in activeSteps"
+                            :key="index"
+                            class="block rounded-full transition-all duration-300"
+                            :class="index === currentStepIndex
+                                ? 'h-2 w-5 bg-[#FF7A00]'
+                                : 'h-2 w-2 bg-slate-200'"
+                        />
+                    </div>
 
                     <button
                         type="button"
-                        class="text-sm font-semibold text-slate-400 transition-colors hover:text-slate-600"
+                        class="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
                         @click="finishTour"
                     >
-                        Omitir
+                        Omitir tour
                     </button>
                 </div>
 
-                <div class="mt-5 space-y-3">
-                    <h3 class="text-2xl font-black tracking-tight text-slate-950">
+                <!-- Cuerpo -->
+                <div class="px-6 py-5">
+                    <div class="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#FF7A00]">
+                        Paso {{ currentStepIndex + 1 }} de {{ activeSteps.length }}
+                    </div>
+
+                    <h3 class="text-lg font-black tracking-tight text-slate-900">
                         {{ currentStep.title }}
                     </h3>
-                    <p class="text-sm font-medium leading-6 text-slate-600">
+                    <p class="mt-1.5 text-sm leading-relaxed text-slate-500">
                         {{ currentStep.description }}
                     </p>
                 </div>
 
-                <div class="mt-6 flex items-center justify-between gap-3">
+                <!-- Acciones -->
+                <div class="flex items-center justify-between gap-3 border-t border-slate-100 px-6 py-4">
                     <button
                         type="button"
-                        class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        class="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                         :disabled="currentStepIndex === 0"
                         @click="previousStep"
                     >
-                        Anterior
+                        ← Anterior
                     </button>
 
                     <button
                         type="button"
-                        class="rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="rounded-xl bg-[#FF7A00] px-6 py-2.5 text-sm font-black text-white shadow-[0_6px_20px_rgba(255,122,0,0.35)] transition-all hover:-translate-y-0.5 hover:bg-orange-500 hover:shadow-[0_10px_28px_rgba(255,122,0,0.42)] disabled:cursor-not-allowed disabled:opacity-60"
                         :disabled="isSubmitting"
                         @click="nextStep"
                     >
-                        {{ isLastStep ? 'Finalizar' : 'Siguiente' }}
+                        {{ isLastStep ? '¡Listo! →' : 'Siguiente →' }}
                     </button>
                 </div>
             </div>

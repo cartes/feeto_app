@@ -1,6 +1,5 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import OnboardingTour from '@/Components/OnboardingTour.vue';
 import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import Toast from '@/Components/Toast.vue';
@@ -99,14 +98,14 @@ onUnmounted(() => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
-            <Link :href="route('admin.dashboard')" class="flex items-center gap-3" data-tour="admin-brand">
+            <Link :href="route('admin.dashboard')" class="flex items-center gap-3">
               <ApplicationLogo class="h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" />
               <div class="flex items-center gap-2 text-2xl font-bold tracking-tight">
                 <span class="text-white">Taller</span>
                 <span class="text-amber-400">Flow</span>
               </div>
             </Link>
-            <div class="hidden sm:-my-px sm:ml-8 sm:flex sm:gap-x-6" data-tour="admin-navigation">
+            <div class="hidden sm:-my-px sm:ml-8 sm:flex sm:gap-x-6">
               <Link
                 :href="route('admin.dashboard')"
                 :class="route().current('admin.dashboard') ? 'border-amber-500 text-white' : 'border-transparent text-slate-300 hover:border-slate-300 hover:text-white'"
@@ -164,7 +163,7 @@ onUnmounted(() => {
                 SEO
               </Link>
               <!-- Blog dropdown -->
-              <div class="relative" ref="blogMenuRef" data-tour="admin-blog">
+              <div class="relative" ref="blogMenuRef">
                 <button
                   type="button"
                   @click="blogMenuOpen = !blogMenuOpen"
@@ -220,7 +219,7 @@ onUnmounted(() => {
             </div>
           </div>
           <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <div class="relative" ref="userMenuRef" data-tour="admin-user-menu">
+            <div class="relative" ref="userMenuRef">
               <button
                 @click="userMenuOpen = !userMenuOpen"
                 class="flex items-center gap-3 text-sm focus:outline-none hover:opacity-80 transition-opacity"
@@ -265,7 +264,6 @@ onUnmounted(() => {
           <div class="-mr-2 flex items-center sm:hidden">
             <button
               @click="showingNavigationDropdown = !showingNavigationDropdown"
-              data-tour="admin-mobile-menu"
               class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 transition-colors"
             >
               <span class="sr-only">Abrir menú principal</span>
@@ -428,7 +426,7 @@ onUnmounted(() => {
     </nav>
 
     <!-- Page Content -->
-    <main class="py-10" data-tour="admin-content">
+    <main class="py-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <slot />
       </div>
@@ -440,6 +438,5 @@ onUnmounted(() => {
       @dismiss="toast.message = ''"
     />
     <PasswordChangeModal v-if="user?.needs_password_change" />
-    <OnboardingTour variant="admin" />
   </div>
 </template>
