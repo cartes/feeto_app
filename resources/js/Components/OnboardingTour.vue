@@ -286,6 +286,12 @@ watch(currentStep, async () => {
     await updateSpotlight();
 });
 
+watch(() => page.url, (newUrl, oldUrl) => {
+    if (newUrl !== oldUrl && isVisible.value) {
+        finishTour();
+    }
+});
+
 onBeforeUnmount(() => {
     window.removeEventListener('resize', handleLayoutChange);
     window.removeEventListener('scroll', updateSpotlight, { capture: true });
