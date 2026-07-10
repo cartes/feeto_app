@@ -69,10 +69,170 @@ const TOUR_VARIANTS = {
             },
         ],
     },
+    dashboard: {
+        common: [
+            {
+                selectors: ['[data-tour="dashboard-summary"]'],
+                title: 'Resumen del día',
+                description: 'Aqui ves de un vistazo las citas, movimientos del tablero y facturas atrasadas del taller.',
+            },
+            {
+                selectors: ['[data-tour="dashboard-quicklinks"]'],
+                title: 'Accesos rápidos',
+                description: 'Desde aca saltas directo a recepcion, ordenes, inventario, servicios, clientes y reportes.',
+            },
+            {
+                selectors: ['[data-tour="dashboard-agenda"]'],
+                title: 'Agenda del taller',
+                description: 'Aqui revisas y agendas las citas del taller para no perderte ninguna.',
+            },
+        ],
+    },
+    reception: {
+        common: [
+            {
+                selectors: ['[data-tour="reception-new-entry"]'],
+                title: 'Nueva recepción',
+                description: 'Toca aqui para iniciar un nuevo ingreso registrando la patente del vehiculo.',
+            },
+        ],
+    },
+    'work-orders': {
+        common: [
+            {
+                selectors: ['[data-tour="work-orders-view-switch"]'],
+                title: 'Tablero o listado',
+                description: 'Cambia entre vista de tablero Kanban y listado segun como prefieras trabajar.',
+            },
+            {
+                selectors: ['[data-tour="work-orders-search"]'],
+                title: 'Búsqueda rápida',
+                description: 'Busca rapido una orden por patente, numero de OT o cliente.',
+            },
+        ],
+    },
+    quotes: {
+        common: [
+            {
+                selectors: ['[data-tour="quotes-new"]'],
+                title: 'Nueva cotización',
+                description: 'Crea una cotizacion para un cliente sin necesidad de una cita ni una orden.',
+            },
+            {
+                selectors: ['[data-tour="quotes-search"]'],
+                title: 'Búsqueda de cotizaciones',
+                description: 'Busca cotizaciones existentes por cliente, RUT o patente.',
+            },
+        ],
+    },
+    inventory: {
+        common: [
+            {
+                selectors: ['[data-tour="inventory-add"]'],
+                title: 'Agregar repuesto',
+                description: 'Agrega un nuevo repuesto o insumo a tu inventario.',
+            },
+            {
+                selectors: ['[data-tour="inventory-search"]'],
+                title: 'Búsqueda de repuestos',
+                description: 'Busca repuestos rapido por nombre o SKU.',
+            },
+        ],
+    },
+    services: {
+        common: [
+            {
+                selectors: ['[data-tour="services-add"]'],
+                title: 'Nuevo servicio',
+                description: 'Crea un nuevo servicio para ofrecer en tus cotizaciones y ordenes.',
+            },
+        ],
+    },
+    clients: {
+        common: [
+            {
+                selectors: ['[data-tour="clients-add"]'],
+                title: 'Nuevo cliente',
+                description: 'Registra un nuevo cliente en tu base de datos.',
+            },
+            {
+                selectors: ['[data-tour="clients-table"]'],
+                title: 'Historial y CRM',
+                description: 'Aqui ves el historial y las señales CRM de cada cliente.',
+            },
+        ],
+    },
+    reports: {
+        common: [
+            {
+                selectors: ['[data-tour="reports-summary"]'],
+                title: 'Resumen de actividad',
+                description: 'Aqui ves un resumen rapido de la actividad comercial y operativa del taller.',
+            },
+            {
+                selectors: ['[data-tour="reports-grid"]'],
+                title: 'Reportes disponibles',
+                description: 'Elige un reporte para profundizar en ventas, stock, clientes o cobranza.',
+            },
+        ],
+    },
+    'subscription-plans': {
+        common: [
+            {
+                selectors: ['[data-tour="subscription-plans-toggle"]'],
+                title: 'Mensual o anual',
+                description: 'Cambia entre pago mensual o anual para ver el ahorro.',
+            },
+            {
+                selectors: ['[data-tour="subscription-plans-grid"]'],
+                title: 'Compara planes',
+                description: 'Compara los planes disponibles y elige el que mejor se ajuste a tu taller.',
+            },
+        ],
+    },
+    'subscription-billing': {
+        common: [
+            {
+                selectors: ['[data-tour="billing-summary"]'],
+                title: 'Resumen de pagos',
+                description: 'Aqui ves cuanto has pagado en total y cuando se renueva tu plan.',
+            },
+            {
+                selectors: ['[data-tour="billing-transactions"]'],
+                title: 'Historial de transacciones',
+                description: 'Revisa el historial completo de tus pagos y su estado.',
+            },
+        ],
+    },
+    settings: {
+        common: [
+            {
+                selectors: ['[data-tour="settings-tabs"]'],
+                title: 'Secciones de configuración',
+                description: 'Desde aca cambias entre usuarios, sucursales y ajustes comerciales del taller.',
+            },
+        ],
+    },
 };
 
+const isGlobalVariant = computed(() => props.variant === 'tenant');
+
 const currentStep = computed(() => activeSteps.value[currentStepIndex.value] ?? null);
-const shouldShowTour = computed(() => Boolean(page.props.onboarding?.show_tour));
+const shouldShowTour = computed(() => {
+    if (isGlobalVariant.value) {
+        return Boolean(page.props.onboarding?.show_tour);
+    }
+
+    // Los tours de sección esperan a que termine (o no aplique) el tour general
+    // para no mostrar dos overlays superpuestos en la primera visita.
+    if (page.props.onboarding?.show_tour) {
+        return false;
+    }
+
+    const completedSections = page.props.onboarding?.completed_sections ?? [];
+
+    return !completedSections.includes(props.variant);
+});
 const isLastStep = computed(() => currentStepIndex.value === activeSteps.value.length - 1);
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -189,7 +349,8 @@ const updateSpotlight = async () => {
 };
 
 const rebuildSteps = async () => {
-    const steps = TOUR_VARIANTS[props.variant]?.[viewportMode.value] ?? [];
+    const variantConfig = TOUR_VARIANTS[props.variant] ?? {};
+    const steps = variantConfig[viewportMode.value] ?? variantConfig.common ?? [];
 
     activeSteps.value = steps.filter((step) => resolveElement(step) !== null);
 
@@ -212,7 +373,10 @@ const finishTour = async () => {
     isSubmitting.value = true;
 
     try {
-        await window.axios.post(route('onboarding-tour.complete'));
+        await window.axios.post(
+            route('onboarding-tour.complete'),
+            isGlobalVariant.value ? {} : { section: props.variant },
+        );
     } catch (error) {
         console.error('Unable to persist onboarding tour state.', error);
     } finally {

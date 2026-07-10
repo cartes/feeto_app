@@ -507,6 +507,7 @@ const submitDeleteWorkOrder = () => {
 
             <!-- View Switcher (Tabs / Icons) -->
             <div
+                data-tour="work-orders-view-switch"
                 class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm shrink-0 self-start md:self-auto">
                 <button type="button" @click="setViewMode('kanban')"
                     :class="viewMode === 'kanban' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
@@ -534,7 +535,7 @@ const submitDeleteWorkOrder = () => {
         <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white/80 backdrop-blur-md p-4 rounded-[2rem] border border-white shadow-sm mb-6">
             <!-- Search Filter -->
-            <div class="relative flex-1 max-w-md">
+            <div class="relative flex-1 max-w-md" data-tour="work-orders-search">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                     <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

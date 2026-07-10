@@ -77,6 +77,7 @@ const computedBranchesCount = computed(() =>
             </div>
 
             <SettingsSectionTabs
+                data-tour="settings-tabs"
                 :tenant-route-params="tenantRouteParams"
                 :current-section="currentSection"
                 :can-access-roles="canAccessRoles"

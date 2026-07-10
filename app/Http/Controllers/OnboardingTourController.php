@@ -15,6 +15,24 @@ class OnboardingTourController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        $section = $request->validate([
+            'section' => ['sometimes', 'string', 'max:64'],
+        ])['section'] ?? null;
+
+        if ($section !== null) {
+            $sections = $user->onboarding_sections_completed ?? [];
+
+            if (! in_array($section, $sections, true)) {
+                $sections[] = $section;
+
+                $user->forceFill([
+                    'onboarding_sections_completed' => $sections,
+                ])->save();
+            }
+
+            return response()->noContent();
+        }
+
         if ($user->onboarding_tour_completed_at === null) {
             $user->forceFill([
                 'onboarding_tour_completed_at' => now(),

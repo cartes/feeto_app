@@ -455,13 +455,13 @@ onUnmounted(() => {
         </div>
 
         <!-- CASO PRO: Escáner de Patente IA -->
-        <PpuScanner v-if="aiReceptionEnabled" :recognized-ppu="formattedPlate || '---'"
+        <PpuScanner v-if="aiReceptionEnabled" data-tour="reception-new-entry" :recognized-ppu="formattedPlate || '---'"
             :is-processing="isUploading || isAnalyzing" :vehicle-info="vehicleInfo" :preview-image-url="previewImageUrl"
             @confirm="handleConfirmIngreso"
             @retry="triggerCamera" @manual="handleManualEntry" />
 
         <!-- CASO GRATUITO: Ingreso Manual Directo -->
-        <div v-else class="w-full flex flex-col items-center py-6 px-4">
+        <div v-else class="w-full flex flex-col items-center py-6 px-4" data-tour="reception-new-entry">
             <div class="w-full max-w-lg space-y-4">
                 <PlanUpgradeBanner
                     title="Escáner con IA no disponible"

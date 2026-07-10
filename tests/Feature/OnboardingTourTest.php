@@ -79,4 +79,54 @@ class OnboardingTourTest extends TestCase
                 ->where('onboarding.show_tour', false)
             );
     }
+
+    public function test_tenant_dashboard_shares_empty_completed_sections_by_default(): void
+    {
+        $tenant = $this->setUpTenant();
+        $user = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'onboarding_tour_completed_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('onboarding.completed_sections', [])
+            );
+    }
+
+    public function test_authenticated_users_can_complete_a_section_tour_without_affecting_the_global_flag(): void
+    {
+        $tenant = $this->setUpTenant();
+        $user = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'onboarding_tour_completed_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('onboarding-tour.complete'), ['section' => 'dashboard'])
+            ->assertNoContent();
+
+        $user->refresh();
+
+        $this->assertSame(['dashboard'], $user->onboarding_sections_completed);
+        $this->assertNotNull($user->onboarding_tour_completed_at);
+
+        $this->actingAs($user)
+            ->post(route('onboarding-tour.complete'), ['section' => 'dashboard'])
+            ->assertNoContent();
+
+        $user->refresh();
+
+        $this->assertSame(['dashboard'], $user->onboarding_sections_completed);
+
+        $this->actingAs($user)
+            ->post(route('onboarding-tour.complete'), ['section' => 'clients'])
+            ->assertNoContent();
+
+        $user->refresh();
+
+        $this->assertSame(['dashboard', 'clients'], $user->onboarding_sections_completed);
+    }
 }

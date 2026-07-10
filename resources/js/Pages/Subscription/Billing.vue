@@ -107,7 +107,7 @@ const BILLING_PERIOD_LABEL = { monthly: 'Mensual', annual: 'Anual' };
         </div>
 
         <!-- Cards de resumen -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="billing-summary">
             <div class="bg-white rounded-2xl border border-white shadow-sm p-5">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Total pagado</p>
                 <p class="text-2xl font-extrabold text-slate-800">{{ clp(summary.total_paid) }}</p>
@@ -125,7 +125,7 @@ const BILLING_PERIOD_LABEL = { monthly: 'Mensual', annual: 'Anual' };
         </div>
 
         <!-- Tabla de transacciones -->
-        <div class="bg-white rounded-2xl shadow-sm border border-white overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-white overflow-hidden" data-tour="billing-transactions">
             <div class="px-6 py-4 border-b border-slate-100">
                 <h2 class="text-base font-bold text-slate-800">Historial de transacciones</h2>
             </div>

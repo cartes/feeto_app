@@ -112,6 +112,7 @@ const handleDelete = (service) => {
 
                 <button
                     type="button"
+                    data-tour="services-add"
                     class="flex shrink-0 items-center gap-2 rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-all active:scale-95 hover:bg-[#CC6200]"
                     @click="openCreateModal"
                 >

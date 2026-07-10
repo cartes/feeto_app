@@ -27,6 +27,30 @@ const canAccessSettings = computed(() => roles.value.includes('Admin') || hasPer
 const hasCustomRoles = computed(() => (tenantContext.value?.features ?? []).includes('custom_roles'));
 const canAccessRoles = computed(() => canAccessSettings.value && hasCustomRoles.value);
 
+const SECTION_TOUR_ROUTES = {
+    dashboard: ['taller.dashboard'],
+    reception: ['receptions.*'],
+    'work-orders': ['work-orders.*'],
+    quotes: ['quotes.*'],
+    inventory: ['inventory.*', 'product-categories.*'],
+    services: ['services.*'],
+    clients: ['clients.*'],
+    reports: ['reports.*'],
+    'subscription-plans': ['subscription.plans'],
+    'subscription-billing': ['subscription.billing'],
+    settings: ['taller.settings*', 'taller.roles.*', 'tenant.users.*'],
+};
+
+const sectionTourKey = computed(() => {
+    for (const [key, patterns] of Object.entries(SECTION_TOUR_ROUTES)) {
+        if (patterns.some((pattern) => route().current(pattern))) {
+            return key;
+        }
+    }
+
+    return null;
+});
+
 const navItems = computed(() => ([
     { label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', route: 'taller.dashboard', visible: true },
     { label: 'Recepción', icon: 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z', route: 'receptions.create', visible: canManageAppointments.value },
@@ -258,6 +282,7 @@ watch(
         <PasswordChangeModal v-if="user?.needs_password_change" />
         <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
         <OnboardingTour variant="tenant" />
+        <OnboardingTour v-if="sectionTourKey" :key="sectionTourKey" :variant="sectionTourKey" />
     </div>
 </template>
 

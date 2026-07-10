@@ -318,7 +318,7 @@ onUnmounted(() => {
             </div>
 
             <!-- Resumen del día -->
-            <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <div class="grid grid-cols-2 gap-3 xl:grid-cols-4" data-tour="dashboard-summary">
                 <div
                     v-for="stat in summaryStats"
                     :key="stat.label"
@@ -334,7 +334,7 @@ onUnmounted(() => {
             <!-- Accesos rápidos -->
             <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Accesos rápidos</p>
-                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7" data-tour="dashboard-quicklinks">
                     <Link
                         v-for="item in quickLinks"
                         :key="item.label"
@@ -351,7 +351,7 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm">
+            <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm" data-tour="dashboard-agenda">
                 <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
                     <div>
                         <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Agendamiento</p>

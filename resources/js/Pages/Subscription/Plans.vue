@@ -92,7 +92,7 @@ const isExpired = computed(() => {
         </div>
 
         <!-- Toggle mensual / anual -->
-        <div class="flex items-center justify-center">
+        <div class="flex items-center justify-center" data-tour="subscription-plans-toggle">
             <div class="inline-flex items-center bg-white rounded-full p-1 shadow-sm border border-gray-100">
                 <button
                     class="px-5 py-2 rounded-full text-sm font-bold transition-all duration-200"
@@ -119,7 +119,7 @@ const isExpired = computed(() => {
         </div>
 
         <!-- Grid de planes -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-2" data-tour="subscription-plans-grid">
             <PlanCard
                 v-for="plan in plans"
                 :key="plan.id"

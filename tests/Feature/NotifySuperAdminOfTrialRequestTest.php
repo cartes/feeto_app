@@ -77,15 +77,54 @@ class NotifySuperAdminOfTrialRequestTest extends TestCase
 
         User::factory()->superAdmin()->create();
 
-        $this->post(route('trial.store'), [
+        $response = $this->post(route('trial.store'), [
             'name' => 'Carlos Díaz',
             'email' => 'carlos@taller.cl',
             'phone' => '+56922222222',
             'business_name' => 'Taller Carlos',
             'business_type' => 'Taller Mecánico',
             'terms' => true,
-        ])->assertRedirect(route('trial.success'));
+        ]);
+
+        $response
+            ->assertRedirect(route('trial.success'))
+            ->assertSessionHas('trial_request_email', 'carlos@taller.cl');
 
         $this->assertDatabaseHas('trial_requests', ['email' => 'carlos@taller.cl']);
+    }
+
+    #[Test]
+    public function it_shows_the_submitted_email_on_the_success_page(): void
+    {
+        $response = $this->withSession([
+            'trial_request_email' => 'equipo@taller.cl',
+        ])->get(route('trial.success'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Trial/Success')
+            ->where('email', 'equipo@taller.cl')
+            ->where('redirect_url', route('home'))
+            ->where('redirect_delay_seconds', 6)
+        );
+    }
+
+    #[Test]
+    public function it_validates_the_email_when_submitting_a_trial_request(): void
+    {
+        $response = $this->post(route('trial.store'), [
+            'name' => 'Carlos Díaz',
+            'email' => 'correo-invalido',
+            'phone' => '+56922222222',
+            'business_name' => 'Taller Carlos',
+            'business_type' => 'Taller Mecánico',
+            'terms' => true,
+        ]);
+
+        $response->assertSessionHasErrors(['email']);
+
+        $this->assertDatabaseMissing('trial_requests', [
+            'email' => 'correo-invalido',
+        ]);
     }
 }

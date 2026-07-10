@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'is_super_admin', 'tenant_id', 'needs_password_change', 'onboarding_tour_completed_at'])]
+#[Fillable(['name', 'email', 'password', 'is_super_admin', 'tenant_id', 'needs_password_change', 'onboarding_tour_completed_at', 'onboarding_sections_completed'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -41,6 +41,7 @@ class User extends Authenticatable
             'is_super_admin' => 'boolean',
             'needs_password_change' => 'boolean',
             'onboarding_tour_completed_at' => 'datetime',
+            'onboarding_sections_completed' => 'array',
         ];
     }
 

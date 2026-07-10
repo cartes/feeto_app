@@ -106,7 +106,7 @@ const submitImport = () => {
                         Importar Excel
                     </button>
 
-                    <button @click="isCreateModalOpen = true"
+                    <button @click="isCreateModalOpen = true" data-tour="clients-add"
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white shadow-sm transition-colors hover:bg-gray-800">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -158,7 +158,7 @@ const submitImport = () => {
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm">
+            <div class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm" data-tour="clients-table">
                 <div v-if="clients.data.length === 0" class="p-12 text-center">
                     <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50">
                         <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
