@@ -31,7 +31,7 @@ class NewTrialRequestNotification extends Notification
         $tr = $this->trialRequest;
 
         return (new MailMessage)
-            ->subject('[Feeto] Nueva solicitud de prueba — '.$tr->business_name)
+            ->subject('[Taller Flow] Nueva solicitud de prueba — '.$tr->business_name)
             ->greeting('¡Nuevo taller interesado!')
             ->line('Se ha registrado una nueva solicitud de prueba gratuita en la plataforma.')
             ->line("**Negocio:** {$tr->business_name}")

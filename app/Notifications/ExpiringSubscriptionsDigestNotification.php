@@ -27,7 +27,7 @@ class ExpiringSubscriptionsDigestNotification extends Notification
     {
         $count = $this->tenants->count();
         $mail = (new MailMessage)
-            ->subject("[Feeto] {$count} suscripción(es) próximas a vencer")
+            ->subject("[Taller Flow] {$count} suscripción(es) próximas a vencer")
             ->greeting('Alerta de suscripciones')
             ->line("Los siguientes **{$count}** taller(es) tienen su suscripción próxima a vencer en los próximos 7 días:");
 

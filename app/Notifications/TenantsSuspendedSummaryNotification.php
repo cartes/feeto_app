@@ -27,7 +27,7 @@ class TenantsSuspendedSummaryNotification extends Notification
     {
         $count = $this->tenants->count();
         $mail = (new MailMessage)
-            ->subject("[Feeto] {$count} taller(es) suspendido(s) hoy")
+            ->subject("[Taller Flow] {$count} taller(es) suspendido(s) hoy")
             ->greeting('Resumen de suspensiones automáticas')
             ->line("Los siguientes **{$count}** taller(es) fueron suspendidos hoy por suscripción vencida:");
 

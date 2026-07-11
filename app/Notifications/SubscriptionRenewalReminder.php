@@ -28,12 +28,12 @@ class SubscriptionRenewalReminder extends Notification
         $checkoutUrl = route('checkout.show', $this->tenant->slug);
 
         return (new MailMessage)
-            ->subject("[Feeto] Tu suscripción vence en {$daysLeft} día(s) — Renueva ahora")
+            ->subject("[Taller Flow] Tu suscripción vence en {$daysLeft} día(s) — Renueva ahora")
             ->greeting("Hola, {$notifiable->name}")
             ->line("La suscripción de tu taller **{$this->tenant->name}** vence el **{$expiryDate}**.")
             ->line('Para mantener el acceso ininterrumpido a todas tus funciones, renueva tu plan antes de esa fecha.')
             ->action('Renovar suscripción', $checkoutUrl)
             ->line('Si ya realizaste el pago, puedes ignorar este correo.')
-            ->salutation('El equipo de Feeto');
+            ->salutation('El equipo de Taller Flow');
     }
 }

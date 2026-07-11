@@ -33,7 +33,7 @@ class TrialRequestApprovedNotification extends Notification
         $trialEndsAt = $this->tenant->subscription_ends_at?->format('d/m/Y') ?? '—';
 
         return (new MailMessage)
-            ->subject("[Feeto] ¡Tu prueba gratuita de {$this->tenant->name} fue aprobada!")
+            ->subject("[Taller Flow] ¡Tu prueba gratuita de {$this->tenant->name} fue aprobada!")
             ->greeting("¡Hola, {$this->trialRequest->name}!")
             ->line("Tu solicitud de prueba gratuita para **{$this->tenant->name}** fue aprobada.")
             ->line('Ya puedes ingresar a la plataforma con estos datos de acceso:')
@@ -43,6 +43,6 @@ class TrialRequestApprovedNotification extends Notification
             ->action('Ingresar a mi cuenta', route('login'))
             ->line('Te recomendamos cambiar tu contraseña provisional una vez que ingreses.')
             ->line('Si tienes dudas, responde directamente a este correo.')
-            ->salutation('El equipo de Feeto');
+            ->salutation('El equipo de Taller Flow');
     }
 }

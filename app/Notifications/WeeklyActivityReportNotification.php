@@ -32,7 +32,7 @@ class WeeklyActivityReportNotification extends Notification
         $period = "del {$this->metrics['week_start']} al {$this->metrics['week_end']}";
 
         $mail = (new MailMessage)
-            ->subject('[Feeto] Informe semanal de actividad — '.$this->metrics['week_end'])
+            ->subject('[Taller Flow] Informe semanal de actividad — '.$this->metrics['week_end'])
             ->greeting('Resumen semanal de la plataforma')
             ->line("Este es el informe de actividad correspondiente al período **{$period}**.")
             ->line('---')

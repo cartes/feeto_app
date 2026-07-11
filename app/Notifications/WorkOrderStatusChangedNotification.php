@@ -36,7 +36,7 @@ class WorkOrderStatusChangedNotification extends Notification
         $trackingUrl = route('tracking.show', ['uuid' => $this->workOrder->uuid]);
 
         return (new MailMessage)
-            ->subject("[Feeto] Tu vehiculo {$plate} ahora esta {$statusLabel}")
+            ->subject("[Taller Flow] Tu vehiculo {$plate} ahora esta {$statusLabel}")
             ->greeting("Hola, {$clientName}")
             ->line("La orden de trabajo de tu vehiculo {$plate} cambio de estado de {$previousStatusLabel} a {$statusLabel}.")
             ->action('Ver seguimiento de tu vehiculo', $trackingUrl)

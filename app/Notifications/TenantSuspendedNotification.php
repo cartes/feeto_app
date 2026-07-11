@@ -26,9 +26,9 @@ class TenantSuspendedNotification extends Notification
         $expiryDate = $this->tenant->subscription_ends_at?->format('d/m/Y') ?? 'fecha no registrada';
 
         return (new MailMessage)
-            ->subject('[Feeto] Tu cuenta ha sido suspendida')
+            ->subject('[Taller Flow] Tu cuenta ha sido suspendida')
             ->greeting("Hola, {$this->tenant->name}")
-            ->line('Tu suscripción a Feeto venció el **'.$expiryDate.'** y tu cuenta ha sido suspendida automáticamente.')
+            ->line('Tu suscripción a Taller Flow venció el **'.$expiryDate.'** y tu cuenta ha sido suspendida automáticamente.')
             ->line('Mientras tu cuenta esté suspendida, tus clientes no podrán acceder al portal y tus flujos de trabajo quedarán en pausa.')
             ->action('Renovar mi suscripción', route('checkout.index'))
             ->line('Si crees que esto es un error o necesitas ayuda, responde este correo o contáctanos directamente.');
