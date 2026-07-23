@@ -164,10 +164,10 @@ const newTenantsChartSeries = computed(() => [
 
 // ── Scatter: actividad vs. tamaño ───────────────────────────────────────────
 const QUADRANTS = {
-    champions: { label: 'Champions',  color: '#10b981' }, // activos + grandes
-    growing:   { label: 'Creciendo',  color: '#6366f1' }, // activos + pequeños
-    at_risk:   { label: 'En riesgo',  color: '#f59e0b' }, // inactivos + grandes
-    sleeping:  { label: 'Dormidos',   color: '#94a3b8' }, // inactivos + pequeños
+    champions: { label: 'Champions', color: '#10b981', description: 'Equipo grande y alta actividad' },
+    growing: { label: 'Creciendo', color: '#6366f1', description: 'Equipo pequeño y alta actividad' },
+    at_risk: { label: 'En riesgo', color: '#f59e0b', description: 'Equipo grande y baja actividad' },
+    sleeping: { label: 'Dormidos', color: '#94a3b8', description: 'Equipo pequeño y baja actividad' },
 };
 
 const scatterSeries = computed(() => {
@@ -246,6 +246,7 @@ const scatterChartOptions = computed(() => {
                         <p class="text-slate-500">Logins 30d: <span class="font-medium text-slate-700">${pt.y}</span></p>
                         <p class="text-slate-500">OTs 30d: <span class="font-medium text-slate-700">${pt.work_orders}</span></p>
                         <p class="mt-1 font-semibold" style="color:${q.color}">${q.label}</p>
+                        <p class="mt-1 border-t border-slate-100 pt-1 text-slate-400">Haz clic para ver el detalle</p>
                     </div>`;
             },
         },
@@ -263,6 +264,18 @@ const scatterByQuadrant = computed(() =>
         tenants: props.tenant_scatter.filter((t) => t.quadrant === key),
     }))
 );
+
+const scatterThresholds = computed(() => {
+    const users = props.scatter_medians.users ?? 0;
+    const logins = props.scatter_medians.logins ?? 0;
+
+    return {
+        champions: `≥ ${users} usuarios · ≥ ${logins} logins`,
+        growing: `< ${users} usuarios · ≥ ${logins} logins`,
+        at_risk: `≥ ${users} usuarios · < ${logins} logins`,
+        sleeping: `< ${users} usuarios · < ${logins} logins`,
+    };
+});
 </script>
 
 <template>
@@ -679,33 +692,60 @@ const scatterByQuadrant = computed(() =>
 
         <!-- ===== SCATTER: Actividad vs. Tamaño ===== -->
         <div v-if="tenant_scatter.length" class="mt-8">
-            <div class="mb-4">
-                <h2 class="text-lg font-semibold text-slate-800">Comparativa de talleres — Actividad vs. Tamaño</h2>
-                <p class="text-sm text-slate-500 mt-0.5">
-                    Cada burbuja es un taller. Eje X: usuarios · Eje Y: logins en 30 días · Tamaño: órdenes de trabajo en 30 días.
-                    Haz clic en un taller para ver su actividad detallada.
-                </p>
+            <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-semibold text-slate-800">Actividad y tamaño de cada taller</h2>
+                        <div class="group relative">
+                            <button
+                                type="button"
+                                aria-label="Cómo se clasifican los talleres"
+                                class="flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-xs font-bold text-slate-500 transition hover:border-indigo-400 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                            >
+                                ?
+                            </button>
+                            <div
+                                role="tooltip"
+                                class="pointer-events-none absolute left-0 top-7 z-20 w-64 rounded-lg bg-slate-900 px-3 py-2 text-xs leading-5 text-white opacity-0 shadow-xl transition group-hover:opacity-100 group-focus-within:opacity-100"
+                            >
+                                Las líneas punteadas marcan la mediana de todos los talleres. Las cuatro categorías se calculan según si cada taller queda sobre o bajo esos cortes.
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-0.5 text-sm text-slate-500">
+                        Compara el tamaño del equipo con su uso reciente. Pasa el cursor por una burbuja para ver sus cifras.
+                    </p>
+                </div>
+                <span class="rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700">Haz clic en una burbuja para abrir el detalle</span>
             </div>
 
-            <!-- Leyenda de cuadrantes -->
+            <!-- Clasificación de cuadrantes -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                <div v-for="q in scatterByQuadrant" :key="q.key" class="rounded-xl border bg-white px-4 py-3 shadow-sm flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full flex-shrink-0" :style="{ background: q.color }" />
-                    <div class="min-w-0">
+                <div v-for="q in scatterByQuadrant" :key="q.key" class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full flex-shrink-0" :style="{ background: q.color }" />
                         <p class="text-sm font-semibold text-slate-800">{{ q.label }}</p>
-                        <p class="text-xs text-slate-400">{{ q.tenants.length }} taller{{ q.tenants.length !== 1 ? 'es' : '' }}</p>
+                        <span class="ml-auto text-xs font-medium text-slate-500">{{ q.tenants.length }}</span>
                     </div>
+                    <p class="mt-1 text-xs text-slate-500">{{ q.description }}</p>
+                    <p class="mt-1 text-[11px] font-medium text-slate-400">{{ scatterThresholds[q.key] }}</p>
                 </div>
             </div>
 
             <!-- Gráfico bubble -->
             <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-slate-100">
-                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-slate-400">
-                        <span><span class="font-semibold text-emerald-600">Champions</span> — activos y con equipo grande</span>
-                        <span><span class="font-semibold text-indigo-600">Creciendo</span> — activos, equipo pequeño → potencial upsell</span>
-                        <span><span class="font-semibold text-amber-500">En riesgo</span> — equipo grande, baja actividad → churn alert</span>
-                        <span><span class="font-semibold text-slate-400">Dormidos</span> — baja actividad y equipo pequeño</span>
+                <div class="grid gap-px border-b border-slate-100 bg-slate-100 sm:grid-cols-3">
+                    <div class="bg-white px-5 py-3">
+                        <p class="text-xs font-semibold text-slate-700">1. Posición horizontal</p>
+                        <p class="mt-0.5 text-xs text-slate-500">Más a la derecha = más usuarios en el equipo.</p>
+                    </div>
+                    <div class="bg-white px-5 py-3">
+                        <p class="text-xs font-semibold text-slate-700">2. Posición vertical</p>
+                        <p class="mt-0.5 text-xs text-slate-500">Más arriba = más logins durante los últimos 30 días.</p>
+                    </div>
+                    <div class="bg-white px-5 py-3">
+                        <p class="text-xs font-semibold text-slate-700">3. Tamaño de burbuja</p>
+                        <p class="mt-0.5 text-xs text-slate-500">Más grande = más órdenes de trabajo en los últimos 30 días.</p>
                     </div>
                 </div>
                 <div class="p-2">
