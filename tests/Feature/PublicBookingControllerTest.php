@@ -188,6 +188,61 @@ class PublicBookingControllerTest extends TestCase
         });
     }
 
+    public function test_booking_sends_bcc_to_admin_when_configured(): void
+    {
+        Mail::fake();
+        config(['mail.admin_bcc' => 'contacto@tallerflow.cl']);
+
+        Branch::forceCreate([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Sucursal Principal',
+            'email' => 'sucursal-principal@tallerflow.cl',
+            'is_main' => true,
+            'is_active' => true,
+        ]);
+
+        $response = $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'Juan Pérez',
+            'phone' => '+56912345678',
+            'plate' => 'AB1234',
+            'appointment_date' => now()->addDays(2)->format('Y-m-d H:i'),
+        ]);
+
+        $response->assertRedirect();
+
+        Mail::assertSent(AppointmentScheduledMail::class, function (AppointmentScheduledMail $mail): bool {
+            return $mail->hasTo('sucursal-principal@tallerflow.cl') &&
+                $mail->hasBcc('contacto@tallerflow.cl');
+        });
+    }
+
+    public function test_booking_does_not_send_bcc_when_not_configured(): void
+    {
+        Mail::fake();
+        config(['mail.admin_bcc' => null]);
+
+        Branch::forceCreate([
+            'tenant_id' => $this->tenant->id,
+            'name' => 'Sucursal Principal',
+            'email' => 'sucursal-principal@tallerflow.cl',
+            'is_main' => true,
+            'is_active' => true,
+        ]);
+
+        $response = $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'Juan Pérez',
+            'phone' => '+56912345678',
+            'plate' => 'AB1234',
+            'appointment_date' => now()->addDays(2)->format('Y-m-d H:i'),
+        ]);
+
+        $response->assertRedirect();
+
+        Mail::assertSent(AppointmentScheduledMail::class, function (AppointmentScheduledMail $mail): bool {
+            return $mail->hasTo('sucursal-principal@tallerflow.cl') && $mail->bcc === [];
+        });
+    }
+
     public function test_booking_page_passes_comuna_and_metadata_to_inertia(): void
     {
         $this->tenant->update([

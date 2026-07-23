@@ -115,4 +115,17 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin BCC Address
+    |--------------------------------------------------------------------------
+    |
+    | Cuando está definida, se agrega como copia oculta (BCC) a las
+    | notificaciones operativas enviadas a los tenants (p. ej. nuevas citas
+    | agendadas), para que el equipo de Taller Flow tenga visibilidad.
+    |
+    */
+
+    'admin_bcc' => env('MAIL_ADMIN_BCC'),
+
 ];

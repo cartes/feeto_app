@@ -107,7 +107,13 @@ class PublicBookingController extends Controller
             'status' => 'pending',
         ]);
 
-        Mail::to($tenantBySlug->getNotificationEmail())->send(new AppointmentScheduledMail($appointment));
+        $tenantNotification = Mail::to($tenantBySlug->getNotificationEmail());
+
+        if (filled(config('mail.admin_bcc'))) {
+            $tenantNotification->bcc(config('mail.admin_bcc'));
+        }
+
+        $tenantNotification->send(new AppointmentScheduledMail($appointment));
 
         if (filled($appointment->email)) {
             Mail::to($appointment->email)->send(new AppointmentConfirmationMail($appointment, $tenantBySlug));
