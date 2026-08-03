@@ -34,16 +34,36 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head title="Restablecer Contraseña" />
 
-        <form @submit.prevent="submit">
+        <div class="mb-6 text-center">
+            <h2 class="text-2xl font-black text-gray-900">Restablecer Contraseña</h2>
+            <p class="text-sm text-gray-500 mt-1">Ingresa tu nueva contraseña para actualizar el acceso a tu cuenta.</p>
+        </div>
+
+        <form @submit.prevent="submit" class="space-y-4">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="token" value="Código / Token de verificación" class="font-semibold text-gray-700" />
+
+                <TextInput
+                    id="token"
+                    type="text"
+                    class="mt-1 block w-full bg-gray-50 font-mono text-sm border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11"
+                    v-model="form.token"
+                    required
+                    readonly
+                />
+
+                <InputError class="mt-2" :message="form.errors.token" />
+            </div>
+
+            <div>
+                <InputLabel for="email" value="Correo electrónico" class="font-semibold text-gray-700" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11"
                     v-model="form.email"
                     required
                     autofocus
@@ -53,32 +73,35 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+            <div>
+                <InputLabel for="password" value="Nueva contraseña" class="font-semibold text-gray-700" />
 
                 <PasswordInput
                     id="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
+                    placeholder="••••••••"
                 />
 
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
+            <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Confirmar nueva contraseña"
+                    class="font-semibold text-gray-700"
                 />
 
                 <PasswordInput
                     id="password_confirmation"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
+                    placeholder="••••••••"
                 />
 
                 <InputError
@@ -87,12 +110,14 @@ const submit = () => {
                 />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <div class="pt-4">
                 <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+                    class="w-full h-12 justify-center bg-tech-orange hover:bg-[#CC6200] text-white font-bold rounded-xl shadow-lg shadow-tech-orange/20 transition-all text-base"
+                    :class="{ 'opacity-25 pointer-events-none': form.processing }"
                     :disabled="form.processing"
                 >
-                    Reset Password
+                    <span v-if="form.processing">Guardando nueva contraseña...</span>
+                    <span v-else>Restablecer Contraseña</span>
                 </PrimaryButton>
             </div>
         </form>
