@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Rules\ChileanPlate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,7 +28,7 @@ class PreviewReceptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patente' => ['required', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
+            'patente' => ['required', 'string', new ChileanPlate],
         ];
     }
 
@@ -38,8 +39,6 @@ class PreviewReceptionRequest extends FormRequest
     {
         return [
             'patente.required' => 'Debes ingresar una patente para consultar.',
-            'patente.size' => 'La patente debe tener 6 caracteres.',
-            'patente.regex' => 'La patente solo puede contener letras y números.',
         ];
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\Tenant;
+use App\Rules\ChileanPlate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,7 @@ class StoreReceptionOrderRequest extends FormRequest
         $tenantId = Tenant::current()?->id;
 
         return [
-            'plate' => ['required', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
+            'plate' => ['required', 'string', new ChileanPlate],
             'vehicle_brand_id' => ['nullable', 'integer', Rule::exists('vehicle_brands', 'id')],
             'vehicle_model_id' => [
                 'nullable',
@@ -71,8 +72,6 @@ class StoreReceptionOrderRequest extends FormRequest
     {
         return [
             'plate.required' => 'Debes ingresar una patente.',
-            'plate.size' => 'La patente debe tener 6 caracteres.',
-            'plate.regex' => 'La patente solo puede contener letras y números.',
             'vehicle_brand_id.exists' => 'La marca seleccionada no es válida.',
             'vehicle_model_id.exists' => 'El modelo seleccionado no pertenece a la marca indicada.',
             'brand.required' => 'Debes ingresar la marca del vehículo.',

@@ -90,6 +90,12 @@ class OcrService
         if (preg_match('/^[A-Z]{2}\d{4}$/', $ppu)) {
             return ['valid' => true, 'type' => 'antigua', 'plate' => $ppu];
         }
+        if (preg_match('/^[BCDFGHJKLPRSTVWXYZ]{3}\d{2}$/', $ppu)) {
+            return ['valid' => true, 'type' => 'moto_moderna', 'plate' => $ppu];
+        }
+        if (preg_match('/^[A-Z]{2}\d{3}$/', $ppu)) {
+            return ['valid' => true, 'type' => 'moto_antigua', 'plate' => $ppu];
+        }
 
         return ['valid' => false, 'type' => null, 'plate' => $ppu];
     }

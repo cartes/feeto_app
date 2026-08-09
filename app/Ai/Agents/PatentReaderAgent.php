@@ -25,7 +25,9 @@ class PatentReaderAgent implements Agent, HasStructuredOutput
         An image of a vehicle license plate and the vehicle itself will be provided.
         
         1. Extract ONLY the alphanumeric characters of the Chilean license plate (PPU).
-           Do NOT include spaces, hyphens, or symbols. Example: "GKSB78".
+           Do NOT include spaces, hyphens, or symbols.
+           Cars have 6 characters (e.g. "GKSB78" or "BC1234").
+           Motorcycles have 5 characters (e.g. "ABC12" or "AB123").
            
         2. Identify the vehicle Brand (Marca) and Model (Modelo) from the image.
            Example: "TOYOTA", "HILUX".

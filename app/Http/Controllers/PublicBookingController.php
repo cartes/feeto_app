@@ -12,6 +12,7 @@ use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\TenantLead;
 use App\Models\TenantNotification;
+use App\Rules\ChileanPlate;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -71,11 +72,13 @@ class PublicBookingController extends Controller
 
     public function store(Request $request, Tenant $tenantBySlug): RedirectResponse
     {
+        $this->normalizePlateInput($request);
+
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
-            'plate' => ['required', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
+            'plate' => ['required', 'string', new ChileanPlate],
             'appointment_date' => ['required', 'date', 'after:now'],
             'pre_check_notes' => ['nullable', 'string', 'max:1000'],
         ]);
@@ -241,13 +244,15 @@ class PublicBookingController extends Controller
 
     public function storeContact(Request $request, Tenant $tenantBySlug): RedirectResponse
     {
+        $this->normalizePlateInput($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'type' => ['required', 'string', 'in:general,quote'],
             'message' => ['required', 'string', 'max:2000'],
-            'plate' => ['nullable', 'required_if:type,quote', 'string', 'size:6', 'regex:/^[A-Z0-9]+$/'],
+            'plate' => ['nullable', 'required_if:type,quote', 'string', new ChileanPlate],
             'brand' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
             'model' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
             'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],
@@ -284,5 +289,14 @@ class PublicBookingController extends Controller
         Mail::to($recipientEmail)->send(new TenantContactMail($validated));
 
         return back()->with('contact_success', true);
+    }
+
+    private function normalizePlateInput(Request $request): void
+    {
+        if ($request->filled('plate')) {
+            $request->merge([
+                'plate' => strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', (string) $request->input('plate'))),
+            ]);
+        }
     }
 }

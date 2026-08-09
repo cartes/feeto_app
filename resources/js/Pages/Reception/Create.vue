@@ -90,11 +90,16 @@ const vehicleCatalog = reactive(useVehicleCatalog({
     modelIdField: 'vehicle_model_id',
 }));
 
+const MOTO_PLATE_REGEX = /^([A-Z]{3}[0-9]{2}|[A-Z]{2}[0-9]{3})$/;
+
 const formattedPlate = computed(() => {
     if (!recognizedPlate.value) return '';
     const clean = recognizedPlate.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
     if (clean.length >= 6) {
         return `${clean.slice(0, 2)}·${clean.slice(2, 4)}·${clean.slice(4, 6)}`;
+    }
+    if (MOTO_PLATE_REGEX.test(clean)) {
+        return clean.replace(/^([A-Z]+)([0-9]+)$/, '$1·$2');
     }
     return clean;
 });
@@ -308,10 +313,23 @@ const debouncedRutLookup = debounce((value) => {
     void lookupClientByRut(value);
 }, 400);
 
-// Autosearch when 6 characters reached in manual input
+// Autosearch: inmediato con 6 caracteres (auto); con debounce para
+// patentes de moto de 5 caracteres, por si el usuario sigue escribiendo.
+const debouncedMotoPlateSearch = debounce((value) => {
+    if (showModal.value && form.plate?.toUpperCase() === value && MOTO_PLATE_REGEX.test(value) && !isSearching.value) {
+        fetchVehicleData(value);
+    }
+}, 600);
+
 watch(() => form.plate, (newVal) => {
-    if (showModal.value && newVal && newVal.length === 6 && !isSearching.value) {
-        fetchVehicleData(newVal);
+    if (!showModal.value || !newVal || isSearching.value) return;
+
+    const clean = newVal.toUpperCase();
+
+    if (clean.length === 6) {
+        fetchVehicleData(clean);
+    } else if (MOTO_PLATE_REGEX.test(clean)) {
+        debouncedMotoPlateSearch(clean);
     }
 });
 
@@ -609,6 +627,7 @@ onUnmounted(() => {
                         <input v-model="form.plate" type="text"
                             class="w-full text-center bg-transparent border-none focus:ring-0 text-5xl font-mono font-black text-gray-900 tracking-widest plate-font uppercase placeholder-gray-200"
                             placeholder="AAAA11" maxlength="6" />
+                        <p class="text-[9px] text-gray-400 mt-2 tracking-wider">Auto: 6 caracteres · Moto: 5 caracteres</p>
                     </div>
 
                     <!-- Datos del Vehículo -->

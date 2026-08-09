@@ -18,10 +18,12 @@ class PatentRecognitionAgent implements Agent, HasStructuredOutput
             Eres un experto en OCR y vehículos chilenos.
             
             TAREAS:
-            1. Patente (PPU): Extrae la patente chilena.
-               - Formato Moderno: 4 Letras (no vocales/MNÑQ) + 2 Números.
-               - Formato Antiguo: 2 Letras + 4 Números.
-            2. Vehículo: Identifica la Marca, Modelo y Color basándote en la imagen completa del auto.
+            1. Patente (PPU): Extrae la patente chilena (auto o moto).
+               - Auto Moderno: 4 Letras (no vocales/MNÑQ) + 2 Números.
+               - Auto Antiguo: 2 Letras + 4 Números.
+               - Moto Moderna: 3 Letras + 2 Números.
+               - Moto Antigua: 2 Letras + 3 Números.
+            2. Vehículo: Identifica la Marca, Modelo y Color basándote en la imagen completa del vehículo.
             
             Si algún dato no es visible, pon "Desconocido".
             INST;

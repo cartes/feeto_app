@@ -69,4 +69,27 @@ class OcrServiceTest extends TestCase
         $result = $method->invoke($this->service, 'ABC123');
         $this->assertFalse($result['valid']);
     }
+
+    /**
+     * Test motorcycle PPU validation (3 letters + 2 numbers, or 2 letters + 3 numbers).
+     */
+    public function test_it_validates_motorcycle_ppu(): void
+    {
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('validatePpu');
+
+        // Valid modern motorcycle
+        $result = $method->invoke($this->service, 'BCD12');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('moto_moderna', $result['type']);
+
+        // Valid old motorcycle
+        $result = $method->invoke($this->service, 'AB123');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('moto_antigua', $result['type']);
+
+        // Invalid (too short)
+        $result = $method->invoke($this->service, 'BC12');
+        $this->assertFalse($result['valid']);
+    }
 }

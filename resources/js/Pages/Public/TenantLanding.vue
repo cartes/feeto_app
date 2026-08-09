@@ -510,7 +510,7 @@ const trackWhatsAppClick = () => {
                                         <div>
                                             <label for="plate" class="block text-sm font-semibold text-gray-700 mb-1.5">
                                                 Patente del Vehículo
-                                                <span class="text-gray-400 font-normal">(6 caracteres)</span>
+                                                <span class="text-gray-400 font-normal">(auto: 6 · moto: 5)</span>
                                             </label>
                                             <input
                                                 id="plate"

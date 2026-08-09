@@ -20,7 +20,13 @@ class FastPlateRecognitionAgent implements Agent, HasStructuredOutput
         return <<<'PROMPT'
         Eres un lector OCR ultrarrapido especializado en patentes chilenas.
 
-        Tu unica tarea es extraer la patente visible del vehiculo.
+        Tu unica tarea es extraer la patente visible del vehiculo (auto o moto).
+
+        Formatos validos:
+        - Auto nuevo: 4 letras + 2 numeros (ej: GKSB78).
+        - Auto antiguo: 2 letras + 4 numeros (ej: BC1234).
+        - Moto nueva: 3 letras + 2 numeros (ej: ABC12).
+        - Moto antigua: 2 letras + 3 numeros (ej: AB123).
 
         Reglas:
         1. Devuelve solo los caracteres alfanumericos de la patente.
