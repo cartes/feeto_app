@@ -296,6 +296,91 @@ onUnmounted(() => {
             </section>
         </div>
 
+        <!-- Sección "Novedad": soporte de patentes de moto -->
+        <section id="moto-support" class="border-b border-slate-100 bg-white py-24 font-sans antialiased">
+            <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
+                <div>
+                    <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FF7A00] px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-white">
+                        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                        Novedad
+                    </span>
+                    <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl md:leading-tight">
+                        Ahora tu taller también recibe <em class="not-italic text-[#FF7A00]">motos.</em>
+                    </h2>
+                    <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
+                        Taller Flow ahora soporta patentes de motocicletas chilenas en todo el flujo: recepción con
+                        escáner IA, agenda online, cotizaciones e historial. Formato nuevo y antiguo, sin configurar nada.
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <span class="inline-flex items-center rounded-full border border-[#FF7A00]/20 bg-[#fff7ef] px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#FF7A00]">
+                            Autos y Motos
+                        </span>
+                        <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
+                            Formato nuevo y antiguo
+                        </span>
+                    </div>
+
+                    <ul class="mt-8 space-y-4">
+                        <li
+                            v-for="bullet in [
+                                'El escáner con IA lee patentes de moto igual que las de auto: captura, reconoce y cruza la agenda del día.',
+                                'Tus clientes pueden agendar y pedir cotizaciones online ingresando la patente de su moto.',
+                                'Historial completo por vehículo: órdenes, cotizaciones y dueño, sin importar si es auto o moto.',
+                            ]"
+                            :key="bullet"
+                            class="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+                        >
+                            <span class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </span>
+                            <p class="text-sm font-semibold leading-relaxed text-slate-700">{{ bullet }}</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.18),_transparent_65%)] blur-2xl"></div>
+                    <div class="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+                        <div class="mb-6 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Recepción</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-700">Patentes de moto reconocidas</p>
+                            </div>
+                            <span class="rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white">
+                                Nuevo
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-5 py-4">
+                            <!-- Patente moto formato nuevo -->
+                            <div class="w-56 rounded-xl border-[3px] border-slate-900 bg-white px-6 py-3 text-center shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
+                                <p class="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400">Chile</p>
+                                <p class="mt-1 font-mono text-4xl font-black tracking-[0.15em] text-slate-900">BCD·12</p>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Formato nuevo · 3 letras + 2 números</p>
+
+                            <!-- Patente moto formato antiguo -->
+                            <div class="w-56 rounded-xl border-[3px] border-slate-900 bg-white px-6 py-3 text-center shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
+                                <p class="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400">Chile</p>
+                                <p class="mt-1 font-mono text-4xl font-black tracking-[0.15em] text-slate-900">AB·123</p>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Formato antiguo · 2 letras + 3 números</p>
+
+                            <div class="mt-2 flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2">
+                                <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                                <span class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">Reconocida por el escáner IA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="inventory-import" class="border-b border-slate-100 bg-[#fff7ef] py-24 font-sans antialiased">
             <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
                 <div>
