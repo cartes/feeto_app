@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\Country;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTrialRequest extends FormRequest
 {
@@ -20,6 +22,7 @@ class StoreTrialRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'country' => ['required', 'string', Rule::in(array_column(Country::cases(), 'value'))],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email:filter', 'max:255', 'unique:trial_requests,email'],
             'phone' => ['required', 'string', 'max:30'],
@@ -39,6 +42,8 @@ class StoreTrialRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'country.required' => 'Debes seleccionar un país.',
+            'country.in' => 'El país seleccionado no es válido.',
             'name.required' => 'El nombre es obligatorio.',
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.email' => 'Ingresa un correo electrónico válido.',

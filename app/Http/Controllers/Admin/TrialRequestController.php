@@ -69,6 +69,7 @@ class TrialRequestController extends Controller
             'name' => $trialRequest->business_name,
             'slug' => $slug,
             'domain' => $domain,
+            'country' => $trialRequest->country?->value ?? 'CL',
             'plan' => 'basico',
             'is_active' => true,
             'status' => 'active',

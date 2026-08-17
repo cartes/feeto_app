@@ -82,6 +82,7 @@ class NotifySuperAdminOfTrialRequestTest extends TestCase
         $superAdmin = User::factory()->superAdmin()->create();
 
         $response = $this->post(route('trial.store'), [
+            'country' => 'CL',
             'name' => 'Carlos Díaz',
             'email' => 'carlos@taller.cl',
             'phone' => '+56922222222',
@@ -129,6 +130,7 @@ class NotifySuperAdminOfTrialRequestTest extends TestCase
         Cache::flush();
 
         $response = $this->post(route('trial.store'), [
+            'country' => 'CL',
             'name' => 'Carlos Díaz',
             'email' => 'correo-invalido',
             'phone' => '+56922222222',
@@ -150,6 +152,7 @@ class NotifySuperAdminOfTrialRequestTest extends TestCase
         Cache::flush();
 
         $response = $this->post(route('trial.store'), [
+            'country' => 'CL',
             'name' => 'Carlos Díaz',
             'email' => 'prueba@email',
             'phone' => '+56922222222',

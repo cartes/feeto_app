@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Country;
 use App\Enums\TenantPlan;
 use App\Services\PlanFeatureService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,7 @@ class Tenant extends SpatieTenant
         'kanban_columns' => 'array',
         'max_discount_without_approval' => 'decimal:2',
         'scheduling_config' => 'array',
+        'country' => Country::class,
     ];
 
     protected static function boot(): void
@@ -104,6 +106,16 @@ class Tenant extends SpatieTenant
         $planName = $this->currentPlan()->label();
 
         return "El plan {$planName} permite un máximo de {$limit} usuarios. Actualiza tu plan para agregar más.";
+    }
+
+    /**
+     * Retorna el país del tenant (por defecto Chile).
+     */
+    public function country(): Country
+    {
+        return $this->getAttribute('country') instanceof Country
+            ? $this->getAttribute('country')
+            : Country::Chile;
     }
 
     /**

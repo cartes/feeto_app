@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\Country;
 use App\Models\Tenant;
-use App\Rules\ChileanPlate;
+use App\Rules\LicensePlate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,7 +33,7 @@ class StoreReceptionOrderRequest extends FormRequest
         $tenantId = Tenant::current()?->id;
 
         return [
-            'plate' => ['required', 'string', new ChileanPlate],
+            'plate' => ['required', 'string', new LicensePlate(Tenant::current()?->country() ?? Country::Chile)],
             'vehicle_brand_id' => ['nullable', 'integer', Rule::exists('vehicle_brands', 'id')],
             'vehicle_model_id' => [
                 'nullable',

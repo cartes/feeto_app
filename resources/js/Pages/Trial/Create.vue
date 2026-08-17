@@ -1,12 +1,15 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 
 const props = defineProps({
     seo: { type: Object, default: () => ({}) },
+    countries: { type: Array, default: () => [] },
 });
 
 const form = useForm({
+    country: 'CL',
     name: '',
     email: '',
     phone: '',
@@ -17,6 +20,14 @@ const form = useForm({
     requested_plan: '',
     message: '',
     terms: false,
+});
+
+const selectedCountry = computed(() => {
+    return props.countries.find(c => c.value === form.country) ?? props.countries[0] ?? null;
+});
+
+const phonePlaceholder = computed(() => {
+    return selectedCountry.value?.phone_placeholder ?? '+56 9 1234 5678';
 });
 
 const businessTypes = [
@@ -68,6 +79,24 @@ const submit = () => {
             <!-- Formulario -->
             <form @submit.prevent="submit" class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-900/5 p-8 space-y-6">
 
+                <!-- País -->
+                <div>
+                    <label for="country" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                        País <span class="text-rose-500">*</span>
+                    </label>
+                    <select
+                        id="country"
+                        v-model="form.country"
+                        class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition bg-white"
+                        :class="{ 'border-rose-400 focus:ring-rose-400': form.errors.country }"
+                    >
+                        <option v-for="c in countries" :key="c.value" :value="c.value">
+                            {{ c.flag }} {{ c.label }}
+                        </option>
+                    </select>
+                    <p v-if="form.errors.country" class="mt-1.5 text-xs text-rose-600">{{ form.errors.country }}</p>
+                </div>
+
                 <!-- Nombre del responsable -->
                 <div>
                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-1.5">
@@ -117,7 +146,7 @@ const submit = () => {
                         v-model="form.phone"
                         type="tel"
                         autocomplete="tel"
-                        placeholder="+56 9 1234 5678"
+                        :placeholder="phonePlaceholder"
                         class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                         :class="{ 'border-rose-400 focus:ring-rose-400': form.errors.phone }"
                     />

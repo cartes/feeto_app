@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\Country;
 use App\Events\TrialRequestSubmitted;
 use App\Http\Requests\StoreTrialRequest;
 use App\Models\TrialRequest;
@@ -15,7 +16,15 @@ class TrialRequestController extends Controller
 {
     public function create(): Response
     {
+        $countries = array_map(static fn (Country $c): array => [
+            'value' => $c->value,
+            'label' => $c->label(),
+            'flag' => $c->flag(),
+            'phone_placeholder' => $c->phonePlaceholder(),
+        ], Country::cases());
+
         return Inertia::render('Trial/Create', [
+            'countries' => $countries,
             'seo' => $this->resolveMarketingSeo(
                 'trial',
                 'Prueba Gratis 14 días · TallerFlow — Software para Talleres',

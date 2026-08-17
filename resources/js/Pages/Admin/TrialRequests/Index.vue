@@ -150,7 +150,11 @@ const formatDate = (date) => {
                         <template v-for="req in requests.data" :key="req.id">
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="py-4 pl-6 pr-3">
-                                    <p class="text-sm font-semibold text-slate-900">{{ req.name }}</p>
+                                    <p class="text-sm font-semibold text-slate-900">
+                                        <span v-if="req.country === 'CO'" class="mr-1" title="Colombia">🇨🇴</span>
+                                        <span v-else class="mr-1" title="Chile">🇨🇱</span>
+                                        {{ req.name }}
+                                    </p>
                                     <p class="text-xs text-slate-500 mt-0.5">{{ req.email }}</p>
                                 </td>
                                 <td class="px-3 py-4">

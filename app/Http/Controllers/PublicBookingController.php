@@ -12,7 +12,7 @@ use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\TenantLead;
 use App\Models\TenantNotification;
-use App\Rules\ChileanPlate;
+use App\Rules\LicensePlate;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -78,7 +78,7 @@ class PublicBookingController extends Controller
             'customer_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
-            'plate' => ['required', 'string', new ChileanPlate],
+            'plate' => ['required', 'string', new LicensePlate($tenantBySlug->country())],
             'appointment_date' => ['required', 'date', 'after:now'],
             'pre_check_notes' => ['nullable', 'string', 'max:1000'],
         ]);
@@ -149,7 +149,7 @@ class PublicBookingController extends Controller
             'image' => $this->resolveSocialImageUrl(),
             'areaServed' => [
                 '@type' => 'Country',
-                'name' => 'Chile',
+                'name' => $tenant->country()->label(),
             ],
         ];
 
@@ -157,7 +157,7 @@ class PublicBookingController extends Controller
             $businessSchema['address'] = [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $tenant->seo_address,
-                'addressCountry' => 'CL',
+                'addressCountry' => $tenant->country()->isoCode(),
             ];
         }
 
@@ -182,7 +182,7 @@ class PublicBookingController extends Controller
                         $loc['address'] = [
                             '@type' => 'PostalAddress',
                             'streetAddress' => $b->address,
-                            'addressCountry' => 'CL',
+                            'addressCountry' => $tenant->country()->isoCode(),
                         ];
                     }
                     if (filled($b->phone)) {
@@ -252,7 +252,7 @@ class PublicBookingController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'type' => ['required', 'string', 'in:general,quote'],
             'message' => ['required', 'string', 'max:2000'],
-            'plate' => ['nullable', 'required_if:type,quote', 'string', new ChileanPlate],
+            'plate' => ['nullable', 'required_if:type,quote', 'string', new LicensePlate($tenantBySlug->country())],
             'brand' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
             'model' => ['nullable', 'required_if:type,quote', 'string', 'max:100'],
             'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Ai\Agents;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -15,14 +17,21 @@ class PatentRecognitionAgent implements Agent, HasStructuredOutput
     public function instructions(): Stringable|string
     {
         return <<<'INST'
-            Eres un experto en OCR y vehículos chilenos.
+            Eres un experto en OCR y vehículos latinoamericanos.
             
             TAREAS:
-            1. Patente (PPU): Extrae la patente chilena (auto o moto).
+            1. Placa vehicular: Extrae la placa del vehículo (auto o moto).
+            
+               Formatos Chile:
                - Auto Moderno: 4 Letras (no vocales/MNÑQ) + 2 Números.
                - Auto Antiguo: 2 Letras + 4 Números.
                - Moto Moderna: 3 Letras + 2 Números.
                - Moto Antigua: 2 Letras + 3 Números.
+               
+               Formatos Colombia:
+               - Auto: 3 Letras + 3 Números (ej: ABC123).
+               - Moto: 3 Letras + 2 Números + 1 Letra (ej: ABC12D).
+               
             2. Vehículo: Identifica la Marca, Modelo y Color basándote en la imagen completa del vehículo.
             
             Si algún dato no es visible, pon "Desconocido".
@@ -32,7 +41,7 @@ class PatentRecognitionAgent implements Agent, HasStructuredOutput
     public function schema(JsonSchema $schema): array
     {
         return [
-            'plate' => $schema->string()->description('Patente extraída')->required(),
+            'plate' => $schema->string()->description('Placa extraída')->required(),
             'brand' => $schema->string()->description('Marca del vehículo')->required(),
             'model' => $schema->string()->description('Modelo del vehículo')->required(),
             'color' => $schema->string()->description('Color del vehículo')->required(),

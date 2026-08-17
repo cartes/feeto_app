@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\ChileanPlate;
+use App\Enums\Country;
+use App\Rules\LicensePlate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Spatie\Multitenancy\Models\Tenant;
 
 class PreviewReceptionRequest extends FormRequest
 {
@@ -28,7 +30,7 @@ class PreviewReceptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patente' => ['required', 'string', new ChileanPlate],
+            'patente' => ['required', 'string', new LicensePlate(Tenant::current()?->country() ?? Country::Chile)],
         ];
     }
 

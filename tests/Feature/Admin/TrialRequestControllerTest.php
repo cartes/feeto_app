@@ -58,6 +58,7 @@ class TrialRequestControllerTest extends TestCase
         ]);
 
         $storeResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
             'name' => 'Juan Perez',
             'email' => 'juan@example.com',
             'phone' => '+56911111111',
