@@ -38,8 +38,8 @@ const slides = [
         imageWebp: '/images/dashboard_kanban.webp'
     },
     {
-        title: 'Recepción con IA móvil',
-        description: 'Escanea la patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.',
+        title: 'Recepción con IA móvil (Chile y Colombia)',
+        description: 'Escanea la placa o patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.',
         tag: 'Recepción IA',
         tagClass: 'bg-purple-50 text-purple-600 border border-purple-100',
         image: '/images/recepcion_ia.png',
@@ -105,7 +105,7 @@ onUnmounted(() => {
 <template>
 
     <Head>
-        <title>{{ seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile' }}</title>
+        <title>{{ seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile y Colombia' }}</title>
     </Head>
 
     <PublicNav :can-login="canLogin" :active-section="activeSection" />
@@ -124,7 +124,7 @@ onUnmounted(() => {
                         <div class="meta-line">
                             <span class="badge-pill">
                                 <span class="dot"></span>
-                                Software para Talleres
+                                🇨🇱 Chile & 🇨🇴 Colombia · Software para Talleres
                             </span>
                         </div>
 
@@ -269,9 +269,7 @@ onUnmounted(() => {
                                 </svg>
                             </span>
                             <h3>Recepción con IA</h3>
-                            <p>Escanea patentes con la cámara de tu celular. Gemini AI lee la patente, cruza la agenda y
-                                muestra los
-                                datos del cliente en segundos.</p>
+                            <p>Escanea patentes y placas con la cámara de tu celular. Gemini AI lee el código (Chile y Colombia), cruza la agenda y muestra los datos en segundos.</p>
                             <div class="feat-tags">
                                 <span class="feat-tag feat-tag-purple">Gemini AI</span>
                                 <span class="feat-tag feat-tag-dim">ALPR</span>
@@ -296,37 +294,41 @@ onUnmounted(() => {
             </section>
         </div>
 
-        <!-- Sección "Novedad": soporte de patentes de moto -->
+        <!-- Sección "Novedad": soporte multi-país Chile y Colombia -->
         <section id="moto-support" class="border-b border-slate-100 bg-white py-24 font-sans antialiased">
             <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
                 <div>
                     <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FF7A00] px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-white">
                         <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-                        Novedad
+                        🇨🇴 ¡Nuevo! Ahora en Colombia
                     </span>
                     <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl md:leading-tight">
-                        Ahora tu taller también recibe <em class="not-italic text-[#FF7A00]">motos.</em>
+                        Tu taller en <em class="not-italic text-[#FF7A00]">Chile y Colombia</em> en una sola plataforma.
                     </h2>
                     <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
-                        Taller Flow ahora soporta patentes de motocicletas chilenas en todo el flujo: recepción con
-                        escáner IA, agenda online, cotizaciones e historial. Formato nuevo y antiguo, sin configurar nada.
+                        TallerFlow ahora cuenta con soporte completo para talleres en <strong>Chile 🇨🇱</strong> y <strong>Colombia 🇨🇴</strong>:
+                        escáner IA de patentes y placas vehiculares, agenda online, recepción express, cotizaciones e historial para autos, motocicletas, motocarros y más.
                     </p>
 
                     <div class="mt-6 flex flex-wrap gap-3">
-                        <span class="inline-flex items-center rounded-full border border-[#FF7A00]/20 bg-[#fff7ef] px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#FF7A00]">
-                            Autos y Motos
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/20 bg-[#fff7ef] px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#FF7A00]">
+                            🇨🇴 Placas Colombianas
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50/60 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-blue-700">
+                            🇨🇱 Patentes Chilenas
                         </span>
                         <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
-                            Formato nuevo y antiguo
+                            Autos, Motos y Más
                         </span>
                     </div>
 
                     <ul class="mt-8 space-y-4">
                         <li
                             v-for="bullet in [
-                                'El escáner con IA lee patentes de moto igual que las de auto: captura, reconoce y cruza la agenda del día.',
-                                'Tus clientes pueden agendar y pedir cotizaciones online ingresando la patente de su moto.',
-                                'Historial completo por vehículo: órdenes, cotizaciones y dueño, sin importar si es auto o moto.',
+                                'El escáner con IA reconoce placas de Colombia (AAA123, AAA12D, 123AAA) y Chile al instante con la cámara de tu teléfono.',
+                                'Formulario de registro con selector de país y adaptación automática de prefijos telefónicos y validaciones.',
+                                'Tus clientes agendan y solicitan cotizaciones online con las placas de su país sin fricción.',
+                                'Historial vehicular completo por placa o patente, sin importar el tipo de vehículo.',
                             ]"
                             :key="bullet"
                             class="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
@@ -346,35 +348,57 @@ onUnmounted(() => {
                     <div class="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
                         <div class="mb-6 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
                             <div>
-                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Recepción</p>
-                                <p class="mt-1 text-sm font-semibold text-slate-700">Patentes de moto reconocidas</p>
+                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Recepción Multipaís</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-700">Placas y Patentes Reconocidas</p>
                             </div>
                             <span class="rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white">
-                                Nuevo
+                                IA Activa
                             </span>
                         </div>
 
-                        <div class="flex flex-col items-center gap-5 py-4">
-                            <!-- Patente moto formato nuevo -->
-                            <div class="w-56 rounded-xl border-[3px] border-slate-900 bg-white px-6 py-3 text-center shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
-                                <p class="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400">Chile</p>
-                                <p class="mt-1 font-mono text-4xl font-black tracking-[0.15em] text-slate-900">BCD·12</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
+                            <!-- Placa Colombia Particular (Amarilla) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Bogotá D.C.</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·123</p>
+                                </div>
+                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇴 Auto Colombia</p>
                             </div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Formato nuevo · 3 letras + 2 números</p>
 
-                            <!-- Patente moto formato antiguo -->
-                            <div class="w-56 rounded-xl border-[3px] border-slate-900 bg-white px-6 py-3 text-center shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
-                                <p class="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400">Chile</p>
-                                <p class="mt-1 font-mono text-4xl font-black tracking-[0.15em] text-slate-900">AB·123</p>
+                            <!-- Placa Colombia Moto (Amarilla) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Moto</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·12D</p>
+                                </div>
+                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇴 Moto Colombia</p>
                             </div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Formato antiguo · 2 letras + 3 números</p>
 
-                            <div class="mt-2 flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2">
-                                <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
-                                <span class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">Reconocida por el escáner IA</span>
+                            <!-- Patente Chile Auto (Blanca) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-400">Chile</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">GKSB·78</p>
+                                </div>
+                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇱 Auto Chile</p>
                             </div>
+
+                            <!-- Patente Chile Moto (Blanca) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-400">Chile</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">BCD·12</p>
+                                </div>
+                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇱 Moto Chile</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2">
+                            <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            <span class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">Reconocidas al instante por Gemini AI</span>
                         </div>
                     </div>
                 </div>
