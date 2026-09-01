@@ -21,7 +21,7 @@ class WorkOrderModalController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $workOrder = WorkOrder::with(['quote.items.product', 'quote.items.service', 'images', 'vehicle.client'])
+        $workOrder = WorkOrder::with(['quote.items.product', 'quote.items.service', 'images', 'vehicle.client', 'checklist'])
             ->findOrFail($id);
 
         // Verificar que el usuario pertenezca al tenant de la work order

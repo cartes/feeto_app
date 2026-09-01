@@ -18,6 +18,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Ai\Providers\AnthropicProvider;
@@ -140,6 +141,120 @@ class ReceptionControllerTest extends TestCase
         ]);
         $this->assertDatabaseCount('work_orders', 1);
         $this->assertSame(WorkOrder::STATUS_RECEPCION, WorkOrder::query()->firstOrFail()->status);
+    }
+
+    public function test_store_order_persists_reception_checklist_with_signature(): void
+    {
+        Storage::fake('local');
+
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        // PNG de 1x1 px válido para simular la firma dibujada en pantalla
+        $signature = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+        $response = $this->actingAs($admin)->post(route('receptions.store_order', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'plate' => 'AA1111',
+            'brand' => 'Toyota',
+            'model' => 'Yaris',
+            'client_name' => 'Maria Nueva',
+            'client_rut' => '22222222-2',
+            'client_email' => '',
+            'client_phone' => '',
+            'selected_client_id' => null,
+            'reassign_vehicle_owner' => false,
+            'checklist' => [
+                'fuel_level' => 50,
+                'damages' => [
+                    ['x' => 25.5, 'y' => 40.0, 'type' => 'rayon', 'note' => 'Puerta conductor'],
+                    ['x' => 80.0, 'y' => 90.0, 'type' => 'abolladura', 'note' => null],
+                ],
+                'belongings' => ['Rueda de repuesto', 'Documentos'],
+                'notes' => 'Llega con luz de check engine encendida.',
+                'signature' => $signature,
+                'signed_by_name' => 'Maria Nueva',
+            ],
+        ]);
+
+        $response->assertRedirect(route('work-orders.index', ['tenantBySlug' => $tenant->slug]));
+
+        $workOrder = WorkOrder::query()->firstOrFail();
+        $checklist = $workOrder->checklist;
+
+        $this->assertNotNull($checklist);
+        $this->assertSame($tenant->id, $checklist->tenant_id);
+        $this->assertSame(50, $checklist->fuel_level);
+        $this->assertCount(2, $checklist->damages);
+        $this->assertSame('rayon', $checklist->damages[0]['type']);
+        $this->assertSame(['Rueda de repuesto', 'Documentos'], $checklist->belongings);
+        $this->assertSame('Llega con luz de check engine encendida.', $checklist->notes);
+        $this->assertSame('Maria Nueva', $checklist->signed_by_name);
+        $this->assertNotNull($checklist->signed_at);
+        $this->assertNotNull($checklist->signature_path);
+        Storage::disk('local')->assertExists($checklist->signature_path);
+        $this->assertStringStartsWith("tenants/{$tenant->id}/work_orders/firmas/", $checklist->signature_path);
+    }
+
+    public function test_store_order_without_checklist_data_creates_no_checklist(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $response = $this->actingAs($admin)->post(route('receptions.store_order', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'plate' => 'AA1111',
+            'brand' => 'Toyota',
+            'model' => 'Yaris',
+            'client_name' => 'Maria Nueva',
+            'client_rut' => '22222222-2',
+            'client_email' => '',
+            'client_phone' => '',
+            'selected_client_id' => null,
+            'reassign_vehicle_owner' => false,
+            'checklist' => [
+                'fuel_level' => null,
+                'damages' => [],
+                'belongings' => [],
+                'notes' => '',
+                'signature' => null,
+                'signed_by_name' => '',
+            ],
+        ]);
+
+        $response->assertRedirect(route('work-orders.index', ['tenantBySlug' => $tenant->slug]));
+        $this->assertDatabaseCount('work_orders', 1);
+        $this->assertDatabaseCount('reception_checklists', 0);
+    }
+
+    public function test_store_order_rejects_invalid_damage_type(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $response = $this->actingAs($admin)->post(route('receptions.store_order', [
+            'tenantBySlug' => $tenant->slug,
+        ]), [
+            'plate' => 'AA1111',
+            'brand' => 'Toyota',
+            'model' => 'Yaris',
+            'client_name' => 'Maria Nueva',
+            'client_rut' => '22222222-2',
+            'client_email' => '',
+            'client_phone' => '',
+            'selected_client_id' => null,
+            'reassign_vehicle_owner' => false,
+            'checklist' => [
+                'damages' => [
+                    ['x' => 25.5, 'y' => 40.0, 'type' => 'inexistente', 'note' => null],
+                ],
+            ],
+        ]);
+
+        $response->assertSessionHasErrors(['checklist.damages.0.type']);
+        $this->assertDatabaseCount('work_orders', 0);
     }
 
     public function test_store_returns_recognized_plate_without_queue_worker(): void

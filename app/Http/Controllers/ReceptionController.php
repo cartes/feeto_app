@@ -176,11 +176,13 @@ class ReceptionController extends Controller
 
         $vehicle->save();
 
-        WorkOrder::create([
+        $workOrder = WorkOrder::create([
             'vehicle_id' => $vehicle->id,
             'status' => 'recepcion',
             'observations' => 'Creada vía Modal de Recepción Digital',
         ]);
+
+        $this->storeChecklist($workOrder, $request->validated('checklist') ?? []);
 
         $appointmentId = $request->integer('appointment_id');
         if ($appointmentId > 0) {
@@ -344,6 +346,74 @@ class ReceptionController extends Controller
                 'flag' => $country->flag(),
             ], $candidates),
         ];
+    }
+
+    /**
+     * Guarda el checklist de recepción (inventario de daños, combustible,
+     * objetos de valor y firma del cliente) asociado a la OT recién creada.
+     *
+     * @param  array<string, mixed>  $checklist
+     */
+    private function storeChecklist(WorkOrder $workOrder, array $checklist): void
+    {
+        $fuelLevel = $checklist['fuel_level'] ?? null;
+        $damages = array_values($checklist['damages'] ?? []);
+        $belongings = array_values($checklist['belongings'] ?? []);
+        $notes = trim((string) ($checklist['notes'] ?? ''));
+        $signature = (string) ($checklist['signature'] ?? '');
+
+        $hasData = $fuelLevel !== null
+            || $damages !== []
+            || $belongings !== []
+            || $notes !== ''
+            || $signature !== '';
+
+        if (! $hasData) {
+            return;
+        }
+
+        $signaturePath = $signature !== '' ? $this->storeSignatureImage($signature) : null;
+
+        $workOrder->checklist()->create([
+            'fuel_level' => $fuelLevel,
+            'damages' => $damages,
+            'belongings' => $belongings,
+            'notes' => $notes !== '' ? $notes : null,
+            'signature_path' => $signaturePath,
+            'signed_by_name' => $signaturePath !== null
+                ? ($checklist['signed_by_name'] ?? null)
+                : null,
+            'signed_at' => $signaturePath !== null ? now() : null,
+        ]);
+    }
+
+    /**
+     * Decodifica la firma (data URL PNG) y la guarda en el disco privado del tenant.
+     */
+    private function storeSignatureImage(string $dataUrl): ?string
+    {
+        $prefix = 'data:image/png;base64,';
+
+        if (! str_starts_with($dataUrl, $prefix)) {
+            return null;
+        }
+
+        $binary = base64_decode(substr($dataUrl, strlen($prefix)), true);
+
+        if ($binary === false || $binary === '') {
+            return null;
+        }
+
+        $tenant = Tenant::current();
+
+        if (! $tenant) {
+            return null;
+        }
+
+        $path = "tenants/{$tenant->id}/work_orders/firmas/".Str::uuid().'.png';
+        Storage::disk('local')->put($path, $binary);
+
+        return $path;
     }
 
     private function computeAppointmentAlert(Appointment $appointment): ?string

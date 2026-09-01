@@ -63,6 +63,22 @@ class StoreReceptionOrderRequest extends FormRequest
             ],
             'reassign_vehicle_owner' => ['required', 'boolean'],
             'appointment_id' => ['nullable', 'integer'],
+            'checklist' => ['nullable', 'array'],
+            'checklist.fuel_level' => ['nullable', 'integer', 'between:0,100'],
+            'checklist.damages' => ['nullable', 'array', 'max:50'],
+            'checklist.damages.*.x' => ['required', 'numeric', 'between:0,100'],
+            'checklist.damages.*.y' => ['required', 'numeric', 'between:0,100'],
+            'checklist.damages.*.type' => [
+                'required',
+                'string',
+                Rule::in(['rayon', 'abolladura', 'trizadura', 'pintura', 'falta_pieza', 'otro']),
+            ],
+            'checklist.damages.*.note' => ['nullable', 'string', 'max:255'],
+            'checklist.belongings' => ['nullable', 'array', 'max:30'],
+            'checklist.belongings.*' => ['required', 'string', 'max:255'],
+            'checklist.notes' => ['nullable', 'string', 'max:2000'],
+            'checklist.signature' => ['nullable', 'string', 'max:2000000', 'regex:#^data:image/png;base64,#'],
+            'checklist.signed_by_name' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -82,6 +98,8 @@ class StoreReceptionOrderRequest extends FormRequest
             'client_email.email' => 'El correo del cliente no es válido.',
             'selected_client_id.exists' => 'El cliente seleccionado no pertenece a este taller.',
             'reassign_vehicle_owner.required' => 'Debes indicar si quieres reasignar el dueño del vehículo.',
+            'checklist.damages.*.type.in' => 'El tipo de daño marcado no es válido.',
+            'checklist.signature.regex' => 'La firma debe ser una imagen PNG válida.',
         ];
     }
 }

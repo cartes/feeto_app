@@ -112,6 +112,11 @@ class WorkOrder extends Model
         return $this->hasMany(WorkOrderImage::class);
     }
 
+    public function checklist(): HasOne
+    {
+        return $this->hasOne(ReceptionChecklist::class);
+    }
+
     /**
      * @return list<string>
      */

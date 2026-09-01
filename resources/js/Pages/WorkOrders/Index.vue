@@ -5,6 +5,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 import Dropdown from '@/Components/Dropdown.vue';
+import VehicleDamageDiagram from '@/Components/Reception/VehicleDamageDiagram.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
 import { useFormatting } from '@/composables/useFormatting';
@@ -91,7 +92,12 @@ const getStatusLabel = (statusId) => {
 const isModalOpen = ref(false);
 const selectedWorkOrder = ref(null);
 const isLoadingModal = ref(false);
-const activeTab = ref('budget'); // 'budget' or 'evidence'
+const activeTab = ref('budget'); // 'budget' | 'evidence' | 'checklist' | 'preview'
+
+const fuelLevelLabel = (level) => {
+    const labels = { 0: 'Vacío (E)', 25: '1/4', 50: '1/2', 75: '3/4', 100: 'Lleno (F)' };
+    return labels[level] ?? `${level}%`;
+};
 
 const quoteStatusConfig = {
     draft: { label: 'Borrador', classes: 'border-slate-200 bg-slate-50 text-slate-500' },
@@ -1083,6 +1089,11 @@ const submitDeleteWorkOrder = () => {
                         :class="activeTab === 'evidence' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
                         Evidencia Fotográfica
                     </button>
+                    <button @click="activeTab = 'checklist'"
+                        class="flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all"
+                        :class="activeTab === 'checklist' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
+                        Checklist Recepción
+                    </button>
                     <button @click="activeTab = 'preview'"
                         class="flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all"
                         :class="activeTab === 'preview' ? 'text-[#FF7A00] border-b-2 border-[#FF7A00] bg-orange-50/30' : 'text-slate-400 hover:text-slate-600'">
@@ -1336,6 +1347,85 @@ const submitDeleteWorkOrder = () => {
                                     <input type="file" accept="image/*" capture="camera" class="hidden"
                                         @change="uploadPhoto" />
                                 </label>
+                            </div>
+                        </div>
+
+                        <!-- Checklist de Recepción Section -->
+                        <div v-if="activeTab === 'checklist'"
+                            class="animate-in slide-in-from-right-4 duration-500">
+                            <div v-if="selectedWorkOrder.checklist" class="max-w-xl mx-auto space-y-8">
+                                <!-- Nivel de combustible -->
+                                <div v-if="selectedWorkOrder.checklist.fuel_level !== null"
+                                    class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+                                        Nivel de Combustible</p>
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1 h-3 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full bg-[#FF7A00] transition-all"
+                                                :style="{ width: selectedWorkOrder.checklist.fuel_level + '%' }"></div>
+                                        </div>
+                                        <span class="text-sm font-black text-slate-900">{{
+                                            fuelLevelLabel(selectedWorkOrder.checklist.fuel_level) }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Inventario de daños -->
+                                <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+                                        Inventario de Daños</p>
+                                    <VehicleDamageDiagram :model-value="selectedWorkOrder.checklist.damages || []"
+                                        readonly />
+                                </div>
+
+                                <!-- Pertenencias -->
+                                <div v-if="(selectedWorkOrder.checklist.belongings || []).length > 0"
+                                    class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+                                        Objetos de Valor / Pertenencias</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span v-for="item in selectedWorkOrder.checklist.belongings" :key="item"
+                                            class="rounded-full bg-sky-50 border border-sky-200 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-sky-700">
+                                            {{ item }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Observaciones -->
+                                <div v-if="selectedWorkOrder.checklist.notes"
+                                    class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                                        Observaciones del Estado</p>
+                                    <p class="text-sm font-medium text-slate-700 whitespace-pre-line">{{
+                                        selectedWorkOrder.checklist.notes }}</p>
+                                </div>
+
+                                <!-- Firma -->
+                                <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+                                        Conformidad del Cliente</p>
+                                    <template v-if="selectedWorkOrder.checklist.signature_path">
+                                        <img :src="'/media/' + selectedWorkOrder.checklist.signature_path"
+                                            class="h-28 w-auto mx-auto" alt="Firma del cliente" />
+                                        <div class="mt-3 border-t border-slate-100 pt-3 text-center">
+                                            <p class="text-xs font-black uppercase text-slate-700">
+                                                {{ selectedWorkOrder.checklist.signed_by_name || 'Cliente' }}</p>
+                                            <p class="text-[10px] font-semibold text-slate-400">
+                                                Firmado el {{ new Date(selectedWorkOrder.checklist.signed_at).toLocaleString('es-CL') }}</p>
+                                        </div>
+                                    </template>
+                                    <p v-else
+                                        class="text-center text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 rounded-2xl border border-amber-200 py-3">
+                                        Recepción sin firma del cliente
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div v-else
+                                class="max-w-xl mx-auto rounded-[2rem] border border-dashed border-slate-200 bg-slate-50/70 p-10 text-center">
+                                <p class="text-sm font-black uppercase tracking-widest text-slate-400">
+                                    Esta orden no tiene checklist de recepción</p>
+                                <p class="mt-2 text-xs font-medium text-slate-400">
+                                    El inventario de daños y la firma se capturan al momento de recibir el vehículo.</p>
                             </div>
                         </div>
 

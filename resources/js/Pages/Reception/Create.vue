@@ -4,6 +4,8 @@ import { Head, usePage, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import PpuScanner from '@/Components/PpuScanner.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import VehicleDamageDiagram from '@/Components/Reception/VehicleDamageDiagram.vue';
+import SignaturePad from '@/Components/Reception/SignaturePad.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
@@ -93,7 +95,79 @@ const form = useForm({
     selected_client_id: null,
     reassign_vehicle_owner: false,
     appointment_id: null,
+    checklist: {
+        fuel_level: null,
+        damages: [],
+        belongings: [],
+        notes: '',
+        signature: null,
+        signed_by_name: '',
+    },
 });
+
+// --- Checklist de recepción (paso 2 del modal) ---
+const modalStep = ref(1);
+const customBelonging = ref('');
+
+const FUEL_LEVELS = [
+    { value: 0, label: 'E' },
+    { value: 25, label: '¼' },
+    { value: 50, label: '½' },
+    { value: 75, label: '¾' },
+    { value: 100, label: 'F' },
+];
+
+const BELONGING_PRESETS = [
+    'Rueda de repuesto',
+    'Gata',
+    'Llave de ruedas',
+    'Triángulos',
+    'Extintor',
+    'Botiquín',
+    'Documentos',
+    'Radio',
+];
+
+const STEP_ONE_ERROR_FIELDS = [
+    'plate', 'vehicle_brand_id', 'vehicle_model_id', 'brand', 'model',
+    'client_name', 'client_rut', 'client_email', 'client_phone',
+    'selected_client_id', 'reassign_vehicle_owner',
+];
+
+const hasChecklistErrors = computed(() =>
+    Object.keys(form.errors).some((key) => key.startsWith('checklist')));
+
+const toggleFuelLevel = (value) => {
+    form.checklist.fuel_level = form.checklist.fuel_level === value ? null : value;
+};
+
+const toggleBelonging = (item) => {
+    const index = form.checklist.belongings.indexOf(item);
+    if (index >= 0) {
+        form.checklist.belongings.splice(index, 1);
+    } else {
+        form.checklist.belongings.push(item);
+    }
+};
+
+const addCustomBelonging = () => {
+    const value = customBelonging.value.trim();
+    if (value && !form.checklist.belongings.includes(value)) {
+        form.checklist.belongings.push(value);
+    }
+    customBelonging.value = '';
+};
+
+const goToChecklistStep = () => {
+    if (!form.checklist.signed_by_name) {
+        form.checklist.signed_by_name = form.client_name;
+    }
+    modalStep.value = 2;
+};
+
+const goToDataStep = () => {
+    modalStep.value = 1;
+};
 
 const vehicleCatalog = reactive(useVehicleCatalog({
     form,
@@ -180,6 +254,8 @@ const resetReceptionState = () => {
     form.clearErrors();
     form.reassign_vehicle_owner = false;
     vehicleCatalog.reset();
+    modalStep.value = 1;
+    customBelonging.value = '';
 };
 
 const closeModal = () => {
@@ -389,6 +465,12 @@ const handleCreateOrder = () => {
         onSuccess: () => {
             showModal.value = false;
             resetReceptionState();
+        },
+        onError: (errors) => {
+            // Los errores de datos básicos se corrigen en el paso 1
+            if (Object.keys(errors).some((key) => STEP_ONE_ERROR_FIELDS.includes(key))) {
+                modalStep.value = 1;
+            }
         },
     });
 };
@@ -654,6 +736,27 @@ onUnmounted(() => {
                 <!-- Formulario Editable -->
                 <form @submit.prevent="handleCreateOrder" class="p-6 lg:p-8 space-y-8">
 
+                    <!-- Indicador de pasos -->
+                    <div class="flex items-center justify-center gap-3">
+                        <button type="button" @click="goToDataStep"
+                            class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest transition-colors"
+                            :class="modalStep === 1 ? 'text-[#FF7A00]' : 'text-slate-400'">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px]"
+                                :class="modalStep === 1 ? 'border-[#FF7A00] bg-[#FF7A00]/10' : 'border-slate-300'">1</span>
+                            Datos
+                        </button>
+                        <span class="h-px w-8 bg-slate-200"></span>
+                        <span class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest"
+                            :class="modalStep === 2 ? 'text-[#FF7A00]' : 'text-slate-400'">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px]"
+                                :class="modalStep === 2 ? 'border-[#FF7A00] bg-[#FF7A00]/10' : 'border-slate-300'">2</span>
+                            Checklist y Firma
+                        </span>
+                    </div>
+
+                    <!-- PASO 1: Datos del vehículo y cliente -->
+                    <div v-show="modalStep === 1" class="space-y-8">
+
                     <!-- Patente (Editable) -->
                     <div
                         class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner group transition-all focus-within:ring-2 focus-within:ring-[#FF7A00]/20">
@@ -906,18 +1009,148 @@ onUnmounted(() => {
                         </div>
                     </div>
 
+                    </div>
+
+                    <!-- PASO 2: Checklist de recepción -->
+                    <div v-show="modalStep === 2" class="space-y-8">
+
+                        <!-- Resumen del vehículo -->
+                        <div class="flex items-center justify-between rounded-3xl bg-gray-50 border border-gray-100 px-5 py-4">
+                            <div>
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Vehículo</p>
+                                <p class="text-xl font-mono font-black text-gray-900 tracking-widest plate-font">{{ form.plate }}</p>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500 uppercase text-right">{{ form.brand }}<br>{{ form.model }}</p>
+                        </div>
+
+                        <div v-if="hasChecklistErrors"
+                            class="rounded-2xl bg-red-50 border border-red-200 px-5 py-3">
+                            <p class="text-xs font-bold text-red-700">Revisa el checklist: hay datos inválidos.</p>
+                        </div>
+
+                        <!-- Nivel de combustible -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#FF7A00]"></span>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nivel de Combustible</p>
+                            </div>
+                            <div class="grid grid-cols-5 gap-2">
+                                <button v-for="level in FUEL_LEVELS" :key="level.value" type="button"
+                                    @click="toggleFuelLevel(level.value)"
+                                    class="py-4 rounded-2xl border-2 text-lg font-black transition-all active:scale-95"
+                                    :class="form.checklist.fuel_level === level.value
+                                        ? 'border-[#FF7A00] bg-[#FF7A00]/10 text-[#FF7A00]'
+                                        : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300'">
+                                    {{ level.label }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Inventario de daños -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Inventario de Daños</p>
+                            </div>
+                            <VehicleDamageDiagram v-model="form.checklist.damages" />
+                        </div>
+
+                        <!-- Objetos de valor -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Objetos de Valor / Pertenencias</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button v-for="item in BELONGING_PRESETS" :key="item" type="button"
+                                    @click="toggleBelonging(item)"
+                                    class="rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border transition-all"
+                                    :class="form.checklist.belongings.includes(item)
+                                        ? 'bg-sky-500 text-white border-sky-500 shadow-md'
+                                        : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'">
+                                    {{ item }}
+                                </button>
+                            </div>
+                            <div class="flex gap-2">
+                                <input v-model="customBelonging" type="text" maxlength="255"
+                                    @keydown.enter.prevent="addCustomBelonging"
+                                    class="flex-1 bg-white border border-gray-300 text-gray-900 text-sm font-semibold rounded-2xl px-5 py-3 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
+                                    placeholder="Otro objeto (ej: lentes de sol)" />
+                                <button type="button" @click="addCustomBelonging"
+                                    class="shrink-0 rounded-2xl bg-slate-900 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-[#FF7A00] transition-all active:scale-95">
+                                    Agregar
+                                </button>
+                            </div>
+                            <div v-if="form.checklist.belongings.some((b) => !BELONGING_PRESETS.includes(b))"
+                                class="flex flex-wrap gap-2">
+                                <span v-for="item in form.checklist.belongings.filter((b) => !BELONGING_PRESETS.includes(b))"
+                                    :key="item"
+                                    class="flex items-center gap-2 rounded-full bg-sky-50 border border-sky-200 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-sky-700">
+                                    {{ item }}
+                                    <button type="button" @click="toggleBelonging(item)"
+                                        class="text-sky-400 hover:text-sky-700">✕</button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Observaciones del Estado</p>
+                            </div>
+                            <textarea v-model="form.checklist.notes" rows="2" maxlength="2000"
+                                class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-semibold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm resize-none"
+                                placeholder="Ej: llega con luz de check engine encendida, tag en parabrisas..."></textarea>
+                        </div>
+
+                        <!-- Firma del cliente -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Firma del Cliente</p>
+                            </div>
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed">
+                                El cliente declara estar de acuerdo con el estado del vehículo registrado en este checklist.
+                            </p>
+                            <SignaturePad v-model="form.checklist.signature" />
+                            <div class="space-y-1.5">
+                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Firmado por</label>
+                                <input v-model="form.checklist.signed_by_name" type="text" maxlength="255"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent uppercase transition-all shadow-sm"
+                                    placeholder="NOMBRE DE QUIEN FIRMA" />
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Acciones -->
                     <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
-                        <button type="button" @click="closeModal"
-                            class="order-2 sm:order-1 flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full font-bold transition-all active:scale-95 text-sm uppercase">
-                            CANCELAR
-                        </button>
-                        <button type="submit" :disabled="form.processing"
-                            class="order-1 sm:order-2 flex-[2] py-4 bg-[#FF7A00] hover:bg-[#CC6200] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-lg">
-                            <div v-if="form.processing"
-                                class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            {{ form.processing ? 'Procesando...' : 'GENERAR ORDEN' }}
-                        </button>
+                        <template v-if="modalStep === 1">
+                            <button type="button" @click="closeModal"
+                                class="order-2 sm:order-1 flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full font-bold transition-all active:scale-95 text-sm uppercase">
+                                CANCELAR
+                            </button>
+                            <button type="button" @click="goToChecklistStep"
+                                class="order-1 sm:order-2 flex-[2] py-4 bg-[#FF7A00] hover:bg-[#CC6200] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 flex items-center justify-center gap-2 tracking-wide text-lg">
+                                CONTINUAR
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        </template>
+                        <template v-else>
+                            <button type="button" @click="goToDataStep"
+                                class="order-2 sm:order-1 flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full font-bold transition-all active:scale-95 text-sm uppercase">
+                                ← VOLVER
+                            </button>
+                            <button type="submit" :disabled="form.processing"
+                                class="order-1 sm:order-2 flex-[2] py-4 bg-[#FF7A00] hover:bg-[#CC6200] text-white rounded-full font-black uppercase shadow-[0_8px_20px_rgba(249,168,38,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2 tracking-wide text-lg">
+                                <div v-if="form.processing"
+                                    class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                {{ form.processing ? 'Procesando...' : 'GENERAR ORDEN' }}
+                            </button>
+                        </template>
                     </div>
                 </form>
             </div>
