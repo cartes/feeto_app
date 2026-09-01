@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Payment;
 use App\Models\Tenant;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesTenant;

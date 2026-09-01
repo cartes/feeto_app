@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Subscription;
 
-use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\Setting;
 use App\Models\Tenant;

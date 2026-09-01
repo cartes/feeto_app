@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blog_posts', function (Blueprint $table) {
-            if (!Schema::hasColumn('blog_posts', 'featured_media_id')) {
+            if (! Schema::hasColumn('blog_posts', 'featured_media_id')) {
                 $table->foreignId('featured_media_id')->nullable()->after('featured_image')
                     ->constrained('media_files')->nullOnDelete();
             } else {

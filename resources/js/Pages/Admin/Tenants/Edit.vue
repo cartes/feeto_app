@@ -145,10 +145,12 @@ const setTrialPeriod = (months) => {
                             <div>
                                 <label for="plan" class="block text-sm font-medium text-gray-700">Plan de Suscripción</label>
                                 <select id="plan" v-model="tenantForm.plan_id" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                                    <option v-if="plans.length === 0" disabled value="">No hay planes registrados</option>
                                     <option v-for="plan in plans" :key="plan.id" :value="plan.id">
                                         {{ plan.name }}{{ plan.is_active ? '' : ' (inactivo)' }}
                                     </option>
                                 </select>
+                                <p v-if="plans.length === 0" class="mt-1 text-xs text-amber-600">No se encontraron planes. Ejecuta: <code>php artisan db:seed --class=PlanSeeder</code></p>
                                 <div v-if="tenantForm.errors.plan_id" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.plan_id }}</div>
                             </div>
                             <div>

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Events\SafetyStockReached;
 use App\Events\StockDepleted;
 use App\Models\TenantNotification;
 

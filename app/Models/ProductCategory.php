@@ -37,7 +37,7 @@ class ProductCategory extends Model
         $counter = 1;
 
         while (static::withoutGlobalScopes()->where('tenant_id', $tenantId)->where('slug', $slug)->exists()) {
-            $slug = $original . '-' . $counter++;
+            $slug = $original.'-'.$counter++;
         }
 
         return $slug;

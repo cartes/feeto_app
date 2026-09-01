@@ -14,7 +14,7 @@ class PersistWorkOrderCreatedNotification
         TenantNotification::create([
             'tenant_id' => $event->tenantId,
             'type' => 'work_order_created',
-            'title' => "Nueva OT recibida",
+            'title' => 'Nueva OT recibida',
             'body' => "Patente {$event->workOrder->plate} — nueva orden de trabajo ingresada al sistema.",
             'data' => ['work_order_id' => $event->workOrder->id],
         ]);

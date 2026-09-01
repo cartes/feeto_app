@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
+use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -105,7 +106,7 @@ class SendRenewalRemindersTest extends TestCase
             'is_active' => true,
         ]);
         $tenant2->makeCurrent();
-        app(\App\Services\TenantSetupService::class)->provisionTenant($tenant2);
+        app(TenantSetupService::class)->provisionTenant($tenant2);
         $admin2 = User::factory()->create(['tenant_id' => $tenant2->id]);
         $admin2->assignRole('Admin');
         Tenant::forgetCurrent();

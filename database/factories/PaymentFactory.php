@@ -24,7 +24,7 @@ class PaymentFactory extends Factory
             'billing_period' => Payment::BILLING_MONTHLY,
             'status' => Payment::STATUS_PENDING,
             'method' => 'mercadopago',
-            'mp_preference_id' => 'pref-' . fake()->uuid(),
+            'mp_preference_id' => 'pref-'.fake()->uuid(),
             'mp_fee_net' => 0,
             'mp_fee_vat' => 0,
             'net_amount' => 0,

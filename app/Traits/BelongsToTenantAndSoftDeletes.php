@@ -12,6 +12,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 trait BelongsToTenantAndSoftDeletes
 {
-    use TenantAware;
     use SoftDeletes;
+    use TenantAware;
 }

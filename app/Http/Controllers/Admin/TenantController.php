@@ -108,13 +108,15 @@ class TenantController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'max_users', 'is_active']);
 
+        $planId = $tenant->plan_id ?? $plans->firstWhere('slug', $tenant->currentPlan()->value)?->id;
+
         return Inertia::render('Admin/Tenants/Edit', [
             'tenant' => [
                 'id' => $tenant->id,
                 'name' => $tenant->name,
                 'domain' => $tenant->domain,
                 'plan' => $tenant->plan,
-                'plan_id' => $tenant->plan_id,
+                'plan_id' => $planId,
                 'status' => $tenant->status,
                 'phone' => $tenant->phone,
                 'seo_address' => $tenant->seo_address,

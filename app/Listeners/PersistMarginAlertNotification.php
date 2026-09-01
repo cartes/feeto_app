@@ -15,7 +15,7 @@ class PersistMarginAlertNotification
             'tenant_id' => $event->tenant->id,
             'type' => 'minimum_margin_warning',
             'title' => "Margen bajo: {$event->product->name}",
-            'body' => "El producto fue vendido por debajo del margen mínimo configurado.",
+            'body' => 'El producto fue vendido por debajo del margen mínimo configurado.',
             'data' => [
                 'product_id' => $event->product->id,
                 'order_item_id' => $event->item->id,

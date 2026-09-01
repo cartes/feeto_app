@@ -45,7 +45,7 @@ class SendPreventiveMarketingReminders extends Command
                 // Aquí iría la integración real con WhatsApp API.
                 // Ejemplo de lo que haría:
                 $message = sprintf(
-                    "Hola %s, hace 6 meses que visitaste nuestro taller con tu vehículo %s %s. ¡Es un buen momento para una revisión preventiva!",
+                    'Hola %s, hace 6 meses que visitaste nuestro taller con tu vehículo %s %s. ¡Es un buen momento para una revisión preventiva!',
                     $client->name,
                     $vehicle->brand,
                     $vehicle->model

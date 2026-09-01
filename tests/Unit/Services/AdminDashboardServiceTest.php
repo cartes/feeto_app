@@ -23,7 +23,7 @@ class AdminDashboardServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new AdminDashboardService();
+        $this->service = new AdminDashboardService;
     }
 
     public function test_get_stats_counts_tenants_users_activity_and_revenue(): void
