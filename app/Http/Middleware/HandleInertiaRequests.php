@@ -120,8 +120,12 @@ class HandleInertiaRequests extends Middleware
         return $authorization;
     }
 
-    private function ziggyGroup(Request $request): string
+    private function ziggyGroup(Request $request): ?string
     {
+        if ($request->user()?->is_super_admin) {
+            return null;
+        }
+
         if ($request->routeIs('admin.*')) {
             return 'admin';
         }

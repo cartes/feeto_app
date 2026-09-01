@@ -7,13 +7,13 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('taller.{tenantId}', function ($user, $tenantId) {
-    return (string) $user->tenant_id === (string) $tenantId;
+    return $user->is_super_admin || (string) $user->tenant_id === (string) $tenantId;
 });
 
 Broadcast::channel('tenant.{tenantId}.work-orders', function ($user, $tenantId) {
-    return (string) $user->tenant_id === (string) $tenantId;
+    return $user->is_super_admin || (string) $user->tenant_id === (string) $tenantId;
 });
 
 Broadcast::channel('tenant.{tenantId}.reception', function ($user, $tenantId) {
-    return (string) $user->tenant_id === (string) $tenantId;
+    return $user->is_super_admin || (string) $user->tenant_id === (string) $tenantId;
 });

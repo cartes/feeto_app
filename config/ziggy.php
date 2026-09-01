@@ -152,6 +152,7 @@ return [
             'profile.update',
             'profile.destroy',
             'storage.serve',
+            'admin.*',
         ],
         'admin' => [
             '*',

@@ -452,7 +452,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             $user = auth()->user();
             $tenant = Tenant::current();
 
-            if (! $tenant || $user->tenant_id !== $tenant->id) {
+            if (! $tenant || (! $user->is_super_admin && $user->tenant_id !== $tenant->id)) {
                 abort(403, 'No tienes acceso a estos archivos.');
             }
 
