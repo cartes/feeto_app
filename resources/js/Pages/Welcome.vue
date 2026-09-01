@@ -5,6 +5,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
+import CountryFlagSvg from '@/Components/CountryFlagSvg.vue';
 
 const props = defineProps({
     canLogin: { type: Boolean },
@@ -17,6 +18,20 @@ const props = defineProps({
 
 const showLoginModal = ref(false);
 const activeSection = ref('features');
+
+// Países con soporte de patentes / apertura en Sudamérica
+const supportedCountries = [
+    { code: 'CL', name: 'Chile', format: 'ABCD·12 / AB·1234', plateTag: 'PPU Nacional', status: 'Operación Activa' },
+    { code: 'CO', name: 'Colombia', format: 'ABC·123 / ABC·12D', plateTag: 'Placa Nacional', status: 'Operación Activa' },
+    { code: 'AR', name: 'Argentina', format: 'AB 123 CD (Mercosur)', plateTag: 'Mercosur & Tradicional', status: 'Soporte ALPR & Cuentas' },
+    { code: 'BR', name: 'Brasil', format: 'ABC 1D23 (Mercosur)', plateTag: 'Mercosur & Tradicional', status: 'Soporte ALPR & Cuentas' },
+    { code: 'PE', name: 'Perú', format: 'A1B·234 / ABC·123', plateTag: 'Nacional & Frontera', status: 'Soporte ALPR & Cuentas' },
+    { code: 'BO', name: 'Bolivia', format: '1234·ABC / 123·ABC', plateTag: 'Nacional & Frontera', status: 'Soporte ALPR & Cuentas' },
+    { code: 'UY', name: 'Uruguay', format: 'ABC 1234 / Mercosur', plateTag: 'Mercosur & Nacional', status: 'Soporte ALPR & Cuentas' },
+    { code: 'PY', name: 'Paraguay', format: 'ABCD 123 / Mercosur', plateTag: 'Mercosur & Nacional', status: 'Soporte ALPR & Cuentas' },
+    { code: 'EC', name: 'Ecuador', format: 'ABC·1234 / ABC·123', plateTag: 'Nacional & Frontera', status: 'Soporte ALPR & Cuentas' },
+    { code: 'MX', name: 'México', format: 'ABC·1234 / ABC·123D', plateTag: 'SCT & Particular', status: 'Soporte ALPR & Cuentas' },
+];
 
 // Slider interactivo de funcionalidades
 const currentSlide = ref(0);
@@ -38,8 +53,8 @@ const slides = [
         imageWebp: '/images/dashboard_kanban.webp'
     },
     {
-        title: 'Recepción con IA móvil (Chile y Colombia)',
-        description: 'Escanea la placa o patente con tu teléfono y la IA completará los datos del vehículo y cliente de inmediato con Gemini.',
+        title: 'Recepción con IA móvil (Multipaís Sudamérica)',
+        description: 'Escanea la placa o patente con tu teléfono y la IA completará los datos del vehículo y cliente al instante (Chile, Colombia, Argentina, Brasil y más).',
         tag: 'Recepción IA',
         tagClass: 'bg-purple-50 text-purple-600 border border-purple-100',
         image: '/images/recepcion_ia.png',
@@ -122,9 +137,16 @@ onUnmounted(() => {
 
                     <div class="meta-row">
                         <div class="meta-line">
-                            <span class="badge-pill">
+                            <span class="badge-pill !gap-2 !py-1.5 !px-3.5">
                                 <span class="dot"></span>
-                                🇨🇱 Chile & 🇨🇴 Colombia · Software para Talleres
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="CL" class-name="w-4 h-3 rounded-[2px]" />
+                                    <CountryFlagSvg country="CO" class-name="w-4 h-3 rounded-[2px]" />
+                                    <CountryFlagSvg country="AR" class-name="w-4 h-3 rounded-[2px]" />
+                                    <CountryFlagSvg country="BR" class-name="w-4 h-3 rounded-[2px]" />
+                                    <CountryFlagSvg country="PE" class-name="w-4 h-3 rounded-[2px]" />
+                                </div>
+                                <span>Chile, Colombia & Multipaís Sudamérica · Software para Talleres</span>
                             </span>
                         </div>
 
@@ -258,7 +280,7 @@ onUnmounted(() => {
                         </div>
 
                         <div class="feat-card feat-card-ai">
-                            <span class="feat-ai-badge">IA</span>
+                            <span class="feat-ai-badge">IA MULTIPAÍS</span>
                             <span class="feat-ico">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -268,11 +290,12 @@ onUnmounted(() => {
                                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                 </svg>
                             </span>
-                            <h3>Recepción con IA</h3>
-                            <p>Escanea patentes y placas con la cámara de tu celular. Gemini AI lee el código (Chile y Colombia), cruza la agenda y muestra los datos en segundos.</p>
+                            <h3>Recepción con IA Multipaís</h3>
+                            <p>Escanea patentes y placas con la cámara de tu celular. Gemini AI reconoce vehículos de Chile, Colombia, Argentina, Brasil, Perú y toda Sudamérica en segundos, ideal para clientes locales y extranjeros que cruzan la frontera.</p>
                             <div class="feat-tags">
                                 <span class="feat-tag feat-tag-purple">Gemini AI</span>
-                                <span class="feat-tag feat-tag-dim">ALPR</span>
+                                <span class="feat-tag feat-tag-dim">ALPR Sudamérica</span>
+                                <span class="feat-tag feat-tag-blue">Mercosur & Local</span>
                             </div>
                         </div>
                     </div>
@@ -294,46 +317,55 @@ onUnmounted(() => {
             </section>
         </div>
 
-        <!-- Sección "Novedad": soporte multi-país Chile y Colombia -->
+        <!-- Sección Soporte Multipaís Sudamérica & Patentes Internacionales -->
         <section id="moto-support" class="border-b border-slate-100 bg-white py-24 font-sans antialiased">
-            <div class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
+            <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8">
                 <div>
-                    <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FF7A00] px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-white">
+                    <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FF7A00] px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-sm">
                         <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-                        🇨🇴 ¡Nuevo! Ahora en Colombia
+                        🌎 Soporte Internacional & Mercosur
                     </span>
                     <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl md:leading-tight">
-                        Tu taller en <em class="not-italic text-[#FF7A00]">Chile y Colombia</em> en una sola plataforma.
+                        ¿Llega un auto de <em class="not-italic text-[#FF7A00]">Argentina o Brasil</em> a tu taller?
                     </h2>
-                    <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
-                        TallerFlow ahora cuenta con soporte completo para talleres en <strong>Chile 🇨🇱</strong> y <strong>Colombia 🇨🇴</strong>:
-                        escáner IA de patentes y placas vehiculares, agenda online, recepción express, cotizaciones e historial para autos, motocicletas, motocarros y más.
+                    <p class="mt-4 text-xl font-bold text-slate-800">
+                        TallerFlow lo reconoce al instante sin fricción técnica.
+                    </p>
+                    <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+                        Si tu taller está en <strong>Chile 🇨🇱</strong> o <strong>Colombia 🇨🇴</strong> y recibes vehículos con patente extranjera de <strong>Argentina (Mercosur), Brasil, Perú, Bolivia o Uruguay</strong>, nuestro escáner con IA identifica automáticamente el país emisor, valida el formato correspondiente y crea la orden de trabajo sin trabas.
                     </p>
 
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/20 bg-[#fff7ef] px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#FF7A00]">
-                            🇨🇴 Placas Colombianas
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50/60 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-blue-700">
-                            🇨🇱 Patentes Chilenas
-                        </span>
-                        <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
-                            Autos, Motos y Más
-                        </span>
+                    <!-- Tarjeta destacada para apertura de talleres en Sudamérica -->
+                    <div class="mt-6 rounded-2xl border border-orange-200/70 bg-gradient-to-br from-orange-50/80 via-amber-50/40 to-white p-5 shadow-sm">
+                        <div class="flex items-start gap-3.5">
+                            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#FF7A00] text-white shadow-sm">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+                                </svg>
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-black uppercase tracking-wider text-slate-900">
+                                    ¿Quieres abrir tu taller desde cualquier país de Sudamérica?
+                                </h3>
+                                <p class="mt-1 text-sm font-medium leading-relaxed text-slate-600">
+                                    Tenemos soporte nativo preparado: adaptación de placas, monedas locales, prefijos telefónicos y validaciones fiscales para talleres en toda la región.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <ul class="mt-8 space-y-4">
+                    <ul class="mt-6 space-y-3.5">
                         <li
                             v-for="bullet in [
-                                'El escáner con IA reconoce placas de Colombia (AAA123, AAA12D, 123AAA) y Chile al instante con la cámara de tu teléfono.',
-                                'Formulario de registro con selector de país y adaptación automática de prefijos telefónicos y validaciones.',
-                                'Tus clientes agendan y solicitan cotizaciones online con las placas de su país sin fricción.',
-                                'Historial vehicular completo por placa o patente, sin importar el tipo de vehículo.',
+                                'El escáner con IA reconoce patentes de Chile, Colombia, Argentina (Mercosur), Brasil, Perú, Bolivia y Uruguay con la cámara de tu teléfono.',
+                                'Detección inteligente del país de origen para no rechazar vehículos extranjeros en recepción ni en cotizaciones.',
+                                'Apertura y registro directo de cuentas de talleres con adaptación automática de prefijos y formatos.',
+                                'Historial vehicular unificado por patente o placa para autos, motocicletas, camionetas y furgones.',
                             ]"
                             :key="bullet"
-                            class="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+                            class="flex items-start gap-3.5 rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-[0_8px_24px_rgba(15,23,42,0.03)]"
                         >
-                            <span class="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                            <span class="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#FF7A00]/10 text-[#FF7A00]">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
@@ -341,56 +373,142 @@ onUnmounted(() => {
                             <p class="text-sm font-semibold leading-relaxed text-slate-700">{{ bullet }}</p>
                         </li>
                     </ul>
+
+                    <div class="mt-8 flex flex-wrap items-center gap-4">
+                        <Link
+                            :href="route('trial.create')"
+                            class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-md transition-all duration-200 hover:bg-[#FF7A00] hover:shadow-lg active:scale-95"
+                        >
+                            <span>Probar gratis 14 días</span>
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
+                        </Link>
+                        <a
+                            href="#features"
+                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50"
+                        >
+                            Ver funcionalidades
+                        </a>
+                    </div>
                 </div>
 
                 <div class="relative">
                     <div class="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.18),_transparent_65%)] blur-2xl"></div>
                     <div class="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
-                        <div class="mb-6 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                        <div class="mb-5 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
                             <div>
                                 <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Recepción Multipaís</p>
-                                <p class="mt-1 text-sm font-semibold text-slate-700">Placas y Patentes Reconocidas</p>
+                                <p class="mt-0.5 text-sm font-bold text-slate-800">Placas & Patentes Reconocidas</p>
                             </div>
-                            <span class="rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-sm">
+                                <span class="h-1.5 w-1.5 rounded-full bg-white animate-ping"></span>
                                 IA Activa
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
-                            <!-- Placa Colombia Particular (Amarilla) -->
-                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
-                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Bogotá D.C.</p>
-                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·123</p>
-                                </div>
-                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇴 Auto Colombia</p>
-                            </div>
-
-                            <!-- Placa Colombia Moto (Amarilla) -->
-                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
-                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Moto</p>
-                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·12D</p>
-                                </div>
-                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇴 Moto Colombia</p>
-                            </div>
-
+                        <!-- Grid de Placas visuales representativas -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 py-1">
                             <!-- Patente Chile Auto (Blanca) -->
-                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
                                 <div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm">
                                     <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-400">Chile</p>
                                     <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">GKSB·78</p>
                                 </div>
-                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇱 Auto Chile</p>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="CL" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Chile (PPU Nacional)</p>
+                                </div>
                             </div>
 
-                            <!-- Patente Chile Moto (Blanca) -->
-                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm">
-                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-400">Chile</p>
-                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">BCD·12</p>
+                            <!-- Placa Colombia Auto (Amarilla) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Bogotá D.C.</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·123</p>
                                 </div>
-                                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">🇨🇱 Moto Chile</p>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="CO" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Colombia (Auto Particular)</p>
+                                </div>
+                            </div>
+
+                            <!-- Placa Argentina Mercosur -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                <div class="w-full overflow-hidden rounded-lg border-2 border-slate-900 bg-white text-center shadow-sm">
+                                    <div class="bg-[#0038A8] py-0.5 px-2 text-center">
+                                        <p class="text-[7px] font-black uppercase tracking-[0.25em] text-white">Mercosur · República Argentina</p>
+                                    </div>
+                                    <div class="py-1.5 px-2">
+                                        <p class="font-mono text-xl font-black tracking-[0.14em] text-slate-900">AB·123·CD</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="AR" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Argentina (Mercosur)</p>
+                                </div>
+                            </div>
+
+                            <!-- Placa Brasil Mercosur -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                <div class="w-full overflow-hidden rounded-lg border-2 border-slate-900 bg-white text-center shadow-sm">
+                                    <div class="bg-[#0038A8] py-0.5 px-2 text-center">
+                                        <p class="text-[7px] font-black uppercase tracking-[0.25em] text-white">Mercosur · Brasil</p>
+                                    </div>
+                                    <div class="py-1.5 px-2">
+                                        <p class="font-mono text-xl font-black tracking-[0.14em] text-slate-900">ABC·1D23</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="BR" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Brasil (Mercosur)</p>
+                                </div>
+                            </div>
+
+                            <!-- Placa Perú Auto -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-[#D91023]">Perú</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">A1B·234</p>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="PE" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Perú (Nacional / Frontera)</p>
+                                </div>
+                            </div>
+
+                            <!-- Placa Colombia Moto (Amarilla) -->
+                            <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                <div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm">
+                                    <p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900">Colombia · Moto</p>
+                                    <p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900">ABC·12D</p>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <CountryFlagSvg country="CO" class-name="w-4 h-3" />
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Colombia (Motocicleta)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección de Banderas con soporte técnico y apertura de cuentas -->
+                        <div class="mt-5 border-t border-slate-100 pt-4">
+                            <div class="mb-3 flex items-center justify-between">
+                                <p class="text-[11px] font-black uppercase tracking-wider text-slate-700">
+                                    Banderas con soporte activo & apertura de cuentas
+                                </p>
+                                <span class="text-[10px] font-bold text-[#FF7A00]">10 Países</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                <div
+                                    v-for="country in supportedCountries"
+                                    :key="country.code"
+                                    class="group flex flex-col items-center gap-1 rounded-xl border border-slate-100 bg-slate-50/80 p-2 text-center transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/40 hover:shadow-sm"
+                                >
+                                    <CountryFlagSvg :country="country.code" class-name="w-7 h-5" />
+                                    <span class="text-[11px] font-bold text-slate-800">{{ country.name }}</span>
+                                    <span class="text-[8px] font-semibold uppercase tracking-wider text-slate-500">{{ country.plateTag }}</span>
+                                </div>
                             </div>
                         </div>
 
