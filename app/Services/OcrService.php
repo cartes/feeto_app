@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Ai\Agents\PatentRecognitionAgent;
+use App\Enums\Country;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Files\Image;
@@ -35,6 +36,18 @@ class OcrService
 
             $cleanedPlate = $this->cleanPlate($rawPlate);
             $validation = $this->validatePpu($cleanedPlate);
+
+            // Corrección típica de OCR (O→0, I→1) solo si la lectura directa
+            // no calza: O e I son letras válidas en patentes extranjeras.
+            if (! $validation['valid']) {
+                $corrected = $this->applyOcrCorrections($cleanedPlate);
+                $correctedValidation = $this->validatePpu($corrected);
+
+                if ($correctedValidation['valid']) {
+                    $cleanedPlate = $corrected;
+                    $validation = $correctedValidation;
+                }
+            }
 
             $this->cleanup($imagePath);
 
@@ -77,9 +90,12 @@ class OcrService
 
     public function cleanPlate(string $plate): string
     {
-        $clean = preg_replace('/[^A-Z0-9]/i', '', strtoupper($plate));
+        return (string) preg_replace('/[^A-Z0-9]/i', '', strtoupper($plate));
+    }
 
-        return str_replace(['O', 'I'], ['0', '1'], $clean);
+    public function applyOcrCorrections(string $plate): string
+    {
+        return str_replace(['O', 'I'], ['0', '1'], $plate);
     }
 
     public function validatePpu(string $ppu): array
@@ -95,6 +111,11 @@ class OcrService
         }
         if (preg_match('/^[A-Z]{2}\d{3}$/', $ppu)) {
             return ['valid' => true, 'type' => 'moto_antigua', 'plate' => $ppu];
+        }
+
+        // Patentes internacionales (otros países latinoamericanos).
+        if (Country::detectFromPlate($ppu) !== []) {
+            return ['valid' => true, 'type' => 'internacional', 'plate' => $ppu];
         }
 
         return ['valid' => false, 'type' => null, 'plate' => $ppu];

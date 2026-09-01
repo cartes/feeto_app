@@ -61,12 +61,12 @@ const scrollToForm = (tab = 'booking', type = null) => {
 };
 
 const formatPlate = (e) => {
-    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
     form.plate = val;
 };
 
 const formatContactPlate = (e) => {
-    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
     contactForm.plate = val;
 };
 
@@ -510,7 +510,7 @@ const trackWhatsAppClick = () => {
                                         <div>
                                             <label for="plate" class="block text-sm font-semibold text-gray-700 mb-1.5">
                                                 Patente del Vehículo
-                                                <span class="text-gray-400 font-normal">(auto: 6 · moto: 5)</span>
+                                                <span class="text-gray-400 font-normal">(auto: 6 · moto: 5 · extranjera: hasta 8)</span>
                                             </label>
                                             <input
                                                 id="plate"
@@ -519,7 +519,7 @@ const trackWhatsAppClick = () => {
                                                 @input="formatPlate"
                                                 autocomplete="off"
                                                 placeholder="BBBB77"
-                                                maxlength="6"
+                                                maxlength="8"
                                                 class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-sm font-mono tracking-widest uppercase"
                                             />
                                             <p v-if="form.errors.plate" class="mt-1 text-xs text-red-500">{{ form.errors.plate }}</p>
@@ -716,7 +716,7 @@ const trackWhatsAppClick = () => {
                                             :value="contactForm.plate"
                                             @input="formatContactPlate"
                                             placeholder="BBBB77"
-                                            maxlength="6"
+                                            maxlength="8"
                                             class="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:bg-white transition text-xs font-mono tracking-widest uppercase"
                                         />
                                         <p v-if="contactForm.errors.plate" class="mt-1 text-[10px] text-red-500">{{ contactForm.errors.plate }}</p>

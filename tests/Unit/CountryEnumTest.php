@@ -45,8 +45,23 @@ class CountryEnumTest extends TestCase
     {
         $cases = Country::cases();
 
-        $this->assertCount(2, $cases);
+        $this->assertCount(10, $cases);
         $this->assertSame('CL', $cases[0]->value);
         $this->assertSame('CO', $cases[1]->value);
+    }
+
+    public function test_operational_countries_are_chile_and_colombia(): void
+    {
+        $this->assertSame([Country::Chile, Country::Colombia], Country::operational());
+    }
+
+    public function test_every_country_defines_helpers_and_plate_patterns(): void
+    {
+        foreach (Country::cases() as $country) {
+            $this->assertNotSame('', $country->label());
+            $this->assertNotSame('', $country->flag());
+            $this->assertStringStartsWith('+', $country->phonePrefix());
+            $this->assertNotEmpty($country->platePatterns());
+        }
     }
 }

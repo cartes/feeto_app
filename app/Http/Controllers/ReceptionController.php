@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Ai\Agents\PatentReaderAgent;
+use App\Enums\Country;
 use App\Http\Requests\PreviewReceptionRequest;
 use App\Http\Requests\SearchReceptionClientsRequest;
 use App\Http\Requests\StoreReceptionOrderRequest;
@@ -198,6 +199,7 @@ class ReceptionController extends Controller
     public function preview(PreviewReceptionRequest $request, BoostrService $boostr): JsonResponse
     {
         $patente = $this->normalizePlate($request->validated('patente'));
+        $plateOrigin = $this->detectForeignPlateOrigin($patente);
 
         $appointment = Appointment::where(function ($q) use ($patente): void {
             $q->where('plate', $patente)
@@ -221,6 +223,7 @@ class ReceptionController extends Controller
                 'is_new' => false,
                 'vehicle_exists' => true,
                 'owner_source' => 'internal',
+                'plate_origin' => $plateOrigin,
                 'appointment' => $appointmentPayload,
                 'vehicle' => [
                     'brand' => $vehicle->brand,
@@ -238,7 +241,9 @@ class ReceptionController extends Controller
             ]);
         }
 
-        $vehicleData = $boostr->getVehicleData($patente);
+        // Las patentes extranjeras no existen en el registro local (Boostr),
+        // así que se omite la consulta y se pasa directo a ingreso manual.
+        $vehicleData = $plateOrigin === null ? $boostr->getVehicleData($patente) : null;
 
         if (! $vehicleData) {
             return response()->json([
@@ -246,6 +251,7 @@ class ReceptionController extends Controller
                 'vehicle_exists' => false,
                 'not_found' => true,
                 'owner_source' => 'manual',
+                'plate_origin' => $plateOrigin,
                 'appointment' => $appointmentPayload,
                 'vehicle' => [
                     'plate' => $patente,
@@ -267,6 +273,7 @@ class ReceptionController extends Controller
             'is_new' => true,
             'vehicle_exists' => false,
             'owner_source' => 'boostr',
+            'plate_origin' => $plateOrigin,
             'appointment' => $appointmentPayload,
             'vehicle' => [
                 'brand' => $vehicleData['marca'] ?? 'N/A',
@@ -302,6 +309,41 @@ class ReceptionController extends Controller
         return response()->json([
             'clients' => $clients,
         ]);
+    }
+
+    /**
+     * Detecta si una patente es extranjera respecto al país del taller.
+     *
+     * Retorna null cuando la patente calza con el formato local (o no calza
+     * con ningún país conocido); en caso contrario, retorna los países
+     * candidatos para mostrar el aviso "Esta patente pertenece a [PAÍS]".
+     *
+     * @return array{countries: list<array{code: string, name: string, flag: string}>}|null
+     */
+    private function detectForeignPlateOrigin(string $plate): ?array
+    {
+        $tenantCountry = Tenant::current()?->country() ?? Country::Chile;
+
+        if ($tenantCountry->matchesPlate($plate)) {
+            return null;
+        }
+
+        $candidates = array_values(array_filter(
+            Country::detectFromPlate($plate),
+            static fn (Country $country): bool => $country !== $tenantCountry,
+        ));
+
+        if ($candidates === []) {
+            return null;
+        }
+
+        return [
+            'countries' => array_map(static fn (Country $country): array => [
+                'code' => $country->isoCode(),
+                'name' => $country->label(),
+                'flag' => $country->flag(),
+            ], $candidates),
+        ];
     }
 
     private function computeAppointmentAlert(Appointment $appointment): ?string

@@ -22,16 +22,26 @@ class OcrServiceTest extends TestCase
     }
 
     /**
-     * Test OCR cleaning ("O" -> "0", "I" -> "1").
+     * Test OCR cleaning (mayúsculas, solo alfanuméricos; sin sustituir O/I,
+     * que son letras válidas en patentes extranjeras).
      */
     public function test_it_cleans_plate_characters(): void
     {
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('cleanPlate');
 
-        $this->assertEquals('ABCD12', $method->invoke($this->service, 'ABCD-I2'));
-        $this->assertEquals('BCDF01', $method->invoke($this->service, 'BCDF O1'));
+        $this->assertEquals('ABCDI2', $method->invoke($this->service, 'ABCD-I2'));
+        $this->assertEquals('BCDFO1', $method->invoke($this->service, 'BCDF O1'));
         $this->assertEquals('AB1234', $method->invoke($this->service, 'ab-1234'));
+    }
+
+    /**
+     * Test corrección de confusiones típicas de OCR ("O" -> "0", "I" -> "1").
+     */
+    public function test_it_applies_ocr_corrections(): void
+    {
+        $this->assertEquals('ABCD12', $this->service->applyOcrCorrections('ABCDI2'));
+        $this->assertEquals('BCDF01', $this->service->applyOcrCorrections('BCDFO1'));
     }
 
     /**
@@ -65,8 +75,37 @@ class OcrServiceTest extends TestCase
         $this->assertTrue($result['valid']);
         $this->assertEquals('antigua', $result['type']);
 
-        // Invalid old (wrong format)
+        // ABC123 ya no es formato chileno, pero sí internacional (Colombia/Argentina)
         $result = $method->invoke($this->service, 'ABC123');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('internacional', $result['type']);
+    }
+
+    /**
+     * Test international plate validation (foreign LATAM formats).
+     */
+    public function test_it_validates_international_plates(): void
+    {
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('validatePpu');
+
+        // Argentina Mercosur
+        $result = $method->invoke($this->service, 'AB123CD');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('internacional', $result['type']);
+
+        // Brasil Mercosur
+        $result = $method->invoke($this->service, 'ABC1D23');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('internacional', $result['type']);
+
+        // Bolivia
+        $result = $method->invoke($this->service, '1234ABC');
+        $this->assertTrue($result['valid']);
+        $this->assertEquals('internacional', $result['type']);
+
+        // Sin formato reconocible
+        $result = $method->invoke($this->service, 'ZZZZZZZ9');
         $this->assertFalse($result['valid']);
     }
 

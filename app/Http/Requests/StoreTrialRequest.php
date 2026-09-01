@@ -22,7 +22,7 @@ class StoreTrialRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'country' => ['required', 'string', Rule::in(array_column(Country::cases(), 'value'))],
+            'country' => ['required', 'string', Rule::in(array_column(Country::operational(), 'value'))],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email:filter', 'max:255', 'unique:trial_requests,email'],
             'phone' => ['required', 'string', 'max:30'],

@@ -10,7 +10,12 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Regla unificada de validación de placas vehiculares.
- * Delega la validación al validador específico del país.
+ *
+ * Acepta patentes con el formato local del país del taller y también
+ * patentes extranjeras que calcen con el formato de otro país
+ * latinoamericano soportado (ej: un vehículo argentino en un taller
+ * chileno). El aviso de origen extranjero se resuelve aparte, con
+ * Country::detectFromPlate().
  */
 class LicensePlate implements ValidationRule
 {
@@ -18,11 +23,25 @@ class LicensePlate implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $rule = match ($this->country) {
-            Country::Chile => new ChileanPlate,
-            Country::Colombia => new ColombianPlate,
-        };
+        if (! is_string($value) || $value === '') {
+            $fail('La patente no tiene un formato válido.');
 
-        $rule->validate($attribute, $value, $fail);
+            return;
+        }
+
+        // Formato local del país del taller.
+        if ($this->country->matchesPlate($value)) {
+            return;
+        }
+
+        // Formato de otro país latinoamericano (patente extranjera).
+        if (Country::detectFromPlate($value) !== []) {
+            return;
+        }
+
+        $fail(sprintf(
+            'La patente no coincide con el formato de %s ni con un formato internacional reconocido.',
+            $this->country->label(),
+        ));
     }
 }

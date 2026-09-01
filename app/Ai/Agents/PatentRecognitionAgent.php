@@ -31,7 +31,13 @@ class PatentRecognitionAgent implements Agent, HasStructuredOutput
                Formatos Colombia:
                - Auto: 3 Letras + 3 Números (ej: ABC123).
                - Moto: 3 Letras + 2 Números + 1 Letra (ej: ABC12D).
-               
+
+               Otros formatos latinoamericanos (transcribe tal cual, sin forzar a 6 caracteres):
+               - Argentina Mercosur: AB123CD · Argentina antiguo: ABC123.
+               - Brasil Mercosur: ABC1D23 · Brasil antiguo: ABC1234.
+               - Uruguay/Ecuador/México: ABC1234 · Paraguay Mercosur: AAAA123.
+               - Bolivia: 1234ABC · Perú: ABC123 / A1B234.
+
             2. Vehículo: Identifica la Marca, Modelo y Color basándote en la imagen completa del vehículo.
             
             Si algún dato no es visible, pon "Desconocido".

@@ -38,6 +38,21 @@ const selectedExistingClient = ref(null);
 const appointmentData = ref(null);
 const isLookingUpRut = ref(false);
 const rutLookupResult = ref(null);
+const plateOrigin = ref(null);
+
+// Aviso de patente extranjera: "Esta patente pertenece a [PAÍS]".
+const plateOriginMessage = computed(() => {
+    const countries = plateOrigin.value?.countries || [];
+    if (!countries.length) return null;
+
+    const names = countries.map((c) => `${c.name} ${c.flag}`);
+    if (names.length === 1) {
+        return `Esta placa patente pertenece a ${names[0]}.`;
+    }
+
+    const last = names.pop();
+    return `Esta placa patente podría pertenecer a ${names.join(', ')} o ${last}.`;
+});
 
 const createEmptyClient = () => ({
     id: null,
@@ -95,7 +110,11 @@ const MOTO_PLATE_REGEX = /^([A-Z]{3}[0-9]{2}|[A-Z]{2}[0-9]{3})$/;
 const formattedPlate = computed(() => {
     if (!recognizedPlate.value) return '';
     const clean = recognizedPlate.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-    if (clean.length >= 6) {
+    // Las patentes extranjeras (7+ caracteres) se muestran sin separadores.
+    if (clean.length > 6) {
+        return clean;
+    }
+    if (clean.length === 6) {
         return `${clean.slice(0, 2)}·${clean.slice(2, 4)}·${clean.slice(4, 6)}`;
     }
     if (MOTO_PLATE_REGEX.test(clean)) {
@@ -155,6 +174,7 @@ const resetReceptionState = () => {
     defaultClient.value = createEmptyClient();
     appointmentData.value = null;
     rutLookupResult.value = null;
+    plateOrigin.value = null;
     resetClientSearchState();
     form.reset();
     form.clearErrors();
@@ -190,6 +210,7 @@ const fetchVehicleData = async (ppu) => {
         isExistingVehicle.value = data.vehicle_exists ?? !data.is_new;
         ownerSource.value = data.owner_source || 'manual';
         appointmentData.value = data.appointment || null;
+        plateOrigin.value = data.plate_origin || null;
         defaultClient.value = {
             id: data.client?.id || null,
             name: data.client?.name || '',
@@ -313,10 +334,11 @@ const debouncedRutLookup = debounce((value) => {
     void lookupClientByRut(value);
 }, 400);
 
-// Autosearch: inmediato con 6 caracteres (auto); con debounce para
-// patentes de moto de 5 caracteres, por si el usuario sigue escribiendo.
-const debouncedMotoPlateSearch = debounce((value) => {
-    if (showModal.value && form.plate?.toUpperCase() === value && MOTO_PLATE_REGEX.test(value) && !isSearching.value) {
+// Autosearch: con debounce para patentes de 5 (moto) y 6 caracteres, por si
+// el usuario sigue escribiendo una patente extranjera más larga (ej: Argentina
+// Mercosur AB123CD de 7); inmediato al llegar a 7 caracteres.
+const debouncedPlateSearch = debounce((value) => {
+    if (showModal.value && form.plate?.toUpperCase() === value && !isSearching.value) {
         fetchVehicleData(value);
     }
 }, 600);
@@ -326,10 +348,10 @@ watch(() => form.plate, (newVal) => {
 
     const clean = newVal.toUpperCase();
 
-    if (clean.length === 6) {
+    if (clean.length === 7) {
         fetchVehicleData(clean);
-    } else if (MOTO_PLATE_REGEX.test(clean)) {
-        debouncedMotoPlateSearch(clean);
+    } else if (clean.length === 6 || MOTO_PLATE_REGEX.test(clean)) {
+        debouncedPlateSearch(clean);
     }
 });
 
@@ -608,6 +630,19 @@ onUnmounted(() => {
                     </p>
                 </div>
 
+                <!-- Aviso: patente extranjera -->
+                <div v-if="plateOriginMessage"
+                    class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-indigo-50 border border-indigo-300 px-5 py-4 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-indigo-700">Patente Extranjera</p>
+                    </div>
+                    <p class="text-sm font-bold text-indigo-900">{{ plateOriginMessage }}</p>
+                    <p class="text-xs text-indigo-700">Los datos del vehículo no están en el registro local, por lo que deben ingresarse manualmente.</p>
+                </div>
+
                 <!-- Info de cita agendada (si existe y tiene notas) -->
                 <div v-if="appointmentData && appointmentData.notes"
                     class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 space-y-1">
@@ -626,8 +661,8 @@ onUnmounted(() => {
                             Identificación</p>
                         <input v-model="form.plate" type="text"
                             class="w-full text-center bg-transparent border-none focus:ring-0 text-5xl font-mono font-black text-gray-900 tracking-widest plate-font uppercase placeholder-gray-200"
-                            placeholder="AAAA11" maxlength="6" />
-                        <p class="text-[9px] text-gray-400 mt-2 tracking-wider">Auto: 6 caracteres · Moto: 5 caracteres</p>
+                            placeholder="AAAA11" maxlength="8" />
+                        <p class="text-[9px] text-gray-400 mt-2 tracking-wider">Auto: 6 caracteres · Moto: 5 · Extranjera: hasta 8</p>
                     </div>
 
                     <!-- Datos del Vehículo -->

@@ -50,7 +50,9 @@ class OcrController extends Controller
 
         ApiUsageLog::record('ocr', Tenant::current()?->id);
 
-        if ($ocrResult['valid'] ?? false) {
+        // Boostr solo tiene registro de vehículos chilenos; se omite la
+        // consulta para patentes internacionales.
+        if (($ocrResult['valid'] ?? false) && ($ocrResult['type'] ?? null) !== 'internacional') {
             $vehicleData = $this->boostrService->getVehicleData((string) $ocrResult['plate']);
 
             // Only merge non-null values to avoid overwriting AI detected data with empty results

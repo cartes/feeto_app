@@ -28,8 +28,12 @@ class LicensePlateRuleTest extends TestCase
             'colombia motocarro válido' => [Country::Colombia, '123ABC', true],
             'colombia diplomática válida' => [Country::Colombia, 'CD1234', true],
             'colombia remolque válido' => [Country::Colombia, 'R12345', true],
-            'colombia placa chilena 4L2N rechazada' => [Country::Colombia, 'GKSB78', false],
+            'colombia placa chilena aceptada como extranjera' => [Country::Colombia, 'GKSB78', true],
             'colombia formato inválido alfanumérico mezclado' => [Country::Colombia, 'A1B2C3', false],
+            'chile placa argentina mercosur aceptada' => [Country::Chile, 'AB123CD', true],
+            'chile placa brasileña mercosur aceptada' => [Country::Chile, 'ABC1D23', true],
+            'chile placa boliviana aceptada' => [Country::Chile, '1234ABC', true],
+            'chile formato desconocido rechazado' => [Country::Chile, 'ZZZZZZZ9', false],
         ];
     }
 
