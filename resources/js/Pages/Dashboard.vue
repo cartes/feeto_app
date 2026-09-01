@@ -253,6 +253,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+
     <Head title="Centro de Comando" />
 
     <TallerLayout>
@@ -261,33 +262,38 @@ onUnmounted(() => {
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Dashboard operativo</p>
-                    <h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900">Centro de comando del taller</h1>
+                    <h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900">Centro de comando del taller
+                    </h1>
                     <p class="mt-1.5 text-sm font-medium text-gray-500">
-                        {{ new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}
+                        {{ new Date().toLocaleDateString('es-CL', {
+                            weekday: 'long', day: 'numeric', month: 'long',
+                        year: 'numeric' }) }}
                     </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <span class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3.5 py-2">
+                    <span
+                        class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3.5 py-2">
                         <span class="relative flex h-2.5 w-2.5">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                            <span
+                                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
                         </span>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Sistema activo</span>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Sistema
+                            activo</span>
                     </span>
 
-                    <a
-                        v-if="tenantPublicUrl"
-                        :href="tenantPublicUrl"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="group inline-flex items-center gap-2 rounded-full border border-[#FF7A00]/20 bg-orange-50 px-3.5 py-2 transition hover:bg-orange-100"
-                    >
-                        <svg class="h-3.5 w-3.5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <a v-if="tenantPublicUrl" :href="tenantPublicUrl" target="_blank" rel="noopener noreferrer"
+                        class="group inline-flex items-center gap-2 rounded-full border border-[#FF7A00]/20 bg-orange-50 px-3.5 py-2 transition hover:bg-orange-100">
+                        <svg class="h-3.5 w-3.5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF7A00]">Tu espacio público</span>
-                        <svg class="h-3 w-3 text-[#FF7A00] transition group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF7A00]">Tu espacio
+                            público</span>
+                        <svg class="h-3 w-3 text-[#FF7A00] transition group-hover:translate-x-0.5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                     </a>
@@ -296,22 +302,18 @@ onUnmounted(() => {
 
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">
-                <div
-                    v-for="alert in inventoryAlerts"
-                    :key="alert.id"
-                    :class="[
-                        'rounded-2xl border p-4 flex justify-between items-start',
-                        alert.type === 'danger' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'
-                    ]"
-                >
+                <div v-for="alert in inventoryAlerts" :key="alert.id" :class="[
+                    'rounded-2xl border p-4 flex justify-between items-start',
+                    alert.type === 'danger' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'
+                ]">
                     <div>
-                        <p :class="['text-sm font-black', alert.type === 'danger' ? 'text-red-900' : 'text-amber-900']">{{ alert.title }}</p>
-                        <p :class="['mt-1 text-sm', alert.type === 'danger' ? 'text-red-700' : 'text-amber-700']">{{ alert.message }}</p>
+                        <p :class="['text-sm font-black', alert.type === 'danger' ? 'text-red-900' : 'text-amber-900']">
+                            {{ alert.title }}</p>
+                        <p :class="['mt-1 text-sm', alert.type === 'danger' ? 'text-red-700' : 'text-amber-700']">{{
+                            alert.message }}</p>
                     </div>
-                    <button
-                        @click="inventoryAlerts = inventoryAlerts.filter(a => a.id !== alert.id)"
-                        :class="['text-xs font-bold uppercase tracking-wide px-2 py-1 rounded hover:bg-white/50 transition', alert.type === 'danger' ? 'text-red-600' : 'text-amber-600']"
-                    >
+                    <button @click="inventoryAlerts = inventoryAlerts.filter(a => a.id !== alert.id)"
+                        :class="['text-xs font-bold uppercase tracking-wide px-2 py-1 rounded hover:bg-white/50 transition', alert.type === 'danger' ? 'text-red-600' : 'text-amber-600']">
                         Descartar
                     </button>
                 </div>
@@ -319,14 +321,12 @@ onUnmounted(() => {
 
             <!-- Resumen del día -->
             <div class="grid grid-cols-2 gap-3 xl:grid-cols-4" data-tour="dashboard-summary">
-                <div
-                    v-for="stat in summaryStats"
-                    :key="stat.label"
-                    class="rounded-2xl border bg-white p-4 shadow-sm"
-                    :class="stat.alert ? 'border-rose-200' : 'border-gray-100'"
-                >
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em]" :class="stat.alert ? 'text-rose-400' : 'text-gray-400'">{{ stat.hint }}</p>
-                    <p class="mt-2 text-3xl font-black tracking-tight" :class="stat.alert ? 'text-rose-600' : 'text-gray-900'">{{ stat.value }}</p>
+                <div v-for="stat in summaryStats" :key="stat.label" class="rounded-2xl border bg-white p-4 shadow-sm"
+                    :class="stat.alert ? 'border-rose-200' : 'border-gray-100'">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em]"
+                        :class="stat.alert ? 'text-rose-400' : 'text-gray-400'">{{ stat.hint }}</p>
+                    <p class="mt-2 text-3xl font-black tracking-tight"
+                        :class="stat.alert ? 'text-rose-600' : 'text-gray-900'">{{ stat.value }}</p>
                     <p class="mt-1 text-xs font-semibold text-gray-500">{{ stat.label }}</p>
                 </div>
             </div>
@@ -334,24 +334,25 @@ onUnmounted(() => {
             <!-- Accesos rápidos -->
             <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Accesos rápidos</p>
-                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7" data-tour="dashboard-quicklinks">
-                    <Link
-                        v-for="item in quickLinks"
-                        :key="item.label"
-                        :href="route(item.route, tenantRouteParams)"
-                        class="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7A00]/30 hover:shadow-md"
-                    >
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7"
+                    data-tour="dashboard-quicklinks">
+                    <Link v-for="item in quickLinks" :key="item.label" :href="route(item.route, tenantRouteParams)"
+                        class="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7A00]/30 hover:shadow-md">
+                        <div
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="1.7">
                                 <path stroke-linecap="round" stroke-linejoin="round" :d="item.iconPath" />
                             </svg>
                         </div>
-                        <p class="truncate text-sm font-black uppercase tracking-tight text-gray-900">{{ item.label }}</p>
+                        <p class="truncate text-sm font-black uppercase tracking-tight text-gray-900">{{ item.label }}
+                        </p>
                     </Link>
                 </div>
             </div>
 
-            <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm" data-tour="dashboard-agenda">
+            <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm"
+                data-tour="dashboard-agenda">
                 <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
                     <div>
                         <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Agendamiento</p>
@@ -359,35 +360,23 @@ onUnmounted(() => {
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3">
-                        <Link
-                            v-if="canManageAppointments"
-                            :href="route('appointments.index', tenantRouteParams)"
-                            class="rounded-full bg-gray-900 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white transition hover:bg-gray-800"
-                        >
+                        <Link v-if="canManageAppointments" :href="route('appointments.index', tenantRouteParams)"
+                            class="rounded-full bg-gray-900 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white transition hover:bg-gray-800">
                             Ver agenda
                         </Link>
-                        <span
-                            class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"
-                            :class="calendarSchedulingEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
-                        >
+                        <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"
+                            :class="calendarSchedulingEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
                             {{ calendarSchedulingEnabled ? 'Calendario activo' : 'Modo básico' }}
                         </span>
                     </div>
                 </div>
 
-                <PlanUpgradeBanner
-                    v-if="!calendarSchedulingEnabled"
-                    title="Calendario interactivo no disponible"
-                    :message="`Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage}`"
-                />
+                <PlanUpgradeBanner v-if="!calendarSchedulingEnabled" title="Calendario interactivo no disponible"
+                    :message="`Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage}`" />
 
                 <div v-if="calendarSchedulingEnabled" class="space-y-6">
-                    <AppointmentCalendar
-                        :appointments="appointments"
-                        :today="today"
-                        :can-delete="canManageAppointments"
-                        @delete="confirmDeleteAppointment"
-                    />
+                    <AppointmentCalendar :appointments="appointments" :today="today" :can-delete="canManageAppointments"
+                        @delete="confirmDeleteAppointment" />
 
                     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
                         <div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5">
@@ -401,38 +390,30 @@ onUnmounted(() => {
                                 </span>
                             </div>
 
-                            <AppointmentList
-                                :appointments="todayAppointments"
-                                empty-title="Sin citas para hoy"
+                            <AppointmentList :appointments="todayAppointments" empty-title="Sin citas para hoy"
                                 empty-description="No hay ingresos programados para la jornada actual."
-                                :show-date="false"
-                                :can-delete="canManageAppointments"
-                                @delete="confirmDeleteAppointment"
-                            />
+                                :show-date="false" :can-delete="canManageAppointments"
+                                @delete="confirmDeleteAppointment" />
                         </div>
 
                         <div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5">
                             <div class="mb-4">
-                                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Recepción inteligente</p>
+                                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Recepción
+                                    inteligente</p>
                                 <h3 class="mt-1 text-xl font-black text-gray-900">Estado del escáner</h3>
                             </div>
 
-                            <PlanUpgradeBanner
-                                v-if="!aiReceptionEnabled"
-                                title="Escáner con IA no disponible"
+                            <PlanUpgradeBanner v-if="!aiReceptionEnabled" title="Escáner con IA no disponible"
                                 :message="`Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage}`"
-                                tone="slate"
-                            />
+                                tone="slate" />
 
                             <div v-else class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                                 <p class="text-sm font-black text-emerald-800">Recepción asistida habilitada</p>
                                 <p class="mt-1 text-sm text-emerald-700">
                                     Puedes usar el escáner de patente desde Recepción y desde el módulo de Agendamiento.
                                 </p>
-                                <Link
-                                    :href="route('receptions.create', tenantRouteParams)"
-                                    class="mt-4 inline-flex rounded-full bg-emerald-600 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-700"
-                                >
+                                <Link :href="route('receptions.create', tenantRouteParams)"
+                                    class="mt-4 inline-flex rounded-full bg-emerald-600 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white transition hover:bg-emerald-700">
                                     Abrir recepción
                                 </Link>
                             </div>
@@ -444,7 +425,8 @@ onUnmounted(() => {
                     <div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div>
-                                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Agenda básica</p>
+                                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Agenda
+                                    básica</p>
                                 <h3 class="mt-1 text-xl font-black text-gray-900">Listado de citas</h3>
                             </div>
                             <span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600">
@@ -452,44 +434,35 @@ onUnmounted(() => {
                             </span>
                         </div>
 
-                        <AppointmentList
-                            :appointments="appointments"
-                            empty-title="Sin citas registradas"
+                        <AppointmentList :appointments="appointments" empty-title="Sin citas registradas"
                             empty-description="No hay citas agendadas en el periodo actual."
-                            :can-delete="canManageAppointments"
-                            @delete="confirmDeleteAppointment"
-                        />
+                            :can-delete="canManageAppointments" @delete="confirmDeleteAppointment" />
                     </div>
 
                     <div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5">
                         <div class="mb-4">
-                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Notificaciones</p>
+                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Notificaciones
+                            </p>
                             <h3 class="mt-1 text-xl font-black text-gray-900">Próximos ingresos</h3>
                         </div>
 
-                        <div
-                            v-if="appointmentNotifications.length === 0"
-                            class="rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center"
-                        >
+                        <div v-if="appointmentNotifications.length === 0"
+                            class="rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center">
                             <p class="text-sm font-bold text-gray-500">Sin movimientos programados</p>
-                            <p class="mt-1 text-sm text-gray-400">Aquí verás un resumen rápido de las próximas citas.</p>
+                            <p class="mt-1 text-sm text-gray-400">Aquí verás un resumen rápido de las próximas citas.
+                            </p>
                         </div>
 
                         <ul v-else class="flex flex-col gap-3">
-                            <li
-                                v-for="notification in appointmentNotifications"
-                                :key="notification.id"
-                                class="rounded-2xl border border-gray-100 bg-white p-4"
-                            >
+                            <li v-for="notification in appointmentNotifications" :key="notification.id"
+                                class="rounded-2xl border border-gray-100 bg-white p-4">
                                 <div class="flex items-start justify-between gap-3">
                                     <div>
                                         <p class="text-sm font-black text-gray-900">{{ notification.title }}</p>
                                         <p class="mt-1 text-sm text-gray-500">{{ notification.description }}</p>
                                     </div>
-                                    <span
-                                        :class="notificationStatusClass(notification.status)"
-                                        class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
-                                    >
+                                    <span :class="notificationStatusClass(notification.status)"
+                                        class="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide">
                                         {{ notification.status }}
                                     </span>
                                 </div>
@@ -503,41 +476,39 @@ onUnmounted(() => {
                 <div class="rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm">
                     <div class="mb-5 flex items-center justify-between gap-3">
                         <div>
-                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Actividad en tiempo real</p>
+                            <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Actividad en
+                                tiempo real</p>
                             <h2 class="mt-1 text-2xl font-black text-gray-900">Movimientos del tablero</h2>
                         </div>
-                        <span class="rounded-full bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Live</span>
+                        <span
+                            class="rounded-full bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Live</span>
                     </div>
 
-                    <div
-                        v-if="recentActivities.length === 0"
-                        class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center"
-                    >
+                    <div v-if="recentActivities.length === 0"
+                        class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center">
                         <p class="text-sm font-bold text-gray-500">Esperando actualizaciones del tablero</p>
                         <p class="mt-1 text-sm text-gray-400">Los cambios de estado aparecerán aquí automáticamente.</p>
                     </div>
 
                     <ul v-else class="flex flex-col gap-3">
-                        <li
-                            v-for="activity in recentActivities"
+                        <li v-for="activity in recentActivities"
                             :key="`${activity.work_order_id}-${activity.new_status || activity.status}`"
-                            class="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 p-4"
-                        >
+                            class="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 p-4">
                             <div class="min-w-0">
                                 <p class="truncate text-sm font-black text-gray-900">
-                                    {{ activity.vehicle }} <span class="font-medium text-gray-400">({{ activity.plate }})</span>
+                                    {{ activity.vehicle }} <span class="font-medium text-gray-400">({{ activity.plate
+                                        }})</span>
                                 </p>
                                 <p class="mt-1 text-xs text-gray-500">
                                     Estado actualizado a
-                                    <span class="font-black uppercase text-gray-700">{{ getStatusLabel(activity.new_status || activity.status) }}</span>
+                                    <span class="font-black uppercase text-gray-700">{{
+                                        getStatusLabel(activity.new_status || activity.status) }}</span>
                                 </p>
                             </div>
 
-                            <button
-                                type="button"
+                            <button type="button"
                                 class="rounded-full bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 transition hover:text-orange-600"
-                                @click="dismissActivity(activity)"
-                            >
+                                @click="dismissActivity(activity)">
                                 Ocultar
                             </button>
                         </li>
@@ -550,75 +521,62 @@ onUnmounted(() => {
                             <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Comercial</p>
                             <h2 class="mt-1 text-2xl font-black text-gray-900">Notificaciones de cotización</h2>
                         </div>
-                        <Link
-                            v-if="canViewReports && commercialReportsEnabled"
+                        <Link v-if="canViewReports && commercialReportsEnabled"
                             :href="route('reports.index', tenantRouteParams)"
-                            class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-600"
-                        >
+                            class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">
                             Ver reportes
                         </Link>
                     </div>
 
-                    <div
-                        v-if="quoteNotifications.length === 0"
-                        class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center"
-                    >
+                    <div v-if="quoteNotifications.length === 0"
+                        class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center">
                         <p class="text-sm font-bold text-gray-500">Sin eventos comerciales recientes</p>
                         <p class="mt-1 text-sm text-gray-400">Las respuestas y envíos de cotización aparecerán aquí.</p>
                     </div>
 
                     <ul v-else class="flex flex-col gap-3">
-                        <li
-                            v-for="notification in quoteNotifications"
-                            :key="notification.id"
-                            class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
-                        >
+                        <li v-for="notification in quoteNotifications" :key="notification.id"
+                            class="rounded-2xl border border-gray-100 bg-gray-50 p-4">
                             <p class="text-sm font-black text-gray-900">{{ notification.description }}</p>
                             <p class="mt-1 text-xs text-gray-500">
-                                {{ notification.client }} · {{ notification.plate }} · OT #{{ notification.work_order_id }}
+                                {{ notification.client }} · {{ notification.plate }} · OT #{{ notification.work_order_id
+                                }}
                             </p>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div
-                v-if="isAdmin"
-                class="rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm"
-            >
+            <div v-if="isAdmin"
+                class="rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm">
                 <div class="mb-5 flex items-center justify-between gap-3">
                     <div>
                         <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Cobranza</p>
                         <h2 class="mt-1 text-2xl font-black text-gray-900">Facturas atrasadas</h2>
                     </div>
-                    <Link
-                        :href="route('invoices.index', tenantRouteParams)"
-                        class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-rose-600"
-                    >
+                    <Link :href="route('invoices.index', tenantRouteParams)"
+                        class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-rose-600">
                         Ver facturas
                     </Link>
                 </div>
 
-                <div
-                    v-if="overdueInvoices.length === 0"
-                    class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center"
-                >
+                <div v-if="overdueInvoices.length === 0"
+                    class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center">
                     <p class="text-sm font-bold text-gray-500">Sin facturas atrasadas</p>
                     <p class="mt-1 text-sm text-gray-400">Aquí aparecerán los clientes con mora activa.</p>
                 </div>
 
                 <ul v-else class="grid gap-3 lg:grid-cols-2">
-                    <li
-                        v-for="invoice in overdueInvoices"
-                        :key="invoice.id"
-                        class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
-                    >
+                    <li v-for="invoice in overdueInvoices" :key="invoice.id"
+                        class="rounded-2xl border border-gray-100 bg-gray-50 p-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-sm font-black text-gray-900">{{ invoice.invoice_number || `Factura #${invoice.id}` }}</p>
+                                <p class="text-sm font-black text-gray-900">{{ invoice.invoice_number || `Factura
+                                    #${invoice.id}` }}</p>
                                 <p class="mt-1 text-sm text-gray-500">{{ invoice.client_name }}</p>
                                 <p class="mt-1 text-xs font-bold uppercase tracking-wide text-rose-500">
-                                    {{ invoice.days_overdue }} día<span v-if="invoice.days_overdue !== 1">s</span> de atraso
+                                    {{ invoice.days_overdue }} día<span v-if="invoice.days_overdue !== 1">s</span> de
+                                    atraso
                                 </p>
                             </div>
                             <div class="text-right">
@@ -632,37 +590,50 @@ onUnmounted(() => {
         </div>
         <!-- Delete Appointment Confirmation Modal -->
         <div v-if="showDeleteAppointmentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteAppointmentModal = false"></div>
+            <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showDeleteAppointmentModal = false">
+            </div>
 
-            <div class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div
+                class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-300">
                 <div class="text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+                    <div
+                        class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
                     <h3 class="text-lg font-black uppercase tracking-tight text-gray-900">¿Eliminar cita?</h3>
-                    <p class="mt-2 text-sm font-medium text-gray-500">Esta acción no se puede deshacer. Se eliminará la cita del sistema.</p>
+                    <p class="mt-2 text-sm font-medium text-gray-500">Esta acción no se puede deshacer. Se eliminará la
+                        cita del sistema.</p>
                 </div>
 
-                <div v-if="appointmentToDelete" class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
+                <div v-if="appointmentToDelete"
+                    class="mt-5 rounded-2xl bg-gray-50 p-4 space-y-2.5 text-xs text-gray-700 font-medium border border-gray-100">
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Patente:</span>
-                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ appointmentToDelete.plate }}</span>
+                        <span class="font-mono font-bold text-gray-900 tracking-wider">{{ appointmentToDelete.plate
+                            }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Cliente:</span>
-                        <span class="font-bold text-gray-900">{{ appointmentToDelete.client?.name || 'Sin registrar' }}</span>
+                        <span class="font-bold text-gray-900">{{ appointmentToDelete.client?.name || 'Sin registrar'
+                            }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400 uppercase tracking-widest text-[9px] font-bold">Fecha y hora:</span>
-                        <span class="font-bold text-gray-900">{{ appointmentToDelete.date }} {{ appointmentToDelete.time }} hrs</span>
+                        <span class="font-bold text-gray-900">{{ appointmentToDelete.date }} {{ appointmentToDelete.time
+                            }} hrs</span>
                     </div>
                 </div>
 
                 <div class="mt-6 flex gap-3">
-                    <button type="button" class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200" @click="showDeleteAppointmentModal = false">Cancelar</button>
-                    <button type="button" class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700" @click="submitDeleteAppointment">Eliminar cita</button>
+                    <button type="button"
+                        class="flex-1 rounded-2xl bg-gray-100 py-3.5 text-xs font-black uppercase tracking-widest text-gray-600 transition-colors hover:bg-gray-200"
+                        @click="showDeleteAppointmentModal = false">Cancelar</button>
+                    <button type="button"
+                        class="flex-1 rounded-2xl bg-red-600 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-red-700"
+                        @click="submitDeleteAppointment">Eliminar cita</button>
                 </div>
             </div>
         </div>

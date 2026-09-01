@@ -10,6 +10,7 @@ import Toast from '@/Components/Toast.vue';
 
 const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user);
+const isSuperAdmin = computed(() => Boolean(user.value?.is_super_admin));
 const permissions = computed(() => user.value?.permissions ?? []);
 const roles = computed(() => user.value?.roles ?? []);
 const planAccess = computed(() => page.props.planAccess ?? null);
@@ -114,16 +115,38 @@ watch(
         <!-- SIDEBAR - Desktop Only -->
         <aside class="hidden lg:flex lg:flex-col lg:w-72 fixed inset-y-0 left-0 bg-white/60 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-50">
             <!-- Branding -->
-            <div class="px-8 py-8 flex items-center gap-3" data-tour="tenant-brand">
-                <ApplicationLogo class="h-12 w-12 rounded-[14px] flex-shrink-0 shadow-sm" />
-                <div class="flex items-center gap-2 text-[2rem] font-bold tracking-tight leading-none">
-                    <span class="text-slate-900">Taller</span>
-                    <span class="text-[#FF7A00]">Flow</span>
+            <div class="px-8 py-6 flex flex-col gap-2" data-tour="tenant-brand">
+                <div class="flex items-center gap-3">
+                    <ApplicationLogo class="h-10 w-10 rounded-[14px] flex-shrink-0 shadow-sm" />
+                    <div class="flex items-center gap-1.5 text-[1.75rem] font-bold tracking-tight leading-none">
+                        <span class="text-slate-900">Taller</span>
+                        <span class="text-[#FF7A00]">Flow</span>
+                    </div>
+                </div>
+                <!-- Badge de Plan del Taller -->
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="inline-flex items-center rounded-md bg-orange-50 px-2 py-0.5 text-xs font-semibold text-[#FF7A00] ring-1 ring-inset ring-orange-500/20 uppercase tracking-wider">
+                        Plan {{ planAccess?.plan_name || 'Básico' }}
+                    </span>
+                    <span v-if="isSuperAdmin" class="inline-flex items-center rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                        Super-Admin
+                    </span>
                 </div>
             </div>
 
             <!-- Navegación Desktop -->
             <nav class="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-3" data-tour="tenant-navigation">
+                <Link
+                    v-if="isSuperAdmin"
+                    :href="route('admin.dashboard')"
+                    class="flex items-center gap-3 px-4 py-3 mb-2 rounded-[1.25rem] font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-md group text-sm"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span>Panel Super-Admin</span>
+                </Link>
+
                 <Link
                     v-for="(item, index) in navItems"
                     :key="index"

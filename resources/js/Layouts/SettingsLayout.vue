@@ -25,6 +25,7 @@ const props = defineProps({
 
 const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user ?? null);
+const isSuperAdmin = computed(() => Boolean(user.value?.is_super_admin));
 const permissions = computed(() => user.value?.permissions ?? []);
 const userRoles = computed(() => user.value?.roles ?? []);
 const tenantContext = computed(() => page.props.tenantContext ?? null);

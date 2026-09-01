@@ -8,6 +8,7 @@ use App\Services\MarketingWhatsAppService;
 use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Tighten\Ziggy\Ziggy;
 
@@ -78,7 +79,14 @@ class HandleInertiaRequests extends Middleware
      */
     private function resolveAuthorization(User $user, ?Tenant $tenant): array
     {
-        if ($user->is_super_admin || ! $tenant) {
+        if ($user->is_super_admin) {
+            return [
+                'roles' => ['SuperAdmin', 'Admin'],
+                'permissions' => Permission::pluck('name')->values()->all(),
+            ];
+        }
+
+        if (! $tenant) {
             return [
                 'roles' => $user->getRoleNames()->values()->all(),
                 'permissions' => $user->getAllPermissions()->pluck('name')->values()->all(),

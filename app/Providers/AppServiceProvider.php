@@ -26,6 +26,7 @@ use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
@@ -40,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::before(static function (User $user, string $ability): ?bool {
+            return $user->is_super_admin ? true : null;
+        });
+
         $this->bootstrapRuntimeConfiguration();
 
         if (app()->environment('production')) {
