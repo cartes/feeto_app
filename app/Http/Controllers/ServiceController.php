@@ -8,6 +8,7 @@ use App\Http\Requests\UpsertServiceRequest;
 use App\Models\Service;
 use App\Models\Tenant;
 use App\Services\PlanFeatureService;
+use App\Services\QuoteItemService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -56,6 +57,8 @@ class ServiceController extends Controller
         $this->ensureFeatureEnabled();
 
         $service->update($request->validated());
+
+        app(QuoteItemService::class)->syncCatalogItemUpdates($service);
 
         return redirect()->back()->with('success', 'Servicio actualizado.');
     }

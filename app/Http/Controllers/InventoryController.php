@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Tenant;
 use App\Services\PlanFeatureService;
+use App\Services\QuoteItemService;
 use App\Services\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -92,6 +93,8 @@ class InventoryController extends Controller
         if ($oldStock !== $newStock) {
             app(StockService::class)->recordManualAdjustment($product, $oldStock, $newStock);
         }
+
+        app(QuoteItemService::class)->syncCatalogItemUpdates($product);
 
         return redirect()->back()->with('success', 'Repuesto actualizado.');
     }

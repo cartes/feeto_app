@@ -242,4 +242,60 @@ class CatalogTaxIncludedTest extends TestCase
             ])
             ->assertForbidden();
     }
+
+    public function test_updating_product_in_catalog_automatically_updates_open_quotes_and_totals(): void
+    {
+        $product = Product::create([
+            'name' => 'Aceite Motor Liqui Moly 10W40',
+            'sku' => 'ACE-LM-10W40',
+            'type' => 'insumo',
+            'cost_price' => 20000,
+            'selling_price' => 35000,
+            'tax_included' => false,
+            'physical_stock' => 50,
+            'min_stock' => 10,
+        ]);
+
+        $quote = Quote::create([
+            'client_id' => $this->client->id,
+            'vehicle_id' => $this->vehicle->id,
+            'status' => Quote::STATUS_DRAFT,
+            'apply_tax' => true,
+            'tax_rate' => 19.0,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->post(route('quotes.items.store', ['quote' => $quote->id]), [
+                'product_id' => $product->id,
+                'quantity' => 1,
+            ]);
+
+        $quote->refresh();
+        $this->assertSame('35000.00', (string) $quote->subtotal_amount);
+        $this->assertSame('6650.00', (string) $quote->tax_amount);
+        $this->assertSame('41650.00', (string) $quote->total_amount);
+
+        // Edit product in catalog to 45.000 Con IVA (Bruto) and changed name
+        $this->actingAs($this->admin)
+            ->put(route('inventory.update', ['product' => $product->id]), [
+                'name' => 'Aceite Motor Liqui Moly 10W40 Sintético',
+                'sku' => 'ACE-LM-10W40',
+                'type' => 'insumo',
+                'cost_price' => 20000,
+                'selling_price' => 45000,
+                'tax_included' => true,
+                'physical_stock' => 50,
+                'min_stock' => 10,
+            ])
+            ->assertRedirect();
+
+        $quote->refresh();
+        $item = $quote->items()->first();
+
+        $this->assertSame('Aceite Motor Liqui Moly 10W40 Sintético', $item->description);
+        $this->assertSame(37815.13, (float) $item->unit_price);
+        $this->assertSame('37815.13', (string) $quote->subtotal_amount);
+        $this->assertSame('7184.87', (string) $quote->tax_amount);
+        $this->assertSame('45000.00', (string) $quote->total_amount);
+    }
 }

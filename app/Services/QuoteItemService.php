@@ -129,6 +129,63 @@ class QuoteItemService
     }
 
     /**
+     * Sincroniza y actualiza los ítems de cotizaciones abiertas (draft o pendientes)
+     * cuando se modifica un producto o servicio en el catálogo.
+     */
+    public function syncCatalogItemUpdates(Product|Service $catalogItem): void
+    {
+        $isProduct = $catalogItem instanceof Product;
+        $foreignKey = $isProduct ? 'product_id' : 'service_id';
+
+        $items = QuoteItem::query()
+            ->where($foreignKey, $catalogItem->id)
+            ->whereHas('quote', function ($query) {
+                $query->whereIn('status', [Quote::STATUS_DRAFT, Quote::STATUS_PENDING_CUSTOMER]);
+            })
+            ->with('quote.tenant')
+            ->get();
+
+        $touchedQuotes = collect();
+
+        foreach ($items as $item) {
+            $quote = $item->quote;
+            if (! $quote) {
+                continue;
+            }
+
+            $rate = (float) (($quote->tax_rate && $quote->tax_rate > 0)
+                ? $quote->tax_rate
+                : ($quote->tenant?->defaultTaxRate() ?? 19.0));
+
+            $baseUnitPrice = ($catalogItem->tax_included && ($quote->apply_tax ?? true))
+                ? $catalogItem->netSellingPrice($rate)
+                : (float) $catalogItem->selling_price;
+
+            $quantity = (float) $item->quantity;
+            $discountPercent = round((float) ($item->discount_percent ?? 0), 2);
+            $discountMultiplier = max(0, 1 - ($discountPercent / 100));
+            $discountedUnitPrice = round($baseUnitPrice * $discountMultiplier, 2);
+            $discountAmount = round(($baseUnitPrice - $discountedUnitPrice) * $quantity, 2);
+            $totalPrice = round($quantity * $discountedUnitPrice, 2);
+
+            $item->update([
+                'description' => $catalogItem->name,
+                'original_unit_price' => $baseUnitPrice,
+                'discount_percent' => $discountPercent,
+                'discount_amount' => $discountAmount,
+                'unit_price' => $discountedUnitPrice,
+                'total_price' => $totalPrice,
+            ]);
+
+            $touchedQuotes->push($quote);
+        }
+
+        foreach ($touchedQuotes->unique('id') as $quote) {
+            $this->recalculateQuoteTotal($quote);
+        }
+    }
+
+    /**
      * Recalcula y persiste el subtotal, impuesto y total de la cotización en base a sus ítems.
      */
     public function recalculateQuoteTotal(Quote $quote): float
