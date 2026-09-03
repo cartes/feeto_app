@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Models\ApiUsageLog;
 use App\Models\LoginLog;
-use App\Models\PageVisit;
 use App\Models\Payment;
 use App\Models\Tenant;
 use App\Models\TrialRequest;
@@ -100,26 +99,6 @@ class AdminDashboardService
             ->map(fn ($row) => [
                 'tenant' => $row->tenant?->name ?? 'Sin tenant',
                 'total' => (int) $row->total,
-            ]);
-    }
-
-    /**
-     * Visitas diarias desde la fecha de inicio indicada.
-     *
-     * @return Collection<int, array{date: string, visits: int, unique_visits: int}>
-     */
-    public function getVisitsByDay(Carbon $startDate): Collection
-    {
-        return PageVisit::query()
-            ->where('date', '>=', $startDate->toDateString())
-            ->select('date', DB::raw('sum(visits) as total'), DB::raw('sum(unique_visits) as unique_total'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->map(fn ($row) => [
-                'date' => $row->date->toDateString(),
-                'visits' => (int) $row->total,
-                'unique_visits' => (int) $row->unique_total,
             ]);
     }
 

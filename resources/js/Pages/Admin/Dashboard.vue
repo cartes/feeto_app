@@ -1,7 +1,10 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
-import { computed, ref, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import VisitsTrendChart from '@/Components/Admin/VisitsTrendChart.vue';
+import VisitsSummaryStat from '@/Components/Admin/VisitsSummaryStat.vue';
+import { PERIOD_OPTIONS, SCOPE_META, formatNumber, formatRange, formatShortDate } from '@/utils/visits';
 
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
 
@@ -9,11 +12,10 @@ const props = defineProps({
     stats: Object,
     work_orders_by_tenant: Array,
     ocr_usage: Array,
-    visits_by_day: Array,
+    visits: { type: Object, default: () => ({ period: '30d', scope: 'site', range: null, summary: {}, by_day: [], by_scope: [] }) },
     expiring_tenants: Array,
     pending_trial_requests: { type: Number, default: 0 },
     recent_trial_requests: { type: Array, default: () => [] },
-    current_period: { type: String, default: '30d' },
     most_active_tenants: { type: Array, default: () => [] },
     new_tenants_by_month: { type: Array, default: () => [] },
     tenant_scatter: { type: Array, default: () => [] },
@@ -47,59 +49,6 @@ const maxOcrUsage = computed(() => {
     return Math.max(...props.ocr_usage.map((i) => i.total), 1);
 });
 
-const activePoint = ref(null);
-
-const visitsPoints = computed(() => {
-    const data = props.visits_by_day;
-    if (!data || !data.length) return [];
-    const maxV = Math.max(...data.map((d) => d.visits), 1);
-    const minV = Math.min(...data.map((d) => d.visits), 0);
-    const range = maxV - minV || 1;
-    const W = 580;
-    const H = 130;
-    const PAD = 10;
-
-    return data.map((d, i) => {
-        const x = PAD + (i / (data.length - 1 || 1)) * (W - 2 * PAD);
-        const y = PAD + (1 - (d.visits - minV) / range) * (H - 2 * PAD);
-        return {
-            x,
-            y,
-            date: d.date,
-            visits: d.visits,
-            unique_visits: d.unique_visits ?? 0,
-        };
-    });
-});
-
-const visitsLinePoints = computed(() => {
-    const pts = visitsPoints.value;
-    if (!pts || pts.length < 2) return '';
-    return pts.map((pt) => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
-});
-
-const visitsAreaPoints = computed(() => {
-    const pts = visitsPoints.value;
-    if (!pts || pts.length < 2) return '';
-    const firstX = 10;
-    const lastX = (10 + (580 - 20)).toFixed(1);
-    const bottom = 130;
-    const coords = pts.map((pt) => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
-    return `${firstX},${bottom} ${coords} ${lastX},${bottom}`;
-});
-
-const formatDateLabel = (dateStr) => {
-    if (!dateStr) return '';
-    const parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-    return date.toLocaleDateString('es-CL', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-    });
-};
-
 const marketingWhatsApp = computed(() => page.props.marketing_whatsapp ?? {});
 const marketingWhatsAppStatus = computed(() => {
     if (marketingWhatsApp.value?.is_ready) {
@@ -113,25 +62,28 @@ const marketingWhatsAppStatus = computed(() => {
     return 'Desactivado';
 });
 
-const changePeriod = (pKey) => {
+const visitsScopeOptions = ['site', 'tenant', 'app'].map((key) => ({ key, ...SCOPE_META[key] }));
+const visitsScopeMeta = computed(() => SCOPE_META[props.visits?.scope] ?? SCOPE_META.site);
+const visitsSummary = computed(() => props.visits?.summary ?? {});
+const visitsByScope = computed(() => props.visits?.by_scope ?? []);
+const visitsRangeLabel = computed(() => formatRange(props.visits?.range));
+
+// Aviso cuando el rango empieza antes de que existan datos de visitantes únicos.
+const visitorsPartialSince = computed(() => {
+    const since = props.visits?.range?.tracking_since;
+    const from = props.visits?.range?.from;
+    if (!from) return null;
+    if (!since) return 'sin datos aún';
+    return since > from ? formatShortDate(since) : null;
+});
+
+const updateVisits = (params) => {
     router.get(
         route('admin.dashboard'),
-        { period: pKey },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['visits_by_day', 'current_period'],
-        }
+        { period: props.visits?.period, scope: props.visits?.scope, ...params },
+        { preserveState: true, preserveScroll: true, only: ['visits'] }
     );
 };
-
-const periodTotals = computed(() => {
-    const data = props.visits_by_day || [];
-    return {
-        visits: data.reduce((acc, d) => acc + d.visits, 0),
-        unique: data.reduce((acc, d) => acc + (d.unique_visits ?? 0), 0),
-    };
-});
 
 // Chart: Tenants más activos (horizontal bar)
 const activeTenantsChartOptions = computed(() => ({
@@ -386,149 +338,127 @@ const scatterThresholds = computed(() => {
             </div>
         </div>
 
-        <!-- Row 3: Visits daily chart -->
-        <div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <div>
-                    <h2 class="text-sm font-semibold text-slate-900">Visitas Diarias</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Tráfico registrado por el sistema en el período seleccionado</p>
+        <!-- Row 3: Visitas -->
+        <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5">
+            <div class="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 lg:flex-row lg:items-start lg:justify-between">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-sm font-semibold text-slate-900">Visitas · {{ visitsScopeMeta.label }}</h2>
+                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">{{ visitsRangeLabel }}</span>
+                    </div>
+                    <p class="mt-0.5 text-xs text-slate-500">{{ visitsScopeMeta.description }}. Se excluyen bots, prefetch, peticiones internas y tu propia navegación.</p>
                 </div>
 
-                <!-- Period selector tabs -->
-                <div class="inline-flex rounded-xl bg-slate-100 p-1 shrink-0">
-                    <button
-                        v-for="p in [
-                            { key: '7d', label: '7 días' },
-                            { key: '30d', label: '1 mes' },
-                            { key: '90d', label: '3 meses' }
-                        ]"
-                        :key="p.key"
-                        @click="changePeriod(p.key)"
-                        :class="[
-                            'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all',
-                            current_period === p.key
-                                ? 'bg-white text-slate-900 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-900'
-                        ]"
+                <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+                    <!-- Ámbito -->
+                    <div class="inline-flex rounded-xl bg-slate-100 p-1" role="tablist" aria-label="Ámbito de las visitas">
+                        <button
+                            v-for="s in visitsScopeOptions"
+                            :key="s.key"
+                            type="button"
+                            role="tab"
+                            :aria-selected="visits.scope === s.key"
+                            @click="updateVisits({ scope: s.key })"
+                            :class="[
+                                'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all',
+                                visits.scope === s.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            <span class="h-1.5 w-1.5 rounded-full" :style="{ background: s.color }" />
+                            {{ s.label }}
+                        </button>
+                    </div>
+
+                    <!-- Período -->
+                    <div class="inline-flex rounded-xl bg-slate-100 p-1" role="tablist" aria-label="Período">
+                        <button
+                            v-for="p in PERIOD_OPTIONS"
+                            :key="p.key"
+                            type="button"
+                            role="tab"
+                            :aria-selected="visits.period === p.key"
+                            @click="updateVisits({ period: p.key })"
+                            :class="[
+                                'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all',
+                                visits.period === p.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            {{ p.label }}
+                        </button>
+                    </div>
+
+                    <Link
+                        :href="route('admin.analytics.visits', { period: visits.period, scope: visits.scope })"
+                        class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-amber-600 transition hover:bg-amber-50 hover:text-amber-800"
                     >
-                        {{ p.label }}
-                    </button>
+                        Análisis completo
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12" /></svg>
+                    </Link>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Left: Chart SVG -->
-                <div class="lg:col-span-3">
-                    <div v-if="visits_by_day && visits_by_day.length >= 2" class="relative">
-                        <svg
-                            viewBox="0 0 600 150"
-                            class="w-full overflow-visible"
-                            preserveAspectRatio="none"
-                            style="height: 160px;"
-                            @mouseleave="activePoint = null"
-                        >
-                            <polygon :points="visitsAreaPoints" fill="#FF7A00" fill-opacity="0.12" />
-                            <polyline :points="visitsLinePoints" fill="none" stroke="#FF7A00" stroke-width="2" stroke-linejoin="round" />
-
-                            <!-- Interactive overlay rects for hover detection -->
-                            <rect
-                                v-for="(pt, idx) in visitsPoints"
-                                :key="idx"
-                                :x="pt.x - (600 / (visitsPoints.length || 1)) / 2"
-                                y="0"
-                                :width="600 / (visitsPoints.length || 1)"
-                                height="150"
-                                fill="transparent"
-                                class="cursor-pointer"
-                                @mouseenter="activePoint = pt"
-                                @mousemove="activePoint = pt"
-                            />
-                        </svg>
-
-                        <!-- Guide line (HTML overlay) -->
-                        <div
-                            v-if="activePoint"
-                            class="absolute w-0 border-l border-dashed border-orange-500 pointer-events-none"
-                            :style="{
-                                left: `${(activePoint.x / 600) * 100}%`,
-                                top: '10px',
-                                height: '120px',
-                                transform: 'translateX(-50%)'
-                            }"
-                        ></div>
-
-                        <!-- Focus dot (HTML overlay) -->
-                        <div
-                            v-if="activePoint"
-                            class="absolute w-3.5 h-3.5 rounded-full bg-orange-500 border-2 border-white shadow-md pointer-events-none"
-                            :style="{
-                                left: `${(activePoint.x / 600) * 100}%`,
-                                top: `${(activePoint.y / 150) * 100}%`,
-                                transform: 'translate(-50%, -50%)'
-                            }"
-                        ></div>
-
-                        <div class="mt-2 flex justify-between text-xs text-slate-400">
-                            <span>{{ visits_by_day[0] ? formatDateLabel(visits_by_day[0].date) : '' }}</span>
-                            <span>{{ visits_by_day[Math.floor(visits_by_day.length / 2)] ? formatDateLabel(visits_by_day[Math.floor(visits_by_day.length / 2)].date) : '' }}</span>
-                            <span>{{ visits_by_day[visits_by_day.length - 1] ? formatDateLabel(visits_by_day[visits_by_day.length - 1].date) : '' }}</span>
-                        </div>
-
-                        <!-- Custom Tooltip -->
-                        <div
-                            v-if="activePoint"
-                            class="absolute z-10 pointer-events-none bg-slate-900/95 backdrop-blur-sm text-white px-3.5 py-2.5 rounded-xl text-xs shadow-xl ring-1 ring-white/10 flex flex-col gap-1.5 min-w-[150px] transition-all duration-75"
-                            :style="{
-                                left: `${(activePoint.x / 600) * 100}%`,
-                                top: `${(activePoint.y / 150) * 100 - 10}%`,
-                                transform: 'translate(-50%, -100%)'
-                            }"
-                        >
-                            <div class="font-bold text-slate-200 border-b border-white/10 pb-1 mb-0.5">
-                                {{ formatDateLabel(activePoint.date) }}
-                            </div>
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-1.5 text-slate-300">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                                    <span>Visitas:</span>
-                                </div>
-                                <span class="font-black text-white">{{ activePoint.visits }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-1.5 text-slate-300">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                                    <span>Únicos:</span>
-                                </div>
-                                <span class="font-black text-white">{{ activePoint.unique_visits }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else-if="visits_by_day && visits_by_day.length === 1" class="py-4">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs text-slate-500">{{ formatDateLabel(visits_by_day[0].date) }}</span>
-                            <span class="text-lg font-semibold text-slate-900">{{ visits_by_day[0].visits }} visitas</span>
-                            <span class="text-sm text-slate-500">({{ visits_by_day[0].unique_visits ?? 0 }} únicos)</span>
-                        </div>
-                    </div>
-                    <p v-else class="text-sm text-slate-400 text-center py-6">Sin datos de visitas disponibles</p>
+            <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
+                <div class="min-w-0 lg:col-span-3">
+                    <VisitsTrendChart :series="visits.by_day" :color="visitsScopeMeta.color" :height="260" />
+                    <p v-if="visitorsPartialSince" class="mt-2 flex items-start gap-1.5 text-[11px] text-slate-400">
+                        <svg class="mt-0.5 h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span v-if="visitorsPartialSince === 'sin datos aún'">El conteo de visitantes únicos empezará a registrarse con las próximas visitas.</span>
+                        <span v-else>Los visitantes únicos se registran desde el {{ visitorsPartialSince }}; los días anteriores solo tienen visitas totales.</span>
+                    </p>
                 </div>
 
-                <!-- Right: Summary Card -->
-                <div class="flex flex-col justify-center rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-950/5">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Métricas del Período</span>
-
-                    <div class="mt-4 flex flex-col gap-5">
-                        <div>
-                            <span class="text-3xl font-black tracking-tight text-slate-900">{{ periodTotals.visits }}</span>
-                            <span class="text-xs text-slate-500 block mt-1">Visitas totales</span>
-                        </div>
-
-                        <div class="border-t border-slate-200/80 pt-4">
-                            <span class="text-3xl font-black tracking-tight text-slate-900">{{ periodTotals.unique }}</span>
-                            <span class="text-xs text-slate-500 block mt-1">Usuarios únicos (total diario)</span>
-                        </div>
+                <div class="flex flex-col gap-5 rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-950/5">
+                    <VisitsSummaryStat
+                        label="Visitas"
+                        :value="visitsSummary.visits ?? 0"
+                        :change="visitsSummary.change?.visits ?? null"
+                        :previous="visitsSummary.previous?.visits ?? 0"
+                        :hint="`${formatNumber(visitsSummary.avg_daily_visits ?? 0)} por día en promedio`"
+                        :accent="visitsScopeMeta.color"
+                    />
+                    <div class="border-t border-slate-200/80 pt-4">
+                        <VisitsSummaryStat
+                            label="Visitantes únicos"
+                            :value="visitsSummary.unique_visitors ?? 0"
+                            :change="visitsSummary.change?.unique_visitors ?? null"
+                            :previous="visitsSummary.previous?.unique_visitors ?? 0"
+                            hint="Personas distintas en el período"
+                            accent="#3b82f6"
+                        />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 border-t border-slate-200/80 pt-4">
+                        <VisitsSummaryStat
+                            label="Págs./visitante"
+                            :value="visitsSummary.pages_per_visitor ?? '—'"
+                        />
+                        <VisitsSummaryStat
+                            label="Mejor día"
+                            :value="visitsSummary.best_day ? formatNumber(visitsSummary.best_day.visits) : '—'"
+                            :hint="visitsSummary.best_day ? formatShortDate(visitsSummary.best_day.date) : ''"
+                        />
                     </div>
                 </div>
+            </div>
+
+            <!-- Reparto por ámbito -->
+            <div v-if="visitsByScope.length" class="grid grid-cols-1 gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-3">
+                <button
+                    v-for="s in visitsByScope"
+                    :key="s.scope"
+                    type="button"
+                    @click="updateVisits({ scope: s.scope })"
+                    :class="['flex items-center gap-3 bg-white px-6 py-3 text-left transition hover:bg-slate-50', visits.scope === s.scope ? 'bg-slate-50/80' : '']"
+                >
+                    <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ background: SCOPE_META[s.scope]?.color }" />
+                    <span class="min-w-0 flex-1">
+                        <span class="block text-xs font-semibold text-slate-700">{{ SCOPE_META[s.scope]?.label }}</span>
+                        <span class="block text-[11px] text-slate-400">{{ formatNumber(s.unique_visitors) }} visitantes únicos</span>
+                    </span>
+                    <span class="text-right">
+                        <span class="block text-sm font-bold tabular-nums text-slate-900">{{ formatNumber(s.visits) }}</span>
+                        <span class="block text-[11px] text-slate-400">{{ s.share }}%</span>
+                    </span>
+                </button>
             </div>
         </div>
 

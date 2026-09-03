@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PageVisit;
 use App\Services\AdminDashboardService;
+use App\Services\VisitAnalyticsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,6 +16,7 @@ class DashboardController extends Controller
 {
     public function __construct(
         private readonly AdminDashboardService $dashboard,
+        private readonly VisitAnalyticsService $visits,
     ) {}
 
     public function __invoke(Request $request): Response
@@ -22,18 +25,8 @@ class DashboardController extends Controller
         $thirtyDaysAgo = $now->copy()->subDays(30);
         $sevenDaysAgo = $now->copy()->subDays(7);
 
-        $period = $request->query('period', '30d');
-        if (! in_array($period, ['7d', '30d', '90d'], true)) {
-            $period = '30d';
-        }
-
-        $days = match ($period) {
-            '7d' => 7,
-            '30d' => 30,
-            '90d' => 90,
-        };
-
-        $visitsStartDate = $now->copy()->subDays($days);
+        $visitsPeriod = VisitAnalyticsService::normalizePeriod($request->query('period'));
+        $visitsScope = VisitAnalyticsService::normalizeScope($request->query('scope'), PageVisit::SCOPE_SITE);
 
         $tenantScatter = $this->dashboard->getTenantScatter($thirtyDaysAgo);
 
@@ -41,8 +34,7 @@ class DashboardController extends Controller
             'stats' => $this->dashboard->getStats($now, $thirtyDaysAgo, $sevenDaysAgo),
             'work_orders_by_tenant' => $this->dashboard->getWorkOrdersByTenant($thirtyDaysAgo),
             'ocr_usage' => $this->dashboard->getOcrUsage($thirtyDaysAgo),
-            'visits_by_day' => $this->dashboard->getVisitsByDay($visitsStartDate),
-            'current_period' => $period,
+            'visits' => $this->visits->dashboardSnapshot($visitsPeriod, $visitsScope),
             'expiring_tenants' => $this->dashboard->getExpiringTenants($now),
             'pending_trial_requests' => $this->dashboard->getPendingTrialRequestsCount(),
             'recent_trial_requests' => $this->dashboard->getRecentTrialRequests(),

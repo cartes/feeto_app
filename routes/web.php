@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\VisitAnalyticsController;
 use App\Http\Controllers\Admin\LandingPageSeoController;
 use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
@@ -496,6 +497,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
     ->name('admin.')
     ->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::get('/analytics/visitas', VisitAnalyticsController::class)->name('analytics.visits');
 
         // Perfil & API Keys
         Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
