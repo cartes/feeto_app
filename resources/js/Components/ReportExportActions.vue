@@ -14,7 +14,7 @@ const currentQuery = computed(() => Object.fromEntries(new URLSearchParams((page
 </script>
 
 <template>
-    <div class="flex flex-wrap gap-3">
+    <div class="flex flex-wrap gap-3" data-support="report-export-actions">
         <a
             :href="route('reports.export.pdf', { ...tenantRouteParams, report: props.report, ...currentQuery })"
             class="inline-flex items-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 transition-colors hover:bg-gray-50"

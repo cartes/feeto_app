@@ -63,6 +63,7 @@ const roleColor = (role) => {
         <div class="flex justify-end">
             <button
                 id="btn-add-user"
+                data-support="users-add"
                 @click="showUserForm = !showUserForm"
                 :disabled="hasReachedUserLimit"
                 class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"

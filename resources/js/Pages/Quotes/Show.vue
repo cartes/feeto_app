@@ -472,6 +472,7 @@ const submitApproveManually = (channel) => {
                             </div>
                         </div>
                         <button type="button"
+                            data-support="quotes-send"
                             class="w-full rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-[#FF7A00] disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="sendQuoteForm.processing || items.length === 0 || quote.status === 'accepted'"
                             @click="sendQuote">
@@ -479,6 +480,7 @@ const submitApproveManually = (channel) => {
                         </button>
 
                         <button type="button"
+                            data-support="quotes-approve"
                             class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
                             :disabled="items.length === 0 || quote.status === 'accepted'"
                             @click="showApproveManuallyModal = true">

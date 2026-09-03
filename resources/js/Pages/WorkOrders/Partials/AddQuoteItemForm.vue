@@ -304,7 +304,7 @@ const submitItem = () => {
                 </div>
             </div>
 
-            <button type="submit" class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-700 disabled:opacity-50" :disabled="addForm.processing">
+            <button type="submit" data-support="work-order-add-item" class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-700 disabled:opacity-50" :disabled="addForm.processing">
                 {{ addForm.processing ? 'Agregando...' : 'Agregar a Cotización' }}
             </button>
         </form>

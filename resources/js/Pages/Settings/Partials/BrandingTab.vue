@@ -126,6 +126,7 @@ watch(() => props.tenant, (newTenant) => {
                         <input
                             type="file"
                             accept="image/*"
+                            data-support="branding-logo-upload"
                             @change="onLogoSelected"
                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#FF7A00]/10 file:text-[#FF7A00] hover:file:bg-[#FF7A00]/20 cursor-pointer"
                         />

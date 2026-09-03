@@ -5,6 +5,7 @@ import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import OnboardingTour from '@/Components/OnboardingTour.vue';
+import FloatingSupportButton from '@/Components/FloatingSupportButton.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 import Toast from '@/Components/Toast.vue';
 
@@ -306,6 +307,7 @@ watch(
         <Toast :message="toast.message" :type="toast.type" @dismiss="toast.message = ''" />
         <OnboardingTour variant="tenant" />
         <OnboardingTour v-if="sectionTourKey" :key="sectionTourKey" :variant="sectionTourKey" />
+        <FloatingSupportButton :key="sectionTourKey" :section="sectionTourKey" />
     </div>
 </template>
 

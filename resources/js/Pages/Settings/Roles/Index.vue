@@ -79,6 +79,7 @@ const deleteRole = (roleId, roleName) => {
             <div class="flex justify-end" v-if="canManageRoles">
                 <Link
                     :href="route('taller.roles.create', tenantRouteParams)"
+                    data-support="roles-add"
                     class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

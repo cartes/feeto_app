@@ -71,6 +71,7 @@ const deleteBranch = (branch) => {
         <div class="flex justify-end">
             <button
                 id="btn-add-branch"
+                data-support="branch-add"
                 @click="openNewBranch"
                 :disabled="!canCreateBranch"
                 class="flex items-center gap-2 px-5 py-3 bg-[#FF7A00] text-white rounded-2xl font-bold text-sm shadow-md hover:bg-[#CC6200] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"

@@ -53,6 +53,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Subscription\BillingController;
 use App\Http\Controllers\Subscription\TenantSubscriptionController;
 use App\Http\Controllers\SupervisorReportController;
+use App\Http\Controllers\SupportAssistantController;
 use App\Http\Controllers\TallerDashboardController;
 use App\Http\Controllers\TenantBrandingController;
 use App\Http\Controllers\TenantNotificationController;
@@ -194,6 +195,13 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/ocr/process', [OcrController::class, 'process'])
             ->middleware(['throttle:20,1', 'permission:appointments.manage', 'tenant.feature:ai_reception'])
             ->name('ocr.process');
+
+        // Asistente de soporte contextual (botón flotante)
+        Route::get('/support/faq', [SupportAssistantController::class, 'faq'])
+            ->name('support.faq');
+        Route::post('/support/ask', [SupportAssistantController::class, 'ask'])
+            ->middleware('throttle:20,1')
+            ->name('support.ask');
 
         // Work Orders / Kanban — permisos granulares por acción
         Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');

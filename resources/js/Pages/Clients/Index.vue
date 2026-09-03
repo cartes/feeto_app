@@ -94,6 +94,7 @@ const submitImport = () => {
                             </svg>
                         </div>
                         <input v-model="search" type="text" placeholder="Buscar por nombre o RUT..."
+                            data-support="clients-search"
                             class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50" />
                     </div>
 

@@ -209,6 +209,7 @@ const handleDelete = (service) => {
                 <!-- Botón Importar -->
                 <button
                     type="button"
+                    data-support="services-import"
                     class="flex shrink-0 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-700 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                     @click="openImportModal"
                 >

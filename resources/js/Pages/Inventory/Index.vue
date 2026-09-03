@@ -391,6 +391,7 @@ const submitImport = () => {
                 <div class="space-y-1.5">
                     <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Estado Stock</label>
                     <select v-model="filterStockStatus"
+                        data-support="inventory-stock-filter"
                         class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all">
                         <option value="">Todos</option>
                         <option value="critical">Crítico</option>
@@ -485,6 +486,7 @@ const submitImport = () => {
                                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <!-- Movements History -->
                                     <button @click="openMovementsModal(product)" title="Historial de movimientos"
+                                        data-support="inventory-movements"
                                         class="p-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-purple-50 hover:text-purple-600 transition-colors">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

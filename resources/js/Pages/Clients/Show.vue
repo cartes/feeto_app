@@ -311,7 +311,7 @@ const submitNote = () => {
                     </section>
 
                     <section class="space-y-6">
-                        <div class="flex flex-wrap gap-6 border-b border-gray-200">
+                        <div class="flex flex-wrap gap-6 border-b border-gray-200" data-support="client-tabs">
                             <button @click="activeTab = 'historial'"
                                 :class="['pb-4 text-sm font-bold uppercase tracking-widest transition-colors', activeTab === 'historial' ? 'border-b-2 border-[#FF7A00] text-[#FF7A00]' : 'text-gray-400 hover:text-gray-600']">
                                 Timeline CRM

@@ -71,6 +71,8 @@ return [
             'receptions.clients.search',
             'receptions.store_order',
             'ocr.process',
+            'support.faq',
+            'support.ask',
             'work-orders.index',
             'work-orders.show',
             'work-orders.status.update',
