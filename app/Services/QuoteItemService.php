@@ -27,7 +27,7 @@ class QuoteItemService
         string $description = 'Se agregó un ítem a la cotización.',
         array $metadata = []
     ): QuoteItem {
-        $itemPayload = $this->buildItemPayload($validated);
+        $itemPayload = $this->buildItemPayload($validated, $quote);
 
         $item = $quote->items()->create($itemPayload);
 
@@ -66,26 +66,37 @@ class QuoteItemService
      * @param  array<string, mixed>  $validated
      * @return array<string, mixed>
      */
-    public function buildItemPayload(array $validated): array
+    public function buildItemPayload(array $validated, ?Quote $quote = null): array
     {
         $product = null;
         $service = null;
         $itemType = QuoteItem::TYPE_MANUAL;
         $description = (string) ($validated['description'] ?? '');
         $baseUnitPrice = (float) ($validated['unit_price'] ?? 0);
+        $hasCustomUnitPrice = array_key_exists('unit_price', $validated) && $validated['unit_price'] !== null && $validated['unit_price'] !== '';
 
         if (! empty($validated['product_id'])) {
             $product = Product::query()->findOrFail($validated['product_id']);
             $itemType = QuoteItem::TYPE_PRODUCT;
             $description = $product->name;
-            $baseUnitPrice = (float) $product->selling_price;
+            $baseUnitPrice = $hasCustomUnitPrice ? (float) $validated['unit_price'] : (float) $product->selling_price;
+
+            if ($product->tax_included && ($quote?->apply_tax ?? true) && ! $hasCustomUnitPrice) {
+                $rate = (float) (($quote?->tax_rate && $quote->tax_rate > 0) ? $quote->tax_rate : ($quote?->tenant?->defaultTaxRate() ?? 19.0));
+                $baseUnitPrice = $product->netSellingPrice($rate);
+            }
         }
 
         if (! empty($validated['service_id'])) {
             $service = Service::query()->findOrFail($validated['service_id']);
             $itemType = QuoteItem::TYPE_SERVICE;
             $description = $service->name;
-            $baseUnitPrice = (float) $service->selling_price;
+            $baseUnitPrice = $hasCustomUnitPrice ? (float) $validated['unit_price'] : (float) $service->selling_price;
+
+            if ($service->tax_included && ($quote?->apply_tax ?? true) && ! $hasCustomUnitPrice) {
+                $rate = (float) (($quote?->tax_rate && $quote->tax_rate > 0) ? $quote->tax_rate : ($quote?->tenant?->defaultTaxRate() ?? 19.0));
+                $baseUnitPrice = $service->netSellingPrice($rate);
+            }
         }
 
         $quantity = (float) $validated['quantity'];

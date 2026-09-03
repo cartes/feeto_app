@@ -53,10 +53,13 @@ class InventoryController extends Controller
             ->withQueryString();
 
         $categories = ProductCategory::orderBy('name')->get(['id', 'name', 'slug']);
+        $tenant = Tenant::current();
 
         return Inertia::render('Inventory/Index', [
             'products' => $products,
             'categories' => $categories,
+            'taxName' => $tenant?->taxName() ?? 'IVA',
+            'defaultTaxRate' => $tenant?->defaultTaxRate() ?? 19.0,
             'filters' => [
                 'search' => $search,
                 'category' => $category,

@@ -6,10 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Exports\ClientVehicleTemplateExport;
 use App\Exports\ProductTemplateExport;
+use App\Exports\ServiceTemplateExport;
 use App\Http\Requests\ImportClientsWorkbookRequest;
 use App\Http\Requests\ImportProductsWorkbookRequest;
+use App\Http\Requests\ImportServicesWorkbookRequest;
 use App\Imports\ClientVehicleWorkbookImport;
 use App\Imports\ProductWorkbookImport;
+use App\Imports\ServiceWorkbookImport;
 use Illuminate\Http\RedirectResponse;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -44,6 +47,23 @@ class WorkbookImportController extends Controller
     public function importProducts(ImportProductsWorkbookRequest $request): RedirectResponse
     {
         $import = new ProductWorkbookImport;
+
+        Excel::import($import, $request->file('workbook'));
+
+        return $this->redirectWithSummary($import->summary());
+    }
+
+    public function downloadServicesTemplate(): BinaryFileResponse
+    {
+        return Excel::download(
+            new ServiceTemplateExport,
+            'plantilla-servicios.xlsx',
+        );
+    }
+
+    public function importServices(ImportServicesWorkbookRequest $request): RedirectResponse
+    {
+        $import = new ServiceWorkbookImport;
 
         Excel::import($import, $request->file('workbook'));
 

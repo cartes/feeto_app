@@ -628,7 +628,10 @@ const submitApproveManually = (channel) => {
                                                 <p class="text-sm font-semibold text-gray-800">{{ product.name }}</p>
                                                 <p class="text-[10px] font-mono text-gray-400">{{ product.sku }} · Stock {{ product.physical_stock }}</p>
                                             </div>
-                                            <span class="text-sm font-black text-orange-500">{{ formatCurrency(product.selling_price) }}</span>
+                                            <div class="text-right">
+                                                <span class="text-sm font-black text-orange-500">{{ formatCurrency(product.selling_price) }}</span>
+                                                <span class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">{{ product.tax_included ? `${taxName} incl.` : `+ ${taxName}` }}</span>
+                                            </div>
                                         </button>
                                     </div>
                                 </div>
@@ -649,7 +652,10 @@ const submitApproveManually = (channel) => {
                                                 <p class="text-sm font-semibold text-gray-800">{{ service.name }}</p>
                                                 <p class="text-[10px] font-mono text-gray-400">{{ service.code || 'Sin código' }} · {{ service.estimated_minutes }} min</p>
                                             </div>
-                                            <span class="text-sm font-black text-orange-500">{{ formatCurrency(service.selling_price) }}</span>
+                                            <div class="text-right">
+                                                <span class="text-sm font-black text-orange-500">{{ formatCurrency(service.selling_price) }}</span>
+                                                <span class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">{{ service.tax_included ? `${taxName} incl.` : `+ ${taxName}` }}</span>
+                                            </div>
                                         </button>
                                     </div>
                                 </div>

@@ -32,8 +32,12 @@ class ServiceController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $tenant = Tenant::current();
+
         return Inertia::render('Services/Index', [
             'services' => $services,
+            'taxName' => $tenant?->taxName() ?? 'IVA',
+            'defaultTaxRate' => $tenant?->defaultTaxRate() ?? 19.0,
             'filters' => ['search' => $search],
         ]);
     }

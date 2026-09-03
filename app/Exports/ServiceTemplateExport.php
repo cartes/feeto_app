@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ProductTemplateExport implements FromArray, ShouldAutoSize, WithHeadings, WithTitle
+class ServiceTemplateExport implements FromArray, ShouldAutoSize, WithHeadings, WithTitle
 {
     /**
      * @return array<int, array<int, string|int>>
@@ -18,28 +18,24 @@ class ProductTemplateExport implements FromArray, ShouldAutoSize, WithHeadings, 
     {
         return [
             [
-                'SKU-FA-100',
-                'Filtro de aceite',
-                'Filtros',
-                'repuesto_nacional',
-                'Filtro de aceite para mantencion general',
-                5000,
-                9990,
+                'SERV-MAN-01',
+                'Cambio de aceite y filtro',
+                'Servicio de mantencion preventiva con cambio de aceite y filtro',
+                15000,
+                35000,
                 'con_iva',
-                12,
-                3,
+                45,
+                'si',
             ],
             [
-                'SKU-BUJ-200',
-                'Bujia iridium',
-                'Encendido',
-                'repuesto_internacional',
-                'Bujia de alto rendimiento',
-                8500,
-                14990,
+                'SERV-ALIN-02',
+                'Alineacion y balanceo 4 ruedas',
+                'Alineacion laser computarizada y balanceo',
+                8000,
+                22000,
                 'mas_iva',
-                8,
-                2,
+                60,
+                'si',
             ],
         ];
     }
@@ -50,21 +46,19 @@ class ProductTemplateExport implements FromArray, ShouldAutoSize, WithHeadings, 
     public function headings(): array
     {
         return [
-            'sku',
+            'codigo',
             'nombre',
-            'categoria',
-            'tipo',
             'descripcion',
             'costo',
             'precio_venta',
             'impuesto',
-            'stock',
-            'stock_minimo',
+            'minutos_estimados',
+            'activo',
         ];
     }
 
     public function title(): string
     {
-        return 'Repuestos';
+        return 'Servicios';
     }
 }

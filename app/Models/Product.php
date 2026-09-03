@@ -24,6 +24,7 @@ class Product extends Model
         'description',
         'cost_price',
         'selling_price',
+        'tax_included',
         'physical_stock',
         'reserved_stock',
         'min_stock',
@@ -35,10 +36,35 @@ class Product extends Model
     protected $casts = [
         'cost_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
+        'tax_included' => 'boolean',
         'physical_stock' => 'integer',
         'reserved_stock' => 'integer',
         'min_stock' => 'integer',
     ];
+
+    public function netSellingPrice(?float $taxRate = null): float
+    {
+        $rate = $taxRate ?? ($this->tenant?->defaultTaxRate() ?? 19.0);
+        $price = (float) $this->selling_price;
+
+        if ($this->tax_included && $rate > 0) {
+            return round($price / (1 + ($rate / 100)), 2);
+        }
+
+        return $price;
+    }
+
+    public function grossSellingPrice(?float $taxRate = null): float
+    {
+        $rate = $taxRate ?? ($this->tenant?->defaultTaxRate() ?? 19.0);
+        $price = (float) $this->selling_price;
+
+        if (! $this->tax_included && $rate > 0) {
+            return round($price * (1 + ($rate / 100)), 2);
+        }
+
+        return $price;
+    }
 
     /**
      * Get the tenant that owns the product.

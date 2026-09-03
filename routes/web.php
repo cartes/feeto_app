@@ -301,6 +301,13 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->parameters(['services' => 'service'])
             ->middleware('permission:inventory.manage');
 
+        Route::get('/services/import/template', [WorkbookImportController::class, 'downloadServicesTemplate'])
+            ->middleware('permission:inventory.manage')
+            ->name('services.import.template');
+        Route::post('/services/import', [WorkbookImportController::class, 'importServices'])
+            ->middleware('permission:inventory.manage')
+            ->name('services.import');
+
         // Branches — usuarios con permiso branches.manage
         Route::resource('branches', BranchController::class)
             ->only(['index', 'store', 'update', 'destroy'])

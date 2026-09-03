@@ -35,6 +35,7 @@ class UpsertServiceRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
+            'tax_included' => ['nullable', 'boolean'],
             'estimated_minutes' => ['required', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ];

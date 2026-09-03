@@ -14,6 +14,14 @@ const { debounce } = useDebounce();
 const props = defineProps({
     products: Object,
     categories: Array,
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
+    defaultTaxRate: {
+        type: Number,
+        default: 19,
+    },
     filters: Object,
 });
 
@@ -80,6 +88,7 @@ const form = useForm({
     category_id: null,
     cost_price: 0,
     selling_price: 0,
+    tax_included: false,
     physical_stock: 0,
     min_stock: 0,
 });
@@ -93,6 +102,7 @@ const modalTitle = computed(() => editingProduct.value ? 'Editar Repuesto' : 'Nu
 const openCreateModal = () => {
     editingProduct.value = null;
     form.reset();
+    form.tax_included = false;
     form.clearErrors();
     showModal.value = true;
 };
@@ -105,6 +115,7 @@ const openEditModal = (product) => {
     form.category_id = product.category_id || null;
     form.cost_price = product.cost_price;
     form.selling_price = product.selling_price;
+    form.tax_included = Boolean(product.tax_included);
     form.physical_stock = product.physical_stock;
     form.min_stock = product.min_stock;
     form.clearErrors();
@@ -432,7 +443,15 @@ const submitImport = () => {
                                 <span v-else class="text-xs text-gray-300">—</span>
                             </td>
                             <td class="px-6 py-4 text-right text-sm font-medium text-gray-600">{{ formatCurrency(product.cost_price) }}</td>
-                            <td class="px-6 py-4 text-right text-sm font-bold text-gray-900">{{ formatCurrency(product.selling_price) }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="text-sm font-bold text-gray-900">{{ formatCurrency(product.selling_price) }}</div>
+                                <span
+                                    :class="product.tax_included ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'"
+                                    class="inline-block mt-0.5 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border"
+                                >
+                                    {{ product.tax_included ? `${taxName} incl.` : `+ ${taxName}` }}
+                                </span>
+                            </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center gap-1">
                                     <span class="text-sm font-black text-gray-900">{{ product.physical_stock }}</span>
@@ -561,21 +580,56 @@ const submitImport = () => {
                             placeholder="Opcional..." />
                     </div>
 
-                    <!-- Prices -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Precio Costo ($)</label>
-                            <input v-model.number="form.cost_price" type="number" step="1" min="0"
-                                class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3.5 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
-                                placeholder="0" />
-                            <p v-if="form.errors.cost_price" class="text-red-500 text-[10px] font-medium ml-1">{{ form.errors.cost_price }}</p>
+                    <!-- Prices & Tax -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Precios y {{ taxName }}</label>
+                            <!-- Selector Tipo de Precio -->
+                            <div class="inline-flex rounded-xl bg-gray-100 p-0.5 border border-gray-200">
+                                <button
+                                    type="button"
+                                    class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
+                                    :class="!form.tax_included ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                                    @click="form.tax_included = false"
+                                >
+                                    + {{ taxName }} (Neto)
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
+                                    :class="form.tax_included ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                                    @click="form.tax_included = true"
+                                >
+                                    Con {{ taxName }} (Bruto)
+                                </button>
+                            </div>
                         </div>
-                        <div class="space-y-1.5">
-                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Precio Venta ($)</label>
-                            <input v-model.number="form.selling_price" type="number" step="1" min="0"
-                                class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3.5 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
-                                placeholder="0" />
-                            <p v-if="form.errors.selling_price" class="text-red-500 text-[10px] font-medium ml-1">{{ form.errors.selling_price }}</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Precio Costo ($)</label>
+                                <input v-model.number="form.cost_price" type="number" step="1" min="0"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3.5 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
+                                    placeholder="0" />
+                                <p v-if="form.errors.cost_price" class="text-red-500 text-[10px] font-medium ml-1">{{ form.errors.cost_price }}</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                    Precio Venta ($) <span class="text-[#FF7A00]">{{ form.tax_included ? `(Con ${taxName})` : `(+ ${taxName})` }}</span>
+                                </label>
+                                <input v-model.number="form.selling_price" type="number" step="1" min="0"
+                                    class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3.5 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
+                                    placeholder="0" />
+                                <p v-if="form.errors.selling_price" class="text-red-500 text-[10px] font-medium ml-1">{{ form.errors.selling_price }}</p>
+                                <p v-if="Number(form.selling_price) > 0" class="text-[11px] font-semibold text-gray-400 ml-1">
+                                    <span v-if="form.tax_included">
+                                        Neto estimado: <strong class="text-gray-700 font-mono">{{ formatCurrency(Math.round(form.selling_price / (1 + (defaultTaxRate / 100)))) }}</strong>
+                                    </span>
+                                    <span v-else>
+                                        Total con {{ taxName }} ({{ defaultTaxRate }}%): <strong class="text-orange-600 font-mono">{{ formatCurrency(Math.round(form.selling_price * (1 + (defaultTaxRate / 100)))) }}</strong>
+                                    </span>
+                                </p>
+                            </div>
                         </div>
                     </div>
 

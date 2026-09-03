@@ -42,6 +42,7 @@ class UpsertProductRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
+            'tax_included' => ['nullable', 'boolean'],
             'physical_stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
         ];
