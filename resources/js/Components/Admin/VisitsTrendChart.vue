@@ -38,6 +38,7 @@ const chartOptions = computed(() => {
         dataLabels: { enabled: false },
         markers: { size: points <= 31 ? 3 : 0, strokeWidth: 2, hover: { size: 6 } },
         xaxis: {
+            type: 'category',
             categories: categories.value,
             tickAmount: Math.min(points, points > 60 ? 8 : points > 14 ? 10 : points),
             labels: {

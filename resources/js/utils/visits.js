@@ -26,7 +26,7 @@ export const formatNumber = (value) => {
 };
 
 const parseDate = (dateStr) => {
-    if (!dateStr) return null;
+    if (typeof dateStr !== 'string') return null;
     const parts = dateStr.split('-');
     if (parts.length !== 3) return null;
     return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
