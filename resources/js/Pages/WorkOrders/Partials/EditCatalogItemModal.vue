@@ -2,14 +2,24 @@
 import { computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
+import { useFormatting } from '@/composables/useFormatting';
 
 const { tenantRouteParams } = useTenantRouting();
+const { formatCurrency } = useFormatting();
 
 const props = defineProps({
     show: Boolean,
     item: {
         type: Object,
         default: null,
+    },
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
+    defaultTaxRate: {
+        type: Number,
+        default: 19,
     },
 });
 
@@ -22,6 +32,7 @@ const catalogForm = useForm({
     description: '',
     cost_price: 0,
     selling_price: 0,
+    tax_included: false,
     physical_stock: 0,
     min_stock: 0,
     code: '',
@@ -43,6 +54,7 @@ watch(() => props.item, (item) => {
         catalogForm.description = item.product.description || '';
         catalogForm.cost_price = Number(item.product.cost_price || 0);
         catalogForm.selling_price = Number(item.product.selling_price || 0);
+        catalogForm.tax_included = Boolean(item.product.tax_included);
         catalogForm.physical_stock = Number(item.product.physical_stock || 0);
         catalogForm.min_stock = Number(item.product.min_stock || 0);
     } else if (item.item_type === 'service') {
@@ -51,6 +63,7 @@ watch(() => props.item, (item) => {
         catalogForm.description = item.service.description || '';
         catalogForm.cost_price = Number(item.service.cost_price || 0);
         catalogForm.selling_price = Number(item.service.selling_price || 0);
+        catalogForm.tax_included = Boolean(item.service.tax_included);
         catalogForm.estimated_minutes = Number(item.service.estimated_minutes || 0);
         catalogForm.is_active = Boolean(item.service.is_active);
     }
@@ -60,6 +73,22 @@ watch(() => props.item, (item) => {
 
 const close = () => {
     emit('update:show', false);
+};
+
+const setPriceTaxIncluded = (isIncluded) => {
+    if (catalogForm.tax_included === isIncluded) return;
+
+    const currentPrice = Number(catalogForm.selling_price) || 0;
+    const rate = Number(props.defaultTaxRate) || 19;
+
+    if (currentPrice > 0) {
+        if (isIncluded) {
+            catalogForm.selling_price = Math.round(currentPrice * (1 + (rate / 100)));
+        } else {
+            catalogForm.selling_price = Math.round(currentPrice / (1 + (rate / 100)));
+        }
+    }
+    catalogForm.tax_included = isIncluded;
 };
 
 const submitCatalogEdit = () => {
@@ -154,16 +183,52 @@ const submitCatalogEdit = () => {
                     </div>
                 </template>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="space-y-1.5">
-                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Costo</label>
-                        <input v-model.number="catalogForm.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                        <p v-if="catalogForm.errors.cost_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.cost_price }}</p>
+                <!-- Precios e Impuesto -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Precios y {{ taxName }}</label>
+                        <!-- Selector Tipo de Precio -->
+                        <div class="inline-flex rounded-xl bg-gray-100 p-0.5 border border-gray-200">
+                            <button
+                                type="button"
+                                class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
+                                :class="!catalogForm.tax_included ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                                @click="setPriceTaxIncluded(false)"
+                            >
+                                + {{ taxName }} (Neto)
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
+                                :class="catalogForm.tax_included ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                                @click="setPriceTaxIncluded(true)"
+                            >
+                                Con {{ taxName }} (Bruto)
+                            </button>
+                        </div>
                     </div>
-                    <div class="space-y-1.5">
-                        <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Precio Venta</label>
-                        <input v-model.number="catalogForm.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
-                        <p v-if="catalogForm.errors.selling_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.selling_price }}</p>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="space-y-1.5">
+                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">Costo ($)</label>
+                            <input v-model.number="catalogForm.cost_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                            <p v-if="catalogForm.errors.cost_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.cost_price }}</p>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="ml-1 block text-[9px] font-bold uppercase tracking-widest text-gray-400">
+                                Precio Venta ($) <span class="text-[#FF7A00]">{{ catalogForm.tax_included ? `(Con ${taxName})` : `(+ ${taxName})` }}</span>
+                            </label>
+                            <input v-model.number="catalogForm.selling_price" type="number" min="0" class="w-full rounded-2xl border border-gray-300 px-5 py-3.5 text-sm font-bold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#FF7A00]" />
+                            <p v-if="catalogForm.errors.selling_price" class="ml-1 text-[10px] font-medium text-red-500">{{ catalogForm.errors.selling_price }}</p>
+                            <p v-if="Number(catalogForm.selling_price) > 0" class="text-[11px] font-semibold text-gray-400 ml-1">
+                                <span v-if="catalogForm.tax_included">
+                                    Neto estimado: <strong class="text-gray-700 font-mono">{{ formatCurrency(Math.round(catalogForm.selling_price / (1 + (defaultTaxRate / 100)))) }}</strong>
+                                </span>
+                                <span v-else>
+                                    Total con {{ taxName }} ({{ defaultTaxRate }}%): <strong class="text-orange-600 font-mono">{{ formatCurrency(Math.round(catalogForm.selling_price * (1 + (defaultTaxRate / 100)))) }}</strong>
+                                </span>
+                            </p>
+                        </div>
                     </div>
                 </div>
 

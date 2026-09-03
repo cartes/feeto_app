@@ -178,4 +178,68 @@ class CatalogTaxIncludedTest extends TestCase
         $this->assertFalse($s2->tax_included);
         $this->assertEquals(20000.00, (float) $s2->selling_price);
     }
+
+    public function test_authorized_user_can_update_product_tax_included(): void
+    {
+        $product = Product::create([
+            'name' => 'Aceite 5W30 Sintético',
+            'sku' => 'OIL-5W30-01',
+            'type' => 'insumo',
+            'cost_price' => 20000,
+            'selling_price' => 35000,
+            'tax_included' => false,
+            'physical_stock' => 15,
+            'min_stock' => 3,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->put(route('inventory.update', ['product' => $product->id]), [
+                'name' => 'Aceite 5W30 Sintético',
+                'sku' => 'OIL-5W30-01',
+                'type' => 'insumo',
+                'cost_price' => 20000,
+                'selling_price' => 41650,
+                'tax_included' => true,
+                'physical_stock' => 15,
+                'min_stock' => 3,
+            ])
+            ->assertRedirect();
+
+        $product->refresh();
+        $this->assertTrue($product->tax_included);
+        $this->assertSame(41650.0, (float) $product->selling_price);
+        $this->assertSame(35000.0, $product->netSellingPrice(19.0));
+    }
+
+    public function test_unauthorized_user_cannot_update_catalog_product(): void
+    {
+        $seller = User::factory()->create([
+            'tenant_id' => $this->tenant->id,
+        ]);
+        $seller->assignRole('Mecanico');
+
+        $product = Product::create([
+            'name' => 'Filtro de Aceite',
+            'sku' => 'FLT-OIL-01',
+            'type' => 'repuesto_nacional',
+            'cost_price' => 5000,
+            'selling_price' => 10000,
+            'tax_included' => false,
+            'physical_stock' => 10,
+            'min_stock' => 2,
+        ]);
+
+        $this->actingAs($seller)
+            ->put(route('inventory.update', ['product' => $product->id]), [
+                'name' => 'Filtro de Aceite Editado',
+                'sku' => 'FLT-OIL-01',
+                'type' => 'repuesto_nacional',
+                'cost_price' => 5000,
+                'selling_price' => 12000,
+                'tax_included' => true,
+                'physical_stock' => 10,
+                'min_stock' => 2,
+            ])
+            ->assertForbidden();
+    }
 }

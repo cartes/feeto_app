@@ -5,6 +5,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
 import { useStatusConfig } from '@/composables/useStatusConfig';
+import EditCatalogItemModal from '@/Pages/WorkOrders/Partials/EditCatalogItemModal.vue';
 
 const page = usePage();
 
@@ -44,6 +45,23 @@ const isSuperAdmin = computed(() => Boolean(page.props.auth?.user?.is_super_admi
 const canManageItems = computed(() => (
     isSuperAdmin.value || permissions.value.includes('work-orders.manage-items')
 ));
+
+const canManageInventory = computed(() => (
+    isSuperAdmin.value ||
+    permissions.value.includes('inventory.manage') ||
+    roles.value.includes('Admin') ||
+    roles.value.includes('Supervisor') ||
+    roles.value.includes('Dueño') ||
+    roles.value.includes('Jefe')
+));
+
+const showCatalogEditModal = ref(false);
+const editingCatalogItem = ref(null);
+
+const openEditCatalogItemModal = (item) => {
+    editingCatalogItem.value = item;
+    showCatalogEditModal.value = true;
+};
 
 const items = computed(() => props.quote.items ?? []);
 
@@ -538,7 +556,20 @@ const submitApproveManually = (channel) => {
                                 <tbody class="divide-y divide-gray-50">
                                     <tr v-for="item in items" :key="item.id" class="transition-colors hover:bg-gray-50/50">
                                         <td class="px-6 py-4">
-                                            <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <p class="text-sm font-semibold text-gray-800">{{ item.description }}</p>
+                                                <button
+                                                    v-if="canManageInventory && (item.item_type === 'product' || item.item_type === 'service')"
+                                                    type="button"
+                                                    class="text-gray-400 hover:text-[#FF7A00] transition-colors"
+                                                    title="Editar en catálogo"
+                                                    @click="openEditCatalogItemModal(item)"
+                                                >
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                             <p v-if="item.product?.sku" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.product.sku }}</p>
                                             <p v-if="item.service?.code" class="mt-0.5 text-[10px] font-mono text-gray-400">{{ item.service.code }}</p>
                                             <p v-if="Number(item.discount_percent) > 0" class="mt-0.5 text-[10px] font-black uppercase tracking-widest text-rose-500">
@@ -786,5 +817,7 @@ const submitApproveManually = (channel) => {
                 </div>
             </div>
         </div>
+
+        <EditCatalogItemModal v-model:show="showCatalogEditModal" :item="editingCatalogItem" :tax-name="taxName" :default-tax-rate="defaultTaxRate" />
     </TallerLayout>
 </template>

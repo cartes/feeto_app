@@ -122,6 +122,22 @@ const openEditModal = (product) => {
     showModal.value = true;
 };
 
+const setPriceTaxIncluded = (isIncluded) => {
+    if (form.tax_included === isIncluded) return;
+
+    const currentPrice = Number(form.selling_price) || 0;
+    const rate = Number(props.defaultTaxRate) || 19;
+
+    if (currentPrice > 0) {
+        if (isIncluded) {
+            form.selling_price = Math.round(currentPrice * (1 + (rate / 100)));
+        } else {
+            form.selling_price = Math.round(currentPrice / (1 + (rate / 100)));
+        }
+    }
+    form.tax_included = isIncluded;
+};
+
 const handleSubmit = () => {
     if (editingProduct.value) {
         form.put(route('inventory.update', { ...tenantRouteParams.value, product: editingProduct.value.id }), {
@@ -590,7 +606,7 @@ const submitImport = () => {
                                     type="button"
                                     class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
                                     :class="!form.tax_included ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
-                                    @click="form.tax_included = false"
+                                    @click="setPriceTaxIncluded(false)"
                                 >
                                     + {{ taxName }} (Neto)
                                 </button>
@@ -598,7 +614,7 @@ const submitImport = () => {
                                     type="button"
                                     class="rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-all"
                                     :class="form.tax_included ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'"
-                                    @click="form.tax_included = true"
+                                    @click="setPriceTaxIncluded(true)"
                                 >
                                     Con {{ taxName }} (Bruto)
                                 </button>

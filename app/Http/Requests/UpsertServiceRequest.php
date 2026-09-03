@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Tenant;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,6 +22,7 @@ class UpsertServiceRequest extends FormRequest
     public function rules(): array
     {
         $serviceId = $this->route('service')?->id;
+        $tenantId = Tenant::current()?->id ?? $this->user()?->tenant_id;
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -29,7 +31,7 @@ class UpsertServiceRequest extends FormRequest
                 'string',
                 'max:100',
                 Rule::unique('services', 'code')
-                    ->where(fn ($query) => $query->where('tenant_id', $this->user()?->tenant_id))
+                    ->where(fn ($query) => $tenantId ? $query->where('tenant_id', $tenantId) : $query)
                     ->ignore($serviceId),
             ],
             'description' => ['nullable', 'string'],

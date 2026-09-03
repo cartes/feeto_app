@@ -45,7 +45,12 @@ const canManageItems = computed(() => (
 ));
 
 const canManageInventory = computed(() => (
-    isSuperAdmin.value || permissions.value.includes('inventory.manage')
+    isSuperAdmin.value ||
+    permissions.value.includes('inventory.manage') ||
+    roles.value.includes('Admin') ||
+    roles.value.includes('Supervisor') ||
+    roles.value.includes('Dueño') ||
+    roles.value.includes('Jefe')
 ));
 
 const canDeleteWorkOrder = computed(() => (
@@ -221,7 +226,7 @@ const showDeleteModal = ref(false);
             </div>
         </div>
 
-        <EditCatalogItemModal v-model:show="showCatalogEditModal" :item="editingCatalogItem" />
+        <EditCatalogItemModal v-model:show="showCatalogEditModal" :item="editingCatalogItem" :tax-name="taxName" :default-tax-rate="defaultTaxRate" />
         <ApproveManuallyModal v-model:show="showApproveManuallyModal" :work-order-id="workOrder.id" />
         <DeleteWorkOrderModal v-model:show="showDeleteModal" :work-order="workOrder" />
     </TallerLayout>

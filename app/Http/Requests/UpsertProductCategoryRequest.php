@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,6 +18,7 @@ class UpsertProductCategoryRequest extends FormRequest
     public function rules(): array
     {
         $id = $this->route('productCategory')?->id;
+        $tenantId = Tenant::current()?->id ?? $this->user()?->tenant_id;
 
         return [
             'name' => [
@@ -24,7 +26,7 @@ class UpsertProductCategoryRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('product_categories', 'name')
-                    ->where(fn ($q) => $q->where('tenant_id', $this->user()?->tenant_id))
+                    ->where(fn ($q) => $tenantId ? $q->where('tenant_id', $tenantId) : $q)
                     ->ignore($id),
             ],
         ];
