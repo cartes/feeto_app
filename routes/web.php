@@ -218,6 +218,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::post('/work-orders/{workOrder}/quote/approve-manually', [QuoteController::class, 'approveManually'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('work-orders.quote.approve-manually');
+        Route::patch('/work-orders/{workOrder}/quote/tax', [QuoteController::class, 'updateTax'])
+            ->middleware('permission:work-orders.manage-items')
+            ->name('work-orders.quote.tax');
 
         // Cotizaciones manuales — independientes de OT/Cita
         Route::get('/quotes', [ManualQuoteController::class, 'index'])
@@ -244,6 +247,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::delete('/quotes/{quote}/items/{item}', [ManualQuoteController::class, 'removeItem'])
             ->middleware('permission:work-orders.manage-items')
             ->name('quotes.items.destroy');
+        Route::patch('/quotes/{quote}/tax', [ManualQuoteController::class, 'updateTax'])
+            ->middleware('permission:work-orders.manage-items')
+            ->name('quotes.tax.update');
         Route::post('/quotes/{quote}/send', [ManualQuoteController::class, 'send'])
             ->middleware('permission:work-orders.view|work-orders.view-own')
             ->name('quotes.send');

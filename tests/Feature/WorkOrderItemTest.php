@@ -106,7 +106,8 @@ class WorkOrderItemTest extends TestCase
         ]);
 
         $workOrder->refresh();
-        $this->assertEquals(35000, $workOrder->total_amount);
+        $this->assertEquals(41650.00, (float) $workOrder->total_amount);
+        $this->assertSame('35000.00', $quote->fresh()->subtotal_amount);
     }
 
     public function test_adding_product_item_does_not_decrement_stock_while_quote_is_pending(): void

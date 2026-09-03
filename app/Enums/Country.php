@@ -57,6 +57,37 @@ enum Country: string
     }
 
     /**
+     * Nombre comercial / legal del impuesto al valor agregado en el país.
+     */
+    public function taxName(): string
+    {
+        return match ($this) {
+            self::Peru => 'IGV',
+            self::Brazil => 'Impostos',
+            default => 'IVA',
+        };
+    }
+
+    /**
+     * Tasa impositiva por defecto (porcentaje).
+     */
+    public function defaultTaxRate(): float
+    {
+        return match ($this) {
+            self::Chile => 19.0,
+            self::Colombia => 19.0,
+            self::Argentina => 21.0,
+            self::Bolivia => 13.0,
+            self::Brazil => 20.0,
+            self::Ecuador => 15.0,
+            self::Mexico => 16.0,
+            self::Paraguay => 10.0,
+            self::Peru => 18.0,
+            self::Uruguay => 22.0,
+        };
+    }
+
+    /**
      * Emoji de bandera para UI.
      */
     public function flag(): string

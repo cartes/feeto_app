@@ -119,6 +119,22 @@ class Tenant extends SpatieTenant
     }
 
     /**
+     * Nombre del impuesto aplicable al tenant (ej: IVA, IGV).
+     */
+    public function taxName(): string
+    {
+        return $this->country()->taxName();
+    }
+
+    /**
+     * Tasa impositiva por defecto para el tenant (porcentaje).
+     */
+    public function defaultTaxRate(): float
+    {
+        return $this->country()->defaultTaxRate();
+    }
+
+    /**
      * @return list<string>
      */
     public function enabledFeatureKeys(): array

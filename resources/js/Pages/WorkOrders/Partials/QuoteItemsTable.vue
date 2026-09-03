@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useFormatting } from '@/composables/useFormatting';
 import { useStatusConfig } from '@/composables/useStatusConfig';
@@ -13,6 +14,17 @@ const props = defineProps({
         default: () => [],
     },
     subtotalAmount: [Number, String],
+    taxAmount: [Number, String],
+    totalAmount: [Number, String],
+    applyTax: {
+        type: Boolean,
+        default: false,
+    },
+    taxRate: [Number, String],
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
     ufValue: {
         type: Number,
         default: null,
@@ -24,6 +36,15 @@ const props = defineProps({
 const emit = defineEmits(['edit-catalog-item']);
 
 const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
+
+const displayTotalAmount = computed(() => {
+    if (props.totalAmount !== undefined && props.totalAmount !== null && Number(props.totalAmount) > 0) {
+        return Number(props.totalAmount);
+    }
+    const sub = Number(props.subtotalAmount || 0);
+    const tax = props.applyTax ? Number(props.taxAmount || 0) : 0;
+    return sub + tax;
+});
 
 const removeItem = (itemId) => {
     router.delete(route('work-orders.items.destroy', { workOrder: props.workOrderId, item: itemId }), {
@@ -107,11 +128,21 @@ const removeItem = (itemId) => {
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr class="border-t-2 border-gray-100 bg-gray-50/50">
-                        <td colspan="4" class="px-6 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-600">Total Cotización</td>
+                    <tr class="border-t border-gray-100 bg-gray-50/40">
+                        <td colspan="4" class="px-6 py-2.5 text-right text-xs font-semibold text-gray-500">Subtotal (Neto):</td>
+                        <td class="px-4 py-2.5 text-right font-mono font-bold text-gray-700">{{ formatCurrency(subtotalAmount) }}</td>
+                        <td></td>
+                    </tr>
+                    <tr v-if="applyTax" class="border-t border-gray-50 bg-gray-50/40">
+                        <td colspan="4" class="px-6 py-2.5 text-right text-xs font-semibold text-gray-500">{{ taxName }} ({{ taxRate }}%):</td>
+                        <td class="px-4 py-2.5 text-right font-mono font-bold text-orange-600">+ {{ formatCurrency(taxAmount) }}</td>
+                        <td></td>
+                    </tr>
+                    <tr class="border-t-2 border-gray-100 bg-gray-50/80">
+                        <td colspan="4" class="px-6 py-4 text-right text-sm font-black uppercase tracking-wider text-gray-700">Total Cotización</td>
                         <td class="px-4 py-4 text-right">
-                            <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(subtotalAmount) }}</span>
-                            <span v-if="formatUf(subtotalAmount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">UF {{ formatUf(subtotalAmount) }}</span>
+                            <span class="text-lg font-black tabular-nums text-gray-900">{{ formatCurrency(displayTotalAmount) }}</span>
+                            <span v-if="formatUf(displayTotalAmount)" class="block text-[10px] font-semibold tabular-nums text-gray-400">UF {{ formatUf(displayTotalAmount) }}</span>
                         </td>
                         <td></td>
                     </tr>

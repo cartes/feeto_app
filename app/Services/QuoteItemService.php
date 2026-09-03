@@ -118,15 +118,62 @@ class QuoteItemService
     }
 
     /**
-     * Recalcula y persiste el subtotal de la cotización en base a sus ítems.
+     * Recalcula y persiste el subtotal, impuesto y total de la cotización en base a sus ítems.
      */
     public function recalculateQuoteTotal(Quote $quote): float
     {
-        $total = (float) $quote->items()->sum('total_price');
+        $subtotal = round((float) $quote->items()->sum('total_price'), 2);
+        $applyTax = (bool) $quote->apply_tax;
+        $taxRate = (float) $quote->tax_rate;
 
-        $quote->update(['subtotal_amount' => $total]);
+        $taxAmount = ($applyTax && $taxRate > 0)
+            ? round($subtotal * ($taxRate / 100), 2)
+            : 0.0;
 
-        return $total;
+        $totalAmount = round($subtotal + $taxAmount, 2);
+
+        $quote->update([
+            'subtotal_amount' => $subtotal,
+            'tax_amount' => $taxAmount,
+            'total_amount' => $totalAmount,
+        ]);
+
+        if ($quote->work_order_id) {
+            $quote->workOrder?->update(['total_amount' => $totalAmount]);
+        }
+
+        return $totalAmount;
+    }
+
+    /**
+     * Actualiza la configuración de impuestos de la cotización y recalcula los totales.
+     */
+    public function updateTax(Quote $quote, bool $applyTax, ?float $taxRate = null): Quote
+    {
+        $taxRate = $taxRate !== null
+            ? max(0.0, min(100.0, round($taxRate, 2)))
+            : (float) $quote->tax_rate;
+
+        $quote->update([
+            'apply_tax' => $applyTax,
+            'tax_rate' => $taxRate,
+        ]);
+
+        $this->recalculateQuoteTotal($quote);
+
+        $taxName = $quote->taxName();
+        $description = $applyTax
+            ? "Se configuró impuesto {$taxName} al {$taxRate}%."
+            : "Se desactivó el impuesto {$taxName} en la cotización.";
+
+        $this->recordEvent($quote, 'staff', 'tax_updated', $description, [
+            'apply_tax' => $applyTax,
+            'tax_rate' => $taxRate,
+            'tax_amount' => $quote->tax_amount,
+            'total_amount' => $quote->total_amount,
+        ]);
+
+        return $quote->fresh();
     }
 
     /**

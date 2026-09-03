@@ -5,6 +5,10 @@ import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 
 const props = defineProps({
     workOrder: Object,
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
     quoteStatuses: Array,
     commercialQuotesEnabled: Boolean,
     ufValue: {
@@ -108,7 +112,7 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                     </span>
                 </div>
 
-                <WorkOrderQuote :workOrder="workOrder" :uf-value="ufValue" />
+                <WorkOrderQuote :workOrder="workOrder" :uf-value="ufValue" :tax-name="taxName" />
 
                 <div v-if="quote.status === 'pending_customer'" class="mt-6 space-y-4 rounded-3xl border border-orange-100 bg-orange-50/60 p-5">
                     <div>

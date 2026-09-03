@@ -105,7 +105,7 @@ watch(search, debounce((value) => {
                                     </span>
                                     <p v-if="quote.work_order" class="mt-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-500">OT #{{ quote.work_order.id }} generada</p>
                                 </td>
-                                <td class="px-6 py-4 align-top text-sm font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</td>
+                                <td class="px-6 py-4 align-top text-sm font-black text-gray-900">{{ formatCurrency(quote.total_amount || quote.subtotal_amount) }}</td>
                                 <td class="px-6 py-4 align-top text-sm font-medium text-gray-600">{{ formatDate(quote.created_at) }}</td>
                                 <td class="px-6 py-4 text-right align-top">
                                     <Link :href="route('quotes.show', { ...tenantRouteParams, quote: quote.id })"

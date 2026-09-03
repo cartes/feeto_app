@@ -26,12 +26,13 @@ class TrackingController extends Controller
             ->where('uuid', $uuid)
             ->firstOrFail();
 
+        $tenant = Tenant::query()->find($workOrder->tenant_id);
+
         return Inertia::render('Tracking/Show', [
             'workOrder' => $workOrder,
+            'taxName' => $workOrder->quote?->taxName() ?? $tenant?->taxName() ?? 'IVA',
             'quoteStatuses' => Quote::statuses(),
-            'commercialQuotesEnabled' => Tenant::query()
-                ->find($workOrder->tenant_id)
-                ?->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES) ?? false,
+            'commercialQuotesEnabled' => $tenant?->hasFeature(PlanFeatureService::FEATURE_COMMERCIAL_QUOTES) ?? false,
             'uf_value' => $this->ufService->getCurrentValue(),
         ]);
     }

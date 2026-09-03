@@ -8,6 +8,7 @@ use App\Http\Requests\AddQuoteItemRequest;
 use App\Http\Requests\RespondToQuoteRequest;
 use App\Http\Requests\SendQuoteRequest;
 use App\Http\Requests\StoreManualQuoteRequest;
+use App\Http\Requests\UpdateQuoteTaxRequest;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Quote;
@@ -115,6 +116,8 @@ class ManualQuoteController extends Controller
 
         return Inertia::render('Quotes/Show', [
             'quote' => $quote,
+            'taxName' => $quote->taxName(),
+            'defaultTaxRate' => Tenant::current()?->defaultTaxRate() ?? 19.0,
             'products' => $products,
             'services' => $services,
             'uf_value' => $this->ufService->getCurrentValue(),
@@ -148,6 +151,22 @@ class ManualQuoteController extends Controller
         $this->manualQuoteService->removeItem($quote, $item);
 
         return back();
+    }
+
+    public function updateTax(UpdateQuoteTaxRequest $request, Quote $quote): RedirectResponse
+    {
+        $this->authorizeQuoteAccess($quote);
+        $this->ensureCommercialQuotesEnabled();
+
+        $validated = $request->validated();
+        $applyTax = (bool) $validated['apply_tax'];
+        $taxRate = isset($validated['tax_rate']) && $validated['tax_rate'] !== null && $validated['tax_rate'] !== ''
+            ? (float) $validated['tax_rate']
+            : null;
+
+        $this->manualQuoteService->updateTax($quote, $applyTax, $taxRate);
+
+        return back()->with('success', 'Configuración de impuestos actualizada.');
     }
 
     public function send(SendQuoteRequest $request, Quote $quote): RedirectResponse

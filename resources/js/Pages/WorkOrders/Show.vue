@@ -17,6 +17,14 @@ const { resolveWorkOrderStatus, resolveQuoteStatus } = useStatusConfig();
 
 const props = defineProps({
     workOrder: Object,
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
+    defaultTaxRate: {
+        type: Number,
+        default: 19,
+    },
     products: Array,
     services: Array,
     discountPolicy: Object,
@@ -155,9 +163,12 @@ const showDeleteModal = ref(false);
                     :quote="quote"
                     :items="items"
                     :uf-value="ufValue"
+                    :tax-name="taxName"
+                    :default-tax-rate="defaultTaxRate"
                     :can-deliver-quote="canDeliverQuote"
                     :can-notify-admin="canNotifyAdmin"
                     :can-share-quote="canShareQuote"
+                    :can-manage-items="canManageItems"
                     @open-approve-modal="showApproveManuallyModal = true"
                 />
 
@@ -167,6 +178,11 @@ const showDeleteModal = ref(false);
                         :work-order-id="workOrder.id"
                         :items="items"
                         :subtotal-amount="quote.subtotal_amount"
+                        :tax-amount="quote.tax_amount"
+                        :total-amount="quote.total_amount"
+                        :apply-tax="quote.apply_tax"
+                        :tax-rate="quote.tax_rate ?? defaultTaxRate"
+                        :tax-name="taxName"
                         :uf-value="ufValue"
                         :can-manage-items="canManageItems"
                         :can-manage-inventory="canManageInventory"

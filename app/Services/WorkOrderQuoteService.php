@@ -59,8 +59,19 @@ class WorkOrderQuoteService
         return $this->quoteItemService->buildItemPayload($validated);
     }
 
+    public function updateTax(WorkOrder $workOrder, bool $applyTax, ?float $taxRate = null): Quote
+    {
+        $quote = $this->quoteFor($workOrder);
+
+        $updatedQuote = $this->quoteItemService->updateTax($quote, $applyTax, $taxRate);
+
+        $this->syncWorkOrderTotal($workOrder, $updatedQuote);
+
+        return $updatedQuote;
+    }
+
     private function syncWorkOrderTotal(WorkOrder $workOrder, Quote $quote): void
     {
-        $workOrder->update(['total_amount' => $quote->subtotal_amount]);
+        $workOrder->update(['total_amount' => $quote->total_amount]);
     }
 }

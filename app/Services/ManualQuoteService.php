@@ -112,6 +112,11 @@ class ManualQuoteService
         return null;
     }
 
+    public function updateTax(Quote $quote, bool $applyTax, ?float $taxRate = null): Quote
+    {
+        return $this->quoteItemService->updateTax($quote, $applyTax, $taxRate);
+    }
+
     /**
      * Crea la Orden de Trabajo a partir de una cotización manual aceptada y la enlaza.
      */
@@ -125,6 +130,7 @@ class ManualQuoteService
             'vehicle_id' => $quote->vehicle_id,
             'status' => WorkOrder::STATUS_RECEPCION,
             'observations' => 'Creada a partir de una cotización manual aceptada.',
+            'total_amount' => $quote->total_amount,
         ]);
 
         $quote->update(['work_order_id' => $workOrder->id]);

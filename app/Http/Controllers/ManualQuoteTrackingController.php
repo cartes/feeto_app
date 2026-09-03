@@ -28,6 +28,7 @@ class ManualQuoteTrackingController extends Controller
 
         return Inertia::render('Quotes/PublicShow', [
             'quote' => $quote,
+            'taxName' => $quote->taxName(),
             'quoteStatuses' => Quote::statuses(),
             'commercialQuotesEnabled' => Tenant::query()
                 ->find($quote->tenant_id)

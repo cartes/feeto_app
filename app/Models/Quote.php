@@ -31,6 +31,10 @@ class Quote extends Model
         'uuid',
         'status',
         'subtotal_amount',
+        'apply_tax',
+        'tax_rate',
+        'tax_amount',
+        'total_amount',
         'notes',
         'sent_at',
         'responded_at',
@@ -42,6 +46,10 @@ class Quote extends Model
      */
     protected $casts = [
         'subtotal_amount' => 'decimal:2',
+        'apply_tax' => 'boolean',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'sent_at' => 'datetime',
         'responded_at' => 'datetime',
     ];
@@ -52,7 +60,28 @@ class Quote extends Model
             if (empty($quote->uuid)) {
                 $quote->uuid = (string) Str::uuid();
             }
+
+            if (! isset($quote->attributes['apply_tax'])) {
+                $quote->apply_tax = true;
+            }
+
+            if (! isset($quote->attributes['tax_rate'])) {
+                $tenant = Tenant::current() ?? ($quote->tenant_id ? Tenant::find($quote->tenant_id) : null);
+                $quote->tax_rate = $tenant?->defaultTaxRate() ?? 19.00;
+            }
         });
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function taxName(): string
+    {
+        $tenant = $this->tenant ?? (Tenant::current() ?? ($this->tenant_id ? Tenant::find($this->tenant_id) : null));
+
+        return $tenant?->taxName() ?? 'IVA';
     }
 
     public function workOrder(): BelongsTo

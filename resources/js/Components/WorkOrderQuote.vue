@@ -8,11 +8,26 @@ const props = defineProps({
         type: Number,
         default: null,
     },
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
 });
 
 const { formatCurrency, formatDate, formatUf: formatUfRaw } = useFormatting();
 
-const quote = computed(() => props.workOrder?.quote ?? props.workOrder ?? { items: [], subtotal_amount: 0 });
+const quote = computed(() => props.workOrder?.quote ?? props.workOrder ?? { items: [], subtotal_amount: 0, total_amount: 0 });
+
+const subtotalAmount = computed(() => Number(quote.value.subtotal_amount ?? props.workOrder?.total_amount ?? 0));
+const applyTax = computed(() => Boolean(quote.value.apply_tax ?? false));
+const taxRate = computed(() => Number(quote.value.tax_rate ?? 0));
+const taxAmount = computed(() => applyTax.value ? Number(quote.value.tax_amount ?? 0) : 0);
+const finalTotalAmount = computed(() => {
+    if (quote.value.total_amount !== undefined && quote.value.total_amount !== null && Number(quote.value.total_amount) > 0) {
+        return Number(quote.value.total_amount);
+    }
+    return applyTax.value ? subtotalAmount.value + taxAmount.value : subtotalAmount.value;
+});
 
 const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
 </script>
@@ -26,13 +41,15 @@ const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
                 <p class="text-xs font-bold text-slate-400 mt-1">{{ formatDate(quote.sent_at || workOrder.created_at) }}</p>
             </div>
             <div class="text-right px-4 py-2 bg-orange-50 rounded-2xl border border-orange-100">
-                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Total
-                    Presupuestado</p>
+                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Total Presupuestado</p>
                 <p class="text-xl font-black text-slate-900 mt-1 leading-none">
-                    {{ formatCurrency(quote.subtotal_amount ?? workOrder.total_amount) }}
+                    {{ formatCurrency(finalTotalAmount) }}
                 </p>
-                <p v-if="formatUf(quote.subtotal_amount ?? workOrder.total_amount)" class="text-[10px] font-bold text-orange-400 mt-0.5">
-                    ≈ UF {{ formatUf(quote.subtotal_amount ?? workOrder.total_amount) }}
+                <p v-if="formatUf(finalTotalAmount)" class="text-[10px] font-bold text-orange-400 mt-0.5">
+                    ≈ UF {{ formatUf(finalTotalAmount) }}
+                </p>
+                <p v-if="applyTax" class="text-[9px] font-bold text-orange-600 mt-1">
+                    Incluye {{ taxName }} ({{ taxRate }}%)
                 </p>
             </div>
         </div>
@@ -64,6 +81,24 @@ const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
                         </td>
                     </tr>
                 </tbody>
+                <!-- Resumen de Totales y Desglose de IVA -->
+                <tfoot class="border-t border-slate-100 bg-slate-50/50">
+                    <tr>
+                        <td colspan="2" class="px-4 py-2.5 text-right text-xs font-semibold text-slate-500">Subtotal (Neto):</td>
+                        <td class="px-4 py-2.5 text-right font-mono font-bold text-slate-700">{{ formatCurrency(subtotalAmount) }}</td>
+                    </tr>
+                    <tr v-if="applyTax">
+                        <td colspan="2" class="px-4 py-2.5 text-right text-xs font-semibold text-slate-500">{{ taxName }} ({{ taxRate }}%):</td>
+                        <td class="px-4 py-2.5 text-right font-mono font-bold text-orange-600">+ {{ formatCurrency(taxAmount) }}</td>
+                    </tr>
+                    <tr class="border-t border-slate-200 bg-orange-50/30">
+                        <td colspan="2" class="px-4 py-3 text-right text-xs font-black uppercase tracking-wider text-slate-900">Total a Pagar:</td>
+                        <td class="px-4 py-3 text-right">
+                            <span class="font-mono text-base font-black text-slate-900">{{ formatCurrency(finalTotalAmount) }}</span>
+                            <span v-if="formatUf(finalTotalAmount)" class="block text-[10px] font-medium text-slate-400 font-mono">UF {{ formatUf(finalTotalAmount) }}</span>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 

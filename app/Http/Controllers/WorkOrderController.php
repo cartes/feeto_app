@@ -131,13 +131,17 @@ class WorkOrderController extends Controller
             ->orderBy('name')
             ->get();
 
+        $tenant = Tenant::current();
+
         return Inertia::render('WorkOrders/Show', [
             'workOrder' => $workOrder,
+            'taxName' => $workOrder->quote?->taxName() ?? $tenant?->taxName() ?? 'IVA',
+            'defaultTaxRate' => $tenant?->defaultTaxRate() ?? 19.0,
             'products' => $products,
             'services' => $services,
             'uf_value' => $this->ufService->getCurrentValue(),
             'discountPolicy' => [
-                'threshold' => Tenant::current()?->maxDiscountWithoutApproval() ?? 10,
+                'threshold' => $tenant?->maxDiscountWithoutApproval() ?? 10,
                 'approver_roles' => ['Jefe', 'Supervisor'],
             ],
         ]);

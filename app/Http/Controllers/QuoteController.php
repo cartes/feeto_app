@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RespondToQuoteRequest;
 use App\Http\Requests\SendQuoteRequest;
+use App\Http\Requests\UpdateQuoteTaxRequest;
 use App\Models\Quote;
 use App\Models\Tenant;
 use App\Models\TenantNotification;
@@ -13,6 +14,7 @@ use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
 use App\Services\QuoteItemService;
+use App\Services\WorkOrderQuoteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -21,7 +23,24 @@ class QuoteController extends Controller
     public function __construct(
         protected PlanFeatureService $planFeatureService,
         protected QuoteItemService $quoteItemService,
+        protected WorkOrderQuoteService $workOrderQuoteService,
     ) {}
+
+    public function updateTax(UpdateQuoteTaxRequest $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $this->authorizeWorkOrderAccess($request, $workOrder);
+        $this->ensureCommercialQuotesEnabled(Tenant::current());
+
+        $validated = $request->validated();
+        $applyTax = (bool) $validated['apply_tax'];
+        $taxRate = isset($validated['tax_rate']) && $validated['tax_rate'] !== null && $validated['tax_rate'] !== ''
+            ? (float) $validated['tax_rate']
+            : null;
+
+        $this->workOrderQuoteService->updateTax($workOrder, $applyTax, $taxRate);
+
+        return back()->with('success', 'Configuración de impuestos actualizada.');
+    }
 
     public function send(SendQuoteRequest $request, WorkOrder $workOrder): RedirectResponse
     {

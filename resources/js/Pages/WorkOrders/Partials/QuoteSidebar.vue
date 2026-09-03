@@ -17,12 +17,56 @@ const props = defineProps({
         type: Number,
         default: null,
     },
+    taxName: {
+        type: String,
+        default: 'IVA',
+    },
+    defaultTaxRate: {
+        type: Number,
+        default: 19,
+    },
     canDeliverQuote: Boolean,
     canNotifyAdmin: Boolean,
     canShareQuote: Boolean,
+    canManageItems: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(['open-approve-modal']);
+
+const subtotalAmount = computed(() => Number(props.quote?.subtotal_amount ?? props.workOrder?.total_amount ?? 0));
+const applyTax = computed(() => Boolean(props.quote?.apply_tax ?? false));
+const taxRate = computed(() => Number(props.quote?.tax_rate ?? props.defaultTaxRate));
+const taxAmount = computed(() => applyTax.value ? Number(props.quote?.tax_amount ?? 0) : 0);
+const finalTotalAmount = computed(() => {
+    if (props.quote?.total_amount !== undefined && props.quote?.total_amount !== null && Number(props.quote.total_amount) > 0) {
+        return Number(props.quote.total_amount);
+    }
+    return applyTax.value ? subtotalAmount.value + taxAmount.value : subtotalAmount.value;
+});
+
+const taxForm = useForm({
+    apply_tax: Boolean(props.quote?.apply_tax ?? true),
+    tax_rate: Number(props.quote?.tax_rate ?? props.defaultTaxRate),
+});
+
+const isEditingTax = ref(false);
+
+const submitTaxUpdate = () => {
+    taxForm.patch(route('work-orders.quote.tax', { workOrder: props.workOrder.id }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            isEditingTax.value = false;
+        },
+    });
+};
+
+const toggleTax = (value) => {
+    taxForm.apply_tax = value;
+    submitTaxUpdate();
+};
 
 const formatUf = (clpValue) => formatUfRaw(clpValue, props.ufValue);
 
@@ -107,11 +151,72 @@ const notifyReady = () => {
     <div class="space-y-4 xl:order-last xl:sticky xl:top-6">
 
         <!-- Total -->
-        <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
-            <p class="mt-1.5 text-3xl font-black text-gray-900">{{ formatCurrency(quote.subtotal_amount) }}</p>
-            <p v-if="formatUf(quote.subtotal_amount)" class="mt-0.5 text-xs font-semibold text-gray-400">≈ UF {{ formatUf(quote.subtotal_amount) }}</p>
-            <p class="mt-1.5 text-xs font-medium text-gray-400">{{ items.length }} ítems cargados</p>
+        <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Cotización</p>
+                <p class="mt-1 text-3xl font-black text-gray-900">{{ formatCurrency(finalTotalAmount) }}</p>
+                <p v-if="formatUf(finalTotalAmount)" class="mt-0.5 text-xs font-semibold text-gray-400">≈ UF {{ formatUf(finalTotalAmount) }}</p>
+            </div>
+
+            <div class="border-t border-gray-50 pt-3 space-y-1 text-xs">
+                <div class="flex items-center justify-between text-gray-500">
+                    <span>Subtotal (Neto):</span>
+                    <span class="font-bold text-gray-700 font-mono">{{ formatCurrency(subtotalAmount) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-gray-500">
+                    <span>{{ taxName }} ({{ taxRate }}%):</span>
+                    <span v-if="applyTax" class="font-bold text-orange-600 font-mono">+ {{ formatCurrency(taxAmount) }}</span>
+                    <span v-else class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No aplica</span>
+                </div>
+            </div>
+
+            <!-- Configuración de Impuestos -->
+            <div v-if="canManageItems" class="border-t border-gray-50 pt-3">
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            :checked="applyTax"
+                            :disabled="taxForm.processing"
+                            class="h-4 w-4 rounded border-gray-300 text-[#FF7A00] focus:ring-[#FF7A00]"
+                            @change="toggleTax($event.target.checked)"
+                        />
+                        <span class="text-xs font-bold text-gray-700">Aplicar {{ taxName }}</span>
+                    </label>
+
+                    <button
+                        type="button"
+                        class="text-[10px] font-bold text-gray-400 hover:text-[#FF7A00] transition-colors"
+                        @click="isEditingTax = !isEditingTax"
+                    >
+                        {{ isEditingTax ? 'Cerrar' : 'Ajustar tasa' }}
+                    </button>
+                </div>
+
+                <form v-if="isEditingTax" @submit.prevent="submitTaxUpdate" class="mt-2.5 flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <input
+                            v-model="taxForm.tax_rate"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            placeholder="19"
+                            class="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-800 focus:border-[#FF7A00] focus:ring-1 focus:ring-[#FF7A00]"
+                        />
+                        <span class="absolute right-2.5 top-1.5 text-xs font-bold text-gray-400">%</span>
+                    </div>
+                    <button
+                        type="submit"
+                        :disabled="taxForm.processing"
+                        class="rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#FF7A00] disabled:opacity-50"
+                    >
+                        Guardar
+                    </button>
+                </form>
+            </div>
+
+            <p class="border-t border-gray-50 pt-2 text-[11px] font-medium text-gray-400">{{ items.length }} ítems cargados</p>
         </div>
 
         <!-- Canal de envío + botón (admin/supervisor) -->
