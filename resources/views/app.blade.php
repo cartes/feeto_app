@@ -7,9 +7,20 @@
             : config('app.name', 'Laravel');
         $seoDescription = is_array($seo) ? ($seo['description'] ?? null) : null;
         $seoImage = is_array($seo) ? ($seo['og_image'] ?? null) : null;
+        $seoImageAlt = is_array($seo) ? ($seo['og_image_alt'] ?? $seoTitle) : null;
+        $seoImageWidth = is_array($seo) ? ($seo['og_image_width'] ?? null) : null;
+        $seoImageHeight = is_array($seo) ? ($seo['og_image_height'] ?? null) : null;
+        $seoOgType = is_array($seo) && filled($seo['og_type'] ?? null) ? $seo['og_type'] : 'website';
+        $seoTwitterCard = is_array($seo) && filled($seo['twitter_card'] ?? null) ? $seo['twitter_card'] : 'summary_large_image';
+        $seoPublishedTime = is_array($seo) ? ($seo['published_time'] ?? null) : null;
+        $seoModifiedTime = is_array($seo) ? ($seo['modified_time'] ?? null) : null;
         $canonicalUrl = is_array($seo) && filled($seo['canonical_url'] ?? null)
             ? $seo['canonical_url']
-            : request()->fullUrl();
+            : request()->url();
+        // Páginas sin bloque `seo` (app del taller, admin, login, tracking, checkout) no se indexan.
+        $seoRobots = is_array($seo) && filled($seoDescription)
+            ? ($seo['robots'] ?? \App\Support\MarketingSeoPages::DEFAULT_ROBOTS)
+            : \App\Support\MarketingSeoPages::NOINDEX_ROBOTS;
         $seoSchema = is_array($seo) ? ($seo['schema'] ?? null) : null;
         $seoSchemaItems = is_array($seoSchema)
             ? (array_is_list($seoSchema) ? $seoSchema : [$seoSchema])
@@ -21,22 +32,44 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        {{-- Los tags marcados con `inertia` son reemplazados por <SeoHead> en el cliente (sin duplicados). --}}
         <title inertia>{{ $seoTitle }}</title>
         @if (filled($seoDescription))
-            <meta name="description" content="{{ $seoDescription }}">
-            <meta name="robots" content="index, follow">
-            <link rel="canonical" href="{{ $canonicalUrl }}">
-            <meta property="og:type" content="website">
-            <meta property="og:title" content="{{ $seoTitle }}">
-            <meta property="og:description" content="{{ $seoDescription }}">
-            <meta property="og:url" content="{{ $canonicalUrl }}">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="{{ $seoTitle }}">
-            <meta name="twitter:description" content="{{ $seoDescription }}">
+            <meta name="robots" content="{{ $seoRobots }}" inertia>
+            <meta name="description" content="{{ $seoDescription }}" inertia>
+            <link rel="canonical" href="{{ $canonicalUrl }}" inertia>
+            <meta property="og:type" content="{{ $seoOgType }}" inertia>
+            <meta property="og:site_name" content="{{ \App\Support\MarketingSeoPages::SITE_NAME }}" inertia>
+            <meta property="og:locale" content="{{ \App\Support\MarketingSeoPages::LOCALE }}" inertia>
+            <meta property="og:title" content="{{ $seoTitle }}" inertia>
+            <meta property="og:description" content="{{ $seoDescription }}" inertia>
+            <meta property="og:url" content="{{ $canonicalUrl }}" inertia>
             @if (filled($seoImage))
-                <meta property="og:image" content="{{ $seoImage }}">
-                <meta name="twitter:image" content="{{ $seoImage }}">
+                <meta property="og:image" content="{{ $seoImage }}" inertia>
+                <meta property="og:image:alt" content="{{ $seoImageAlt }}" inertia>
+                @if (filled($seoImageWidth) && filled($seoImageHeight))
+                    <meta property="og:image:width" content="{{ $seoImageWidth }}" inertia>
+                    <meta property="og:image:height" content="{{ $seoImageHeight }}" inertia>
+                @endif
             @endif
+            @if ($seoOgType === 'article')
+                @if (filled($seoPublishedTime))
+                    <meta property="article:published_time" content="{{ $seoPublishedTime }}" inertia>
+                @endif
+                @if (filled($seoModifiedTime))
+                    <meta property="article:modified_time" content="{{ $seoModifiedTime }}" inertia>
+                @endif
+            @endif
+            <meta name="twitter:card" content="{{ $seoTwitterCard }}" inertia>
+            <meta name="twitter:site" content="{{ \App\Support\MarketingSeoPages::TWITTER_SITE }}" inertia>
+            <meta name="twitter:title" content="{{ $seoTitle }}" inertia>
+            <meta name="twitter:description" content="{{ $seoDescription }}" inertia>
+            @if (filled($seoImage))
+                <meta name="twitter:image" content="{{ $seoImage }}" inertia>
+                <meta name="twitter:image:alt" content="{{ $seoImageAlt }}" inertia>
+            @endif
+        @else
+            <meta name="robots" content="{{ $seoRobots }}">
         @endif
         @foreach ($seoSchemaItems as $schemaItem)
             @if (is_array($schemaItem) && $schemaItem !== [])

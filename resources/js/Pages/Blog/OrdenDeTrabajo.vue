@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { ref, computed } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
@@ -25,31 +26,6 @@ const yearlyDaysSaved = computed(() => {
     return Math.round(days);
 });
 
-const schema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Orden de Trabajo para Taller Mecánico: Guía Completa 2025",
-    "description": "Aprende qué es una orden de trabajo para taller mecánico, qué debe incluir y cómo digitalizarla. Incluye template gratuito.",
-    "image": "https://tallerflow.cl/images/tallerflow-social-share.png",
-    "author": {
-        "@type": "Organization",
-        "name": "TallerFlow",
-        "url": "https://tallerflow.cl"
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "TallerFlow",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "https://tallerflow.cl/images/tallerflow-logo.png"
-        }
-    },
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://tallerflow.cl/orden-de-trabajo-taller-mecanico"
-    }
-};
-
 const scrollToSection = (id) => {
     activeSection.value = id;
     const element = document.getElementById(id);
@@ -61,34 +37,7 @@ const scrollToSection = (id) => {
 
 <template>
 
-    <Head>
-        <title>Orden de Trabajo para Taller Mecánico: Guía Completa 2025 | TallerFlow</title>
-        <meta name="description"
-            content="Aprende qué es una orden de trabajo para taller mecánico, qué debe incluir y cómo digitalizarla. Incluye template gratuito." />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://tallerflow.cl/orden-de-trabajo-taller-mecanico" />
-
-        <!-- Open Graph -->
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="TallerFlow" />
-        <meta property="og:locale" content="es_CL" />
-        <meta property="og:title" content="Orden de Trabajo para Taller Mecánico: Guía Completa 2025 | TallerFlow" />
-        <meta property="og:description"
-            content="Aprende qué es una orden de trabajo para taller mecánico, qué debe incluir y cómo digitalizarla. Incluye template gratuito." />
-        <meta property="og:url" content="https://tallerflow.cl/orden-de-trabajo-taller-mecanico" />
-        <meta property="og:image" content="https://tallerflow.cl/images/tallerflow-social-share.png" />
-
-        <!-- Twitter Card -->
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@tallerflow" />
-        <meta name="twitter:title" content="Orden de Trabajo para Taller Mecánico: Guía Completa 2025 | TallerFlow" />
-        <meta name="twitter:description"
-            content="Aprende qué es una orden de trabajo para taller mecánico, qué debe incluir y cómo digitalizarla. Incluye template gratuito." />
-        <meta name="twitter:image" content="https://tallerflow.cl/images/tallerflow-social-share.png" />
-
-        <!-- JSON-LD Schema (Article) -->
-        <component :is="'script'" type="application/ld+json" v-text="JSON.stringify(schema)" />
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'Orden de Trabajo para Taller Mecánico: Guía Completa | TallerFlow'" />
 
     <!-- Public Navigation Bar -->
     <PublicNav :can-login="canLogin" />

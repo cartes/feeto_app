@@ -42,11 +42,7 @@ class PublicPricingController extends Controller
         return Inertia::render('Pricing', [
             'plans' => $plans,
             'canLogin' => Route::has('login'),
-            'seo' => $this->resolveMarketingSeo(
-                'pricing',
-                'Planes y Precios · TallerFlow — Software para Talleres',
-                'Elige el plan TallerFlow ideal para tu taller mecánico. Desde $19.990/mes con 14 días de prueba gratis. Sin tarjeta de crédito requerida.',
-            ),
+            'seo' => $this->resolveMarketingSeo('pricing'),
         ]);
     }
 }

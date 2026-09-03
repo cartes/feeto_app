@@ -23,6 +23,18 @@ class SeoBlogTest extends TestCase
         $this->superAdmin = User::factory()->superAdmin()->create();
     }
 
+    public function test_robots_txt_disallows_private_paths(): void
+    {
+        $response = $this->get(route('robots'));
+
+        $response->assertOk();
+        $response->assertSee('Disallow: /admin', false);
+        $response->assertSee('Disallow: /ot/', false);
+        $response->assertSee('Disallow: /cotizacion/', false);
+        $response->assertSee('Sitemap: '.route('sitemap'), false);
+        $this->assertFileDoesNotExist(public_path('robots.txt'));
+    }
+
     public function test_robots_txt_returns_text_plain_content(): void
     {
         $response = $this->get(route('robots'));
@@ -91,6 +103,7 @@ class SeoBlogTest extends TestCase
         $response->assertSee(route('orden-de-trabajo-taller-mecanico'), false);
         $response->assertSee(route('trial.create'), false);
         $response->assertSee(route('blog.index'), false);
+        $response->assertSee(route('talleres.index'), false);
 
         // Debe contener el taller activo
         $response->assertSee(route('taller.landing', 'taller-activo'), false);

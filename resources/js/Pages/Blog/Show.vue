@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
@@ -23,55 +24,7 @@ const formatDate = (dateStr) => {
 </script>
 
 <template>
-    <Head>
-        <title>{{ seo.title }}</title>
-        <meta name="description" :content="seo.description">
-        <meta name="author" content="TallerFlow">
-        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-        <link rel="canonical" :href="seo.canonical_url">
-
-        <!-- Open Graph -->
-        <meta property="og:type" content="article">
-        <meta property="og:site_name" content="TallerFlow">
-        <meta property="og:locale" content="es_CL">
-        <meta property="og:title" :content="seo.title">
-        <meta property="og:description" :content="seo.description">
-        <meta property="og:url" :content="seo.canonical_url">
-        <meta property="og:image" :content="seo.og_image">
-        <meta property="og:image:secure_url" :content="seo.og_image">
-        <meta property="og:image:alt" :content="seo.og_image_alt">
-        <meta property="og:image:width" :content="String(seo.og_image_width)">
-        <meta property="og:image:height" :content="String(seo.og_image_height)">
-        <meta property="og:image:type" content="image/webp">
-
-        <!-- Article meta -->
-        <meta property="article:published_time" :content="seo.published_time">
-        <meta property="article:modified_time" :content="seo.modified_time">
-        <meta property="article:author" content="TallerFlow">
-        <meta
-            v-for="cat in seo.categories"
-            :key="cat"
-            property="article:section"
-            :content="cat"
-        >
-
-        <!-- Twitter Card -->
-        <meta name="twitter:card" :content="seo.twitter_card">
-        <meta name="twitter:site" content="@tallerflow">
-        <meta name="twitter:title" :content="seo.title">
-        <meta name="twitter:description" :content="seo.description">
-        <meta name="twitter:image" :content="seo.og_image">
-        <meta name="twitter:image:alt" :content="seo.og_image_alt">
-
-        <!-- JSON-LD Schema -->
-        <component
-            v-for="(schema, i) in seo.schema"
-            :key="i"
-            :is="'script'"
-            type="application/ld+json"
-            v-text="JSON.stringify(schema)"
-        />
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'Blog · TallerFlow'" />
 
     <PublicNav :can-login="true" active-section="blog" />
 

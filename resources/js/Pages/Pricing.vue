@@ -1,6 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { computed, ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
@@ -61,9 +62,7 @@ const jsonLd = computed(() => JSON.stringify({
 
 <template>
 
-    <Head>
-        <title>{{ seo.title ?? 'Planes y Precios · TallerFlow' }}</title>
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'Planes y Precios · TallerFlow'" />
 
     <!-- JSON-LD structured data -->
     <component :is="'script'" type="application/ld+json">{{ jsonLd }}</component>

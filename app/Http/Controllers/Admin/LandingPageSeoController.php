@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\UpdateMarketingWhatsAppRequest;
 use App\Models\AuditLog;
 use App\Models\Setting;
 use App\Services\MarketingWhatsAppService;
+use App\Support\MarketingSeoPages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,40 +22,14 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class LandingPageSeoController extends Controller
 {
-    private const PAGES = [
-        'home' => [
-            'label' => 'Página de Inicio',
-            'url' => '/',
-            'default_title' => 'TallerFlow · Software para Talleres Mecánicos en Chile',
-            'default_description' => 'TallerFlow digitaliza la gestión de tu taller mecánico en Chile. Kanban en vivo, recepción con IA, inventario inteligente y WhatsApp automatizado. Prueba gratis 14 días.',
-        ],
-        'pricing' => [
-            'label' => 'Página de Precios',
-            'url' => '/precios',
-            'default_title' => 'Planes y Precios · TallerFlow — Software para Talleres',
-            'default_description' => 'Elige el plan TallerFlow ideal para tu taller mecánico. Desde $19.990/mes con 14 días de prueba gratis. Sin tarjeta de crédito requerida.',
-        ],
-        'trial' => [
-            'label' => 'Solicitar Prueba Gratuita',
-            'url' => '/trial',
-            'default_title' => 'Prueba Gratis 14 días · TallerFlow — Software para Talleres',
-            'default_description' => 'Solicita tu acceso gratuito de 14 días a TallerFlow. Sin tarjeta de crédito. Sin compromisos. Activa tu taller digital hoy.',
-        ],
-        'blog' => [
-            'label' => 'Blog',
-            'url' => '/blog',
-            'default_title' => 'Blog · TallerFlow — Recursos para Talleres Mecánicos',
-            'default_description' => 'Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.',
-        ],
-    ];
-
     public function index(MarketingWhatsAppService $marketingWhatsAppService): Response
     {
-        $pages = collect(self::PAGES)->map(function (array $page, string $key): array {
+        $pages = collect(MarketingSeoPages::all())->map(function (array $page, string $key): array {
             return [
                 'key' => $key,
                 'label' => $page['label'],
-                'url' => $page['url'],
+                'url' => route($page['route'], [], false),
+                'og_type' => $page['og_type'],
                 'title' => Setting::get("seo_{$key}_title", $page['default_title']),
                 'description' => Setting::get("seo_{$key}_description", $page['default_description']),
                 'og_image' => Setting::get("seo_{$key}_og_image", ''),
@@ -110,7 +85,7 @@ class LandingPageSeoController extends Controller
 
     public function uploadOgImage(Request $request, string $pageKey): RedirectResponse
     {
-        if (! array_key_exists($pageKey, self::PAGES)) {
+        if (! MarketingSeoPages::has($pageKey)) {
             abort(404);
         }
 
@@ -151,7 +126,7 @@ class LandingPageSeoController extends Controller
 
     public function deleteOgImage(string $pageKey): RedirectResponse
     {
-        if (! array_key_exists($pageKey, self::PAGES)) {
+        if (! MarketingSeoPages::has($pageKey)) {
             abort(404);
         }
 

@@ -1,7 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp, router } from '@inertiajs/vue3';
+import { createInertiaApp, router, usePage } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { route as ziggyRoute, ZiggyVue } from '../../vendor/tightenco/ziggy';
@@ -87,7 +87,18 @@ router.on('navigate', (event) => {
 });
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    // Las páginas públicas (<SeoHead>) definen su título SEO exacto desde el
+    // servidor: no se les agrega el sufijo de la app para no alterar el <title>
+    // que ve Google al renderizar JS. El resto de páginas conserva el sufijo.
+    title: (title) => {
+        const seoTitle = usePage().props?.seo?.title;
+
+        if (title && seoTitle && title === seoTitle) {
+            return title;
+        }
+
+        return `${title} - ${appName}`;
+    },
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.vue`,

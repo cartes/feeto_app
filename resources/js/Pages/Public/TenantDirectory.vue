@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
@@ -14,40 +15,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <Head>
-        <title>{{ seo.title }}</title>
-        <meta name="description" :content="seo.description">
-        <meta name="robots" content="index, follow">
-        <link rel="canonical" :href="seo.canonical_url">
-
-        <!-- Open Graph -->
-        <meta property="og:type" content="website">
-        <meta property="og:site_name" content="TallerFlow">
-        <meta property="og:locale" content="es_CL">
-        <meta property="og:title" :content="seo.title">
-        <meta property="og:description" :content="seo.description">
-        <meta property="og:url" :content="seo.canonical_url">
-        <meta property="og:image" :content="seo.og_image">
-        <meta property="og:image:alt" :content="seo.og_image_alt">
-        <meta property="og:image:width" :content="String(seo.og_image_width)">
-        <meta property="og:image:height" :content="String(seo.og_image_height)">
-
-        <!-- Twitter Card -->
-        <meta name="twitter:card" :content="seo.twitter_card">
-        <meta name="twitter:site" content="@tallerflow">
-        <meta name="twitter:title" :content="seo.title">
-        <meta name="twitter:description" :content="seo.description">
-        <meta name="twitter:image" :content="seo.og_image">
-
-        <!-- JSON-LD Schema -->
-        <component
-            v-for="(schema, i) in seo.schema"
-            :key="i"
-            :is="'script'"
-            type="application/ld+json"
-            v-text="JSON.stringify(schema)"
-        />
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'Directorio de Talleres · TallerFlow'" />
 
     <PublicNav :can-login="true" />
 

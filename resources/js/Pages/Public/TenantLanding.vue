@@ -1,7 +1,8 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { ref, computed } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import LoginModal from '@/Components/LoginModal.vue';
 import Toast from '@/Components/Toast.vue';
 
@@ -125,9 +126,7 @@ const trackWhatsAppClick = () => {
 </script>
 
 <template>
-    <Head>
-        <title>{{ seo.title ?? `Agendamiento - ${tenant.name}` }}</title>
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="`Agendamiento - ${tenant.name}`" />
 
     <div class="min-h-screen bg-gray-50 font-sans antialiased" :style="{ '--brand': primaryColor, '--brand-hover': primaryColor + 'dd' }">
 

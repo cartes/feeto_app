@@ -1,6 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import LoginModal from '@/Components/LoginModal.vue';
 import PublicNav from '@/Components/PublicNav.vue';
@@ -119,9 +120,7 @@ onUnmounted(() => {
 
 <template>
 
-    <Head>
-        <title>{{ seo.title ?? 'TallerFlow · Software para Talleres Mecánicos en Chile y Colombia' }}</title>
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'TallerFlow · Software para Talleres Mecánicos en Chile'" />
 
     <PublicNav :can-login="canLogin" :active-section="activeSection" />
 

@@ -17,11 +17,7 @@ class PublicServicesController extends Controller
     {
         return Inertia::render('Servicios', [
             'canLogin' => Route::has('login'),
-            'seo' => $this->resolveMarketingSeo(
-                'services',
-                'Características y Módulos · TallerFlow — Sistema para Talleres',
-                'Conoce todas las características de TallerFlow. Recepción inteligente de patentes con IA, tablero Kanban, agenda integrada, inventario, cotizaciones por WhatsApp y reportes.'
-            ),
+            'seo' => $this->resolveMarketingSeo('services'),
         ]);
     }
 }

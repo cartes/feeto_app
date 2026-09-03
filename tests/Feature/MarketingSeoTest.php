@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Setting;
 use App\Models\Tenant;
+use App\Models\User;
+use App\Support\MarketingSeoPages;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -135,5 +137,93 @@ class MarketingSeoTest extends TestCase
         $response->assertSee('type="application/ld+json"', false);
         $response->assertSee('"@type":"AutoRepair"', false);
         $response->assertSee('"@type":"ReserveAction"', false);
+    }
+
+    public function test_public_pages_do_not_emit_duplicate_og_type_tags(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $this->assertSame(1, substr_count($response->getContent(), 'property="og:type"'));
+        $response->assertSee('property="og:type" content="website"', false);
+        $response->assertSee('property="og:site_name" content="TallerFlow"', false);
+        $response->assertSee('property="og:locale" content="es_CL"', false);
+        $response->assertSee('name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"', false);
+    }
+
+    public function test_pages_without_seo_block_are_marked_noindex(): void
+    {
+        $response = $this->get(route('trial.success'));
+
+        $response->assertOk();
+        $response->assertSee('name="robots" content="noindex, nofollow"', false);
+        $response->assertDontSee('property="og:title"', false);
+    }
+
+    public function test_orden_de_trabajo_guide_uses_article_metadata_and_editable_seo(): void
+    {
+        Setting::set('seo_orden_trabajo_title', 'Guía OT personalizada');
+
+        $response = $this->get('/orden-de-trabajo-taller-mecanico');
+
+        $response->assertOk();
+        $response->assertSee('<title inertia>Guía OT personalizada</title>', false);
+        $response->assertSee('property="og:type" content="article"', false);
+        $response->assertSee('"@type":"Article"', false);
+        $response->assertInertia(fn ($page) => $page->where('seo.title', 'Guía OT personalizada'));
+    }
+
+    public function test_services_and_directory_pages_use_editable_seo(): void
+    {
+        Setting::set('seo_services_description', 'Descripción servicios editada.');
+        Setting::set('seo_talleres_title', 'Directorio editado');
+
+        $this->get('/servicios')
+            ->assertOk()
+            ->assertSee('name="description" content="Descripción servicios editada."', false);
+
+        $this->get('/talleres')
+            ->assertOk()
+            ->assertSee('<title inertia>Directorio editado</title>', false);
+    }
+
+    public function test_organization_schema_logo_points_to_an_existing_asset(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee(url('/images/taller-flow-isotipo.png'), false);
+        $this->assertFileExists(public_path('images/taller-flow-isotipo.png'));
+    }
+
+    public function test_inactive_tenant_landing_is_marked_noindex(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'slug' => 'taller-pausado',
+            'is_active' => false,
+        ]);
+
+        $response = $this->get(route('taller.landing', ['tenantBySlug' => $tenant->slug]));
+
+        $response->assertOk();
+        $response->assertSee('name="robots" content="noindex, nofollow"', false);
+    }
+
+    public function test_super_admin_can_update_seo_for_every_marketing_page(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+
+        $pages = collect(MarketingSeoPages::keys())->map(fn (string $key) => [
+            'key' => $key,
+            'title' => "Título {$key}",
+            'description' => "Descripción {$key}",
+        ])->all();
+
+        $this->actingAs($admin)
+            ->put(route('admin.landing-seo.update'), ['pages' => $pages])
+            ->assertRedirect();
+
+        $this->assertSame('Título services', Setting::get('seo_services_title'));
+        $this->assertSame('Descripción talleres', Setting::get('seo_talleres_description'));
     }
 }

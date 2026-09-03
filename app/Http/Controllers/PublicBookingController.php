@@ -13,6 +13,7 @@ use App\Models\Tenant;
 use App\Models\TenantLead;
 use App\Models\TenantNotification;
 use App\Rules\LicensePlate;
+use App\Support\MarketingSeoPages;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,8 @@ class PublicBookingController extends Controller
         $defaultDescription = $tenantBySlug->seo_description
             ?: "Agenda tu cita en {$tenantBySlug->name}. Diagnóstico rápido, repuestos garantizados y transparencia total.";
         $canonicalUrl = $request->url();
+        $socialImage = $this->resolveSocialImage();
+        $isIndexable = $tenantBySlug->is_active && $tenantBySlug->status === 'active';
 
         $branches = $tenantBySlug->branches()
             ->where('is_active', true)
@@ -64,7 +67,13 @@ class PublicBookingController extends Controller
                 'title' => "Agendamiento - {$tenantBySlug->name}",
                 'description' => $defaultDescription,
                 'canonical_url' => $canonicalUrl,
-                'og_image' => $this->resolveSocialImageUrl(),
+                'robots' => $isIndexable ? MarketingSeoPages::DEFAULT_ROBOTS : MarketingSeoPages::NOINDEX_ROBOTS,
+                'og_type' => 'website',
+                'og_image' => $socialImage['url'],
+                'og_image_alt' => $tenantBySlug->name,
+                'og_image_width' => $socialImage['width'],
+                'og_image_height' => $socialImage['height'],
+                'twitter_card' => 'summary_large_image',
                 'schema' => $this->resolveTenantLandingSchema($tenantBySlug, $branches, $canonicalUrl, $defaultDescription),
             ],
         ]);

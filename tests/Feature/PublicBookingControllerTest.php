@@ -38,7 +38,7 @@ class PublicBookingControllerTest extends TestCase
         $response = $this->get(route('taller.landing', ['tenantBySlug' => $this->tenant->slug]));
 
         $response->assertOk();
-        $response->assertSee('<link rel="canonical" href="'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'">', false);
+        $response->assertSee('<link rel="canonical" href="'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'" inertia>', false);
         $response->assertSee('"@type":"AutoRepair"', false);
         $response->assertSee('"@id":"'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'#business"', false);
         $response->assertSee('"url":"'.route('taller.landing', ['tenantBySlug' => $this->tenant->slug]).'"', false);

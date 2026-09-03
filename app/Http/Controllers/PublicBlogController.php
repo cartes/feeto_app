@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Setting;
+use App\Support\MarketingSeoPages;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,16 +37,19 @@ class PublicBlogController extends Controller
         $canonicalUrl = request()->url();
         $title = Setting::get('seo_blog_title', 'Blog · TallerFlow — Recursos para Talleres Mecánicos');
         $description = Setting::get('seo_blog_description', 'Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.');
-        $ogImage = $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
+        $image = $this->resolveSocialImage(Setting::get('seo_blog_og_image', ''));
+        $ogImage = $image['url'];
 
         $seo = [
             'title' => $title,
             'description' => $description,
             'canonical_url' => $canonicalUrl,
+            'robots' => MarketingSeoPages::DEFAULT_ROBOTS,
+            'og_type' => 'website',
             'og_image' => $ogImage,
             'og_image_alt' => 'Blog de TallerFlow',
-            'og_image_width' => 1200,
-            'og_image_height' => 630,
+            'og_image_width' => $image['width'],
+            'og_image_height' => $image['height'],
             'twitter_card' => 'summary_large_image',
             'schema' => [
                 [
@@ -60,7 +64,7 @@ class PublicBlogController extends Controller
                         '@type' => 'Organization',
                         '@id' => url('/').'#organization',
                         'name' => 'TallerFlow',
-                        'logo' => ['@type' => 'ImageObject', 'url' => url('/images/tallerflow-logo.png')],
+                        'logo' => ['@type' => 'ImageObject', 'url' => url(MarketingSeoPages::LOGO_IMAGE)],
                     ],
                 ],
                 [
@@ -110,16 +114,19 @@ class PublicBlogController extends Controller
         $canonicalUrl = request()->url();
         $title = "Artículos sobre {$category->name} · Blog de TallerFlow";
         $description = "Explora recursos, consejos y guías sobre {$category->name} para optimizar y hacer crecer tu taller mecánico.";
-        $ogImage = $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
+        $image = $this->resolveSocialImage(Setting::get('seo_blog_og_image', ''));
+        $ogImage = $image['url'];
 
         $seo = [
             'title' => $title,
             'description' => $description,
             'canonical_url' => $canonicalUrl,
+            'robots' => MarketingSeoPages::DEFAULT_ROBOTS,
+            'og_type' => 'website',
             'og_image' => $ogImage,
             'og_image_alt' => "Blog de TallerFlow - {$category->name}",
-            'og_image_width' => 1200,
-            'og_image_height' => 630,
+            'og_image_width' => $image['width'],
+            'og_image_height' => $image['height'],
             'twitter_card' => 'summary_large_image',
             'schema' => [
                 [
@@ -134,7 +141,7 @@ class PublicBlogController extends Controller
                         '@type' => 'Organization',
                         '@id' => url('/').'#organization',
                         'name' => 'TallerFlow',
-                        'logo' => ['@type' => 'ImageObject', 'url' => url('/images/tallerflow-logo.png')],
+                        'logo' => ['@type' => 'ImageObject', 'url' => url(MarketingSeoPages::LOGO_IMAGE)],
                     ],
                 ],
                 [
@@ -167,7 +174,10 @@ class PublicBlogController extends Controller
             ->firstOrFail();
 
         $canonicalUrl = request()->url();
-        $imageUrl = $post->featured_image_url ?? $this->resolveSocialImageUrl(Setting::get('seo_blog_og_image', ''));
+        $defaultImage = $this->resolveSocialImage(Setting::get('seo_blog_og_image', ''));
+        $imageUrl = $post->featured_image_url ?? $defaultImage['url'];
+        $imageWidth = $post->featured_image_url ? $post->featuredMedia?->width : $defaultImage['width'];
+        $imageHeight = $post->featured_image_url ? $post->featuredMedia?->height : $defaultImage['height'];
 
         $seoTitle = filled($post->meta_title) ? $post->meta_title : "{$post->title} · Blog de TallerFlow";
         $seoDescription = filled($post->meta_description)
@@ -184,10 +194,12 @@ class PublicBlogController extends Controller
             'title' => $seoTitle,
             'description' => $seoDescription,
             'canonical_url' => $canonicalUrl,
+            'robots' => $post->is_published ? MarketingSeoPages::DEFAULT_ROBOTS : MarketingSeoPages::NOINDEX_ROBOTS,
+            'og_type' => 'article',
             'og_image' => $imageUrl,
             'og_image_alt' => $post->featuredMedia?->alt_text ?? $post->title,
-            'og_image_width' => $post->featuredMedia?->width ?? 1200,
-            'og_image_height' => $post->featuredMedia?->height ?? 630,
+            'og_image_width' => $imageWidth,
+            'og_image_height' => $imageHeight,
             'published_time' => $publishedAt,
             'modified_time' => $modifiedAt,
             'author' => 'TallerFlow',
@@ -205,8 +217,8 @@ class PublicBlogController extends Controller
                     'image' => [
                         '@type' => 'ImageObject',
                         'url' => $imageUrl,
-                        'width' => $post->featuredMedia?->width ?? 1200,
-                        'height' => $post->featuredMedia?->height ?? 630,
+                        'width' => $imageWidth,
+                        'height' => $imageHeight,
                     ],
                     'datePublished' => $publishedAt,
                     'dateModified' => $modifiedAt,
@@ -220,7 +232,7 @@ class PublicBlogController extends Controller
                         '@type' => 'Organization',
                         '@id' => url('/').'#organization',
                         'name' => 'TallerFlow',
-                        'logo' => ['@type' => 'ImageObject', 'url' => url('/images/tallerflow-logo.png')],
+                        'logo' => ['@type' => 'ImageObject', 'url' => url(MarketingSeoPages::LOGO_IMAGE)],
                     ],
                     'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
                     'url' => $canonicalUrl,

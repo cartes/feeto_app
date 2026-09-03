@@ -18,11 +18,7 @@ class PublicOrdenDeTrabajoController extends Controller
     {
         return Inertia::render('Blog/OrdenDeTrabajo', [
             'canLogin' => Route::has('login'),
-            'seo' => $this->resolveMarketingSeo(
-                'orden_trabajo',
-                'Orden de Trabajo para Taller Mecánico: Guía Completa 2025 | TallerFlow',
-                'Aprende qué es una orden de trabajo para taller mecánico, qué debe incluir y cómo digitalizarla. Incluye template gratuito.'
-            ),
+            'seo' => $this->resolveMarketingSeo('orden_trabajo'),
         ]);
     }
 }

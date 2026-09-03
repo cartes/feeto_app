@@ -25,11 +25,7 @@ class TrialRequestController extends Controller
 
         return Inertia::render('Trial/Create', [
             'countries' => $countries,
-            'seo' => $this->resolveMarketingSeo(
-                'trial',
-                'Prueba Gratis 14 días · TallerFlow — Software para Talleres',
-                'Solicita tu acceso gratuito de 14 días a TallerFlow. Sin tarjeta de crédito. Sin compromisos. Activa tu taller digital hoy.',
-            ),
+            'seo' => $this->resolveMarketingSeo('trial'),
         ]);
     }
 

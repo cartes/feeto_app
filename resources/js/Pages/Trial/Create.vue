@@ -1,5 +1,6 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { computed } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 
@@ -54,9 +55,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head>
-        <title>{{ seo.title ?? 'Solicitar prueba gratis · TallerFlow' }}</title>
-    </Head>
+    <SeoHead :seo="seo" :fallback-title="'Solicitar prueba gratis · TallerFlow'" />
 
     <PublicNav :can-login="false" />
 

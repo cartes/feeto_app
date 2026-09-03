@@ -65,11 +65,7 @@ class WelcomeController extends Controller
                 'image' => '/images/screenshots/inventario.png',
                 'imageWebp' => '/images/screenshots/inventario.webp',
             ],
-            'seo' => $this->resolveMarketingSeo(
-                'home',
-                'TallerFlow · Software para Talleres Mecánicos en Chile',
-                'TallerFlow digitaliza la gestión de tu taller mecánico en Chile. Kanban en vivo, recepción con IA, inventario inteligente y WhatsApp automatizado. Prueba gratis 14 días.',
-            ),
+            'seo' => $this->resolveMarketingSeo('home'),
         ]);
     }
 }

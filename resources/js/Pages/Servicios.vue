@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import SeoHead from '@/Components/SeoHead.vue';
 import { ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
@@ -101,44 +102,16 @@ const features = [
 </script>
 
 <template>
-    <Head>
-        <title>{{ seo.title ?? 'Características y Módulos · TallerFlow — Sistema para Talleres' }}</title>
-        <meta name="description" :content="seo.description || 'Conoce todas las características de TallerFlow. Recepción inteligente de patentes con IA, tablero Kanban, agenda integrada, inventario, cotizaciones por WhatsApp y reportes.'" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" :href="seo.canonical_url" v-if="seo.canonical_url" />
+    <SeoHead :seo="seo" :fallback-title="'Características y Módulos · TallerFlow — Sistema para Talleres'" />
 
-        <!-- Preload all screenshot images so they're ready before the user clicks a tab -->
+    <Head>
+        <!-- Preload de capturas para que estén listas antes de cambiar de pestaña -->
         <link
             v-for="feature in features"
             :key="feature.id"
             rel="preload"
             as="image"
             :href="feature.image"
-        />
-
-        <!-- Open Graph -->
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="TallerFlow" />
-        <meta property="og:locale" content="es_CL" />
-        <meta property="og:title" :content="seo.title ?? 'Características y Módulos · TallerFlow — Sistema para Talleres'" />
-        <meta property="og:description" :content="seo.description || 'Conoce todas las características de TallerFlow. Recepción inteligente de patentes con IA, tablero Kanban, agenda integrada, inventario, cotizaciones por WhatsApp y reportes.'" />
-        <meta property="og:url" :content="seo.canonical_url" v-if="seo.canonical_url" />
-        <meta property="og:image" :content="seo.og_image" v-if="seo.og_image" />
-
-        <!-- Twitter Card -->
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@tallerflow" />
-        <meta name="twitter:title" :content="seo.title ?? 'Características y Módulos · TallerFlow — Sistema para Talleres'" />
-        <meta name="twitter:description" :content="seo.description || 'Conoce todas las características de TallerFlow. Recepción inteligente de patentes con IA, tablero Kanban, agenda integrada, inventario, cotizaciones por WhatsApp y reportes.'" />
-        <meta name="twitter:image" :content="seo.og_image" v-if="seo.og_image" />
-
-        <!-- JSON-LD Schema -->
-        <component
-            v-for="(schema, i) in seo.schema"
-            :key="i"
-            :is="'script'"
-            type="application/ld+json"
-            v-text="JSON.stringify(schema)"
         />
     </Head>
 

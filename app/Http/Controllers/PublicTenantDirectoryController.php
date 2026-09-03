@@ -41,8 +41,9 @@ class PublicTenantDirectoryController extends Controller
             $tenants = $this->directoryTenants();
         }
 
-        $title = 'Directorio de Talleres Mecánicos en Chile · TallerFlow';
-        $description = 'Encuentra talleres mecánicos confiables en tu comuna. Agenda tu hora directamente con cada taller asociado a TallerFlow.';
+        $seo = $this->resolveMarketingSeo('talleres');
+        $seo['canonical_url'] = $canonicalUrl;
+        $seo['schema'] = $this->resolveDirectorySchema($tenants, $canonicalUrl, $seo['title'], $seo['description']);
 
         return Inertia::render('Public/TenantDirectory', [
             'latestTenants' => $this->mapTenants($latestTenants),
@@ -52,17 +53,7 @@ class PublicTenantDirectoryController extends Controller
                 'comuna' => $comuna,
                 'fallback_to_all' => $fallbackToAll,
             ],
-            'seo' => [
-                'title' => $title,
-                'description' => $description,
-                'canonical_url' => $canonicalUrl,
-                'og_image' => $this->resolveSocialImageUrl(),
-                'og_image_alt' => 'Directorio de Talleres TallerFlow',
-                'og_image_width' => 1200,
-                'og_image_height' => 630,
-                'twitter_card' => 'summary_large_image',
-                'schema' => $this->resolveDirectorySchema($tenants, $canonicalUrl, $title, $description),
-            ],
+            'seo' => $seo,
         ]);
     }
 
