@@ -22,15 +22,19 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.includes('@tiptap') || id.includes('prosemirror')) {
-                        return 'vendor-tiptap';
+                    if (id.includes('node_modules/vue/') || id.includes('node_modules/@vue/') || id.includes('node_modules/@inertiajs/')) {
+                        return 'vendor-core';
                     }
 
-                    if (id.includes('apexcharts') || id.includes('vue3-apexcharts')) {
+                    if (id.includes('node_modules/apexcharts')) {
                         return 'vendor-charts';
                     }
 
-                    if (id.includes('pusher-js') || id.includes('laravel-echo')) {
+                    if (id.includes('node_modules/@tiptap') || id.includes('node_modules/prosemirror')) {
+                        return 'vendor-tiptap';
+                    }
+
+                    if (id.includes('node_modules/pusher-js') || id.includes('node_modules/laravel-echo')) {
                         return 'vendor-reverb';
                     }
                 },
