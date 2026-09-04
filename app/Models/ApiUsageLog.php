@@ -25,10 +25,12 @@ class ApiUsageLog extends Model
 
     public static function record(string $service, ?int $tenantId = null): void
     {
+        $table = (new static)->getTable();
+
         static::upsert(
             [['tenant_id' => $tenantId, 'service' => $service, 'date' => now()->toDateString(), 'calls_count' => 1]],
             uniqueBy: ['tenant_id', 'service', 'date'],
-            update: ['calls_count' => \DB::raw('calls_count + 1')],
+            update: ['calls_count' => \DB::raw("{$table}.calls_count + 1")],
         );
     }
 }
