@@ -493,11 +493,14 @@ const handleCreateOrder = () => {
                         Cita en Otro Día · {{ formatAppointmentDate(appointmentData.date) }}
                     </span>
                 </div>
-                <button type="button" @click="closeModal"
-                    class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all border border-gray-200 shadow-sm">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M6 18L18 6M6 6l12 12" />
+                <button
+                    type="button"
+                    @click="closeModal"
+                    aria-label="Cerrar modal"
+                    class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all border border-slate-200 shadow-sm shrink-0"
+                >
+                    <svg class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
