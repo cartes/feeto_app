@@ -29,6 +29,10 @@ export default defineConfig({
                     if (id.includes('apexcharts') || id.includes('vue3-apexcharts')) {
                         return 'vendor-charts';
                     }
+
+                    if (id.includes('pusher-js') || id.includes('laravel-echo')) {
+                        return 'vendor-reverb';
+                    }
                 },
             },
         },

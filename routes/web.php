@@ -494,7 +494,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
                 abort(404);
             }
 
-            return response()->file($fullPath);
+            return response()->file($fullPath, [
+                'Cache-Control' => 'private, max-age=86400, stale-while-revalidate=604800',
+            ]);
         })->where('path', '.*')->name('storage.serve');
     });
 
