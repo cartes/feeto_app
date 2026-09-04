@@ -6,6 +6,7 @@ import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
 import { useStatusConfig } from '@/composables/useStatusConfig';
 import { useDebounce } from '@/composables/useDebounce';
+import { useIdentification } from '@/composables/useIdentification';
 
 const props = defineProps({
     quotes: Object,
@@ -17,6 +18,12 @@ const { page, tenantRouteParams } = useTenantRouting();
 const { formatCurrency, formatDate } = useFormatting();
 const { resolveQuoteStatus } = useStatusConfig();
 const { debounce } = useDebounce();
+const { getCountryConfig } = useIdentification();
+
+const tenantCountry = computed(() => page.props.tenantContext?.country || 'CL');
+const countryConfig = computed(() => getCountryConfig(tenantCountry.value));
+const docLabel = computed(() => countryConfig.value.docName);
+
 const planAccess = computed(() => page.props.planAccess ?? null);
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 
@@ -48,7 +55,7 @@ watch(search, debounce((value) => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input v-model="search" type="text" placeholder="Buscar por cliente, RUT o patente..."
+                        <input v-model="search" type="text" :placeholder="'Buscar por cliente, ' + docLabel + ' o patente...'"
                             class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50" />
                     </div>
 

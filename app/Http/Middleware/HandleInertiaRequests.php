@@ -211,9 +211,18 @@ class HandleInertiaRequests extends Middleware
 
         $plan = $tenant->currentPlan();
         $featureKeys = $tenant->enabledFeatureKeys();
+        $country = $tenant->country();
 
         return [
             ...$tenant->only('id', 'name', 'slug'),
+            'country' => $country->value,
+            'country_label' => $country->label(),
+            'country_flag' => $country->flag(),
+            'identification_name' => $country->identificationName(),
+            'identification_placeholder' => $country->identificationPlaceholder(),
+            'tax_name' => $tenant->taxName(),
+            'phone_prefix' => $country->phonePrefix(),
+            'phone_placeholder' => $country->phonePlaceholder(),
             'plan' => [
                 'code' => $plan->value,
                 'label' => $plan->label(),

@@ -1,12 +1,14 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
+import { useIdentification } from '@/composables/useIdentification';
 import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 import axios from 'axios';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
+const page = usePage();
 const props = defineProps({
     vehicleCatalogBrands: {
         type: Array,
@@ -16,6 +18,17 @@ const props = defineProps({
 
 const { tenantRouteParams } = useTenantRouting();
 const { debounce } = useDebounce();
+const {
+    cleanIdentification,
+    formatIdentification,
+    validateIdentification,
+    getCountryConfig,
+} = useIdentification();
+
+const tenantCountry = computed(() => page.props.tenantContext?.country || 'CL');
+const countryConfig = computed(() => getCountryConfig(tenantCountry.value));
+const docLabel = computed(() => countryConfig.value.docName);
+const docPlaceholder = computed(() => countryConfig.value.placeholder);
 
 const currentStep = ref(1);
 
@@ -48,6 +61,19 @@ const createForm = reactive({
     phone: '',
     secondary_phone: '',
     address: '',
+});
+
+const isCreateRutValid = computed(() => {
+    if (!createForm.rut) return null;
+    return validateIdentification(createForm.rut, tenantCountry.value);
+});
+
+watch(() => createForm.rut, (newVal) => {
+    if (!newVal) return;
+    const formatted = formatIdentification(newVal, tenantCountry.value);
+    if (formatted !== newVal) {
+        createForm.rut = formatted;
+    }
 });
 
 const vehicleCatalog = reactive(useVehicleCatalog({
@@ -545,11 +571,32 @@ const submit = () => {
                                 <p class="text-[10px] font-black uppercase tracking-widest text-[#FF7A00]">Datos del cliente</p>
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">RUT *</label>
-                                        <input v-model="createForm.rut" type="text"
-                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
-                                            placeholder="12.345.678-9" />
+                                        <div class="flex items-center justify-between mb-1.5">
+                                            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">{{ docLabel }} *</label>
+                                            <span v-if="countryConfig" class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                                {{ countryConfig.flag }}
+                                            </span>
+                                        </div>
+                                        <div class="relative">
+                                            <input v-model="createForm.rut" type="text"
+                                                class="w-full rounded-xl border bg-white px-4 py-3 text-sm font-bold text-gray-900 uppercase placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2"
+                                                :class="[
+                                                    createErrors.rut
+                                                        ? 'border-rose-300 focus:ring-rose-400'
+                                                        : isCreateRutValid === true
+                                                            ? 'border-emerald-300 focus:ring-emerald-400'
+                                                            : 'border-gray-300 focus:ring-[#FF7A00]',
+                                                ]"
+                                                :placeholder="docPlaceholder" />
+                                            <div v-if="createForm.rut" class="absolute inset-y-0 right-3 flex items-center">
+                                                <span v-if="isCreateRutValid === true" class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-black">✓</span>
+                                                <span v-else-if="isCreateRutValid === false && createForm.rut.length >= 7" class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-600 text-xs font-black">!</span>
+                                            </div>
+                                        </div>
                                         <p v-if="createErrors.rut" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.rut[0] }}</p>
+                                        <p v-else-if="isCreateRutValid === false && createForm.rut.length >= 7" class="mt-1 text-[9px] font-semibold text-amber-600">
+                                            Revise el dígito verificador (ej: {{ docPlaceholder }})
+                                        </p>
                                     </div>
                                     <div>
                                         <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Nombre *</label>

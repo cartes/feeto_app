@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\Country;
 use App\Http\Requests\AddQuoteItemRequest;
 use App\Http\Requests\RespondToQuoteRequest;
 use App\Http\Requests\SendQuoteRequest;
@@ -17,6 +18,7 @@ use App\Models\Service;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Rules\ValidIdentification;
 use App\Services\ManualQuoteService;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
@@ -286,7 +288,7 @@ class ManualQuoteController extends Controller
             ],
             'vehicle_model' => ['nullable', 'string', 'max:100'],
             'vehicle_brand' => ['nullable', 'string', 'max:100'],
-            'rut' => ['required', 'string', 'max:20'],
+            'rut' => ['required', 'string', 'max:20', new ValidIdentification(Tenant::current()?->country() ?? Country::Chile)],
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'secondary_phone' => ['nullable', 'string', 'max:20'],

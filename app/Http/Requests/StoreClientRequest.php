@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\Country;
+use App\Models\Tenant;
+use App\Rules\ValidIdentification;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,9 +22,11 @@ class StoreClientRequest extends FormRequest
      */
     public function rules(): array
     {
+        $country = Tenant::current()?->country() ?? Country::Chile;
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'rut' => ['required', 'string', 'max:20'],
+            'rut' => ['required', 'string', 'max:20', new ValidIdentification($country)],
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'max_credit_limit' => ['nullable', 'numeric', 'min:0'],

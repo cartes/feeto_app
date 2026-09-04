@@ -7,6 +7,7 @@ namespace App\Http\Requests;
 use App\Enums\Country;
 use App\Models\Tenant;
 use App\Rules\LicensePlate;
+use App\Rules\ValidIdentification;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -49,7 +50,7 @@ class StoreReceptionOrderRequest extends FormRequest
             'brand' => ['required', 'string', 'max:255'],
             'model' => ['required', 'string', 'max:255'],
             'client_name' => ['required', 'string', 'max:255'],
-            'client_rut' => ['required', 'string', 'max:255'],
+            'client_rut' => ['required', 'string', 'max:255', new ValidIdentification(Tenant::current()?->country() ?? Country::Chile)],
             'client_email' => ['nullable', 'email', 'max:255'],
             'client_phone' => ['nullable', 'string', 'max:255'],
             'selected_client_id' => [

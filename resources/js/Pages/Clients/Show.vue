@@ -1,12 +1,19 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
+import { useIdentification } from '@/composables/useIdentification';
 
+const page = usePage();
 const { tenantRouteParams } = useTenantRouting();
 const { formatCurrency, formatDate, formatDateTime } = useFormatting();
+const { getCountryConfig } = useIdentification();
+
+const tenantCountry = computed(() => page.props.tenantContext?.country || 'CL');
+const countryConfig = computed(() => getCountryConfig(tenantCountry.value));
+const docLabel = computed(() => countryConfig.value.docName);
 
 const props = defineProps({
     client: Object,
@@ -133,7 +140,7 @@ const submitNote = () => {
 
                     <div class="grid grid-cols-1 gap-3">
                         <div class="rounded-2xl bg-gray-50/80 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">RUT</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">{{ docLabel }}</p>
                             <p class="mt-1 text-sm font-bold text-gray-900">{{ client.rut }}</p>
                         </div>
                         <div class="rounded-2xl bg-gray-50/80 p-4">

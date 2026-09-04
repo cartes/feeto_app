@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\Country;
 use App\Enums\TenantPlan;
+use App\Rules\ValidIdentification;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,9 +28,12 @@ class StoreTenantRequest extends FormRequest
      */
     public function rules(): array
     {
+        $country = Country::tryFrom((string) $this->input('country')) ?? Country::Chile;
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'rut_taller' => ['nullable', 'string', 'max:20', 'unique:tenants,rut_taller'],
+            'country' => ['nullable', Rule::enum(Country::class)],
+            'rut_taller' => ['nullable', 'string', 'max:20', 'unique:tenants,rut_taller', new ValidIdentification($country)],
             'domain' => ['nullable', 'string', 'max:255', 'unique:tenants,domain'],
             'plan' => ['required', Rule::enum(TenantPlan::class)],
             'status' => ['required', 'in:active,suspended'],

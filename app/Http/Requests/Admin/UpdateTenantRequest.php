@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Tenant;
+use App\Rules\ValidIdentification;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -23,9 +25,21 @@ class UpdateTenantRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tenantId = $this->route('tenant') instanceof Tenant
+            ? $this->route('tenant')->id
+            : $this->route('tenant');
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'domain' => ['required', 'string', 'max:255', Rule::unique('tenants', 'domain')->ignore($this->route('tenant'))],
+            'country' => ['nullable', 'string', 'size:2'],
+            'rut_taller' => [
+                'nullable',
+                'string',
+                'max:30',
+                Rule::unique('tenants', 'rut_taller')->ignore($tenantId),
+                new ValidIdentification($this->input('country')),
+            ],
+            'domain' => ['required', 'string', 'max:255', Rule::unique('tenants', 'domain')->ignore($tenantId)],
             'plan_id' => ['required', 'exists:plans,id'],
             'status' => ['required', 'in:active,suspended'],
             'subscription_ends_at' => ['nullable', 'date'],

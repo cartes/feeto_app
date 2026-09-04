@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Country;
 use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTenantRequest;
@@ -55,11 +56,17 @@ class TenantController extends Controller
             $slug = Tenant::generateUniqueSlug($validated['name']);
             $domain = $validated['domain'] ?? $this->generateUniqueDomain($slug);
 
+            $country = Country::tryFrom((string) ($validated['country'] ?? 'CL')) ?? Country::Chile;
+            $rutTaller = ! empty($validated['rut_taller'])
+                ? $country->formatIdentification($validated['rut_taller'])
+                : null;
+
             $tenant = Tenant::create([
                 'name' => $validated['name'],
                 'slug' => $slug,
                 'domain' => $domain,
-                'rut_taller' => $validated['rut_taller'],
+                'country' => $country,
+                'rut_taller' => $rutTaller,
                 'plan' => $validated['plan'],
                 'is_active' => $validated['status'] === 'active',
                 'status' => $validated['status'],
@@ -114,6 +121,8 @@ class TenantController extends Controller
             'tenant' => [
                 'id' => $tenant->id,
                 'name' => $tenant->name,
+                'country' => $tenant->country?->value ?? 'CL',
+                'rut_taller' => $tenant->rut_taller,
                 'domain' => $tenant->domain,
                 'plan' => $tenant->plan,
                 'plan_id' => $planId,
@@ -150,9 +159,15 @@ class TenantController extends Controller
         $validated = $request->validated();
         $plan = Plan::query()->findOrFail($validated['plan_id']);
         $resolvedPlan = TenantPlan::fromPlanModel($plan)?->value ?? $plan->slug;
+        $country = Country::tryFrom((string) ($validated['country'] ?? 'CL')) ?? Country::Chile;
+        $rutTaller = ! empty($validated['rut_taller'])
+            ? $country->formatIdentification($validated['rut_taller'])
+            : null;
 
         $tenant->update([
             'name' => $validated['name'],
+            'country' => $country,
+            'rut_taller' => $rutTaller,
             'domain' => $validated['domain'],
             'plan_id' => $plan->id,
             'plan' => $resolvedPlan,

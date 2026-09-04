@@ -1,13 +1,21 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import PasswordInput from '@/Components/PasswordInput.vue';
+import { useIdentification } from '@/composables/useIdentification';
 
 const props = defineProps({
     tenant: Object,
     plans: Array,
 });
+
+const {
+    formatIdentification,
+    validateIdentification,
+    getCountryConfig,
+    COUNTRY_CONFIGS,
+} = useIdentification();
 
 const activeTab = ref('details');
 
@@ -38,6 +46,8 @@ const trialEndDateForMonths = (months) => {
 
 const tenantForm = useForm({
     name: props.tenant.name || '',
+    country: props.tenant.country || 'CL',
+    rut_taller: props.tenant.rut_taller ? formatIdentification(props.tenant.rut_taller, props.tenant.country || 'CL') : '',
     domain: props.tenant.domain || '',
     plan_id: props.tenant.plan_id ?? props.plans[0]?.id ?? null,
     status: props.tenant.status || 'active',
@@ -46,6 +56,23 @@ const tenantForm = useForm({
     comuna: props.tenant.comuna || '',
     whatsapp_number: props.tenant.whatsapp_number || '',
     subscription_ends_at: props.tenant.subscription_ends_at || '',
+});
+
+const countryConfig = computed(() => getCountryConfig(tenantForm.country));
+const docLabel = computed(() => countryConfig.value.docName);
+const docPlaceholder = computed(() => countryConfig.value.placeholder);
+
+const isRutValid = computed(() => {
+    if (!tenantForm.rut_taller) return null;
+    return validateIdentification(tenantForm.rut_taller, tenantForm.country);
+});
+
+watch(() => tenantForm.rut_taller, (newVal) => {
+    if (!newVal) return;
+    const formatted = formatIdentification(newVal, tenantForm.country);
+    if (formatted !== newVal) {
+        tenantForm.rut_taller = formatted;
+    }
 });
 
 const adminForm = useForm({
@@ -126,10 +153,52 @@ const setTrialPeriod = (months) => {
                 <!-- Tab 1: Tenant Details -->
                 <div v-show="activeTab === 'details'">
                     <form @submit.prevent="submitTenant" class="space-y-6 max-w-2xl">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Nombre del Taller</label>
+                                <input type="text" id="name" v-model="tenantForm.name" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" />
+                                <div v-if="tenantForm.errors.name" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.name }}</div>
+                            </div>
+                            <div>
+                                <label for="country" class="block text-sm font-medium text-gray-700">País</label>
+                                <select id="country" v-model="tenantForm.country" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                                    <option v-for="(cfg, code) in COUNTRY_CONFIGS" :key="code" :value="code">
+                                        {{ cfg.flag }} {{ cfg.name }} ({{ cfg.docName }})
+                                    </option>
+                                </select>
+                                <div v-if="tenantForm.errors.country" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.country }}</div>
+                            </div>
+                        </div>
+
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre del Taller</label>
-                            <input type="text" id="name" v-model="tenantForm.name" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm" />
-                            <div v-if="tenantForm.errors.name" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.name }}</div>
+                            <label for="rut_taller" class="block text-sm font-medium text-gray-700">
+                                {{ docLabel }} del Taller
+                            </label>
+                            <div class="relative mt-2 rounded-md shadow-sm">
+                                <input
+                                    type="text"
+                                    id="rut_taller"
+                                    v-model="tenantForm.rut_taller"
+                                    :placeholder="docPlaceholder"
+                                    class="block w-full rounded-md border-gray-200 pr-10 text-gray-900 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                                />
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <span v-if="isRutValid === true" class="text-emerald-600" title="Dígito verificador válido">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </span>
+                                    <span v-else-if="isRutValid === false" class="text-rose-500" title="Dígito verificador inválido">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <p v-if="isRutValid === false" class="mt-1 text-xs text-rose-500">
+                                El dígito verificador no es válido para {{ countryConfig.name }}.
+                            </p>
+                            <div v-if="tenantForm.errors.rut_taller" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.rut_taller }}</div>
                         </div>
 
                         <div>

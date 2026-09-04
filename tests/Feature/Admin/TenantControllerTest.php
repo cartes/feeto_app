@@ -176,7 +176,7 @@ class TenantControllerTest extends TestCase
         $response = $this->actingAs($this->superAdmin)
             ->post(route('admin.tenants.store'), [
                 'name' => 'Taller Manuel',
-                'rut_taller' => '12.345.678-9',
+                'rut_taller' => '12345678-5',
                 'domain' => 'manual.tallerflow.test',
                 'plan' => 'basico',
                 'status' => 'active',
@@ -190,7 +190,7 @@ class TenantControllerTest extends TestCase
 
         $this->assertDatabaseHas('tenants', [
             'name' => 'Taller Manuel',
-            'rut_taller' => '12.345.678-9',
+            'rut_taller' => '12345678-5',
             'domain' => 'manual.tallerflow.test',
             'plan' => 'basico',
             'status' => 'active',
@@ -209,7 +209,7 @@ class TenantControllerTest extends TestCase
     {
         // Create an existing tenant to conflict with unique fields
         $existingTenant = Tenant::factory()->create([
-            'rut_taller' => '12.345.678-9',
+            'rut_taller' => '12345678-5',
             'domain' => 'manual.tallerflow.test',
         ]);
 
@@ -220,7 +220,7 @@ class TenantControllerTest extends TestCase
         $response = $this->actingAs($this->superAdmin)
             ->post(route('admin.tenants.store'), [
                 'name' => '', // required
-                'rut_taller' => '12.345.678-9', // unique
+                'rut_taller' => '12345678-5', // unique
                 'domain' => 'manual.tallerflow.test', // unique
                 'plan' => 'invalid-plan', // invalid enum
                 'status' => 'invalid-status', // invalid in

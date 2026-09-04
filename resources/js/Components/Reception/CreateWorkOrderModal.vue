@@ -6,6 +6,7 @@ import VehicleDamageDiagram from '@/Components/Reception/VehicleDamageDiagram.vu
 import SignaturePad from '@/Components/Reception/SignaturePad.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
+import { useIdentification } from '@/composables/useIdentification';
 import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 
 const props = defineProps({
@@ -32,6 +33,17 @@ const emit = defineEmits(['update:show', 'close', 'created']);
 const page = usePage();
 const { tenantRouteParams } = useTenantRouting();
 const { debounce } = useDebounce();
+const {
+    cleanIdentification,
+    formatIdentification,
+    validateIdentification,
+    getCountryConfig,
+} = useIdentification();
+
+const tenantCountry = computed(() => page.props.tenantContext?.country || 'CL');
+const countryConfig = computed(() => getCountryConfig(tenantCountry.value));
+const docLabel = computed(() => countryConfig.value.docName);
+const docPlaceholder = computed(() => countryConfig.value.placeholder);
 
 const brandsCatalog = computed(() => {
     if (props.vehicleCatalogBrands && props.vehicleCatalogBrands.length > 0) {
@@ -418,8 +430,22 @@ watch(() => form.reassign_vehicle_owner, (shouldReassign) => {
     }
 });
 
+const isRutValid = computed(() => {
+    if (!form.client_rut) return null;
+    return validateIdentification(form.client_rut, tenantCountry.value);
+});
+
 watch(() => form.client_rut, (newVal) => {
-    if (!newVal || selectedExistingClient.value) {
+    if (!newVal) {
+        rutLookupResult.value = null;
+        return;
+    }
+    const formatted = formatIdentification(newVal, tenantCountry.value);
+    if (formatted !== newVal) {
+        form.client_rut = formatted;
+        return;
+    }
+    if (selectedExistingClient.value) {
         rutLookupResult.value = null;
         return;
     }
@@ -785,18 +811,35 @@ const handleCreateOrder = () => {
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
-                                    <label
-                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">RUT</label>
+                                    <div class="flex items-center justify-between">
+                                        <label
+                                            class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ docLabel }}</label>
+                                        <span v-if="countryConfig" class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                            {{ countryConfig.flag }}
+                                        </span>
+                                    </div>
                                     <div class="relative">
                                         <input v-model="form.client_rut" type="text"
-                                            class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
-                                            placeholder="12.345.678-9" />
-                                        <div v-if="isLookingUpRut" class="absolute inset-y-0 right-4 flex items-center">
-                                            <div class="h-4 w-4 rounded-full border-2 border-gray-200 border-t-[#FF7A00] animate-spin"></div>
+                                            class="w-full bg-white border text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none transition-all shadow-sm uppercase"
+                                            :class="[
+                                                form.errors.client_rut
+                                                    ? 'border-rose-300 focus:ring-2 focus:ring-rose-400'
+                                                    : isRutValid === true
+                                                        ? 'border-emerald-300 focus:ring-2 focus:ring-emerald-400'
+                                                        : 'border-gray-300 focus:ring-2 focus:ring-[#FF7A00]',
+                                            ]"
+                                            :placeholder="docPlaceholder" />
+                                        <div class="absolute inset-y-0 right-4 flex items-center gap-1.5">
+                                            <div v-if="isLookingUpRut" class="h-4 w-4 rounded-full border-2 border-gray-200 border-t-[#FF7A00] animate-spin"></div>
+                                            <span v-else-if="isRutValid === true" class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-black" title="Dígito verificador válido">✓</span>
+                                            <span v-else-if="isRutValid === false && form.client_rut.length >= 7" class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-600 text-xs font-black" title="Verifique el dígito verificador">!</span>
                                         </div>
                                     </div>
                                     <p v-if="rutLookupResult === 'found'" class="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">
                                         ✓ Cliente encontrado y vinculado
+                                    </p>
+                                    <p v-else-if="isRutValid === false && form.client_rut.length >= 7" class="text-amber-600 text-[9px] font-semibold ml-1">
+                                        Revise el dígito verificador (ej: {{ docPlaceholder }})
                                     </p>
                                     <p v-if="form.errors.client_rut" class="text-red-500 text-[10px] font-medium ml-1">
                                         {{ form.errors.client_rut }}</p>

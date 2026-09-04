@@ -425,7 +425,7 @@ class ReceptionControllerTest extends TestCase
             'brand' => 'toyota manipulada',
             'model' => 'corolla manipulada',
             'client_name' => 'Juan Cliente',
-            'client_rut' => '12345678-9',
+            'client_rut' => '12345678-5',
             'client_email' => '',
             'client_phone' => '',
             'selected_client_id' => null,
