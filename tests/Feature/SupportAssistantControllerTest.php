@@ -30,6 +30,21 @@ class SupportAssistantControllerTest extends TestCase
             ->assertJsonPath('faqs.0.id', 'reception-new-manual-ot');
     }
 
+    public function test_faq_endpoint_returns_work_orders_faqs_including_manual_ot_creation(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $response = $this->actingAs($admin)->getJson(route('support.faq', [
+            'tenantBySlug' => $tenant->slug,
+            'section' => 'work-orders',
+        ]));
+
+        $response->assertOk()
+            ->assertJsonPath('faqs.0.id', 'work-orders-create-manual')
+            ->assertJsonPath('faqs.0.selector', '[data-support="work-orders-create-manual"]');
+    }
+
     public function test_faq_endpoint_returns_empty_list_for_unknown_section(): void
     {
         $tenant = $this->setUpTenant();

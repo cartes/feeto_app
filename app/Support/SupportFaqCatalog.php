@@ -54,6 +54,12 @@ class SupportFaqCatalog
 
             'work-orders' => [
                 [
+                    'id' => 'work-orders-create-manual',
+                    'question' => '¿Cómo creo una nueva orden de trabajo (OT) manualmente?',
+                    'answer' => 'Presiona el botón "Nueva OT" en la parte superior del tablero. Se abrirá el formulario para ingresar la patente, datos del vehículo, cliente y checklist de recepción.',
+                    'selector' => '[data-support="work-orders-create-manual"]',
+                ],
+                [
                     'id' => 'work-orders-status-change',
                     'question' => '¿Cómo cambio el estado de una orden de trabajo?',
                     'answer' => 'En la vista Tablero, arrastra la tarjeta de la orden desde su columna actual hasta la columna del nuevo estado (drag-and-drop). El cambio se guarda automáticamente al soltarla.',

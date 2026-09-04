@@ -13,6 +13,7 @@ use App\Models\Service;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
+use App\Services\VehicleCatalogService;
 use App\Services\WorkOrderQuoteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class WorkOrderController extends Controller
     /**
      * Muestra el Tablero Kanban o el Listado con todas las órdenes de trabajo del taller.
      */
-    public function index(Request $request): Response
+    public function index(Request $request, VehicleCatalogService $vehicleCatalogService): Response
     {
         $statuses = WorkOrder::statuses();
         $tenantId = Tenant::current()?->id;
@@ -99,6 +100,7 @@ class WorkOrderController extends Controller
             'kanban' => $kanban,
             'orders' => $orders,
             'tenantId' => $tenantId ?? 0,
+            'vehicleCatalogBrands' => $vehicleCatalogService->brandOptions(),
             'filters' => [
                 'view' => $viewMode,
                 'month' => $month,

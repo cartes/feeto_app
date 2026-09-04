@@ -6,6 +6,7 @@ import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import VehicleDamageDiagram from '@/Components/Reception/VehicleDamageDiagram.vue';
+import CreateWorkOrderModal from '@/Components/Reception/CreateWorkOrderModal.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
 import { useFormatting } from '@/composables/useFormatting';
@@ -14,7 +15,8 @@ const props = defineProps({
     kanban: Object,
     orders: Object,
     filters: Object,
-    tenantId: Number
+    tenantId: Number,
+    vehicleCatalogBrands: Array,
 });
 
 const { page, tenantRouteParams } = useTenantRouting();
@@ -30,6 +32,10 @@ const isSuperAdmin = computed(() => Boolean(page.props.auth?.user?.is_super_admi
 const canDeleteWorkOrder = computed(() => (
     isSuperAdmin.value || permissions.value.includes('work-orders.delete')
 ));
+const canCreateWorkOrder = computed(() => (
+    isSuperAdmin.value || permissions.value.includes('appointments.manage')
+));
+const isCreateOrderModalOpen = ref(false);
 
 // Column identifiers and headers (moved to top for early reference)
 const columns = [
@@ -511,29 +517,46 @@ const submitDeleteWorkOrder = () => {
                 </p>
             </div>
 
-            <!-- View Switcher (Tabs / Icons) -->
-            <div
-                data-tour="work-orders-view-switch"
-                class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm shrink-0 self-start md:self-auto">
-                <button type="button" @click="setViewMode('kanban')"
-                    :class="viewMode === 'kanban' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                    class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <div class="flex items-center gap-3 shrink-0 self-start md:self-auto flex-wrap">
+                <!-- Botón Nueva OT (Creación Manual) -->
+                <button
+                    v-if="canCreateWorkOrder"
+                    type="button"
+                    data-support="work-orders-create-manual"
+                    data-tour="work-orders-create-manual"
+                    @click="isCreateOrderModalOpen = true"
+                    class="rounded-2xl bg-[#FF7A00] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white shadow-[0_8px_20px_rgba(255,122,0,0.3)] transition-all hover:bg-[#CC6200] hover:shadow-[0_12px_25px_rgba(255,122,0,0.4)] active:scale-95 flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
-                    Tablero
+                    <span>Nueva OT</span>
                 </button>
-                <button type="button" @click="setViewMode('list')"
-                    :class="viewMode === 'list' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                    class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    Listado
-                </button>
+
+                <!-- View Switcher (Tabs / Icons) -->
+                <div
+                    data-tour="work-orders-view-switch"
+                    class="inline-flex rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-1 shadow-sm">
+                    <button type="button" @click="setViewMode('kanban')"
+                        :class="viewMode === 'kanban' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                        class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Tablero
+                    </button>
+                    <button type="button" @click="setViewMode('list')"
+                        :class="viewMode === 'list' ? 'bg-[#FF7A00] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                        class="rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        Listado
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1519,6 +1542,12 @@ const submitDeleteWorkOrder = () => {
                 </div>
             </div>
         </div>
+
+        <!-- Modal de Creación Manual de Orden de Trabajo -->
+        <CreateWorkOrderModal
+            v-model:show="isCreateOrderModalOpen"
+            :vehicle-catalog-brands="props.vehicleCatalogBrands"
+        />
     </TallerLayout>
 </template>
 

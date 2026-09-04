@@ -66,6 +66,17 @@ class WorkOrderStatusTest extends TestCase
             );
     }
 
+    public function test_work_orders_index_shares_vehicle_catalog_brands(): void
+    {
+        $this->actingAs($this->user)
+            ->get(route('work-orders.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('WorkOrders/Index')
+                ->has('vehicleCatalogBrands')
+            );
+    }
+
     public function test_work_order_can_move_to_control_calidad(): void
     {
         Event::fake([WorkOrderStatusUpdated::class]);
