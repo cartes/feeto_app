@@ -85,35 +85,41 @@ const stopAutoPlay = () => {
     }
 };
 
-let scrollHandler = null;
+let observer = null;
 
 onMounted(() => {
-    scrollHandler = () => {
-        const benefits = document.getElementById('benefits');
-        const pricing = document.getElementById('pricing');
-
-        if (!benefits) return;
-
-        const scrollY = window.scrollY;
-        const benefitsTop = benefits.getBoundingClientRect().top + scrollY;
-        const pricingTop = pricing ? pricing.getBoundingClientRect().top + scrollY : Number.POSITIVE_INFINITY;
-
-        if (scrollY >= pricingTop - 180) {
-            activeSection.value = 'pricing';
-        } else if (scrollY >= benefitsTop - 180) {
-            activeSection.value = 'benefits';
-        } else {
-            activeSection.value = 'features';
-        }
-    };
-
-    scrollHandler();
-    window.addEventListener('scroll', scrollHandler, { passive: true });
     startAutoPlay();
+
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'pricing') {
+                        activeSection.value = 'pricing';
+                    } else if (entry.target.id === 'benefits') {
+                        activeSection.value = 'benefits';
+                    } else if (entry.target.id === 'features' || entry.target.classList.contains('hero')) {
+                        activeSection.value = 'features';
+                    }
+                }
+            });
+        }, { rootMargin: '-20% 0px -60% 0px', threshold: 0.05 });
+
+        const featuresEl = document.getElementById('features') || document.querySelector('.hero');
+        const benefitsEl = document.getElementById('benefits');
+        const pricingEl = document.getElementById('pricing');
+
+        if (featuresEl) observer.observe(featuresEl);
+        if (benefitsEl) observer.observe(benefitsEl);
+        if (pricingEl) observer.observe(pricingEl);
+    }
 });
 
 onUnmounted(() => {
-    if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
+    if (observer) {
+        observer.disconnect();
+        observer = null;
+    }
     stopAutoPlay();
 });
 </script>
@@ -124,7 +130,7 @@ onUnmounted(() => {
 
     <PublicNav :can-login="canLogin" :active-section="activeSection" />
 
-    <div class="min-h-screen bg-white font-sans antialiased">
+    <main class="min-h-screen bg-white font-sans antialiased">
         <div class="dark-wrapper">
             <div class="hero-page">
                 <section class="hero layout-car-left">
@@ -1100,7 +1106,7 @@ onUnmounted(() => {
         <PublicFooter />
 
         <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
-    </div>
+    </main>
 </template>
 
 <style scoped>
