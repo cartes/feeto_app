@@ -107,6 +107,7 @@ const minDate = computed(() => {
 });
 
 const primaryColor = computed(() => props.tenant?.primary_color ?? '#FF7A00');
+const branchImage = computed(() => props.tenant?.logo_url || props.seo?.og_image || null);
 
 const phoneNumber = computed(() => {
     const mainBranch = props.tenant.branches?.find(b => b.is_main);
@@ -309,6 +310,7 @@ const trackWhatsAppClick = () => {
                                 :itemscope="true"
                                 itemtype="https://schema.org/AutoRepair"
                             >
+                                <meta v-if="branchImage" itemprop="image" :content="branchImage" />
                                 <div class="flex items-center gap-2 flex-wrap mb-2">
                                     <span
                                         class="h-2 w-2 rounded-full shrink-0"
