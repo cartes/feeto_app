@@ -29,9 +29,67 @@ const formatDate = (dateStr) => {
     <PublicNav :can-login="true" active-section="blog" />
 
     <div class="min-h-screen bg-slate-50 font-sans antialiased flex flex-col justify-between">
-        <main class="flex-grow pt-28 pb-20">
-            <article class="max-w-4xl mx-auto px-6 lg:px-8">
+        <main class="flex-grow pb-20">
+            <!-- Hero (featured image) -->
+            <div v-if="post.featured_image_url" class="relative w-full h-[58vh] min-h-[420px] max-h-[620px] overflow-hidden">
+                <img
+                    :src="post.featured_image_url"
+                    :alt="post.featured_media?.alt_text || post.title"
+                    class="absolute inset-0 w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10"></div>
+
                 <!-- Back Link -->
+                <div class="absolute inset-x-0 top-24 md:top-28">
+                    <div class="max-w-4xl mx-auto px-6 lg:px-8">
+                        <Link
+                            :href="route('blog.index')"
+                            class="inline-flex items-center gap-1 text-xs font-bold text-white/80 hover:text-white transition group"
+                        >
+                            <svg class="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                            Volver al blog
+                        </Link>
+                    </div>
+                </div>
+
+                <!-- Title block -->
+                <div class="absolute inset-x-0 bottom-0">
+                    <div class="max-w-4xl mx-auto px-6 lg:px-8 pb-10 md:pb-14">
+                        <div class="flex items-center gap-3 text-xs text-white/70 mb-4 flex-wrap">
+                            <span v-if="!post.is_published" class="px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-semibold uppercase tracking-wider">
+                                Borrador
+                            </span>
+                            <span v-if="!post.is_published">•</span>
+                            <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
+                            <span>•</span>
+                            <span>Por TallerFlow</span>
+                            <span>•</span>
+                            <span>{{ seo.reading_minutes }} min de lectura</span>
+                            <template v-if="post.categories?.length">
+                                <span>•</span>
+                                <Link
+                                    v-for="cat in post.categories"
+                                    :key="cat.id"
+                                    :href="route('blog.category', cat.slug)"
+                                    class="px-2.5 py-0.5 rounded-full text-white text-xs font-bold transition-opacity hover:opacity-90"
+                                    :style="`background-color: ${cat.color}`"
+                                >{{ cat.name }}</Link>
+                            </template>
+                        </div>
+                        <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4 drop-shadow-sm">
+                            {{ post.title }}
+                        </h1>
+                        <p v-if="post.summary" class="text-lg text-white/85 leading-relaxed font-medium max-w-2xl">
+                            {{ post.summary }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header (no featured image) -->
+            <header v-else class="max-w-4xl mx-auto px-6 lg:px-8 pt-28 mb-10">
                 <div class="mb-8">
                     <Link
                         :href="route('blog.index')"
@@ -43,47 +101,36 @@ const formatDate = (dateStr) => {
                         Volver al blog
                     </Link>
                 </div>
-
-                <!-- Header -->
-                <header class="mb-10">
-                    <div class="flex items-center gap-3 text-xs text-slate-400 mb-4 flex-wrap">
-                        <span v-if="!post.is_published" class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
-                            Borrador
-                        </span>
-                        <span v-if="!post.is_published">•</span>
-                        <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
+                <div class="flex items-center gap-3 text-xs text-slate-400 mb-4 flex-wrap">
+                    <span v-if="!post.is_published" class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
+                        Borrador
+                    </span>
+                    <span v-if="!post.is_published">•</span>
+                    <span>{{ formatDate(post.published_at ?? post.created_at) }}</span>
+                    <span>•</span>
+                    <span>Por TallerFlow</span>
+                    <span>•</span>
+                    <span>{{ seo.reading_minutes }} min de lectura</span>
+                    <template v-if="post.categories?.length">
                         <span>•</span>
-                        <span>Por TallerFlow</span>
-                        <span>•</span>
-                        <span>{{ seo.reading_minutes }} min de lectura</span>
-                        <template v-if="post.categories?.length">
-                            <span>•</span>
-                            <Link
-                                v-for="cat in post.categories"
-                                :key="cat.id"
-                                :href="route('blog.category', cat.slug)"
-                                class="px-2.5 py-0.5 rounded-full text-white text-xs font-bold transition-opacity hover:opacity-90"
-                                :style="`background-color: ${cat.color}`"
-                            >{{ cat.name }}</Link>
-                        </template>
-                    </div>
-                    <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">
-                        {{ post.title }}
-                    </h1>
-                    <p v-if="post.summary" class="text-lg text-slate-500 leading-relaxed font-medium">
-                        {{ post.summary }}
-                    </p>
-                </header>
-
-                <!-- Featured Image -->
-                <div v-if="post.featured_image_url" class="aspect-[21/9] rounded-3xl overflow-hidden shadow-sm border border-slate-100 mb-12">
-                    <img
-                        :src="post.featured_image_url"
-                        :alt="post.featured_media?.alt_text || post.title"
-                        class="w-full h-full object-cover"
-                    />
+                        <Link
+                            v-for="cat in post.categories"
+                            :key="cat.id"
+                            :href="route('blog.category', cat.slug)"
+                            class="px-2.5 py-0.5 rounded-full text-white text-xs font-bold transition-opacity hover:opacity-90"
+                            :style="`background-color: ${cat.color}`"
+                        >{{ cat.name }}</Link>
+                    </template>
                 </div>
+                <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">
+                    {{ post.title }}
+                </h1>
+                <p v-if="post.summary" class="text-lg text-slate-500 leading-relaxed font-medium">
+                    {{ post.summary }}
+                </p>
+            </header>
 
+            <article class="max-w-4xl mx-auto px-6 lg:px-8" :class="post.featured_image_url ? 'pt-10 md:pt-14' : ''">
                 <!-- Content -->
                 <div class="blog-content bg-white p-8 md:p-12 rounded-3xl border border-slate-100 shadow-sm mb-12" v-html="post.content"></div>
 
