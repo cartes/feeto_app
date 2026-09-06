@@ -183,4 +183,8 @@ const formatDate = (dateStr) => {
 .blog-content strong { font-weight: 700; color: #0f172a; }
 .blog-content a { color: #FF7A00; text-decoration: underline; font-weight: 600; }
 .blog-content a:hover { color: #CC6200; }
+.blog-content table { width: 100%; border-collapse: collapse; margin: 1.5em 0; table-layout: fixed; }
+.blog-content th, .blog-content td { border: 1px solid #e2e8f0; padding: 0.6em 0.9em; text-align: left; vertical-align: top; font-size: 0.98rem; color: #334155; }
+.blog-content th { background-color: #f8fafc; font-weight: 700; color: #0f172a; }
+.blog-content tr:nth-child(even) td { background-color: #fafafa; }
 </style>

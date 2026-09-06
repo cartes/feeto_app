@@ -101,6 +101,29 @@
 
       <div class="w-px bg-slate-200 mx-1 self-stretch"></div>
 
+      <!-- Table -->
+      <button type="button" @click="insertTable"
+        :class="editor?.isActive('table') ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:bg-slate-100'"
+        class="toolbar-btn" title="Insertar tabla">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>
+      </button>
+      <template v-if="editor?.isActive('table')">
+        <button type="button" @click="editor.chain().focus().addColumnAfter().run()"
+          class="toolbar-btn text-xs px-2 text-slate-600 hover:bg-slate-100" title="Agregar columna">+Col</button>
+        <button type="button" @click="editor.chain().focus().deleteColumn().run()"
+          class="toolbar-btn text-xs px-2 text-slate-600 hover:bg-slate-100" title="Eliminar columna">-Col</button>
+        <button type="button" @click="editor.chain().focus().addRowAfter().run()"
+          class="toolbar-btn text-xs px-2 text-slate-600 hover:bg-slate-100" title="Agregar fila">+Fila</button>
+        <button type="button" @click="editor.chain().focus().deleteRow().run()"
+          class="toolbar-btn text-xs px-2 text-slate-600 hover:bg-slate-100" title="Eliminar fila">-Fila</button>
+        <button type="button" @click="editor.chain().focus().deleteTable().run()"
+          class="toolbar-btn text-slate-600 hover:bg-slate-100" title="Eliminar tabla">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </template>
+
+      <div class="w-px bg-slate-200 mx-1 self-stretch"></div>
+
       <!-- Undo / Redo -->
       <button type="button" @click="editor.chain().focus().undo().run()" :disabled="!editor?.can().undo()"
         class="toolbar-btn text-slate-600 hover:bg-slate-100 disabled:opacity-30" title="Deshacer (Ctrl+Z)">
@@ -125,6 +148,10 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
+import { Table } from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableHeader from '@tiptap/extension-table-header'
+import TableCell from '@tiptap/extension-table-cell'
 import { watch, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
@@ -143,6 +170,10 @@ const editor = useEditor({
     Link.configure({ openOnClick: false, HTMLAttributes: { class: 'tiptap-link' } }),
     Image.configure({ HTMLAttributes: { class: 'tiptap-image' } }),
     Placeholder.configure({ placeholder: props.placeholder }),
+    Table.configure({ resizable: true, HTMLAttributes: { class: 'tiptap-table' } }),
+    TableRow,
+    TableHeader,
+    TableCell,
   ],
   onUpdate: ({ editor }) => {
     emit('update:modelValue', editor.getHTML())
@@ -168,6 +199,10 @@ function setLink() {
 
 function insertImage(url) {
   editor.value.chain().focus().setImage({ src: url }).run()
+}
+
+function insertTable() {
+  editor.value.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
 }
 
 defineExpose({ insertImage })
@@ -201,4 +236,12 @@ onBeforeUnmount(() => editor.value?.destroy())
 .tiptap-content .ProseMirror .tiptap-link { @apply text-amber-600 underline; }
 .tiptap-content .ProseMirror .tiptap-image { @apply rounded-xl max-w-full my-4 border border-slate-200 shadow-sm; }
 .tiptap-content .ProseMirror hr { @apply border-slate-200 my-6; }
+
+.tiptap-content .ProseMirror table { @apply w-full my-4 border-collapse table-fixed; }
+.tiptap-content .ProseMirror table td,
+.tiptap-content .ProseMirror table th { @apply border border-slate-300 px-3 py-2 align-top relative; min-width: 1em; }
+.tiptap-content .ProseMirror table th { @apply bg-slate-100 font-semibold text-left; }
+.tiptap-content .ProseMirror table .selectedCell { @apply bg-amber-50; }
+.tiptap-content .ProseMirror table .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background-color: #f59e0b; pointer-events: none; }
+.tiptap-content .ProseMirror .tableWrapper { @apply overflow-x-auto; }
 </style>

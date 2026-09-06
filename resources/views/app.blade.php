@@ -18,7 +18,10 @@
             ? $seo['canonical_url']
             : request()->url();
         // Páginas sin bloque `seo` (app del taller, admin, login, tracking, checkout) no se indexan.
-        $seoRobots = is_array($seo) && filled($seoDescription)
+        // Nota: esto depende de que exista el bloque `seo` (identidad de página pública),
+        // no de si el admin dejó la descripción vacía — una descripción vacía no debe
+        // des-indexar la página ni quitarle canonical/OG.
+        $seoRobots = is_array($seo)
             ? ($seo['robots'] ?? \App\Support\MarketingSeoPages::DEFAULT_ROBOTS)
             : \App\Support\MarketingSeoPages::NOINDEX_ROBOTS;
         $seoSchema = is_array($seo) ? ($seo['schema'] ?? null) : null;
@@ -34,15 +37,19 @@
 
         {{-- Los tags marcados con `inertia` son reemplazados por <SeoHead> en el cliente (sin duplicados). --}}
         <title inertia>{{ $seoTitle }}</title>
-        @if (filled($seoDescription))
+        @if (is_array($seo))
             <meta name="robots" content="{{ $seoRobots }}" inertia>
-            <meta name="description" content="{{ $seoDescription }}" inertia>
+            @if (filled($seoDescription))
+                <meta name="description" content="{{ $seoDescription }}" inertia>
+            @endif
             <link rel="canonical" href="{{ $canonicalUrl }}" inertia>
             <meta property="og:type" content="{{ $seoOgType }}" inertia>
             <meta property="og:site_name" content="{{ \App\Support\MarketingSeoPages::SITE_NAME }}" inertia>
             <meta property="og:locale" content="{{ \App\Support\MarketingSeoPages::LOCALE }}" inertia>
             <meta property="og:title" content="{{ $seoTitle }}" inertia>
-            <meta property="og:description" content="{{ $seoDescription }}" inertia>
+            @if (filled($seoDescription))
+                <meta property="og:description" content="{{ $seoDescription }}" inertia>
+            @endif
             <meta property="og:url" content="{{ $canonicalUrl }}" inertia>
             @if (filled($seoImage))
                 <meta property="og:image" content="{{ $seoImage }}" inertia>
@@ -63,7 +70,9 @@
             <meta name="twitter:card" content="{{ $seoTwitterCard }}" inertia>
             <meta name="twitter:site" content="{{ \App\Support\MarketingSeoPages::TWITTER_SITE }}" inertia>
             <meta name="twitter:title" content="{{ $seoTitle }}" inertia>
-            <meta name="twitter:description" content="{{ $seoDescription }}" inertia>
+            @if (filled($seoDescription))
+                <meta name="twitter:description" content="{{ $seoDescription }}" inertia>
+            @endif
             @if (filled($seoImage))
                 <meta name="twitter:image" content="{{ $seoImage }}" inertia>
                 <meta name="twitter:image:alt" content="{{ $seoImageAlt }}" inertia>

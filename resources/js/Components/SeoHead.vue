@@ -21,6 +21,7 @@ const LOCALE = 'es_CL';
 const TWITTER_SITE = '@tallerflow';
 const DEFAULT_ROBOTS = 'index, follow, max-image-preview:large, max-snippet:-1';
 
+const hasSeo = computed(() => props.seo && Object.keys(props.seo).length > 0);
 const title = computed(() => props.seo?.title || props.fallbackTitle);
 const description = computed(() => props.seo?.description || '');
 const canonical = computed(() => props.seo?.canonical_url || null);
@@ -38,16 +39,16 @@ const modifiedTime = computed(() => props.seo?.modified_time || null);
 <template>
     <Head>
         <title>{{ title }}</title>
-        <template v-if="description">
+        <template v-if="hasSeo">
             <meta name="robots" :content="robots">
-            <meta name="description" :content="description">
+            <meta v-if="description" name="description" :content="description">
             <link v-if="canonical" rel="canonical" :href="canonical">
 
             <meta property="og:type" :content="ogType">
             <meta property="og:site_name" :content="SITE_NAME">
             <meta property="og:locale" :content="LOCALE">
             <meta property="og:title" :content="title">
-            <meta property="og:description" :content="description">
+            <meta v-if="description" property="og:description" :content="description">
             <meta v-if="canonical" property="og:url" :content="canonical">
             <template v-if="image">
                 <meta property="og:image" :content="image">
@@ -65,7 +66,7 @@ const modifiedTime = computed(() => props.seo?.modified_time || null);
             <meta name="twitter:card" :content="twitterCard">
             <meta name="twitter:site" :content="TWITTER_SITE">
             <meta name="twitter:title" :content="title">
-            <meta name="twitter:description" :content="description">
+            <meta v-if="description" name="twitter:description" :content="description">
             <template v-if="image">
                 <meta name="twitter:image" :content="image">
                 <meta name="twitter:image:alt" :content="imageAlt">
