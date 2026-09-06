@@ -24,22 +24,87 @@ class TenantController extends Controller
 
     public function index(Request $request): Response
     {
-        $search = $request->query('search', '');
+        $search = trim((string) $request->query('search', ''));
+        $perPage = (int) $request->query('per_page', 25);
+        if (! in_array($perPage, [25, 50, 100], true)) {
+            $perPage = 25;
+        }
 
-        $tenants = Tenant::query()
-            ->withCount('users')
-            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('slug', 'like', "%{$search}%")
-                    ->orWhere('rut_taller', 'like', "%{$search}%");
-            }))
-            ->latest()
-            ->paginate(20, ['id', 'name', 'slug', 'rut_taller', 'is_active', 'status', 'plan', 'plan_id', 'max_users', 'subscription_ends_at'])
-            ->withQueryString();
+        $allowedSorts = [
+            'usage',
+            'work_orders_count',
+            'name',
+            'slug',
+            'plan',
+            'users_count',
+            'status',
+            'subscription_ends_at',
+            'created_at',
+        ];
+
+        $sortBy = (string) $request->query('sort_by', 'usage');
+        if (! in_array($sortBy, $allowedSorts, true)) {
+            $sortBy = 'usage';
+        }
+
+        $defaultDirection = in_array($sortBy, ['usage', 'work_orders_count', 'subscription_ends_at', 'created_at', 'users_count'], true)
+            ? 'desc'
+            : 'asc';
+
+        $sortDirection = strtolower((string) $request->query('sort_direction', $defaultDirection));
+        if (! in_array($sortDirection, ['asc', 'desc'], true)) {
+            $sortDirection = $defaultDirection;
+        }
+
+        $query = Tenant::query()
+            ->withCount(['users', 'workOrders', 'appointments', 'loginLogs'])
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('rut_taller', 'like', "%{$search}%")
+                        ->orWhere('domain', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhereHas('users', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            });
+
+        if ($sortBy === 'usage') {
+            $query->orderBy('work_orders_count', $sortDirection)
+                ->orderBy('appointments_count', $sortDirection)
+                ->orderBy('login_logs_count', $sortDirection)
+                ->orderBy('id', 'desc');
+        } else {
+            $query->orderBy($sortBy, $sortDirection)
+                ->orderBy('id', 'desc');
+        }
+
+        $tenants = $query->paginate($perPage, [
+            'id',
+            'name',
+            'slug',
+            'rut_taller',
+            'domain',
+            'is_active',
+            'status',
+            'plan',
+            'plan_id',
+            'max_users',
+            'subscription_ends_at',
+            'created_at',
+        ])->withQueryString();
 
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,
-            'filters' => ['search' => $search],
+            'filters' => [
+                'search' => $search,
+                'sort_by' => $sortBy,
+                'sort_direction' => $sortDirection,
+                'per_page' => $perPage,
+            ],
         ]);
     }
 
