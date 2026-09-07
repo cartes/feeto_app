@@ -38,7 +38,7 @@ final class MarketingSeoPages
             'label' => 'Página de Inicio',
             'route' => 'home',
             'og_type' => 'website',
-            'default_title' => 'TallerFlow · Software para Talleres Mecánicos en Chile',
+            'default_title' => 'TallerFlow | Gestión digital',
             'default_description' => 'TallerFlow digitaliza la gestión de tu taller mecánico en Chile. Kanban en vivo, recepción con IA, inventario inteligente y WhatsApp automatizado. Prueba gratis 14 días.',
         ],
         'services' => [

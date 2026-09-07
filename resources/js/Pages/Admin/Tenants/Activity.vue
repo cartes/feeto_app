@@ -169,17 +169,17 @@ const statusBadge = {
         </div>
 
         <!-- Tabs -->
-        <div class="border-b border-slate-200 mb-6 overflow-x-auto">
-            <nav class="-mb-px flex gap-0 min-w-max">
+        <div class="border-b border-slate-200 mb-6 overflow-x-auto no-scrollbar scrollbar-none">
+            <nav class="-mb-px flex gap-1 min-w-max">
                 <button
                     v-for="tab in tabs"
                     :key="tab.id"
                     @click="activeTab = tab.id"
                     :class="[
-                        'px-4 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap transition-colors',
+                        'px-3 sm:px-3.5 lg:px-4 py-2.5 text-sm border-b-2 whitespace-nowrap transition-colors',
                         activeTab === tab.id
-                            ? 'border-indigo-600 text-indigo-700'
-                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
+                            ? 'border-orange-500 text-orange-600 font-semibold'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 font-medium',
                     ]"
                 >
                     {{ tab.label }}
@@ -525,3 +525,15 @@ const statusBadge = {
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar,
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>
