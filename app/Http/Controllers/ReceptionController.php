@@ -15,6 +15,7 @@ use App\Models\Tenant;
 use App\Models\Vehicle;
 use App\Models\WorkOrder;
 use App\Services\BoostrService;
+use App\Services\BranchContext;
 use App\Services\VehicleCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -176,8 +177,12 @@ class ReceptionController extends Controller
 
         $vehicle->save();
 
+        $branchContext = app(BranchContext::class);
+        $branchId = $branchContext->id() ?? $request->user()?->branch_id;
+
         $workOrder = WorkOrder::create([
             'vehicle_id' => $vehicle->id,
+            'branch_id' => $branchId,
             'status' => 'recepcion',
             'observations' => 'Creada vía Modal de Recepción Digital',
         ]);
@@ -203,10 +208,17 @@ class ReceptionController extends Controller
         $patente = $this->normalizePlate($request->validated('patente'));
         $plateOrigin = $this->detectForeignPlateOrigin($patente);
 
+        $branchContext = app(BranchContext::class);
+        $activeBranchId = $branchContext->id();
+
         $appointment = Appointment::where(function ($q) use ($patente): void {
             $q->where('plate', $patente)
                 ->orWhereRaw("REPLACE(REPLACE(plate, '-', ''), '·', '') = ?", [$patente]);
-        })->where('status', 'pending')->orderBy('appointment_date')->first();
+        })
+            ->when($activeBranchId !== null, fn ($q) => $q->where('branch_id', $activeBranchId))
+            ->where('status', 'pending')
+            ->orderBy('appointment_date')
+            ->first();
 
         $appointmentPayload = $appointment ? [
             'id' => $appointment->id,

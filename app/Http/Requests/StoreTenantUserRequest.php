@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Tenant;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTenantUserRequest extends FormRequest
 {
@@ -19,12 +21,19 @@ class StoreTenantUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tenantId = Tenant::current()?->id;
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required', 'string', 'min:8'],
             'role' => ['required', 'string', 'exists:roles,name'],
+            'branch_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('branches', 'id')->where('tenant_id', $tenantId),
+            ],
         ];
     }
 

@@ -341,22 +341,31 @@ class Tenant extends SpatieTenant
 
     public function branches(): HasMany
     {
-        return $this->hasMany(Branch::class);
+        return $this->hasMany(Branch::class)->withoutGlobalScope('tenant');
     }
 
     public function appointments(): HasMany
     {
-        return $this->hasMany(Appointment::class);
+        return $this->hasMany(Appointment::class)->withoutGlobalScope('tenant');
     }
 
     public function workOrders(): HasMany
     {
-        return $this->hasMany(WorkOrder::class);
+        return $this->hasMany(WorkOrder::class)->withoutGlobalScope('tenant');
     }
 
     public function clients(): HasMany
     {
-        return $this->hasMany(Client::class);
+        return $this->hasMany(Client::class)->withoutGlobalScope('tenant');
+    }
+
+    /**
+     * Obtiene la sucursal principal (Casa Matriz) del taller.
+     */
+    public function mainBranch(): ?Branch
+    {
+        return $this->branches()->where('is_main', true)->first()
+            ?? $this->branches()->first();
     }
 
     /**
@@ -364,8 +373,7 @@ class Tenant extends SpatieTenant
      */
     public function getNotificationEmail(): string
     {
-        $branch = $this->branches()->where('is_main', true)->first()
-            ?? $this->branches()->first();
+        $branch = $this->mainBranch();
 
         $email = $branch?->email;
 

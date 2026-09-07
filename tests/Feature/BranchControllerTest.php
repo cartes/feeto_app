@@ -22,6 +22,7 @@ class BranchControllerTest extends TestCase
         parent::setUp();
 
         $tenant = $this->setUpTenant();
+        $tenant->update(['plan' => 'empresa']);
 
         $this->admin = User::factory()->create([
             'tenant_id' => $tenant->id,

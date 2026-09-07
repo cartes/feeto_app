@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
+import BranchSwitcher from '@/Components/BranchSwitcher.vue';
 import OnboardingTour from '@/Components/OnboardingTour.vue';
 import FloatingSupportButton from '@/Components/FloatingSupportButton.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
@@ -236,7 +237,8 @@ watch(
                 </div>
 
                 <!-- Botones Derecha -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <BranchSwitcher />
                     <div data-tour="tenant-notifications">
                         <NotificationBell />
                     </div>

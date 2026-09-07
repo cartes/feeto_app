@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\WorkOrderItemController;
 use App\Http\Controllers\Api\WorkOrderModalController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BranchSwitchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientInvoiceController;
 use App\Http\Controllers\CollectionsReportController;
@@ -318,6 +319,7 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
             ->name('services.import');
 
         // Branches — usuarios con permiso branches.manage
+        Route::post('/branches/switch', BranchSwitchController::class)->name('branches.switch');
         Route::resource('branches', BranchController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['branches' => 'branch'])

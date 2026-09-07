@@ -11,6 +11,7 @@ use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Models\Service;
 use App\Models\WorkOrder;
+use App\Services\BranchContext;
 use App\Services\PlanFeatureService;
 use App\Services\UfService;
 use App\Services\VehicleCatalogService;
@@ -52,14 +53,19 @@ class WorkOrderController extends Controller
             $perPage = 15;
         }
 
+        $branchContext = app(BranchContext::class);
+        $activeBranchId = $branchContext->id();
+
         $query = WorkOrder::query()
-            ->select(['id', 'uuid', 'vehicle_id', 'status', 'created_at', 'tenant_id', 'total_amount'])
+            ->select(['id', 'uuid', 'vehicle_id', 'branch_id', 'status', 'created_at', 'tenant_id', 'total_amount'])
             ->with([
+                'branch' => fn ($query) => $query->select(['id', 'name', 'code']),
                 'vehicle' => fn ($query) => $query->select(['id', 'client_id', 'plate', 'brand', 'model', 'tenant_id']),
                 'vehicle.client' => fn ($query) => $query->select(['id', 'name', 'tenant_id']),
                 'quote' => fn ($query) => $query->select(['id', 'work_order_id', 'status', 'tenant_id']),
             ])
-            ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId));
+            ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
+            ->when($activeBranchId !== null, fn ($q) => $q->where('branch_id', $activeBranchId));
 
         // Month filter (YYYY-MM)
         if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
@@ -115,7 +121,10 @@ class WorkOrderController extends Controller
      */
     public function show(WorkOrder $workOrder): Response
     {
+        $this->authorizeWorkOrderAccess($workOrder);
+
         $workOrder->load([
+            'branch',
             'vehicle.client',
             'quote.items.product',
             'quote.items.service',
@@ -180,18 +189,16 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Actualiza el estado de la Orden de Trabajo a través de llamadas asíncronas / Inertia (Drag and Drop).
+     * Actualiza el estado del Kanban / Orden de Trabajo.
      */
     public function updateStatus(Request $request, WorkOrder $workOrder): RedirectResponse
     {
-        // Verificar que el usuario pertenezca al tenant de la work order
         $this->authorizeWorkOrderAccess($workOrder);
 
         $validated = $request->validate([
             'status' => ['required', Rule::in(WorkOrder::statuses())],
             'confirmed_without_accepted_quote' => ['nullable', 'boolean'],
         ]);
-
         $oldStatus = $workOrder->status;
 
         if ($this->requiresUnacceptedQuoteConfirmation($workOrder, $validated['status']) && ! $request->boolean('confirmed_without_accepted_quote')) {
@@ -234,12 +241,20 @@ class WorkOrderController extends Controller
     {
         $user = request()->user();
 
+        if (! $user) {
+            abort(401);
+        }
+
         if ($user->is_super_admin) {
             return;
         }
 
         if ($user->tenant_id !== $workOrder->tenant_id) {
             abort(403, 'No tienes permiso para modificar esta orden de trabajo.');
+        }
+
+        if ($user->branch_id !== null && $workOrder->branch_id !== null && (int) $user->branch_id !== (int) $workOrder->branch_id) {
+            abort(403, 'No tienes acceso a órdenes de trabajo de otra sucursal.');
         }
     }
 

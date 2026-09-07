@@ -49,6 +49,7 @@ const canAccessRoles = computed(() => (
         <UsersTab
             v-if="activeTab === 'users'"
             :users="users"
+            :branches="branches"
             :roles="roles"
             :plan-max-users="planMaxUsers"
             :current-user-count="currentUserCount"

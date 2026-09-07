@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'is_super_admin', 'tenant_id', 'needs_password_change', 'onboarding_tour_completed_at', 'onboarding_sections_completed'])]
+#[Fillable(['name', 'email', 'password', 'is_super_admin', 'tenant_id', 'branch_id', 'needs_password_change', 'onboarding_tour_completed_at', 'onboarding_sections_completed'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -49,6 +49,53 @@ class User extends Authenticatable
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Obtiene la sucursal asignada al usuario (sub-tenant).
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
+     * Determina si el usuario es un Super Admin del Taller (Tenant Super Admin).
+     * Tiene acceso transversal a todas las sucursales del taller.
+     */
+    public function isTenantSuperAdmin(): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        return $this->tenant_id !== null
+            && $this->branch_id === null
+            && $this->hasRole('Admin');
+    }
+
+    /**
+     * Determina si el usuario está restringido a una sucursal específica.
+     */
+    public function isBranchUser(): bool
+    {
+        return $this->branch_id !== null;
+    }
+
+    /**
+     * Verifica si el usuario tiene permiso para acceder o gestionar la sucursal dada.
+     */
+    public function canAccessBranch(?int $branchId): bool
+    {
+        if ($branchId === null) {
+            return $this->isTenantSuperAdmin();
+        }
+
+        if ($this->isTenantSuperAdmin()) {
+            return true;
+        }
+
+        return $this->branch_id === $branchId;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\BranchContext;
 use App\Services\MarketingWhatsAppService;
 use App\Services\PlanFeatureService;
 use Illuminate\Http\Request;
@@ -49,6 +50,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user ? array_merge($user->toArray(), [
                     'tenant_id' => $user->tenant_id,
+                    'branch_id' => $user->branch_id,
+                    'is_tenant_super_admin' => $user->isTenantSuperAdmin(),
+                    'is_branch_user' => $user->isBranchUser(),
                     'roles' => $authorization['roles'],
                     'permissions' => $authorization['permissions'],
                 ]) : null,
@@ -69,6 +73,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'tenant' => $tenant ? $tenant->only('id', 'name', 'slug') : null,
             'tenantContext' => $this->resolveTenantContext($tenant),
+            'branchContext' => fn (): ?array => $tenant ? app(BranchContext::class)->toInertia() : null,
             'planAccess' => $this->resolvePlanAccess($tenant),
             'marketing_whatsapp' => fn (): array => app(MarketingWhatsAppService::class)->settings(),
         ];

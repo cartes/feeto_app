@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\User;
 use Database\Seeders\DefaultServiceSeeder;
@@ -31,6 +32,8 @@ class TenantSetupService
         $serviceSeeder = new DefaultServiceSeeder;
         $serviceSeeder->run();
 
+        $this->ensureMainBranch($tenant);
+
         if ($adminUser !== null) {
             $this->assignAdminRole($adminUser);
         }
@@ -49,5 +52,28 @@ class TenantSetupService
     public function assignAdminRole(User $adminUser): void
     {
         $adminUser->assignRole('Admin');
+    }
+
+    /**
+     * Asegura que el taller tenga su Casa Matriz creada.
+     */
+    public function ensureMainBranch(Tenant $tenant): Branch
+    {
+        $mainBranch = $tenant->branches()->where('is_main', true)->first()
+            ?? $tenant->branches()->first();
+
+        if (! $mainBranch) {
+            $mainBranch = Branch::create([
+                'tenant_id' => $tenant->id,
+                'name' => 'Casa Matriz',
+                'code' => 'MATRIZ',
+                'address' => $tenant->seo_address ?? $tenant->comuna ?? null,
+                'phone' => $tenant->whatsapp_number ?? null,
+                'is_main' => true,
+                'is_active' => true,
+            ]);
+        }
+
+        return $mainBranch;
     }
 }

@@ -28,11 +28,13 @@ class TenantSettingsController extends Controller
 
         $users = User::query()
             ->where('tenant_id', $tenant->id)
-            ->with('roles')
+            ->with(['roles', 'branch'])
             ->orderBy('created_at')
-            ->get(['id', 'name', 'email', 'created_at']);
+            ->get(['id', 'name', 'email', 'branch_id', 'created_at']);
 
         $branches = Branch::query()
+            ->where('tenant_id', $tenant->id)
+            ->withCount('users')
             ->orderBy('is_main', 'desc')
             ->orderBy('name')
             ->get(['id', 'name', 'code', 'address', 'phone', 'email', 'is_main', 'is_active']);
@@ -46,6 +48,12 @@ class TenantSettingsController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'branch_id' => $user->branch_id,
+                'branch' => $user->branch ? [
+                    'id' => $user->branch->id,
+                    'name' => $user->branch->name,
+                    'code' => $user->branch->code,
+                ] : null,
                 'roles' => $user->roles->pluck('name'),
                 'created_at' => $user->created_at,
             ]),

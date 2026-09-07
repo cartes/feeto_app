@@ -21,8 +21,8 @@ class TenantUserController extends Controller
 
         $users = User::query()
             ->where('tenant_id', $tenant->id)
-            ->with('roles')
-            ->get(['id', 'name', 'email', 'created_at']);
+            ->with(['roles', 'branch'])
+            ->get(['id', 'name', 'email', 'branch_id', 'created_at']);
 
         $roles = Role::query()
             ->get(['id', 'name']);
@@ -32,6 +32,12 @@ class TenantUserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'branch_id' => $user->branch_id,
+                'branch' => $user->branch ? [
+                    'id' => $user->branch->id,
+                    'name' => $user->branch->name,
+                    'code' => $user->branch->code,
+                ] : null,
                 'roles' => $user->roles->pluck('name'),
                 'created_at' => $user->created_at,
             ]),
@@ -44,12 +50,19 @@ class TenantUserController extends Controller
     public function store(StoreTenantUserRequest $request): RedirectResponse
     {
         $tenant = Tenant::current();
+        $creator = $request->user();
+
+        $branchId = $request->validated('branch_id');
+        if ($creator && $creator->branch_id !== null) {
+            $branchId = $creator->branch_id;
+        }
 
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => Hash::make($request->validated('password')),
             'tenant_id' => $tenant->id,
+            'branch_id' => $branchId,
         ]);
 
         $user->assignRole($request->validated('role'));
@@ -60,9 +73,11 @@ class TenantUserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         $tenant = Tenant::current();
+        $creator = request()->user();
 
         abort_if($user->tenant_id !== $tenant->id, 403, 'No puedes eliminar usuarios de otro taller.');
-        abort_if($user->hasRole('Admin') && $tenant->users()->count() === 1, 422, 'No puedes eliminar al único administrador del taller.');
+        abort_if($creator && $creator->branch_id !== null && $user->branch_id !== $creator->branch_id, 403, 'No puedes eliminar usuarios de otra sucursal.');
+        abort_if($user->hasRole('Admin') && $user->branch_id === null && $tenant->users()->whereNull('branch_id')->count() === 1, 422, 'No puedes eliminar al único administrador general del taller.');
 
         $user->delete();
 

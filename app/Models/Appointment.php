@@ -15,6 +15,7 @@ class Appointment extends Model
 
     protected $fillable = [
         'tenant_id',
+        'branch_id',
         'client_id',
         'vehicle_id',
         'plate',
@@ -31,6 +32,11 @@ class Appointment extends Model
     protected $casts = [
         'appointment_date' => 'datetime',
     ];
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function client(): BelongsTo
     {

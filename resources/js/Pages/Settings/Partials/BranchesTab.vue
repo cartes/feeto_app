@@ -154,6 +154,10 @@ const deleteBranch = (branch) => {
                         <svg class="w-3.5 h-3.5 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                         {{ branch.phone }}
                     </p>
+                    <p class="flex items-center gap-1.5 text-[11px] text-gray-400 font-semibold pt-0.5">
+                        <svg class="w-3.5 h-3.5 text-[#FF7A00]/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        {{ branch.users_count ?? 0 }} {{ (branch.users_count === 1) ? 'usuario asignado' : 'usuarios asignados' }}
+                    </p>
                 </div>
                 <div class="flex gap-2 pt-1 border-t border-gray-50">
                     <button @click="openEditBranch(branch)"

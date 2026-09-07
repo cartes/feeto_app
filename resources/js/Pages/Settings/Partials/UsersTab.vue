@@ -8,6 +8,10 @@ const { tenantRouteParams } = useTenantRouting();
 
 const props = defineProps({
     users: Array,
+    branches: {
+        type: Array,
+        default: () => [],
+    },
     roles: Array,
     planMaxUsers: Number,
     currentUserCount: Number,
@@ -20,6 +24,7 @@ const userForm = useForm({
     password: '',
     password_confirmation: '',
     role: 'Recepcionista',
+    branch_id: null,
 });
 
 const hasReachedUserLimit = computed(() => props.currentUserCount >= props.planMaxUsers);
@@ -109,6 +114,17 @@ const roleColor = (role) => {
                     </select>
                     <p v-if="userForm.errors.role" class="text-red-500 text-xs">{{ userForm.errors.role }}</p>
                 </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sucursal Asignada</label>
+                    <select v-model="userForm.branch_id"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF7A00]">
+                        <option :value="null">🌐 Acceso Global (Todas las sucursales)</option>
+                        <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+                            🏢 {{ branch.name }} {{ branch.code ? `(${branch.code})` : '' }}
+                        </option>
+                    </select>
+                    <p v-if="userForm.errors.branch_id" class="text-red-500 text-xs">{{ userForm.errors.branch_id }}</p>
+                </div>
                 <div class="sm:col-span-2 flex gap-3 justify-end pt-2">
                     <button type="button" @click="showUserForm = false"
                         class="px-5 py-2.5 bg-gray-100 text-gray-500 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Cancelar</button>
@@ -128,6 +144,7 @@ const roleColor = (role) => {
                         <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Usuario</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400 hidden sm:table-cell">Email</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Rol</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Sucursal</th>
                         <th class="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Acción</th>
                     </tr>
                 </thead>
@@ -147,6 +164,14 @@ const roleColor = (role) => {
                                 class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wide mr-1"
                                 :class="roleColor(role)">{{ role }}</span>
                         </td>
+                        <td class="px-6 py-4">
+                            <span v-if="user.branch" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700">
+                                🏢 {{ user.branch.name }}
+                            </span>
+                            <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-orange-50 text-[#FF7A00] border border-[#FF7A00]/20">
+                                🌐 Global (Todas)
+                            </span>
+                        </td>
                         <td class="px-6 py-4 text-right">
                             <button @click="deleteUser(user.id)"
                                 class="text-xs font-bold text-red-400 hover:text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50">
@@ -155,7 +180,7 @@ const roleColor = (role) => {
                         </td>
                     </tr>
                     <tr v-if="users.length === 0">
-                        <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400 font-medium">No hay usuarios registrados.</td>
+                        <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-400 font-medium">No hay usuarios registrados.</td>
                     </tr>
                 </tbody>
             </table>

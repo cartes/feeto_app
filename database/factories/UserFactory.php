@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -51,6 +52,16 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_super_admin' => true,
             'tenant_id' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is assigned to a specific branch.
+     */
+    public function branch(?Branch $branch = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'branch_id' => $branch?->id ?? Branch::factory(),
         ]);
     }
 }

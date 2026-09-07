@@ -65,6 +65,22 @@ class Branch extends Model
     }
 
     /**
+     * Get the users assigned to the branch.
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    /**
+     * Get the appointments for the branch.
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    /**
      * Get the clients through vehicles (branch -> vehicles -> clients).
      */
     public function vehicles(): HasMany

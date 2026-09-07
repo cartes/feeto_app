@@ -8,6 +8,7 @@ use App\Http\Requests\UpsertProductRequest;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Tenant;
+use App\Services\BranchContext;
 use App\Services\PlanFeatureService;
 use App\Services\QuoteItemService;
 use App\Services\StockService;
@@ -28,8 +29,15 @@ class InventoryController extends Controller
         $priceMin = $request->input('price_min');
         $priceMax = $request->input('price_max');
 
+        $branchContext = app(BranchContext::class);
+        $activeBranchId = $branchContext->id();
+
         $products = Product::query()
-            ->with('category:id,name')
+            ->with(['category:id,name', 'branch:id,name,code'])
+            ->when($activeBranchId !== null, fn ($query) => $query->where(function ($q) use ($activeBranchId) {
+                $q->where('branch_id', $activeBranchId)
+                    ->orWhereNull('branch_id');
+            }))
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")

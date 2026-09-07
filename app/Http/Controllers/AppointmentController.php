@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Services\BranchContext;
 use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -17,8 +18,12 @@ class AppointmentController extends Controller
         $calendarStart = now()->startOfMonth()->startOfDay();
         $calendarEnd = now()->endOfMonth()->endOfDay();
 
+        $branchContext = app(BranchContext::class);
+        $activeBranchId = $branchContext->id();
+
         $appointments = Appointment::query()
-            ->with(['client', 'vehicle'])
+            ->with(['client', 'vehicle', 'branch'])
+            ->when($activeBranchId !== null, fn ($q) => $q->where('branch_id', $activeBranchId))
             ->whereBetween('appointment_date', [$calendarStart, $calendarEnd])
             ->orderBy('appointment_date')
             ->get();
@@ -52,6 +57,11 @@ class AppointmentController extends Controller
 
     public function destroy(Appointment $appointment): RedirectResponse
     {
+        $user = request()->user();
+        if ($user && $user->branch_id !== null && $appointment->branch_id !== null && (int) $user->branch_id !== (int) $appointment->branch_id) {
+            abort(403, 'No tienes permiso para eliminar citas de otra sucursal.');
+        }
+
         $appointment->delete();
 
         return back()->with('success', 'Cita eliminada exitosamente.');
