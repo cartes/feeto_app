@@ -17,6 +17,23 @@ class StoreClientRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $country = Tenant::current()?->country() ?? Country::Chile;
+
+        $updates = [];
+        if ($this->has('phone')) {
+            $updates['phone'] = $country->normalizePhoneNumber($this->input('phone'));
+        }
+        if ($this->has('secondary_phone')) {
+            $updates['secondary_phone'] = $country->normalizePhoneNumber($this->input('secondary_phone'));
+        }
+
+        if (! empty($updates)) {
+            $this->merge($updates);
+        }
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -28,6 +45,8 @@ class StoreClientRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'rut' => ['required', 'string', 'max:20', new ValidIdentification($country)],
             'phone' => ['nullable', 'string', 'max:50'],
+            'secondary_phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'max_credit_limit' => ['nullable', 'numeric', 'min:0'],
         ];

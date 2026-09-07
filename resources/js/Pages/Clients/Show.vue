@@ -5,6 +5,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
 import { useIdentification } from '@/composables/useIdentification';
+import { parsePhoneNumber } from '@/composables/usePhone';
 
 const page = usePage();
 const { tenantRouteParams } = useTenantRouting();
@@ -43,20 +44,30 @@ const noteForm = useForm({
     content: '',
 });
 
-const clientWhatsAppLink = computed(() => {
-    const phone = props.client.phone ?? '';
-    const amountDue = props.invoiceSummary?.overdue_amount || props.invoiceSummary?.amount_due || 0;
+const parsedPhone = computed(() => {
+    if (!props.client?.phone) return null;
+    return parsePhoneNumber(props.client.phone, tenantCountry.value);
+});
 
-    if (!phone) {
+const formattedPhone = computed(() => {
+    if (!parsedPhone.value || !parsedPhone.value.nationalDigits) return null;
+    return `${parsedPhone.value.prefix} ${parsedPhone.value.formattedNational}`;
+});
+
+const clientWhatsAppLink = computed(() => {
+    if (!parsedPhone.value || !parsedPhone.value.nationalDigits) {
         return null;
     }
 
+    const amountDue = props.invoiceSummary?.overdue_amount || props.invoiceSummary?.amount_due || 0;
     const message = encodeURIComponent(
         `Hola ${props.client.name}, te contactamos desde el taller para hacer seguimiento a tu saldo pendiente por ${formatCurrency(amountDue)}.`
     );
 
-    return `https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`;
+    const waNumber = `${parsedPhone.value.dialCode}${parsedPhone.value.nationalDigits}`;
+    return `https://wa.me/${waNumber}?text=${message}`;
 });
+
 
 const noteAuthorInitial = (note) => (note.user?.name?.charAt(0) ?? 'N').toUpperCase();
 const clientInitial = computed(() => props.client.name?.charAt(0)?.toUpperCase() ?? 'C');
@@ -145,7 +156,7 @@ const submitNote = () => {
                         </div>
                         <div class="rounded-2xl bg-gray-50/80 p-4">
                             <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Teléfono</p>
-                            <p class="mt-1 text-sm font-bold text-gray-900">{{ client.phone || 'No registrado' }}</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900">{{ formattedPhone || 'No registrado' }}</p>
                         </div>
                         <div class="rounded-2xl bg-gray-50/80 p-4">
                             <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</p>

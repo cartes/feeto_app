@@ -316,12 +316,14 @@ class ManualQuoteController extends Controller
             ], 422);
         }
 
+        $country = Tenant::current()?->country() ?? Country::Chile;
+
         $client = Client::firstOrCreate(
             ['rut' => $validated['rut']],
             [
                 'name' => $validated['name'],
-                'phone' => $validated['phone'],
-                'secondary_phone' => $validated['secondary_phone'] ?? null,
+                'phone' => $country->normalizePhoneNumber($validated['phone']),
+                'secondary_phone' => $country->normalizePhoneNumber($validated['secondary_phone'] ?? null),
                 'address' => $validated['address'] ?? null,
             ]
         );

@@ -8,6 +8,7 @@ import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useDebounce } from '@/composables/useDebounce';
 import { useIdentification } from '@/composables/useIdentification';
 import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
+import PhoneInput from '@/Components/PhoneInput.vue';
 
 const props = defineProps({
     show: {
@@ -864,11 +865,12 @@ const handleCreateOrder = () => {
                                         placeholder="correo@ejemplo.cl" />
                                 </div>
                                 <div class="space-y-1.5">
-                                    <label
-                                        class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">Celular</label>
-                                    <input v-model="form.client_phone" type="tel"
-                                        class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
-                                        placeholder="+56 9 1234 5678" />
+                                    <PhoneInput
+                                        v-model="form.client_phone"
+                                        label="Celular"
+                                        :error-message="form.errors.client_phone"
+                                        input-class="py-4 text-lg font-bold"
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -145,6 +145,38 @@ enum Country: string
     }
 
     /**
+     * Normaliza un número telefónico al estándar E.164 (+<código_país><número>).
+     */
+    public function normalizePhoneNumber(?string $phone): ?string
+    {
+        if ($phone === null) {
+            return null;
+        }
+
+        $trimmed = trim($phone);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $trimmed) ?? '';
+        if ($digits === '') {
+            return null;
+        }
+
+        $dialCode = ltrim($this->phonePrefix(), '+');
+
+        if (str_starts_with($trimmed, '+')) {
+            return '+'.$digits;
+        }
+
+        if (str_starts_with($digits, $dialCode) && strlen($digits) > strlen($dialCode) + 6) {
+            return '+'.$digits;
+        }
+
+        return '+'.$dialCode.$digits;
+    }
+
+    /**
      * Nombre comercial / legal del documento de identificación en el país.
      */
     public function identificationName(): string

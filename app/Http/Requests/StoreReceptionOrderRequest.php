@@ -16,9 +16,17 @@ class StoreReceptionOrderRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        $this->merge([
+        $country = Tenant::current()?->country() ?? Country::Chile;
+
+        $merges = [
             'plate' => strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', (string) $this->input('plate'))),
-        ]);
+        ];
+
+        if ($this->has('client_phone')) {
+            $merges['client_phone'] = $country->normalizePhoneNumber($this->input('client_phone'));
+        }
+
+        $this->merge($merges);
     }
 
     public function authorize(): bool

@@ -7,6 +7,7 @@ import { useIdentification } from '@/composables/useIdentification';
 import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 import axios from 'axios';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
+import PhoneInput from '@/Components/PhoneInput.vue';
 
 const page = usePage();
 const props = defineProps({
@@ -606,17 +607,18 @@ const submit = () => {
                                         <p v-if="createErrors.name" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.name[0] }}</p>
                                     </div>
                                     <div>
-                                        <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Celular (WhatsApp) *</label>
-                                        <input v-model="createForm.phone" type="text"
-                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
-                                            placeholder="+56 9 1234 5678" />
-                                        <p v-if="createErrors.phone" class="mt-1 text-[10px] font-medium text-red-500">{{ createErrors.phone[0] }}</p>
+                                        <PhoneInput
+                                            v-model="createForm.phone"
+                                            label="Celular (WhatsApp) *"
+                                            :error-message="createErrors.phone ? createErrors.phone[0] : null"
+                                        />
                                     </div>
                                     <div>
-                                        <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Otro teléfono</label>
-                                        <input v-model="createForm.secondary_phone" type="text"
-                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-300 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#FF7A00]"
-                                            placeholder="Opcional" />
+                                        <PhoneInput
+                                            v-model="createForm.secondary_phone"
+                                            label="Otro teléfono"
+                                            :error-message="createErrors.secondary_phone ? createErrors.secondary_phone[0] : null"
+                                        />
                                     </div>
                                 </div>
                                 <div>
