@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\Country;
 use App\Models\Tenant;
 use App\Rules\ValidIdentification;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -29,6 +30,8 @@ class UpdateTenantRequest extends FormRequest
             ? $this->route('tenant')->id
             : $this->route('tenant');
 
+        $country = Country::tryFrom((string) $this->input('country')) ?? Country::Chile;
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'size:2'],
@@ -37,7 +40,7 @@ class UpdateTenantRequest extends FormRequest
                 'string',
                 'max:30',
                 Rule::unique('tenants', 'rut_taller')->ignore($tenantId),
-                new ValidIdentification($this->input('country')),
+                new ValidIdentification($country),
             ],
             'domain' => ['required', 'string', 'max:255', Rule::unique('tenants', 'domain')->ignore($tenantId)],
             'plan_id' => ['required', 'exists:plans,id'],
