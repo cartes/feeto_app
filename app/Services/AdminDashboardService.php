@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\ApiUsageLog;
+use App\Models\EmailTracking;
 use App\Models\LoginLog;
 use App\Models\Payment;
 use App\Models\Tenant;
@@ -103,16 +104,76 @@ class AdminDashboardService
     }
 
     /**
-     * Tenants próximos a vencer (7 días).
+     * Tenants próximos a vencer (7 días) con su último tracking de renovación.
      *
-     * @return Collection<int, Tenant>
+     * @return Collection<int, array<string, mixed>>
      */
     public function getExpiringTenants(Carbon $now): Collection
     {
         return Tenant::query()
             ->whereBetween('subscription_ends_at', [$now, $now->copy()->addDays(7)])
-            ->select('id', 'name', 'subscription_ends_at')
+            ->select('id', 'name', 'slug', 'subscription_ends_at')
+            ->with(['latestRenewalTracking'])
+            ->get()
+            ->map(function (Tenant $tenant) use ($now): array {
+                $tracking = $tenant->latestRenewalTracking;
+                $daysLeft = (int) max(0, $now->diffInDays($tenant->subscription_ends_at, false));
+
+                return [
+                    'id' => $tenant->id,
+                    'name' => $tenant->name,
+                    'slug' => $tenant->slug,
+                    'subscription_ends_at' => $tenant->subscription_ends_at?->toIso8601String(),
+                    'days_left' => $daysLeft,
+                    'tracking' => $tracking ? [
+                        'id' => $tracking->id,
+                        'type' => $tracking->type,
+                        'recipient_email' => $tracking->recipient_email,
+                        'sent_at' => $tracking->sent_at?->toIso8601String(),
+                        'opened_at' => $tracking->opened_at?->toIso8601String(),
+                        'open_count' => $tracking->open_count,
+                        'clicked_at' => $tracking->clicked_at?->toIso8601String(),
+                        'click_count' => $tracking->click_count,
+                        'offer_discount_percent' => $tracking->offer_discount_percent,
+                    ] : null,
+                ];
+            });
+    }
+
+    /**
+     * Métricas de renovación y lectura de notificaciones (últimos 14 días).
+     *
+     * @return array{
+     *     expiring_count: int,
+     *     sent_count: int,
+     *     opened_count: int,
+     *     clicked_count: int,
+     *     open_rate: float,
+     * }
+     */
+    public function getRenewalMetrics(Carbon $now): array
+    {
+        $expiringCount = Tenant::query()
+            ->whereBetween('subscription_ends_at', [$now, $now->copy()->addDays(7)])
+            ->count();
+
+        $recentTrackings = EmailTracking::query()
+            ->where('sent_at', '>=', $now->copy()->subDays(14))
+            ->whereIn('type', ['renewal_reminder', 'renewal_offer'])
             ->get();
+
+        $sentCount = $recentTrackings->count();
+        $openedCount = $recentTrackings->filter(static fn (EmailTracking $t): bool => $t->isOpened())->count();
+        $clickedCount = $recentTrackings->filter(static fn (EmailTracking $t): bool => $t->isClicked())->count();
+        $openRate = $sentCount > 0 ? round(($openedCount / $sentCount) * 100, 1) : 0.0;
+
+        return [
+            'expiring_count' => $expiringCount,
+            'sent_count' => $sentCount,
+            'opened_count' => $openedCount,
+            'clicked_count' => $clickedCount,
+            'open_rate' => $openRate,
+        ];
     }
 
     public function getPendingTrialRequestsCount(): int

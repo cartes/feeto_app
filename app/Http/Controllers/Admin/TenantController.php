@@ -5,16 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Country;
 use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SendRenewalOfferRequest;
 use App\Http\Requests\Admin\StoreTenantRequest;
 use App\Http\Requests\Admin\UpdateTenantRequest;
+use App\Models\AuditLog;
+use App\Models\EmailTracking;
 use App\Models\Plan;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Notifications\SubscriptionRenewalReminder;
 use App\Services\TenantSetupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -295,5 +300,61 @@ class TenantController extends Controller
         $tenant->update(['status' => $newStatus]);
 
         return back()->with('success', "Estado del taller actualizado a {$newStatus}.");
+    }
+
+    public function sendRenewalOffer(SendRenewalOfferRequest $request, Tenant $tenant): RedirectResponse
+    {
+        $validated = $request->validated();
+        $discountPercent = isset($validated['discount_percent']) ? (int) $validated['discount_percent'] : null;
+        $customMessage = $validated['custom_message'] ?? null;
+
+        $tenant->makeCurrent();
+
+        $admin = User::where('tenant_id', $tenant->id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'Admin'))
+            ->first() ?? User::where('tenant_id', $tenant->id)->first();
+
+        Tenant::forgetCurrent();
+
+        if (! $admin) {
+            return back()->with('error', "No se encontró un usuario administrador para '{$tenant->name}'.");
+        }
+
+        $type = ($discountPercent && $discountPercent > 0) ? 'renewal_offer' : 'renewal_reminder';
+        $subject = ($discountPercent && $discountPercent > 0)
+            ? "[Taller Flow] ¡Oferta especial! Renueva con {$discountPercent}% de descuento en {$tenant->name}"
+            : "[Taller Flow] Recordatorio de renovación de suscripción — {$tenant->name}";
+
+        $tracking = EmailTracking::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $admin->id,
+            'type' => $type,
+            'recipient_email' => $admin->email,
+            'token' => Str::random(40),
+            'subject' => $subject,
+            'offer_discount_percent' => $discountPercent,
+            'metadata' => [
+                'custom_message' => $customMessage,
+                'manual_send' => true,
+                'sent_by' => $request->user()?->name ?? 'Admin',
+            ],
+            'sent_at' => now(),
+        ]);
+
+        $admin->notify(new SubscriptionRenewalReminder(
+            tenant: $tenant,
+            trackingToken: $tracking->token,
+            discountPercent: $discountPercent,
+            customMessage: $customMessage,
+        ));
+
+        $discountLog = $discountPercent ? "{$discountPercent}% desc." : 'sin descuento';
+        AuditLog::record(
+            'subscription.renewal_offer_sent',
+            "Oferta/Recordatorio de renovación enviado a {$admin->email} para '{$tenant->name}' con {$discountLog}",
+            $tenant
+        );
+
+        return back()->with('success', "Recordatorio/oferta enviado exitosamente a {$admin->email}.");
     }
 }

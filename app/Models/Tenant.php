@@ -9,6 +9,7 @@ use App\Enums\TenantPlan;
 use App\Services\PlanFeatureService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
@@ -383,5 +384,15 @@ class Tenant extends SpatieTenant
         }
 
         return $email ?? (string) config('mail.from.address');
+    }
+
+    public function emailTrackings(): HasMany
+    {
+        return $this->hasMany(EmailTracking::class);
+    }
+
+    public function latestRenewalTracking(): HasOne
+    {
+        return $this->hasOne(EmailTracking::class)->latestOfMany('sent_at');
     }
 }

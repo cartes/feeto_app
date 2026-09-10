@@ -36,6 +36,7 @@ class DashboardController extends Controller
             'ocr_usage' => $this->dashboard->getOcrUsage($thirtyDaysAgo),
             'visits' => $this->visits->dashboardSnapshot($visitsPeriod, $visitsScope),
             'expiring_tenants' => $this->dashboard->getExpiringTenants($now),
+            'renewal_metrics' => $this->dashboard->getRenewalMetrics($now),
             'pending_trial_requests' => $this->dashboard->getPendingTrialRequestsCount(),
             'recent_trial_requests' => $this->dashboard->getRecentTrialRequests(),
             'most_active_tenants' => $this->dashboard->getMostActiveTenants($thirtyDaysAgo),

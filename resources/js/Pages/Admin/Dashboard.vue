@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link, usePage, router } from '@inertiajs/vue3';
-import { computed, defineAsyncComponent } from 'vue';
+import { Head, Link, usePage, router, useForm } from '@inertiajs/vue3';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import VisitsTrendChart from '@/Components/Admin/VisitsTrendChart.vue';
 import VisitsSummaryStat from '@/Components/Admin/VisitsSummaryStat.vue';
@@ -14,6 +14,7 @@ const props = defineProps({
     ocr_usage: Array,
     visits: { type: Object, default: () => ({ period: '30d', scope: 'site', range: null, summary: {}, by_day: [], by_scope: [] }) },
     expiring_tenants: Array,
+    renewal_metrics: { type: Object, default: () => ({ expiring_count: 0, sent_count: 0, opened_count: 0, clicked_count: 0, open_rate: 0 }) },
     pending_trial_requests: { type: Number, default: 0 },
     recent_trial_requests: { type: Array, default: () => [] },
     most_active_tenants: { type: Array, default: () => [] },
@@ -22,6 +23,47 @@ const props = defineProps({
     scatter_medians: { type: Object, default: () => ({ users: 0, logins: 0 }) },
 });
 const page = usePage();
+
+const isOfferModalOpen = ref(false);
+const selectedTenant = ref(null);
+const offerForm = useForm({
+    discount_percent: 15,
+    custom_message: '',
+});
+
+const openOfferModal = (tenant) => {
+    selectedTenant.value = tenant;
+    offerForm.discount_percent = tenant.tracking?.offer_discount_percent ?? 15;
+    offerForm.custom_message = '';
+    isOfferModalOpen.value = true;
+};
+
+const closeOfferModal = () => {
+    isOfferModalOpen.value = false;
+    selectedTenant.value = null;
+    offerForm.reset();
+};
+
+const submitOffer = () => {
+    if (!selectedTenant.value) return;
+    offerForm.post(route('admin.tenants.send-renewal-offer', selectedTenant.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            closeOfferModal();
+        },
+    });
+};
+
+const formatDateTime = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleDateString('es-CL', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
 
 const formatCLP = (value) => {
     if (!value && value !== 0) return '$0';
@@ -462,35 +504,220 @@ const scatterThresholds = computed(() => {
             </div>
         </div>
 
-        <!-- Row 4: Expiring tenants -->
+        <!-- Row 4: Expiring tenants & Renewal Notification Tracking -->
         <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100">
-                <h2 class="text-sm font-semibold text-slate-900">Próximas a Vencer</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Suscripciones con vencimiento próximo</p>
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                        <span>Próximas a Vencer</span>
+                        <span v-if="expiring_tenants && expiring_tenants.length" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20">
+                            {{ expiring_tenants.length }} taller{{ expiring_tenants.length !== 1 ? 'es' : '' }}
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Suscripciones con vencimiento próximo en los siguientes 7 días</p>
+                </div>
+
+                <!-- Métricas Rápidas de Notificaciones de Renovación -->
+                <div v-if="renewal_metrics" class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-200/80 text-xs">
+                        <span class="text-slate-500">Mails enviados:</span>
+                        <span class="font-bold text-slate-800">{{ renewal_metrics.sent_count }}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-200/80 text-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-emerald-700">Leídos (Píxel):</span>
+                        <span class="font-bold text-emerald-800">{{ renewal_metrics.opened_count }} ({{ renewal_metrics.open_rate }}%)</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 rounded-lg border border-indigo-200/80 text-xs">
+                        <span class="text-indigo-600">Clics al checkout:</span>
+                        <span class="font-bold text-indigo-800">{{ renewal_metrics.clicked_count }}</span>
+                    </div>
+                </div>
             </div>
+
             <div v-if="expiring_tenants && expiring_tenants.length" class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100">
                     <thead class="bg-slate-50">
                         <tr>
                             <th class="py-3 pl-6 pr-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Taller</th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Vence</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Vencimiento</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Estado Notificación</th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Oferta</th>
                             <th class="py-3 pl-3 pr-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
-                        <tr v-for="tenant in expiring_tenants" :key="tenant.id">
-                            <td class="whitespace-nowrap py-3 pl-6 pr-3 text-sm font-medium text-slate-900">{{ tenant.name }}</td>
-                            <td class="whitespace-nowrap px-3 py-3 text-sm text-rose-600 font-medium">
-                                {{ new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') }}
+                        <tr v-for="tenant in expiring_tenants" :key="tenant.id" class="hover:bg-slate-50/60 transition-colors">
+                            <td class="whitespace-nowrap py-3.5 pl-6 pr-3 text-sm">
+                                <div class="font-semibold text-slate-900">{{ tenant.name }}</div>
+                                <div class="text-[11px] text-slate-400 font-mono">{{ tenant.slug }}</div>
                             </td>
-                            <td class="whitespace-nowrap py-3 pl-3 pr-6 text-right text-sm">
-                                <Link :href="route('admin.tenants.edit', tenant.id)" class="text-amber-600 hover:text-amber-900 font-semibold">Gestionar</Link>
+                            <td class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <div class="font-semibold text-rose-600">
+                                    {{ new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') }}
+                                </div>
+                                <div class="text-xs text-slate-400">
+                                    {{ tenant.days_left <= 0 ? 'Vence hoy' : (tenant.days_left === 1 ? 'En 1 día' : `En ${tenant.days_left} días`) }}
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-3.5 text-xs">
+                                <div v-if="!tenant.tracking" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium bg-slate-100 text-slate-600">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    <span>No enviado aún</span>
+                                </div>
+                                <div v-else class="space-y-1">
+                                    <div class="flex items-center gap-1.5">
+                                        <!-- Si fue leído (píxel) -->
+                                        <div v-if="tenant.tracking.opened_at" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>Leído ({{ tenant.tracking.open_count }}x)</span>
+                                        </div>
+                                        <!-- Si sólo fue enviado pero no abierto aún -->
+                                        <div v-else class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium text-[11px] bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-sky-600" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                            </svg>
+                                            <span>Enviado</span>
+                                        </div>
+
+                                        <!-- Si hizo clic en renovar -->
+                                        <div v-if="tenant.tracking.clicked_at" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/20">
+                                            <span>✓ Clic ({{ tenant.tracking.click_count }})</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-400">
+                                        {{ tenant.tracking.opened_at ? `Leído: ${formatDateTime(tenant.tracking.opened_at)}` : `Enviado: ${formatDateTime(tenant.tracking.sent_at)}` }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-3.5 text-xs">
+                                <span v-if="tenant.tracking?.offer_discount_percent" class="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-[11px] bg-amber-50 text-amber-800 border border-amber-200">
+                                    {{ tenant.tracking.offer_discount_percent }}% OFF
+                                </span>
+                                <span v-else class="text-slate-400 text-xs">—</span>
+                            </td>
+                            <td class="whitespace-nowrap py-3.5 pl-3 pr-6 text-right text-sm space-x-2">
+                                <button
+                                    type="button"
+                                    @click="openOfferModal(tenant)"
+                                    class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 5.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 12H14a1 1 0 100-2H8.414l1.293-1.293z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>{{ tenant.tracking ? 'Reenviar' : 'Enviar Oferta' }}</span>
+                                </button>
+                                <Link :href="route('admin.tenants.edit', tenant.id)" class="text-xs text-slate-500 hover:text-slate-800 font-semibold underline">
+                                    Gestionar
+                                </Link>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <p v-else class="px-6 py-8 text-sm text-slate-400 text-center">No hay talleres próximos a vencer.</p>
+        </div>
+
+        <!-- Modal: Enviar Oferta de Renovación -->
+        <div v-if="isOfferModalOpen" class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+            <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="closeOfferModal"></div>
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-100">
+                    <form @submit.prevent="submitOffer" class="p-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <h3 class="text-base font-bold text-slate-900">
+                                Enviar Notificación / Oferta
+                            </h3>
+                            <button type="button" @click="closeOfferModal" class="text-slate-400 hover:text-slate-600 text-sm font-bold">
+                                ✕
+                            </button>
+                        </div>
+
+                        <div class="mt-4 space-y-4">
+                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                                <p class="text-xs text-slate-500">Taller destino:</p>
+                                <p class="text-sm font-bold text-slate-900">{{ selectedTenant?.name }}</p>
+                                <p class="text-xs text-rose-600 font-medium mt-1">
+                                    Vence: {{ selectedTenant ? new Date(selectedTenant.subscription_ends_at).toLocaleDateString('es-CL') : '' }}
+                                    ({{ selectedTenant?.days_left }} días restantes)
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                                    Porcentaje de Descuento
+                                </label>
+                                <div class="grid grid-cols-4 gap-2 mb-2">
+                                    <button
+                                        v-for="preset in [0, 10, 15, 20]"
+                                        :key="preset"
+                                        type="button"
+                                        @click="offerForm.discount_percent = preset"
+                                        :class="[
+                                            offerForm.discount_percent === preset
+                                                ? 'bg-orange-500 text-white font-bold border-orange-500'
+                                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50',
+                                            'px-3 py-1.5 text-xs rounded-lg border transition-all text-center'
+                                        ]"
+                                    >
+                                        {{ preset === 0 ? 'Sin desc.' : `${preset}%` }}
+                                    </button>
+                                </div>
+                                <div class="relative mt-1">
+                                    <input
+                                        v-model.number="offerForm.discount_percent"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        class="w-full text-sm rounded-lg border-slate-200 focus:border-orange-500 focus:ring-orange-500"
+                                        placeholder="Porcentaje personalizado"
+                                    />
+                                    <span class="absolute right-3 top-2 text-sm text-slate-400 font-medium">%</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                                    Mensaje Personalizado (Opcional)
+                                </label>
+                                <textarea
+                                    v-model="offerForm.custom_message"
+                                    rows="3"
+                                    class="w-full text-xs rounded-lg border-slate-200 focus:border-orange-500 focus:ring-orange-500"
+                                    placeholder="Ej: Te ofrecemos este descuento especial para que continúes sin interrupciones..."
+                                ></textarea>
+                            </div>
+
+                            <p class="text-[11px] text-slate-500 leading-relaxed bg-blue-50/60 p-2.5 rounded-lg border border-blue-100">
+                                ℹ️ El correo incluirá un píxel de seguimiento y enlace rastreado para que veas en tiempo real cuándo lo abren y si dan clic en el botón de pago.
+                            </p>
+                        </div>
+
+                        <div class="mt-6 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+                            <button
+                                type="button"
+                                @click="closeOfferModal"
+                                class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="offerForm.processing"
+                                class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-1.5"
+                            >
+                                <span v-if="offerForm.processing">Enviando...</span>
+                                <span v-else>Enviar Notificación</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Solicitudes de prueba pendientes -->

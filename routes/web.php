@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\Admin\TenantActivityController;
 use App\Http\Controllers\Admin\TenantController;
 use App\Http\Controllers\Admin\TrialRequestController as AdminTrialRequestController;
@@ -124,6 +125,10 @@ Route::get('/cotizacion/{uuid}', [ManualQuoteTrackingController::class, 'show'])
 Route::post('/cotizacion/{uuid}/respond', [ManualQuoteController::class, 'respond'])
     ->middleware('throttle:20,1')
     ->name('quotes.public.respond');
+
+// Tracking de correos (Píxel de apertura y tracking de clics)
+Route::get('/mail/track/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('mail.track');
+Route::get('/mail/click/{token}', [EmailTrackingController::class, 'trackClick'])->name('mail.click');
 
 // Landing page pública del taller — embudo de conversión con Pre-Check ALPR
 Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->name('taller.landing');
@@ -530,6 +535,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::put('/tenants/{tenant}/admin', [TenantController::class, 'updateAdmin'])->name('tenants.update_admin');
         Route::put('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
         Route::get('/tenants/{tenant}/activity', [TenantActivityController::class, 'show'])->name('tenants.activity');
+        Route::post('/tenants/{tenant}/send-renewal-offer', [TenantController::class, 'sendRenewalOffer'])->name('tenants.send-renewal-offer');
 
         // Usuarios
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

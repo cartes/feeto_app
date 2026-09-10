@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\AuditLog;
+use App\Models\EmailTracking;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Str;
 
 class SendRenewalReminders implements ShouldQueue
 {
@@ -39,7 +41,23 @@ class SendRenewalReminders implements ShouldQueue
                     return;
                 }
 
-                $admin->notify(new SubscriptionRenewalReminder($tenant));
+                $daysLeft = (int) max(0, now()->diffInDays($tenant->subscription_ends_at, false));
+                $subject = "[Taller Flow] Tu suscripción vence en {$daysLeft} día(s) — Renueva ahora";
+
+                $tracking = EmailTracking::create([
+                    'tenant_id' => $tenant->id,
+                    'user_id' => $admin->id,
+                    'type' => 'renewal_reminder',
+                    'recipient_email' => $admin->email,
+                    'token' => Str::random(40),
+                    'subject' => $subject,
+                    'sent_at' => now(),
+                ]);
+
+                $admin->notify(new SubscriptionRenewalReminder(
+                    tenant: $tenant,
+                    trackingToken: $tracking->token,
+                ));
 
                 AuditLog::record(
                     'subscription.renewal_reminder',
