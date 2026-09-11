@@ -11,9 +11,9 @@ use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\MercadoPagoWebhookController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PlanController;
-use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\Admin\TenantActivityController;
 use App\Http\Controllers\Admin\TenantController;
+use App\Http\Controllers\Admin\TestDailyReportController;
 use App\Http\Controllers\Admin\TrialRequestController as AdminTrialRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VisitAnalyticsController;
@@ -28,6 +28,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientInvoiceController;
 use App\Http\Controllers\CollectionsReportController;
 use App\Http\Controllers\CustomerReportController;
+use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
@@ -514,6 +515,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
     ->name('admin.')
     ->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::post('/test-daily-report', TestDailyReportController::class)->name('test-daily-report');
         Route::get('/analytics/visitas', VisitAnalyticsController::class)->name('analytics.visits');
 
         // Perfil & API Keys

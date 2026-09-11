@@ -128,4 +128,16 @@ return [
 
     'admin_bcc' => env('MAIL_ADMIN_BCC'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Report Recipient Address
+    |--------------------------------------------------------------------------
+    |
+    | Correo destino para reportes diarios, resúmenes semanales y alertas
+    | globales de la plataforma. Si no se especifica, recurre a MAIL_ADMIN_BCC.
+    |
+    */
+
+    'admin_report_email' => env('ADMIN_REPORT_EMAIL', env('MAIL_ADMIN_BCC', 'contacto@tallerflow.cl')),
+
 ];

@@ -270,15 +270,47 @@ const scatterThresholds = computed(() => {
         sleeping: `< ${users} usuarios · < ${logins} logins`,
     };
 });
+
+const isSendingReport = ref(false);
+
+const sendTestDailyReport = () => {
+    isSendingReport.value = true;
+    router.post(route('admin.test-daily-report'), {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            isSendingReport.value = false;
+        },
+    });
+};
 </script>
 
 <template>
     <Head title="Panel de Administración Global" />
 
     <AdminLayout>
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Panel de Administración Global</h1>
-            <p class="mt-1 text-sm text-slate-500">Métricas principales de toda la plataforma SaaS.</p>
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Panel de Administración Global</h1>
+                <p class="mt-1 text-sm text-slate-500">Métricas principales de toda la plataforma SaaS.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button
+                    type="button"
+                    @click="sendTestDailyReport"
+                    :disabled="isSendingReport"
+                    class="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer"
+                    title="Genera un reporte diario de prueba y lo envía al correo configurado"
+                >
+                    <svg v-if="!isSendingReport" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    <svg v-else class="h-4 w-4 animate-spin text-slate-500" viewBox="0 0 24 24" fill="none">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ isSendingReport ? 'Generando reporte...' : 'Probar Reporte Diario' }}</span>
+                </button>
+            </div>
         </div>
 
         <!-- Row 1: Stat cards -->
