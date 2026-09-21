@@ -276,8 +276,8 @@ const submitImport = () => {
                 <h1 class="text-3xl font-black text-gray-900 tracking-tight uppercase">Inventario</h1>
                 <p class="text-sm font-medium text-gray-500 mt-1">Gestiona los repuestos e insumos del taller.</p>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="relative w-full md:w-80" data-tour="inventory-search">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative w-full md:w-56 lg:w-72 xl:w-80" data-tour="inventory-search">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -639,7 +639,8 @@ const submitImport = () => {
                                     class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-bold rounded-2xl px-5 py-3.5 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm"
                                     placeholder="0" />
                                 <p v-if="form.errors.selling_price" class="text-red-500 text-[10px] font-medium ml-1">{{ form.errors.selling_price }}</p>
-                                <p v-if="Number(form.selling_price) > 0" class="text-[11px] font-semibold text-gray-400 ml-1">
+                                <p class="text-[11px] font-semibold text-gray-400 ml-1 min-h-[1.375rem] transition-opacity"
+                                    :class="Number(form.selling_price) > 0 ? 'opacity-100' : 'opacity-0'">
                                     <span v-if="form.tax_included">
                                         Neto estimado: <strong class="text-gray-700 font-mono">{{ formatCurrency(Math.round(form.selling_price / (1 + (defaultTaxRate / 100)))) }}</strong>
                                     </span>

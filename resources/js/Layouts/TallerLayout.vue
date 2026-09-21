@@ -223,31 +223,31 @@ watch(
                     </div>
 
                     <!-- Buscador global en desktop -->
-                    <div class="hidden lg:flex relative w-96" data-tour="tenant-search">
+                    <div class="hidden lg:flex relative w-full max-w-[220px] xl:max-w-xs 2xl:max-w-sm" data-tour="tenant-search">
                         <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input 
-                            type="text" 
-                            placeholder="Buscar patentes, órdenes, reportes..." 
+                        <input
+                            type="text"
+                            placeholder="Buscar patentes, órdenes, reportes..."
                             class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-gray-200 focus:ring-2 focus:ring-[#FF7A00] outline-none font-medium placeholder:text-gray-400 transition-all"
                         />
                     </div>
                 </div>
 
                 <!-- Botones Derecha -->
-                <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     <BranchSwitcher />
-                    <div data-tour="tenant-notifications">
+                    <div data-tour="tenant-notifications" class="flex-shrink-0">
                         <NotificationBell />
                     </div>
                     <Link
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm"
+                        class="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm whitespace-nowrap"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -324,5 +324,26 @@ watch(
 * {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* Excepcion: los contenedores con scroll horizontal (tablas, etc.) necesitan
+   una barra visible y usable, o el contenido que sobresale queda inalcanzable. */
+.overflow-x-auto {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+.overflow-x-auto::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.35);
+  border-radius: 9999px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.55);
 }
 </style>

@@ -5,9 +5,10 @@ const props = defineProps({
     message: { type: String, default: '' },
     type: { type: String, default: 'success' }, // success | error | warning | info
     duration: { type: Number, default: 4000 },
+    actionLabel: { type: String, default: '' },
 });
 
-const emit = defineEmits(['dismiss']);
+const emit = defineEmits(['dismiss', 'action']);
 
 const visible = ref(false);
 let timer = null;
@@ -23,6 +24,11 @@ function dismiss() {
     visible.value = false;
     clearTimeout(timer);
     emit('dismiss');
+}
+
+function triggerAction() {
+    emit('action');
+    dismiss();
 }
 
 const STYLES = {
@@ -58,6 +64,10 @@ const ICONS = {
                 <path stroke-linecap="round" stroke-linejoin="round" :d="ICONS[type] ?? ICONS.info" />
             </svg>
             <span class="flex-1">{{ message }}</span>
+            <button v-if="actionLabel" @click="triggerAction"
+                class="shrink-0 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-colors">
+                {{ actionLabel }}
+            </button>
             <button @click="dismiss" class="ml-1 rounded-full p-0.5 hover:bg-white/20 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

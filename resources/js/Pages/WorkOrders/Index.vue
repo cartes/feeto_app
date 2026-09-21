@@ -5,6 +5,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 import Dropdown from '@/Components/Dropdown.vue';
+import Toast from '@/Components/Toast.vue';
 import VehicleDamageDiagram from '@/Components/Reception/VehicleDamageDiagram.vue';
 import CreateWorkOrderModal from '@/Components/Reception/CreateWorkOrderModal.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
@@ -379,8 +380,18 @@ const onDragOver = (e, columnId) => {
     currentHoverColumn.value = columnId;
 };
 
+// Toast de confirmación con opción de "Deshacer" tras mover una OT de etapa
+const stageToast = ref({ message: '', actionLabel: '', handler: null });
+
+const showStageToast = (message, handler = null) => {
+    stageToast.value = { message: '', actionLabel: '', handler: null };
+    requestAnimationFrame(() => {
+        stageToast.value = { message, actionLabel: handler ? 'Deshacer' : '', handler };
+    });
+};
+
 // Mueve una OT desde una columna a otra, validando la cotización si corresponde
-const moveOrderToColumn = (order, fromColumnId, toColumnId) => {
+const moveOrderToColumn = (order, fromColumnId, toColumnId, options = {}) => {
     if (toColumnId === fromColumnId) return;
 
     const confirmedWithoutAcceptedQuote = requiresQuoteConfirmation(order, fromColumnId, toColumnId);
@@ -390,12 +401,24 @@ const moveOrderToColumn = (order, fromColumnId, toColumnId) => {
         if (!shouldContinue) return;
     }
 
+    const fromTitle = columns.find(c => c.id === fromColumnId)?.title ?? fromColumnId;
+    const toTitle = columns.find(c => c.id === toColumnId)?.title ?? toColumnId;
+
     router.put(route('work-orders.status.update', { workOrder: order.id }), {
         status: toColumnId,
         confirmed_without_accepted_quote: confirmedWithoutAcceptedQuote,
     }, {
         preserveScroll: true,
         preserveState: true,
+        onSuccess: () => {
+            if (options.isUndo) {
+                showStageToast(`OT #${order.id} devuelta a "${fromTitle}".`);
+            } else {
+                showStageToast(`OT #${order.id} movida a "${toTitle}".`, () => {
+                    moveOrderToColumn(order, toColumnId, fromColumnId, { isUndo: true });
+                });
+            }
+        },
     });
 };
 
@@ -818,16 +841,22 @@ const submitDeleteWorkOrder = () => {
                                     class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-400">
                                     <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">{{ new
                                         Date(order.created_at).toLocaleDateString() }}</span>
-                                    <button v-if="getAdjacentColumn(col.id, 1)" type="button"
-                                        @click.stop="moveOrderStep(order, col.id, 1)"
-                                        :title="`Mover a ${getAdjacentColumn(col.id, 1).title}`"
-                                        class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 active:scale-90 transition-all">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
+                                    <div v-if="getAdjacentColumn(col.id, 1)" class="relative group">
+                                        <span
+                                            class="pointer-events-none absolute -top-9 right-0 z-20 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-[10px] font-bold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+                                            Mover a {{ getAdjacentColumn(col.id, 1).title }}
+                                        </span>
+                                        <button type="button"
+                                            @click.stop="moveOrderStep(order, col.id, 1)"
+                                            :aria-label="`Mover a ${getAdjacentColumn(col.id, 1).title}`"
+                                            class="w-8 h-8 rounded-full bg-[#1C1C1E] text-white flex items-center justify-center shadow-md hover:bg-orange-500 active:scale-90 transition-all">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Acciones rápidas de avance (Mobile) -->
@@ -1547,6 +1576,16 @@ const submitDeleteWorkOrder = () => {
         <CreateWorkOrderModal
             v-model:show="isCreateOrderModalOpen"
             :vehicle-catalog-brands="props.vehicleCatalogBrands"
+        />
+
+        <!-- Toast de confirmación al avanzar de etapa, con opción de deshacer -->
+        <Toast
+            :message="stageToast.message"
+            type="info"
+            :duration="6000"
+            :action-label="stageToast.actionLabel"
+            @action="stageToast.handler && stageToast.handler()"
+            @dismiss="stageToast.message = ''"
         />
     </TallerLayout>
 </template>
