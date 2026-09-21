@@ -9,6 +9,8 @@ import { useDebounce } from '@/composables/useDebounce';
 import { useIdentification } from '@/composables/useIdentification';
 import { MANUAL_SELECTION, useVehicleCatalog } from '@/composables/useVehicleCatalog';
 import PhoneInput from '@/Components/PhoneInput.vue';
+import CountryFlagSvg from '@/Components/CountryFlagSvg.vue';
+import { useLicensePlate } from '@/composables/useLicensePlate';
 
 const props = defineProps({
     show: {
@@ -45,6 +47,10 @@ const tenantCountry = computed(() => page.props.tenantContext?.country || 'CL');
 const countryConfig = computed(() => getCountryConfig(tenantCountry.value));
 const docLabel = computed(() => countryConfig.value.docName);
 const docPlaceholder = computed(() => countryConfig.value.placeholder);
+
+const { analyzePlate } = useLicensePlate();
+const plateAnalysis = computed(() => analyzePlate(form.plate, tenantCountry.value));
+const submitErrorMessage = ref(null);
 
 const brandsCatalog = computed(() => {
     if (props.vehicleCatalogBrands && props.vehicleCatalogBrands.length > 0) {
@@ -156,6 +162,18 @@ const addCustomBelonging = () => {
 };
 
 const goToChecklistStep = () => {
+    submitErrorMessage.value = null;
+
+    if (!form.plate || form.plate.trim() === '') {
+        form.setError('plate', 'Debes ingresar una patente.');
+        return;
+    }
+
+    if (!plateAnalysis.value.isValid) {
+        form.setError('plate', plateAnalysis.value.error || 'La patente no tiene un formato válido.');
+        return;
+    }
+
     if (!form.checklist.signed_by_name) {
         form.checklist.signed_by_name = form.client_name;
     }
@@ -178,7 +196,18 @@ const vehicleCatalog = reactive(useVehicleCatalog({
 
 const MOTO_PLATE_REGEX = /^([A-Z]{3}[0-9]{2}|[A-Z]{2}[0-9]{3})$/;
 
+const plateOriginCountries = computed(() => {
+    if (plateAnalysis.value.isForeign && plateAnalysis.value.detectedCountries.length > 0) {
+        return plateAnalysis.value.detectedCountries;
+    }
+    return plateOrigin.value?.countries || [];
+});
+
 const plateOriginMessage = computed(() => {
+    if (plateAnalysis.value.isForeign) {
+        return plateAnalysis.value.message;
+    }
+
     const countries = plateOrigin.value?.countries || [];
     if (!countries.length) return null;
 
@@ -242,6 +271,7 @@ const resetModalState = () => {
     appointmentData.value = null;
     rutLookupResult.value = null;
     plateOrigin.value = null;
+    submitErrorMessage.value = null;
     resetClientSearchState();
     form.reset();
     form.clearErrors();
@@ -301,7 +331,13 @@ const fetchVehicleData = async (ppu) => {
 
         return true;
     } catch (error) {
-        errorMsg.value = 'ERROR AL CONSULTAR DATOS.';
+        if (error.response?.data?.errors?.patente?.[0]) {
+            form.setError('plate', error.response.data.errors.patente[0]);
+        } else if (error.response?.data?.message) {
+            form.setError('plate', error.response.data.message);
+        } else {
+            errorMsg.value = 'ERROR AL CONSULTAR DATOS.';
+        }
         return false;
     } finally {
         isSearching.value = false;
@@ -384,10 +420,10 @@ const debouncedRutLookup = debounce((value) => {
 }, 400);
 
 const debouncedPlateSearch = debounce((value) => {
-    if (props.show && form.plate?.toUpperCase() === value && !isSearching.value) {
+    if (props.show && form.plate?.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() === value && !isSearching.value) {
         fetchVehicleData(value);
     }
-}, 600);
+}, 500);
 
 watch(() => props.show, async (isOpen) => {
     if (isOpen) {
@@ -401,13 +437,21 @@ watch(() => props.show, async (isOpen) => {
 });
 
 watch(() => form.plate, (newVal) => {
+    if (form.errors.plate) {
+        form.clearErrors('plate');
+    }
+    submitErrorMessage.value = null;
+
     if (!props.show || !newVal || isSearching.value) return;
 
-    const clean = newVal.toUpperCase();
+    const clean = newVal.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (clean !== newVal) {
+        form.plate = clean;
+        return;
+    }
 
-    if (clean.length === 7) {
-        fetchVehicleData(clean);
-    } else if (clean.length === 6 || MOTO_PLATE_REGEX.test(clean)) {
+    const analysis = analyzePlate(clean, tenantCountry.value);
+    if (analysis.isValid && clean.length >= 5 && clean.length <= 8) {
         debouncedPlateSearch(clean);
     }
 });
@@ -456,12 +500,34 @@ watch(() => form.client_rut, (newVal) => {
 });
 
 const handleCreateOrder = () => {
+    submitErrorMessage.value = null;
+
+    if (!form.plate || form.plate.trim() === '') {
+        modalStep.value = 1;
+        form.setError('plate', 'Debes ingresar una patente.');
+        submitErrorMessage.value = 'Debes ingresar una patente antes de continuar.';
+        return;
+    }
+
+    if (!plateAnalysis.value.isValid) {
+        modalStep.value = 1;
+        form.setError('plate', plateAnalysis.value.error || 'La patente no tiene un formato válido.');
+        submitErrorMessage.value = plateAnalysis.value.error || 'La patente ingresada no tiene un formato válido.';
+        return;
+    }
+
     form.post(route('receptions.store_order', tenantRouteParams.value), {
         onSuccess: () => {
             emit('created');
             closeModal();
         },
         onError: (errors) => {
+            if (errors.plate) {
+                submitErrorMessage.value = errors.plate;
+            } else {
+                submitErrorMessage.value = 'Revisa los campos requeridos antes de generar la orden.';
+            }
+
             if (Object.keys(errors).some((key) => STEP_ONE_ERROR_FIELDS.includes(key))) {
                 modalStep.value = 1;
             }
@@ -561,14 +627,34 @@ const handleCreateOrder = () => {
                 </p>
             </div>
 
+            <!-- Alerta de error en formulario -->
+            <div v-if="submitErrorMessage"
+                class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-red-50 border-2 border-red-300 px-5 py-4 flex items-center justify-between gap-3 animate-in fade-in">
+                <div class="flex items-center gap-2.5">
+                    <svg class="h-5 w-5 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-red-700">No se pudo crear la orden</p>
+                        <p class="text-sm font-bold text-red-900">{{ submitErrorMessage }}</p>
+                    </div>
+                </div>
+                <button type="button" @click="submitErrorMessage = null" class="text-red-400 hover:text-red-700 text-sm font-bold">✕</button>
+            </div>
+
             <!-- Aviso: patente extranjera -->
-            <div v-if="plateOriginMessage"
+            <div v-if="plateAnalysis.isForeign || plateOriginMessage"
                 class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-indigo-50 border border-indigo-300 px-5 py-4 space-y-2">
                 <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p class="text-[9px] font-black uppercase tracking-widest text-indigo-700">Patente Extranjera</p>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <CountryFlagSvg
+                            v-for="c in plateOriginCountries"
+                            :key="c.code"
+                            :country="c.code"
+                            class-name="w-6 h-4"
+                        />
+                    </div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-indigo-700">Patente Extranjera Detectada</p>
                 </div>
                 <p class="text-sm font-bold text-indigo-900">{{ plateOriginMessage }}</p>
                 <p class="text-xs text-indigo-700">Los datos del vehículo no están en el registro local, por lo que deben ingresarse manualmente.</p>
@@ -608,13 +694,48 @@ const handleCreateOrder = () => {
 
                     <!-- Patente (Editable) -->
                     <div
-                        class="flex flex-col items-center py-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner group transition-all focus-within:ring-2 focus-within:ring-[#FF7A00]/20">
+                        class="flex flex-col items-center py-6 px-4 bg-gray-50 rounded-3xl border shadow-inner group transition-all"
+                        :class="[
+                            form.errors.plate || (form.plate && form.plate.length >= 5 && !plateAnalysis.isValid)
+                                ? 'border-red-300 ring-2 ring-red-500/20 bg-red-50/40'
+                                : plateAnalysis.isForeign
+                                    ? 'border-indigo-300 ring-2 ring-indigo-500/20 bg-indigo-50/30'
+                                    : 'border-gray-100 focus-within:ring-2 focus-within:ring-[#FF7A00]/20'
+                        ]"
+                    >
                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Placa de
                             Identificación</p>
                         <input v-model="form.plate" type="text"
                             class="w-full text-center bg-transparent border-none focus:ring-0 text-5xl font-mono font-black text-gray-900 tracking-widest plate-font uppercase placeholder-gray-200"
                             placeholder="AAAA11" maxlength="8" />
-                        <p class="text-[9px] text-gray-400 mt-2 tracking-wider">Auto: 6 caracteres · Moto: 5 · Extranjera: hasta 8</p>
+
+                        <!-- Hint básico cuando no hay avisos ni errores -->
+                        <p v-if="!plateAnalysis.isForeign && !form.errors.plate && (!form.plate || plateAnalysis.isValid || form.plate.length < 5)"
+                            class="text-[9px] text-gray-400 mt-2 tracking-wider">
+                            Auto: 6 caracteres · Moto: 5 · Extranjera: hasta 8
+                        </p>
+
+                        <!-- AVISO: Patente extranjera detectada (con bandera y país) -->
+                        <div v-else-if="plateAnalysis.isForeign" class="mt-3 flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-100/80 border border-indigo-300 text-indigo-950 text-xs font-bold animate-in fade-in max-w-md">
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <CountryFlagSvg
+                                    v-for="c in plateAnalysis.detectedCountries"
+                                    :key="c.code"
+                                    :country="c.code"
+                                    class-name="w-5 h-3.5"
+                                />
+                            </div>
+                            <span>{{ plateAnalysis.message }}</span>
+                        </div>
+
+                        <!-- ERROR: Formato inválido o error del servidor -->
+                        <div v-else-if="form.errors.plate || (form.plate && form.plate.length >= 5 && !plateAnalysis.isValid)"
+                            class="mt-3 flex items-center gap-2 px-4 py-2 rounded-2xl bg-red-100/80 border border-red-300 text-red-900 text-xs font-semibold text-center animate-in fade-in max-w-md">
+                            <svg class="h-4 w-4 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>{{ form.errors.plate || plateAnalysis.error }}</span>
+                        </div>
                     </div>
 
                     <!-- Datos del Vehículo -->

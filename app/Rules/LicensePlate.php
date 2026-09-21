@@ -40,8 +40,9 @@ class LicensePlate implements ValidationRule
         }
 
         $fail(sprintf(
-            'La patente no coincide con el formato de %s ni con un formato internacional reconocido.',
+            'La patente no coincide con el formato de %s %s ni con un formato internacional reconocido (ej. Argentina 🇦🇷, Brasil 🇧🇷, Perú 🇵🇪).',
             $this->country->label(),
+            $this->country->flag(),
         ));
     }
 }
