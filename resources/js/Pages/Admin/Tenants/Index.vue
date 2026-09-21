@@ -183,183 +183,181 @@ const getSortLabel = () => {
 
         <!-- Tabla de Talleres -->
         <div class="flow-root">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div class="overflow-hidden shadow-xs ring-1 ring-slate-900/5 sm:rounded-xl bg-white">
-                        <table class="min-w-full divide-y divide-slate-200 text-left">
-                            <thead class="bg-slate-50/80">
-                                <tr>
-                                    <!-- Nombre de Taller -->
-                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-sm sm:pl-6">
-                                        <button
-                                            @click="handleSort('name')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Nombre de Taller
-                                            <span :class="[sortBy === 'name' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'name' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'name' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <!-- Nombre de Taller (Columna Bloqueada) -->
+                            <th scope="col" class="sticky left-0 z-20 bg-slate-50 py-3.5 pl-4 pr-3 text-sm sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap">
+                                <button
+                                    @click="handleSort('name')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Nombre de Taller
+                                    <span :class="[sortBy === 'name' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'name' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'name' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Slug / URL -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('slug')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Slug / URL
-                                            <span :class="[sortBy === 'slug' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'slug' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'slug' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Slug / URL -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('slug')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Slug / URL
+                                    <span :class="[sortBy === 'slug' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'slug' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'slug' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Plan -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('plan')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Plan
-                                            <span :class="[sortBy === 'plan' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'plan' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'plan' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Plan -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('plan')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Plan
+                                    <span :class="[sortBy === 'plan' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'plan' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'plan' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Usuarios -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('users_count')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Usuarios
-                                            <span :class="[sortBy === 'users_count' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'users_count' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'users_count' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Usuarios -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('users_count')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Usuarios
+                                    <span :class="[sortBy === 'users_count' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'users_count' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'users_count' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Uso / Actividad -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('usage')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                            title="Ordenar por actividad global del taller (OTs, Citas, Logins)"
-                                        >
-                                            Uso / OTs
-                                            <span :class="[sortBy === 'usage' || sortBy === 'work_orders_count' ? 'text-amber-700 font-bold' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="(sortBy === 'usage' || sortBy === 'work_orders_count') && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="(sortBy === 'usage' || sortBy === 'work_orders_count') && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Uso / Actividad -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('usage')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                    title="Ordenar por actividad global del taller (OTs, Citas, Logins)"
+                                >
+                                    Uso / OTs
+                                    <span :class="[sortBy === 'usage' || sortBy === 'work_orders_count' ? 'text-amber-700 font-bold' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="(sortBy === 'usage' || sortBy === 'work_orders_count') && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="(sortBy === 'usage' || sortBy === 'work_orders_count') && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Estado -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('status')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Estado
-                                            <span :class="[sortBy === 'status' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'status' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'status' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Estado -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('status')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Estado
+                                    <span :class="[sortBy === 'status' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'status' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'status' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Suscripción -->
-                                    <th scope="col" class="px-3 py-3.5 text-sm">
-                                        <button
-                                            @click="handleSort('subscription_ends_at')"
-                                            type="button"
-                                            class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
-                                        >
-                                            Suscripción
-                                            <span :class="[sortBy === 'subscription_ends_at' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
-                                                <svg v-if="sortBy === 'subscription_ends_at' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else-if="sortBy === 'subscription_ends_at' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </th>
+                            <!-- Suscripción -->
+                            <th scope="col" class="whitespace-nowrap px-3 py-3.5 text-sm">
+                                <button
+                                    @click="handleSort('subscription_ends_at')"
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"
+                                >
+                                    Suscripción
+                                    <span :class="[sortBy === 'subscription_ends_at' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600', 'transition-colors']">
+                                        <svg v-if="sortBy === 'subscription_ends_at' && sortDirection === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else-if="sortBy === 'subscription_ends_at' && sortDirection === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </th>
 
-                                    <!-- Acciones -->
-                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 text-right text-sm font-semibold text-slate-900">
-                                        Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200 bg-white">
-                                <tr v-for="tenant in tenants.data" :key="tenant.id" class="hover:bg-slate-50/70 transition-colors">
-                                    <!-- Nombre / RUT / Dominio -->
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">
-                                        <div class="font-semibold text-slate-900">{{ tenant.name }}</div>
-                                        <div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2">
-                                            <span>RUT: {{ tenant.rut_taller || 'N/D' }}</span>
-                                            <span v-if="tenant.domain" class="text-slate-400">• {{ tenant.domain }}</span>
-                                        </div>
-                                    </td>
+                            <!-- Acciones -->
+                            <th scope="col" class="relative whitespace-nowrap py-3.5 pl-3 pr-4 sm:pr-6 text-right text-sm font-semibold text-slate-900">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        <tr v-for="tenant in tenants.data" :key="tenant.id" class="group hover:bg-slate-50/70 transition-colors">
+                            <!-- Nombre / RUT / Dominio (Columna Bloqueada) -->
+                            <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors">
+                                <div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]" :title="tenant.name">{{ tenant.name }}</div>
+                                <div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap">
+                                    <span>RUT: {{ tenant.rut_taller || 'N/D' }}</span>
+                                    <span v-if="tenant.domain" class="text-slate-400 truncate max-w-[140px]" :title="tenant.domain">• {{ tenant.domain }}</span>
+                                </div>
+                            </td>
 
                                     <!-- Slug / URL -->
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
@@ -487,8 +485,6 @@ const getSortLabel = () => {
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
             </div>
         </div>
 
