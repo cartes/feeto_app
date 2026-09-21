@@ -219,6 +219,34 @@ class ClientControllerTest extends TestCase
                 ->where('clients.data.0.metrics.notes_count', 1)
                 ->where('clients.data.0.metrics.total_spent', fn ($value) => (float) $value === 99000.0)
                 ->where('clients.data.0.metrics.last_visit', $appointment->appointment_date->toISOString())
+                ->has('clients.data.0.crm.tags')
+                ->where('clients.data.0.crm.tags', [])
+            );
+    }
+
+    public function test_index_never_omits_the_crm_tags_key_for_a_client_without_activity(): void
+    {
+        // Regression test: la vista Clients/Index.vue lee `client.crm.tags`
+        // para cada fila del listado. Si el backend alguna vez deja de emitir
+        // la clave `crm`, el render de /clients se cae por completo con un
+        // TypeError ("Cannot read properties of undefined (reading 'tags')")
+        // para TODOS los clientes, no solo para uno con datos incompletos.
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+        $this->createClient([
+            'tenant_id' => $tenant->id,
+            'name' => 'Cliente Sin Actividad',
+            'rut' => '55555555-5',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('clients.index', ['tenantBySlug' => $tenant->slug]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Clients/Index')
+                ->has('clients.data.0.crm.tags')
+                ->where('clients.data.0.crm.tags.0.label', 'Sin visitas')
+                ->where('clients.data.0.crm.tags.0.tone', 'gray')
             );
     }
 

@@ -17,6 +17,10 @@ use Illuminate\Support\Collection;
 
 class ClientCrmService
 {
+    private const FREQUENT_VISITS_THRESHOLD = 3;
+
+    private const HIGH_VALUE_THRESHOLD_CLP = 300_000.0;
+
     /**
      * @return array{
      *     client: array<string, mixed>,
@@ -162,6 +166,9 @@ class ClientCrmService
      */
     public function buildIndexItem(Client $client): array
     {
+        $visitsCount = (int) ($client->work_orders_count ?? 0) + (int) ($client->appointments_count ?? 0);
+        $totalSpent = (float) ($client->total_spent ?? 0);
+
         return [
             'id' => $client->id,
             'name' => $client->name,
@@ -170,15 +177,44 @@ class ClientCrmService
             'email' => $client->email,
             'metrics' => [
                 'vehicles_count' => (int) ($client->vehicles_count ?? 0),
-                'visits_count' => (int) ($client->work_orders_count ?? 0) + (int) ($client->appointments_count ?? 0),
+                'visits_count' => $visitsCount,
                 'notes_count' => (int) ($client->internal_notes_count ?? 0),
-                'total_spent' => (float) ($client->total_spent ?? 0),
+                'total_spent' => $totalSpent,
                 'last_visit' => $this->latestDate(
                     $this->parseDate($client->latest_work_order_at ?? null),
                     $this->parseDate($client->latest_appointment_at ?? null),
                 ),
             ],
+            'crm' => [
+                'tags' => $this->buildClientTags($visitsCount, $totalSpent),
+            ],
         ];
+    }
+
+    /**
+     * Heurística inicial de señales CRM derivada de las métricas ya
+     * calculadas en el listado (sin queries adicionales). Sujeta a
+     * definición de producto a futuro.
+     *
+     * @return array<int, array{label: string, tone: string}>
+     */
+    private function buildClientTags(int $visitsCount, float $totalSpent): array
+    {
+        $tags = [];
+
+        if ($visitsCount === 0) {
+            $tags[] = ['label' => 'Sin visitas', 'tone' => 'gray'];
+        }
+
+        if ($visitsCount >= self::FREQUENT_VISITS_THRESHOLD) {
+            $tags[] = ['label' => 'Frecuente', 'tone' => 'sky'];
+        }
+
+        if ($totalSpent >= self::HIGH_VALUE_THRESHOLD_CLP) {
+            $tags[] = ['label' => 'Alto valor', 'tone' => 'emerald'];
+        }
+
+        return $tags;
     }
 
     /**

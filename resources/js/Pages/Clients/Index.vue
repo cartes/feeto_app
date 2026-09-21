@@ -217,7 +217,7 @@ const submitImport = () => {
                                 </td>
                                 <td class="px-6 py-4 align-top">
                                     <div class="flex flex-wrap gap-1.5">
-                                        <span v-for="tag in client.crm.tags" :key="tag.label"
+                                        <span v-for="tag in (client.crm?.tags ?? [])" :key="tag.label"
                                             class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest"
                                             :class="{
                                                 'border-emerald-200 bg-emerald-50 text-emerald-700': tag.tone === 'emerald',

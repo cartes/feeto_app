@@ -9,6 +9,7 @@ import OnboardingTour from '@/Components/OnboardingTour.vue';
 import FloatingSupportButton from '@/Components/FloatingSupportButton.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
 import Toast from '@/Components/Toast.vue';
+import ErrorBoundary from '@/Components/ErrorBoundary.vue';
 
 const { page, tenantRouteParams } = useTenantRouting();
 const user = computed(() => page.props.auth.user);
@@ -272,7 +273,9 @@ watch(
                     />
                 </div>
 
-                <slot />
+                <ErrorBoundary>
+                    <slot />
+                </ErrorBoundary>
             </main>
 
             <!-- ======== BOTTOM FLOATING NAV (SOLO MOBILE) ======== -->
