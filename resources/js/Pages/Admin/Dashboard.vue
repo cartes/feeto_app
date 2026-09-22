@@ -164,91 +164,27 @@ const QUADRANTS = {
     sleeping: { label: 'Dormidos', color: '#94a3b8', description: 'Equipo pequeño y baja actividad' },
 };
 
-const scatterSeries = computed(() => {
-    const groups = { champions: [], growing: [], at_risk: [], sleeping: [] };
-    for (const t of props.tenant_scatter) {
-        groups[t.quadrant]?.push({
-            x: t.users,
-            y: t.logins,
-            z: Math.max(t.work_orders, 1),
-            name: t.name,
-            plan: t.plan,
-            id: t.id,
-            work_orders: t.work_orders,
-        });
-    }
-    return Object.entries(QUADRANTS).map(([key, meta]) => ({
-        name: meta.label,
-        data: groups[key],
-    }));
-});
+// Tabla comparativa: una fila por taller, con barras de magnitud por columna.
+// (Un bubble chart de 4 colores excede el máximo de 3 series categóricas
+// recomendado para gráficos de dispersión y obliga a hacer hover para identificar
+// cada taller; la tabla se lee de un vistazo.)
+const scatterMaxValues = computed(() => ({
+    users: Math.max(...props.tenant_scatter.map((t) => t.users), 1),
+    logins: Math.max(...props.tenant_scatter.map((t) => t.logins), 1),
+    work_orders: Math.max(...props.tenant_scatter.map((t) => t.work_orders), 1),
+}));
 
-const scatterChartOptions = computed(() => {
-    const mu = props.scatter_medians.users ?? 1;
-    const ml = props.scatter_medians.logins ?? 1;
-    return {
-        chart: {
-            type: 'bubble',
-            toolbar: { show: false },
-            zoom: { enabled: true },
-            events: {
-                dataPointSelection: (_e, _ctx, { seriesIndex, dataPointIndex }) => {
-                    const series = scatterSeries.value[seriesIndex];
-                    const pt = series?.data?.[dataPointIndex];
-                    if (pt?.id) window.location.href = route('admin.tenants.activity', pt.id);
-                },
-            },
-        },
-        colors: Object.values(QUADRANTS).map((q) => q.color),
-        dataLabels: { enabled: false },
-        fill: { opacity: 0.75 },
-        xaxis: {
-            title: { text: 'Usuarios del taller', style: { fontSize: '11px', color: '#64748b' } },
-            tickAmount: 5,
-            labels: { style: { fontSize: '11px' } },
-            min: 0,
-        },
-        yaxis: {
-            title: { text: 'Logins últimos 30 días', style: { fontSize: '11px', color: '#64748b' } },
-            labels: { style: { fontSize: '11px' } },
-            min: 0,
-        },
-        annotations: {
-            xaxis: [{
-                x: mu,
-                borderColor: '#cbd5e1',
-                strokeDashArray: 5,
-                label: { text: 'Mediana usuarios', style: { fontSize: '10px', color: '#94a3b8', background: 'transparent' } },
-            }],
-            yaxis: [{
-                y: ml,
-                borderColor: '#cbd5e1',
-                strokeDashArray: 5,
-                label: { text: 'Mediana logins', style: { fontSize: '10px', color: '#94a3b8', background: 'transparent' } },
-            }],
-        },
-        tooltip: {
-            custom: ({ seriesIndex, dataPointIndex, w }) => {
-                const pt = w.config.series[seriesIndex]?.data?.[dataPointIndex];
-                if (!pt) return '';
-                const q = Object.values(QUADRANTS)[seriesIndex];
-                return `
-                    <div class="px-3 py-2 text-xs bg-white shadow-lg rounded-lg border border-slate-200 min-w-[160px]">
-                        <p class="font-semibold text-slate-800 mb-1">${pt.name}</p>
-                        <p class="text-slate-500">Plan: <span class="font-medium text-slate-700 uppercase">${pt.plan}</span></p>
-                        <p class="text-slate-500">Usuarios: <span class="font-medium text-slate-700">${pt.x}</span></p>
-                        <p class="text-slate-500">Logins 30d: <span class="font-medium text-slate-700">${pt.y}</span></p>
-                        <p class="text-slate-500">OTs 30d: <span class="font-medium text-slate-700">${pt.work_orders}</span></p>
-                        <p class="mt-1 font-semibold" style="color:${q.color}">${q.label}</p>
-                        <p class="mt-1 border-t border-slate-100 pt-1 text-slate-400">Haz clic para ver el detalle</p>
-                    </div>`;
-            },
-        },
-        legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-        grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-        plotOptions: { bubble: { minBubbleRadius: 6, maxBubbleRadius: 30 } },
-    };
-});
+const scatterTableRows = computed(() =>
+    [...props.tenant_scatter]
+        .sort((a, b) => b.logins - a.logins || b.users - a.users)
+        .map((t) => ({
+            ...t,
+            quadrantMeta: QUADRANTS[t.quadrant],
+            usersPct: Math.round((t.users / scatterMaxValues.value.users) * 100),
+            loginsPct: Math.round((t.logins / scatterMaxValues.value.logins) * 100),
+            workOrdersPct: Math.round((t.work_orders / scatterMaxValues.value.work_orders) * 100),
+        }))
+);
 
 // Tabla resumen por cuadrante
 const scatterByQuadrant = computed(() =>
@@ -902,10 +838,10 @@ const sendTestDailyReport = () => {
                         </div>
                     </div>
                     <p class="mt-0.5 text-sm text-slate-500">
-                        Compara el tamaño del equipo con su uso reciente. Pasa el cursor por una burbuja para ver sus cifras.
+                        Compara el tamaño del equipo con su uso reciente, ordenado por actividad.
                     </p>
                 </div>
-                <span class="rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700">Haz clic en una burbuja para abrir el detalle</span>
+                <span class="rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700">Haz clic en "Ver" para abrir el detalle</span>
             </div>
 
             <!-- Clasificación de cuadrantes -->
@@ -921,29 +857,65 @@ const sendTestDailyReport = () => {
                 </div>
             </div>
 
-            <!-- Gráfico bubble -->
+            <!-- Tabla comparativa: usuarios, logins y OTs por taller -->
             <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                <div class="grid gap-px border-b border-slate-100 bg-slate-100 sm:grid-cols-3">
-                    <div class="bg-white px-5 py-3">
-                        <p class="text-xs font-semibold text-slate-700">1. Posición horizontal</p>
-                        <p class="mt-0.5 text-xs text-slate-500">Más a la derecha = más usuarios en el equipo.</p>
-                    </div>
-                    <div class="bg-white px-5 py-3">
-                        <p class="text-xs font-semibold text-slate-700">2. Posición vertical</p>
-                        <p class="mt-0.5 text-xs text-slate-500">Más arriba = más logins durante los últimos 30 días.</p>
-                    </div>
-                    <div class="bg-white px-5 py-3">
-                        <p class="text-xs font-semibold text-slate-700">3. Tamaño de burbuja</p>
-                        <p class="mt-0.5 text-xs text-slate-500">Más grande = más órdenes de trabajo en los últimos 30 días.</p>
-                    </div>
-                </div>
-                <div class="p-2">
-                    <VueApexCharts
-                        type="bubble"
-                        height="380"
-                        :options="scatterChartOptions"
-                        :series="scatterSeries"
-                    />
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="py-3 pl-5 pr-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Taller</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Usuarios</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Logins 30d</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">OTs 30d</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Cuadrante</th>
+                                <th class="py-3 pl-3 pr-5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            <tr v-for="t in scatterTableRows" :key="t.id" class="hover:bg-slate-50/60 transition-colors">
+                                <td class="py-3 pl-5 pr-3 text-sm">
+                                    <p class="font-medium text-slate-800 truncate max-w-[180px]">{{ t.name }}</p>
+                                    <p class="text-[11px] text-slate-400 uppercase tracking-wide">{{ t.plan }}</p>
+                                </td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full bg-violet-500" :style="{ width: t.usersPct + '%' }" />
+                                        </div>
+                                        <span class="text-xs font-semibold text-slate-600 w-6 text-right tabular-nums">{{ t.users }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full bg-indigo-500" :style="{ width: t.loginsPct + '%' }" />
+                                        </div>
+                                        <span class="text-xs font-semibold text-slate-600 w-6 text-right tabular-nums">{{ t.logins }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full bg-emerald-500" :style="{ width: t.workOrdersPct + '%' }" />
+                                        </div>
+                                        <span class="text-xs font-semibold text-slate-600 w-6 text-right tabular-nums">{{ t.work_orders }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                                        :style="{ background: t.quadrantMeta.color + '1a', color: t.quadrantMeta.color }"
+                                    >
+                                        <span class="h-1.5 w-1.5 rounded-full" :style="{ background: t.quadrantMeta.color }" />
+                                        {{ t.quadrantMeta.label }}
+                                    </span>
+                                </td>
+                                <td class="py-3 pl-3 pr-5 text-right">
+                                    <Link :href="route('admin.tenants.activity', t.id)" class="text-xs font-semibold text-indigo-600 hover:text-indigo-900">Ver →</Link>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

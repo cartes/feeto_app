@@ -64,8 +64,35 @@ const chartOptions = computed(() => {
         tooltip: {
             shared: true,
             intersect: false,
-            x: { formatter: (value) => formatDateLabel(value, { weekday: 'long', day: 'numeric', month: 'long' }) },
-            y: { formatter: (value) => (value === null || value === undefined ? 'Sin datos' : formatNumber(value)) },
+            // `tooltip.x.formatter` no aplica la fecha en el título con eje "category" + shared,
+            // así que se arma el cuadro flotante a mano para poder mostrar la fecha completa.
+            custom: ({ dataPointIndex }) => {
+                const point = props.series[dataPointIndex];
+                if (!point) return '';
+                const rawDateLabel = formatDateLabel(point.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                const dateLabel = rawDateLabel.charAt(0).toUpperCase() + rawDateLabel.slice(1);
+                const uniqueVisitors = point.unique_visitors === null || point.unique_visitors === undefined
+                    ? 'Sin datos'
+                    : formatNumber(point.unique_visitors);
+                return `
+                    <div class="px-3 py-2 text-xs bg-white shadow-lg rounded-lg border border-slate-200 min-w-[190px]">
+                        <p class="font-semibold text-slate-800 mb-1.5">${dateLabel}</p>
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="flex items-center gap-1.5 text-slate-500">
+                                <span class="h-2 w-2 rounded-full" style="background:${props.color}"></span>
+                                Visitas
+                            </span>
+                            <span class="font-semibold text-slate-700">${formatNumber(point.visits)}</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-4 mt-1">
+                            <span class="flex items-center gap-1.5 text-slate-500">
+                                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                                Visitantes únicos
+                            </span>
+                            <span class="font-semibold text-slate-700">${uniqueVisitors}</span>
+                        </div>
+                    </div>`;
+            },
         },
     };
 });
