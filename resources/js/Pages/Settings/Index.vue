@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
+import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import UsersTab from './Partials/UsersTab.vue';
 import BranchesTab from './Partials/BranchesTab.vue';
 import CommercialTab from './Partials/CommercialTab.vue';
@@ -46,6 +47,17 @@ const canAccessRoles = computed(() => (
         :plan-max-users="planMaxUsers"
         :branches-count="branches.length"
     >
+        <div v-if="activeTab === 'website'" class="space-y-6">
+            <TenantPublicPageCard :public-url="tenant.public_url" />
+            <div class="rounded-2xl border border-gray-100 bg-white p-5">
+                <h2 class="text-lg font-bold text-gray-900">Prepara tu página para tus clientes</h2>
+                <p class="mt-2 text-sm text-gray-600">Personaliza el logo y los colores. Revisa también los horarios de atención en la pestaña Horarios.</p>
+                <p v-if="!canAccessSeo" class="mt-2 text-sm text-gray-600">La edición de descripción, dirección y WhatsApp está disponible en los planes que incluyen SEO y WhatsApp.</p>
+            </div>
+            <BrandingTab v-if="canAccessBranding" :tenant="tenant" :branding-routes="brandingRoutes" />
+            <SeoTab v-if="canAccessSeo" :tenant="tenant" />
+        </div>
+
         <UsersTab
             v-if="activeTab === 'users'"
             :users="users"

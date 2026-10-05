@@ -6,6 +6,7 @@ import { useFormatting } from '@/composables/useFormatting';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
@@ -283,22 +284,15 @@ onUnmounted(() => {
                             activo</span>
                     </span>
 
-                    <a v-if="tenantPublicUrl" :href="tenantPublicUrl" target="_blank" rel="noopener noreferrer"
-                        class="group inline-flex items-center gap-2 rounded-full border border-[#FF7A00]/20 bg-orange-50 px-3.5 py-2 transition hover:bg-orange-100">
-                        <svg class="h-3.5 w-3.5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF7A00]">Tu espacio
-                            público</span>
-                        <svg class="h-3 w-3 text-[#FF7A00] transition group-hover:translate-x-0.5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
             </div>
+
+            <TenantPublicPageCard
+                v-if="tenantPublicUrl"
+                :public-url="tenantPublicUrl"
+                :settings-url="hasPermission('users.manage') ? route('taller.settings', { ...tenantRouteParams, tab: 'website' }) : null"
+            />
 
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">

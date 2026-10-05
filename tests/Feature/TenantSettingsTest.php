@@ -34,7 +34,7 @@ class TenantSettingsTest extends TestCase
         $tenant->makeCurrent();
         $this->actingAs($admin);
 
-        $response = $this->get(route('taller.settings', ['tenantBySlug' => $tenant->slug]));
+        $response = $this->get(route('taller.settings', ['tenantBySlug' => $tenant->slug, 'tab' => 'website']));
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->component('Settings/Index'));
@@ -64,6 +64,7 @@ class TenantSettingsTest extends TestCase
             ->has('planMaxUsers')
             ->has('currentUserCount')
             ->has('canCreateBranch')
+            ->where('tenant.public_url', route('taller.landing', ['tenantBySlug' => $tenant->slug]))
             ->where('brandingRoutes.color', route('taller.settings.branding.color', ['tenantBySlug' => $tenant->slug]))
             ->where('brandingRoutes.logo', route('taller.settings.branding.logo', ['tenantBySlug' => $tenant->slug]))
             ->where('brandingRoutes.deleteLogo', route('taller.settings.branding.logo.delete', ['tenantBySlug' => $tenant->slug]))

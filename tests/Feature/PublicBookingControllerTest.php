@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Mail\AppointmentConfirmationMail;
 use App\Mail\AppointmentScheduledMail;
 use App\Models\Appointment;
 use App\Models\Branch;
@@ -62,9 +63,32 @@ class PublicBookingControllerTest extends TestCase
             'tenant_id' => $this->tenant->id,
             'plate' => 'AB1234',
             'customer_name' => 'Juan Pérez',
+            'status' => 'pending',
         ]);
 
         Mail::assertSent(AppointmentScheduledMail::class);
+    }
+
+    public function test_customer_email_describes_a_pending_request(): void
+    {
+        Mail::fake();
+
+        $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'Juan Pérez',
+            'phone' => '+56912345678',
+            'email' => 'cliente@example.com',
+            'plate' => 'AB1234',
+            'appointment_date' => now()->addDays(2)->format('Y-m-d H:i'),
+        ])->assertSessionHasNoErrors()->assertSessionHas('booking_success', true);
+
+        Mail::assertSent(AppointmentConfirmationMail::class, function (AppointmentConfirmationMail $mail): bool {
+            $this->assertSame('pending', $mail->appointment->status);
+            $this->assertSame("Solicitud de cita recibida en {$this->tenant->name}", $mail->envelope()->subject);
+            $mail->assertSeeInHtml('pendiente de confirmación');
+            $mail->assertDontSeeInHtml('Tu cita está confirmada');
+
+            return $mail->hasTo('cliente@example.com');
+        });
     }
 
     public function test_booking_rejects_conflicting_time_slot(): void

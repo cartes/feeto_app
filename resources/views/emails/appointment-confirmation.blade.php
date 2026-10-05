@@ -1,11 +1,11 @@
 <x-mail::message>
-# ¡Tu cita está confirmada! ✅
+# ¡Recibimos tu solicitud de cita!
 
 Hola **{{ $appointment->customer_name }}**,
 
-Tu hora de atención en **{{ $tenant->name }}** ha sido recibida y confirmada.
+Tu hora de atención en **{{ $tenant->name }}** está pendiente de confirmación. El taller se pondrá en contacto contigo para confirmar la disponibilidad.
 
-## Resumen de tu cita
+## Resumen de tu solicitud
 
 - **Fecha y Hora:** {{ $appointment->appointment_date->locale('es_CL')->translatedFormat('d \d\e F, Y \a \l\a\s H:i \h\r\s') }}
 - **Patente:** {{ $appointment->plate }}
@@ -23,10 +23,10 @@ Tu hora de atención en **{{ $tenant->name }}** ha sido recibida y confirmada.
 @endif
 
 ---
-**Te recomendamos llegar 5 minutos antes de tu cita.**
+**Espera la confirmación del taller antes de asistir.**
 
 Si necesitas reagendar o tienes alguna consulta, contáctanos directamente al taller.
 
 ---
-Este correo fue enviado automáticamente por la plataforma Feeto.
+Este correo fue enviado automáticamente por la plataforma TallerFlow.
 </x-mail::message>

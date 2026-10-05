@@ -26,7 +26,7 @@ class AppointmentConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Tu cita en {$this->tenant->name} está confirmada",
+            subject: "Solicitud de cita recibida en {$this->tenant->name}",
         );
     }
 

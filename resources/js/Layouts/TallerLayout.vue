@@ -27,6 +27,7 @@ const canManageCustomers = computed(() => hasPermission('customers.manage'));
 const canViewReports = computed(() => hasPermission('reports.view'));
 const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quotes_enabled ?? false);
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
+const isWebsiteSettings = computed(() => route().current('taller.settings') && new URL(page.url, 'http://localhost').searchParams.get('tab') === 'website');
 const canAccessSettings = computed(() => roles.value.includes('Admin') || hasPermission('users.manage') || hasPermission('branches.manage'));
 const hasCustomRoles = computed(() => (tenantContext.value?.features ?? []).includes('custom_roles'));
 const canAccessRoles = computed(() => canAccessSettings.value && hasCustomRoles.value);
@@ -164,11 +165,21 @@ watch(
                 </Link>
 
                 <Link
+                    v-if="hasPermission('users.manage')"
+                    :href="route('taller.settings', { ...tenantRouteParams, tab: 'website' })"
+                    class="flex items-center gap-4 rounded-[1.25rem] px-4 py-4 font-bold transition"
+                    :class="isWebsiteSettings ? 'bg-[#FF7A00] text-white' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                >
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18v14H3z M3 9h18 M7 7h.01 M10 7h.01" /></svg>
+                    <span>Mi página web</span>
+                </Link>
+
+                <Link
                     v-if="canAccessSettings"
                     :href="route('taller.settings', tenantRouteParams)"
                     data-tour="tenant-settings"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                    :class="(route().current('taller.settings') && !isWebsiteSettings) || route().current('taller.roles.*') ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

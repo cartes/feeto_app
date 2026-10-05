@@ -75,7 +75,7 @@ const submitBooking = () => {
     form.post(route('taller.booking.store', props.tenant.slug), {
         preserveScroll: true,
         onSuccess: () => {
-            showToast('¡Cita confirmada! Te esperamos en el taller.', 'success');
+            showToast('Solicitud recibida. El taller confirmará la disponibilidad.', 'success');
         },
         onError: (errors) => {
             if (errors.appointment_date) {
@@ -223,7 +223,7 @@ const trackWhatsAppClick = () => {
 
                     <!-- Subheadline -->
                     <p class="mt-6 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-                        {{ tenant.seo_description || 'Diagnóstico rápido, repuestos garantizados y transparencia total. Cuando llegues, leeremos tu patente automáticamente para atenderte sin esperas.' }}
+                        {{ tenant.seo_description || 'Conoce nuestro taller, contáctanos y solicita una cita para la atención de tu vehículo.' }}
                     </p>
 
                     <!-- Location & Website Details -->
@@ -435,7 +435,7 @@ const trackWhatsAppClick = () => {
                     <div v-if="activeTab === 'booking'" class="animate-fade-in space-y-8">
                         <div class="text-center mb-8">
                             <h2 class="text-3xl font-black text-gray-900 tracking-tight">Agenda tu Cita</h2>
-                            <p class="mt-2 text-gray-500">Completa el formulario y te confirmaremos en minutos.</p>
+                            <p class="mt-2 text-gray-500">Completa el formulario y el taller se pondrá en contacto contigo para confirmar la disponibilidad.</p>
                         </div>
 
                         <!-- SUCCESS STATE -->
@@ -445,15 +445,15 @@ const trackWhatsAppClick = () => {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-black text-gray-900">¡Cita Confirmada!</h3>
+                            <h3 class="text-2xl font-black text-gray-900">¡Solicitud recibida!</h3>
                             <p class="mt-4 text-gray-600 max-w-md mx-auto leading-relaxed">
-                                Cuando llegues al taller, <strong>leeremos tu patente automáticamente</strong> para atenderte sin demoras ni filas. ¡Te esperamos!
+                                Tu solicitud está <strong>pendiente de confirmación</strong>. El taller se pondrá en contacto contigo para confirmar la fecha y hora de atención.
                             </p>
                             <div class="mt-8 inline-flex items-center gap-2 bg-gray-50 border border-gray-100 text-gray-500 text-sm font-medium px-5 py-3 rounded-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Recibirás un recordatorio antes de tu cita.
+                                El envío de la solicitud no confirma la reserva.
                             </div>
                         </div>
 
@@ -587,7 +587,7 @@ const trackWhatsAppClick = () => {
                                     <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    {{ form.processing ? 'Agendando...' : 'Confirmar mi Cita' }}
+                                    {{ form.processing ? 'Agendando...' : 'Solicitar mi cita' }}
                                 </button>
                                 <p class="mt-4 text-center text-xs text-gray-400">
                                     Al agendar, aceptas que el taller se contacte contigo para confirmar el servicio.
