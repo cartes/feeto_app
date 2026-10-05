@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\BranchLimitService;
+use App\Services\TenantSetupChecklistService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,7 +23,7 @@ class TenantSettingsController extends Controller
      * Muestra la página unificada de configuración del taller.
      * Incluye gestión de usuarios, sucursales y datos del tenant.
      */
-    public function index(): Response
+    public function index(TenantSetupChecklistService $checklist): Response
     {
         $tenant = Tenant::current();
 
@@ -44,6 +45,7 @@ class TenantSettingsController extends Controller
             ->get(['id', 'name']);
 
         return Inertia::render('Settings/Index', [
+            'setupChecklist' => $checklist->forTenant($tenant),
             'users' => $users->map(fn (User $user) => [
                 'id' => $user->id,
                 'name' => $user->name,

@@ -11,6 +11,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\PlanFeatureService;
+use App\Services\TenantSetupChecklistService;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,7 +20,7 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    public function __invoke(Request $request): InertiaResponse|Response
+    public function __invoke(Request $request, TenantSetupChecklistService $checklist): InertiaResponse|Response
     {
         $tenant = Tenant::current();
 
@@ -113,6 +114,7 @@ class TallerDashboardController extends Controller
             : collect();
 
         return Inertia::render('Dashboard', [
+            'setupChecklist' => $user->can('users.manage') ? $checklist->forTenant($tenant) : null,
             'initialActivities' => $initialActivities,
             'quoteNotifications' => $quoteNotifications,
             'appointments' => $serializedAppointments,

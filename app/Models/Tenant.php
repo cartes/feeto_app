@@ -32,6 +32,7 @@ class Tenant extends SpatieTenant
         'id',
         'billing_api_key',
         'whatsapp_api_token',
+        'setup_checklist',
     ];
 
     /** @var array<string, string> */
@@ -43,6 +44,7 @@ class Tenant extends SpatieTenant
         'kanban_columns' => 'array',
         'max_discount_without_approval' => 'decimal:2',
         'scheduling_config' => 'array',
+        'setup_checklist' => 'array',
         'country' => Country::class,
     ];
 

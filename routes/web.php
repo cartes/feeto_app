@@ -64,6 +64,7 @@ use App\Http\Controllers\TenantRoleController;
 use App\Http\Controllers\TenantSchedulingController;
 use App\Http\Controllers\TenantSeoController;
 use App\Http\Controllers\TenantSettingsController;
+use App\Http\Controllers\TenantSetupChecklistController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\TrialRequestController;
@@ -373,6 +374,9 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
         Route::get('/settings', [TenantSettingsController::class, 'index'])
             ->middleware('permission:users.manage')
             ->name('taller.settings');
+        Route::patch('/settings/setup-checklist', TenantSetupChecklistController::class)
+            ->middleware('permission:users.manage')
+            ->name('taller.settings.setup-checklist.update');
         Route::patch('/settings/commercial', [TenantSettingsController::class, 'updateCommercial'])
             ->middleware('permission:users.manage')
             ->name('taller.settings.commercial.update');

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import SettingsLayout from '@/Layouts/SettingsLayout.vue';
+import TenantSetupChecklist from '@/Components/TenantSetupChecklist.vue';
 import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import UsersTab from './Partials/UsersTab.vue';
 import BranchesTab from './Partials/BranchesTab.vue';
@@ -18,6 +19,7 @@ const userRoles = computed(() => user.value?.roles ?? []);
 const tenantContext = computed(() => page.props.tenantContext ?? null);
 const currentTab = computed(() => new URL(page.url, window.location.origin).searchParams.get('tab'));
 const props = defineProps({
+    setupChecklist: Object,
     users: Array,
     branches: Array,
     roles: Array,
@@ -31,6 +33,7 @@ const props = defineProps({
     canAccessBranding: Boolean,
 });
 
+const checklistStepId = computed(() => ({ branches: 'business_details', branding: 'branding_contact', seo: 'branding_contact', scheduling: 'scheduling' })[activeTab.value] ?? null);
 const activeTab = computed(() => currentTab.value ?? 'users');
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canAccessRoles = computed(() => (
@@ -47,6 +50,11 @@ const canAccessRoles = computed(() => (
         :plan-max-users="planMaxUsers"
         :branches-count="branches.length"
     >
+        <TenantSetupChecklist
+            v-if="setupChecklist && (activeTab === 'website' || checklistStepId)"
+            :checklist="setupChecklist"
+            :step-id="checklistStepId"
+        />
         <div v-if="activeTab === 'website'" class="space-y-6">
             <TenantPublicPageCard :public-url="tenant.public_url" />
             <div class="rounded-2xl border border-gray-100 bg-white p-5">

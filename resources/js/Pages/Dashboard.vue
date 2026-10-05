@@ -6,10 +6,12 @@ import { useFormatting } from '@/composables/useFormatting';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import TenantSetupChecklist from '@/Components/TenantSetupChecklist.vue';
 import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
+    setupChecklist: { type: Object, default: null },
     initialActivities: {
         type: Array,
         default: () => [],
@@ -293,6 +295,8 @@ onUnmounted(() => {
                 :public-url="tenantPublicUrl"
                 :settings-url="hasPermission('users.manage') ? route('taller.settings', { ...tenantRouteParams, tab: 'website' }) : null"
             />
+
+            <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
 
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">
