@@ -34,7 +34,7 @@ class PublicBookingController extends Controller
 
         $branches = $tenantBySlug->branches()
             ->where('is_active', true)
-            ->select(['id', 'name', 'address', 'phone', 'is_main'])
+            ->select(['id', 'name', 'address', 'phone', 'email', 'is_main'])
             ->orderByDesc('is_main')
             ->orderBy('name')
             ->get();
@@ -52,6 +52,9 @@ class PublicBookingController extends Controller
                 'seo_address' => $tenantBySlug->seo_address,
                 'comuna' => $tenantBySlug->comuna,
                 'whatsapp_number' => $tenantBySlug->whatsapp_number,
+                'contact_email' => ! empty($tenantBySlug->setup_checklist['welcome']['completed_at'])
+                    ? ($branches->firstWhere('is_main', true) ?? $branches->first())?->email
+                    : null,
                 'website_url' => $tenantBySlug->website_url,
                 'primary_color' => $tenantBySlug->primary_color,
                 'logo_url' => $tenantBySlug->logoUrl(),
@@ -162,16 +165,17 @@ class PublicBookingController extends Controller
             ],
         ];
 
-        if (filled($tenant->seo_address)) {
-            $businessSchema['address'] = [
+        if (filled($tenant->seo_address) || filled($tenant->comuna)) {
+            $businessSchema['address'] = array_filter([
                 '@type' => 'PostalAddress',
                 'streetAddress' => $tenant->seo_address,
+                'addressLocality' => $tenant->comuna,
                 'addressCountry' => $tenant->country()->isoCode(),
-            ];
+            ], fn ($value): bool => filled($value));
         }
 
-        if (filled($tenant->whatsapp_number)) {
-            $businessSchema['telephone'] = $tenant->whatsapp_number;
+        if (filled($tenant->phone) || filled($tenant->whatsapp_number)) {
+            $businessSchema['telephone'] = $tenant->phone ?: $tenant->whatsapp_number;
         }
 
         if (filled($tenant->website_url)) {
@@ -181,7 +185,7 @@ class PublicBookingController extends Controller
         if ($branches->isNotEmpty()) {
             $locations = $branches
                 ->filter(fn (Branch $b): bool => filled($b->address) || filled($b->phone))
-                ->map(function (Branch $b) use ($canonicalUrl): array {
+                ->map(function (Branch $b) use ($canonicalUrl, $tenant): array {
                     $loc = [
                         '@type' => 'AutoRepair',
                         'name' => $b->name,

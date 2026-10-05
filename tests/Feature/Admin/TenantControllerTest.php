@@ -198,6 +198,8 @@ class TenantControllerTest extends TestCase
         ]);
 
         $tenant = Tenant::where('name', 'Taller Manuel')->firstOrFail();
+        $this->assertTrue($tenant->setup_checklist['welcome']['required']);
+        $this->assertSame(1, $tenant->setup_checklist['welcome']['next_step']);
 
         $this->assertDatabaseHas('users', [
             'name' => 'Admin Manuel',

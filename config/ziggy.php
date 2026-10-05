@@ -64,6 +64,7 @@ return [
             'verification.*',
             'dashboard',
             'onboarding-tour.complete',
+            'taller.welcome.*',
             'taller.dashboard',
             'receptions.create',
             'receptions.store',

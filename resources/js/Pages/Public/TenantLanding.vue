@@ -114,6 +114,8 @@ const phoneNumber = computed(() => {
     return mainBranch?.phone || props.tenant.whatsapp_number || null;
 });
 
+const publicEmail = computed(() => props.tenant.contact_email || null);
+
 const hasBranches = computed(() => Array.isArray(props.tenant.branches) && props.tenant.branches.length > 0);
 
 const trackWhatsAppClick = () => {
@@ -289,6 +291,7 @@ const trackWhatsAppClick = () => {
                             </svg>
                             Llamar al Taller
                         </a>
+                        <a v-if="publicEmail" :href="`mailto:${publicEmail}`" class="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-8 py-4 text-lg font-bold text-gray-700 hover:border-gray-300">Escribir al Taller</a>
                     </div>
 
                     <!-- ── Sucursales / Ubicaciones ── -->

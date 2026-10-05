@@ -66,6 +66,7 @@ use App\Http\Controllers\TenantSeoController;
 use App\Http\Controllers\TenantSettingsController;
 use App\Http\Controllers\TenantSetupChecklistController;
 use App\Http\Controllers\TenantUserController;
+use App\Http\Controllers\TenantWelcomeController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\TrialRequestController;
 use App\Http\Controllers\VehicleCatalogController;
@@ -179,6 +180,10 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
     ->prefix('/taller/{tenantBySlug}')
     ->group(function () {
         Route::get('/dashboard', TallerDashboardController::class)->name('taller.dashboard');
+        Route::get('/bienvenida', [TenantWelcomeController::class, 'show'])
+            ->middleware('permission:users.manage')->name('taller.welcome.show');
+        Route::patch('/bienvenida', [TenantWelcomeController::class, 'update'])
+            ->middleware('permission:users.manage')->name('taller.welcome.update');
 
         // Nueva Recepción — Usuarios con permiso appointments.manage
         Route::get('/receptions/create', [ReceptionController::class, 'create'])

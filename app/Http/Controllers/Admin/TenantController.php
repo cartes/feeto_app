@@ -15,6 +15,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
 use App\Services\TenantSetupService;
+use App\Services\TenantWelcomeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -142,6 +143,8 @@ class TenantController extends Controller
                 'status' => $validated['status'],
                 'subscription_ends_at' => $validated['subscription_ends_at'] ? now()->parse($validated['subscription_ends_at']) : null,
             ]);
+
+            app(TenantWelcomeService::class)->start($tenant);
 
             $admin = new User;
             $admin->name = $validated['admin_name'];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Tenant;
 use App\Models\TrialRequest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -123,6 +124,7 @@ class TrialRequestCountryTest extends TestCase
         $trialRequest->refresh();
         $this->assertSame('approved', $trialRequest->status);
         $this->assertNotNull($trialRequest->tenant_id);
+        $this->assertTrue(Tenant::query()->findOrFail($trialRequest->tenant_id)->setup_checklist['welcome']['required']);
 
         $this->assertDatabaseHas('tenants', [
             'id' => $trialRequest->tenant_id,

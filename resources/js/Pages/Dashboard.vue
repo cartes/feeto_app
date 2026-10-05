@@ -12,6 +12,7 @@ import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
+    welcome: { type: Object, default: null },
     dailySummary: { type: Array, default: () => [] },
     pendingAppointments: { type: Array, default: () => [] },
     setupChecklist: { type: Object, default: null },
@@ -275,6 +276,11 @@ onUnmounted(() => {
                     </button>
                 </div>
             </div>
+
+            <section v-if="welcome && !welcome.completed" class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-orange-50 p-5">
+                <div><h2 class="font-bold text-gray-900">Prepara tu taller y tu página web</h2><p class="mt-1 text-sm text-gray-600">Completa tus datos en cuatro pasos. Tu página para recibir solicitudes de hora ya está incluida.</p></div>
+                <Link :href="welcome.url" class="rounded-xl bg-orange-600 px-5 py-3 text-sm font-bold text-white hover:bg-orange-700">{{ welcome.started ? 'Retomar bienvenida' : 'Comenzar bienvenida' }}</Link>
+            </section>
 
             <TenantDailySummary v-if="dailySummary.length" :items="dailySummary" />
 

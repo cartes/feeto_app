@@ -14,7 +14,9 @@ use App\Services\BranchContext;
 use App\Services\PlanFeatureService;
 use App\Services\TenantDailyOverviewService;
 use App\Services\TenantSetupChecklistService;
+use App\Services\TenantWelcomeService;
 use Carbon\CarbonInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
@@ -22,7 +24,7 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    public function __invoke(Request $request, TenantSetupChecklistService $checklist, TenantDailyOverviewService $dailyOverview): InertiaResponse|Response
+    public function __invoke(Request $request, TenantSetupChecklistService $checklist, TenantDailyOverviewService $dailyOverview, TenantWelcomeService $welcome): InertiaResponse|Response|RedirectResponse
     {
         $tenant = Tenant::current();
 
@@ -35,6 +37,10 @@ class TallerDashboardController extends Controller
 
         if (! $user->is_super_admin && $user->tenant_id !== $tenant->id) {
             abort(403, 'No tienes acceso a este taller.');
+        }
+
+        if (! $user->is_super_admin && $user->can('users.manage') && $welcome->shouldRedirect($tenant)) {
+            return redirect()->route('taller.welcome.show', ['tenantBySlug' => $tenant->slug]);
         }
 
         $initialActivities = WorkOrder::query()
@@ -121,6 +127,11 @@ class TallerDashboardController extends Controller
         $overview = $dailyOverview->forTenant($tenant, $user, $appointments->filter(fn (Appointment $appointment): bool => $appointment->appointment_date->isToday() && $appointment->status !== 'cancelled')->count());
 
         return Inertia::render('Dashboard', [
+            'welcome' => $user->can('users.manage') ? [
+                'completed' => ! empty($tenant->setup_checklist['welcome']['completed_at']),
+                'url' => route('taller.welcome.show', ['tenantBySlug' => $tenant->slug]),
+                'started' => ($tenant->setup_checklist['welcome']['next_step'] ?? 1) > 1,
+            ] : null,
             'dailySummary' => $overview['summary'],
             'pendingAppointments' => $overview['pending_appointments']->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))->values(),
             'setupChecklist' => $user->can('users.manage') ? $checklist->forTenant($tenant) : null,

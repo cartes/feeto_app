@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\TrialRequestApprovedNotification;
 use App\Notifications\TrialRequestRejectedNotification;
 use App\Services\TenantSetupService;
+use App\Services\TenantWelcomeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -75,6 +76,8 @@ class TrialRequestController extends Controller
             'status' => 'active',
             'subscription_ends_at' => now()->addDays(14),
         ]);
+
+        app(TenantWelcomeService::class)->start($tenant);
 
         $admin = new User;
         $admin->name = $trialRequest->name;

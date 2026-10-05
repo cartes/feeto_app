@@ -135,7 +135,7 @@ class HandleInertiaRequests extends Middleware
             return 'admin';
         }
 
-        if ($request->routeIs('taller.dashboard', 'work-orders.*', 'quotes.*', 'clients.*', 'appointments.*', 'inventory.*', 'product-categories.*', 'services.*', 'invoices.*', 'reports.*', 'taller.settings*', 'taller.roles.*', 'taller.users.*', 'tenant.users.*', 'notifications.*', 'receptions.*', 'subscription.*', 'branches.*', 'profile.*', 'api.*')) {
+        if ($request->routeIs('taller.dashboard', 'taller.welcome.*', 'work-orders.*', 'quotes.*', 'clients.*', 'appointments.*', 'inventory.*', 'product-categories.*', 'services.*', 'invoices.*', 'reports.*', 'taller.settings*', 'taller.roles.*', 'taller.users.*', 'tenant.users.*', 'notifications.*', 'receptions.*', 'subscription.*', 'branches.*', 'profile.*', 'api.*')) {
             return 'tenant';
         }
 
