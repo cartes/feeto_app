@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import ActionEmptyState from '@/Components/ActionEmptyState.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
@@ -30,7 +31,7 @@ const docLabel = computed(() => countryConfig.value.docName);
 const docPlaceholder = computed(() => countryConfig.value.placeholder);
 
 const search = ref(props.filters.search || '');
-const isCreateModalOpen = ref(false);
+const isCreateModalOpen = ref(new URL(page.url, 'http://localhost').searchParams.get('create') === '1');
 const isImportModalOpen = ref(false);
 const importInput = ref(null);
 const flash = computed(() => page.props.flash ?? {});
@@ -245,7 +246,12 @@ const submitImport = () => {
                             </tr>
                             <tr v-if="clients.data.length === 0">
                                 <td colspan="6" class="px-6 py-12 text-center text-sm font-medium text-gray-400">
-                                    No se encontraron clientes registrados.
+                                    <ActionEmptyState
+                                        :title="search ? 'No encontramos clientes con esa búsqueda' : 'Aún no tienes clientes registrados'"
+                                        :description="search ? 'Prueba con otro nombre o identificación, o limpia la búsqueda.' : 'Agrega tu primer cliente para guardar sus datos y reutilizarlos en próximas atenciones.'"
+                                        :action-label="search ? 'Limpiar búsqueda' : 'Agregar mi primer cliente'"
+                                        @action="search ? search = '' : isCreateModalOpen = true"
+                                    />
                                 </td>
                             </tr>
                         </tbody>
@@ -289,12 +295,14 @@ const submitImport = () => {
                     </div>
 
                     <form @submit.prevent="submit" class="space-y-4">
+                        <p class="text-sm text-gray-500">Solo el nombre y la identificación son obligatorios. Puedes completar los datos de contacto después.</p>
+                        <p v-if="form.hasErrors" role="alert" class="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">Revisa los campos marcados para guardar el cliente.</p>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div class="space-y-1 sm:col-span-2">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Nombre completo *</label>
-                                <input v-model="form.name" type="text"
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400" for="new-client-name">Nombre completo *</label>
+                                <input id="new-client-name" v-model="form.name" type="text" autocomplete="name"
                                     class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
-                                    placeholder="Ej. Juan Pérez" required />
+                                    placeholder="Ej. Juan Pérez" autofocus required />
                                 <p v-if="form.errors.name" class="mt-1 text-xs text-rose-500">{{ form.errors.name }}</p>
                             </div>
 
@@ -330,14 +338,14 @@ const submitImport = () => {
                             <div class="space-y-1">
                                 <PhoneInput
                                     v-model="form.phone"
-                                    label="Teléfono"
+                                    label="Teléfono (opcional)"
                                     :error-message="form.errors.phone"
                                 />
                             </div>
 
                             <div class="space-y-1 sm:col-span-2">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</label>
-                                <input v-model="form.email" type="email"
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400" for="new-client-email">Correo electrónico (opcional)</label>
+                                <input id="new-client-email" v-model="form.email" type="email" autocomplete="email"
                                     class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20"
                                     placeholder="correo@ejemplo.com" />
                                 <p v-if="form.errors.email" class="mt-1 text-xs text-rose-500">{{ form.errors.email }}</p>

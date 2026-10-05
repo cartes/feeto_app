@@ -10,7 +10,9 @@ use App\Models\QuoteEvent;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Services\BranchContext;
 use App\Services\PlanFeatureService;
+use App\Services\TenantDailyOverviewService;
 use App\Services\TenantSetupChecklistService;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
@@ -20,7 +22,7 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    public function __invoke(Request $request, TenantSetupChecklistService $checklist): InertiaResponse|Response
+    public function __invoke(Request $request, TenantSetupChecklistService $checklist, TenantDailyOverviewService $dailyOverview): InertiaResponse|Response
     {
         $tenant = Tenant::current();
 
@@ -66,11 +68,14 @@ class TallerDashboardController extends Controller
                 ])
             : collect();
 
+        $activeBranchId = app(BranchContext::class)->id();
+
         $calendarStart = now()->startOfMonth()->startOfDay();
         $calendarEnd = now()->endOfMonth()->endOfDay();
 
         $appointments = Appointment::query()
             ->with(['client', 'vehicle'])
+            ->when($activeBranchId !== null, fn ($query) => $query->where('branch_id', $activeBranchId))
             ->whereBetween('appointment_date', [$calendarStart, $calendarEnd])
             ->orderBy('appointment_date')
             ->get();
@@ -113,7 +118,11 @@ class TallerDashboardController extends Controller
                 ])
             : collect();
 
+        $overview = $dailyOverview->forTenant($tenant, $user, $appointments->filter(fn (Appointment $appointment): bool => $appointment->appointment_date->isToday() && $appointment->status !== 'cancelled')->count());
+
         return Inertia::render('Dashboard', [
+            'dailySummary' => $overview['summary'],
+            'pendingAppointments' => $overview['pending_appointments']->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))->values(),
             'setupChecklist' => $user->can('users.manage') ? $checklist->forTenant($tenant) : null,
             'initialActivities' => $initialActivities,
             'quoteNotifications' => $quoteNotifications,

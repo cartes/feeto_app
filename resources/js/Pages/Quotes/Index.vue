@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import ActionEmptyState from '@/Components/ActionEmptyState.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import { useFormatting } from '@/composables/useFormatting';
@@ -74,15 +75,14 @@ watch(search, debounce((value) => {
             </div>
 
             <div v-if="commercialQuotesEnabled" class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm">
-                <div v-if="quotes.data.length === 0" class="p-12 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50">
-                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m-6 4h6m-6 4h4M5 3h14a2 2 0 012 2v14l-4-3-3 3-3-3-3 3-3-3-2 1.5V5a2 2 0 012-2z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900">Aún no hay cotizaciones manuales</h3>
-                    <p class="mt-1 text-sm text-gray-500">Crea una nueva para cotizar a un cliente sin pasar por una OT.</p>
-                </div>
+                <ActionEmptyState
+                    v-if="quotes.data.length === 0"
+                    :title="search ? 'No encontramos cotizaciones con esa búsqueda' : 'Aún no tienes cotizaciones'"
+                    :description="search ? 'Prueba con otro cliente o patente, o limpia la búsqueda.' : 'Crea la primera cotización usando un cliente y vehículo registrados, o agrega sus datos durante el proceso.'"
+                    :action-label="search ? 'Limpiar búsqueda' : 'Crear mi primera cotización'"
+                    :action-href="search ? null : route('quotes.create', tenantRouteParams)"
+                    @action="search = ''"
+                />
 
                 <div v-else class="overflow-x-auto">
                     <table class="w-full border-collapse text-left">

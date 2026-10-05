@@ -46,6 +46,9 @@ class WorkOrderController extends Controller
             $viewMode = 'kanban';
         }
 
+        $status = $request->input('status');
+        $status = in_array($status, $statuses, true) ? $status : null;
+
         $month = $request->input('month');
         $search = $request->input('search');
         $perPage = (int) $request->input('per_page', 15);
@@ -66,6 +69,8 @@ class WorkOrderController extends Controller
             ])
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
             ->when($activeBranchId !== null, fn ($q) => $q->where('branch_id', $activeBranchId));
+
+        $query->when($status !== null, fn ($query) => $query->where('status', $status));
 
         // Month filter (YYYY-MM)
         if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
@@ -104,12 +109,14 @@ class WorkOrderController extends Controller
 
         return Inertia::render('WorkOrders/Index', [
             'kanban' => $kanban,
+            'statusOptions' => $statuses,
             'orders' => $orders,
             'tenantId' => $tenantId ?? 0,
             'vehicleCatalogBrands' => $vehicleCatalogService->brandOptions(),
             'filters' => [
                 'view' => $viewMode,
                 'month' => $month,
+                'status' => $status,
                 'search' => $search,
                 'per_page' => $perPage,
             ],

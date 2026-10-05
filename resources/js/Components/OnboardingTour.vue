@@ -65,7 +65,7 @@ const TOUR_VARIANTS = {
             {
                 selectors: ['[data-tour="tenant-mobile-settings"]'],
                 title: 'Configuracion',
-                description: 'Desde aqui entras a usuarios, sucursales y ajustes generales del taller.',
+                description: 'Abre Más para encontrar todas las secciones, tu página web y la configuración del taller.',
             },
         ],
     },

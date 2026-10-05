@@ -1,4 +1,6 @@
 <script setup>
+import TenantSearch from '@/Components/TenantSearch.vue';
+import TenantMobileNavigation from '@/Components/TenantMobileNavigation.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { computed, ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
@@ -20,7 +22,7 @@ const planAccess = computed(() => page.props.planAccess ?? null);
 const tenantContext = computed(() => page.props.tenantContext ?? null);
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canManageAppointments = computed(() => hasPermission('appointments.manage'));
-const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
+const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own']
     .some((permission) => hasPermission(permission)));
 const canManageInventory = computed(() => hasPermission('inventory.manage'));
 const canManageCustomers = computed(() => hasPermission('customers.manage'));
@@ -57,8 +59,9 @@ const sectionTourKey = computed(() => {
 });
 
 const navItems = computed(() => ([
-    { label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', route: 'taller.dashboard', visible: true },
+    { label: 'Inicio', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', route: 'taller.dashboard', visible: true },
     { label: 'Recepción', icon: 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z', route: 'receptions.create', visible: canManageAppointments.value },
+    { label: 'Agenda', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', route: 'appointments.index', visible: canManageAppointments.value },
     { label: 'Órdenes', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01', route: 'work-orders.index', visible: canViewWorkOrders.value },
     { label: 'Cotizaciones', icon: 'M9 7h6m-6 4h6m-6 4h4M5 3h14a2 2 0 012 2v14l-4-3-3 3-3-3-3 3-3-3-2 1.5V5a2 2 0 012-2z', route: 'quotes.index', visible: canViewWorkOrders.value && commercialQuotesEnabled.value },
     { label: 'Inventario', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', route: 'inventory.index', visible: canManageInventory.value },
@@ -68,6 +71,22 @@ const navItems = computed(() => ([
     { label: 'Suscripción', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route: 'subscription.plans', visible: canAccessSettings.value },
     { label: 'Facturación', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route: 'subscription.billing', visible: canAccessSettings.value },
 ]).filter((item) => item.visible));
+
+const isNavItemActive = (item) => ['taller.dashboard', 'subscription.plans', 'subscription.billing'].includes(item.route)
+    ? route().current(item.route)
+    : route().current(`${item.route.split('.')[0]}.*`);
+const mobileItems = computed(() => [
+    ...navItems.value.map(item => ({ ...item, url: route(item.route, tenantRouteParams.value), active: isNavItemActive(item) })),
+    ...(hasPermission('users.manage') ? [
+        { label: 'Mi página web', url: route('taller.settings', { ...tenantRouteParams.value, tab: 'website' }), icon: 'M3 5h18v14H3z M3 9h18', active: isWebsiteSettings.value },
+        { label: 'Configuración', url: route('taller.settings', tenantRouteParams.value), icon: 'M12 8a4 4 0 110 8 4 4 0 010-8z M12 3v2m0 14v2M3 12h2m14 0h2', active: route().current('taller.settings') && !isWebsiteSettings.value },
+    ] : []),
+    ...(canAccessRoles.value ? [{ label: 'Roles y permisos', url: route('taller.roles.index', tenantRouteParams.value), icon: 'M12 4a4 4 0 110 8 4 4 0 010-8z M4 21v-2a8 8 0 0116 0v2', active: route().current('taller.roles.*') }] : []),
+    ...(isSuperAdmin.value ? [{ label: 'Panel Super-Admin', url: route('admin.dashboard'), icon: 'M3 12h18M12 3v18', active: false }] : []),
+]);
+const canSearchWorkOrders = computed(() => hasPermission('work-orders.view') || hasPermission('work-orders.view-own'));
+const searchUrl = computed(() => canSearchWorkOrders.value ? route('work-orders.index', tenantRouteParams.value) : canManageCustomers.value ? route('clients.index', tenantRouteParams.value) : null);
+const searchLabel = computed(() => canSearchWorkOrders.value ? 'Buscar patente, orden o cliente' : 'Buscar cliente');
 
 const toast = ref({ message: '', type: 'success' });
 const showToast = (message, type = 'success') => {
@@ -156,7 +175,7 @@ watch(
                     :key="index"
                     :href="route(item.route, tenantRouteParams)"
                     class="flex items-center gap-4 px-4 py-4 rounded-[1.25rem] font-bold transition-all duration-300 group"
-                    :class="route().current(item.route) ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
+                    :class="isNavItemActive(item) ? 'bg-[#FF7A00] text-white shadow-[0_4px_12px_rgba(249,168,38,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
@@ -234,18 +253,7 @@ watch(
                     </div>
 
                     <!-- Buscador global en desktop -->
-                    <div class="hidden lg:flex relative w-full max-w-[220px] xl:max-w-xs 2xl:max-w-sm" data-tour="tenant-search">
-                        <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Buscar patentes, órdenes, reportes..."
-                            class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-gray-200 focus:ring-2 focus:ring-[#FF7A00] outline-none font-medium placeholder:text-gray-400 transition-all"
-                        />
-                    </div>
+                    <TenantSearch v-if="searchUrl" :search-url="searchUrl" :label="searchLabel" :list-view="canSearchWorkOrders" class="hidden w-full max-w-sm lg:flex" data-tour="tenant-search" />
                 </div>
 
                 <!-- Botones Derecha -->
@@ -270,53 +278,14 @@ watch(
 
             <!-- MAIN CONTENT AREA -->
             <main class="flex-1 px-6 lg:px-10 pb-28 lg:pb-12 flex flex-col gap-6">
-                <!-- Search Bar (Mobile only) -->
-                <div class="relative lg:hidden" data-tour="tenant-mobile-search">
-                    <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input 
-                        type="text" 
-                        placeholder="Buscar patentes, órdenes..." 
-                        class="w-full bg-white text-gray-700 rounded-full py-3.5 pl-14 pr-5 shadow-sm border border-gray-100 focus:ring-2 focus:ring-[#FF7A00] outline-none font-medium placeholder:text-gray-400"
-                    />
-                </div>
+                <TenantSearch v-if="searchUrl" :search-url="searchUrl" :label="searchLabel" :list-view="canSearchWorkOrders" class="lg:hidden" data-tour="tenant-mobile-search" />
 
                 <ErrorBoundary>
                     <slot />
                 </ErrorBoundary>
             </main>
 
-            <!-- ======== BOTTOM FLOATING NAV (SOLO MOBILE) ======== -->
-            <nav class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] h-16 bg-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-around px-2 z-50 border border-gray-100" data-tour="tenant-mobile-navigation">
-                <Link
-                    v-for="(item, index) in navItems"
-                    :key="index"
-                    :href="route(item.route, tenantRouteParams)"
-                    class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="route().current(item.route) ? 'bg-[#FF7A00] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
-                    </svg>
-                </Link>
-
-                <!-- Configuración en mobile: icono activo también cuando se está en roles -->
-                <Link
-                    v-if="canAccessSettings"
-                    :href="route('taller.settings', tenantRouteParams)"
-                    data-tour="tenant-mobile-settings"
-                    class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
-                    :class="route().current('taller.settings') || route().current('taller.roles.*') ? 'bg-[#FF7A00] shadow-[0_4px_12px_rgba(249,168,38,0.3)] text-white' : 'text-gray-400 hover:text-gray-600'"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </Link>
-            </nav>
+            <TenantMobileNavigation :items="mobileItems" :has-settings="hasPermission('users.manage')" />
 
         </div>
         <PasswordChangeModal v-if="user?.needs_password_change" />

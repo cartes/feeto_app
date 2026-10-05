@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
+import { workOrderColumns } from '@/utils/workOrderColumns';
+import ActionEmptyState from '@/Components/ActionEmptyState.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 import axios from 'axios';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
@@ -13,6 +15,7 @@ import { useDebounce } from '@/composables/useDebounce';
 import { useFormatting } from '@/composables/useFormatting';
 
 const props = defineProps({
+    statusOptions: Array,
     kanban: Object,
     orders: Object,
     filters: Object,
@@ -38,18 +41,12 @@ const canCreateWorkOrder = computed(() => (
 ));
 const isCreateOrderModalOpen = ref(false);
 
-// Column identifiers and headers (moved to top for early reference)
-const columns = [
-    { id: 'recepcion', title: 'Recepción', color: 'bg-orange-100/50' },
-    { id: 'diagnostico', title: 'En Diagnóstico', color: 'bg-blue-100/50' },
-    { id: 'esperando_repuestos', title: 'Esp. Repuestos', color: 'bg-yellow-100/50' },
-    { id: 'control_calidad', title: 'Control de Calidad', color: 'bg-cyan-100/50' },
-    { id: 'listo', title: 'Listo para Entrega', color: 'bg-green-100/50' },
-];
+const columns = workOrderColumns(props.statusOptions ?? Object.keys(props.kanban ?? {}));
 
 // Filter & View State
 const search = ref(props.filters?.search || '');
 const month = ref(props.filters?.month || '');
+const selectedStatus = ref(props.filters?.status || '');
 const viewMode = ref(props.filters?.view || 'kanban');
 const perPage = ref(props.filters?.per_page || 15);
 
@@ -59,6 +56,7 @@ const updateFilters = () => {
         {
             view: viewMode.value,
             month: month.value,
+            status: selectedStatus.value,
             search: search.value,
             per_page: perPage.value,
         },
@@ -73,17 +71,7 @@ const triggerSearch = debounce(() => {
     updateFilters();
 }, 300);
 
-watch(search, () => {
-    triggerSearch();
-});
-
-watch(month, () => {
-    updateFilters();
-});
-
-watch(perPage, () => {
-    updateFilters();
-});
+watch([search, month, selectedStatus, perPage], triggerSearch);
 
 const setViewMode = (mode) => {
     viewMode.value = mode;
@@ -600,6 +588,13 @@ const submitDeleteWorkOrder = () => {
 
             <!-- Month & Pagination Limit Filters -->
             <div class="flex items-center gap-4 flex-wrap">
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    Estado:
+                    <select v-model="selectedStatus" class="rounded-xl border-slate-200 py-2 text-sm text-slate-700 focus:border-orange-400 focus:ring-orange-200">
+                        <option value="">Todos</option>
+                        <option v-for="column in columns" :key="column.id" :value="column.id">{{ column.title }}</option>
+                    </select>
+                </label>
                 <!-- Month selector -->
                 <div class="flex items-center gap-2">
                     <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mes:</label>
@@ -621,13 +616,21 @@ const submitDeleteWorkOrder = () => {
                 </div>
 
                 <!-- Clear filters button -->
-                <button v-if="search || month" @click="search = ''; month = ''"
+                <button v-if="search || month || selectedStatus" @click="search = ''; month = ''; selectedStatus = ''"
                     class="rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 py-2 px-3 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">
                     Limpiar Filtros
                 </button>
             </div>
         </div>
 
+        <ActionEmptyState
+            v-if="viewMode === 'kanban' && Object.values(kanban ?? {}).every(orders => orders.length === 0)"
+            :title="search || month || selectedStatus ? 'No encontramos órdenes con esos filtros' : 'Tu tablero está listo para comenzar'"
+            :description="search || month || selectedStatus ? 'Limpia los filtros para ver todas las órdenes.' : 'Ingresa tu primer vehículo y sigue su avance desde recepción hasta la entrega.'"
+            :action-label="search || month || selectedStatus ? 'Limpiar filtros' : canCreateWorkOrder ? 'Ingresar mi primer vehículo' : null"
+            class="mb-6"
+            @action="search || month || selectedStatus ? (search = '', month = '', selectedStatus = '') : isCreateOrderModalOpen = true"
+        />
         <div v-if="viewMode === 'kanban'" class="relative">
 
             <!-- Scroll arrows -->
@@ -934,17 +937,13 @@ const submitDeleteWorkOrder = () => {
         <div v-else class="space-y-6">
             <div
                 class="overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <div v-if="!orders?.data || orders.data.length === 0" class="p-12 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50">
-                        <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800">No se encontraron órdenes</h3>
-                    <p class="mt-1 text-sm text-slate-500 font-medium">Prueba limpiando o cambiando los filtros de
-                        búsqueda.</p>
-                </div>
+                <ActionEmptyState
+                    v-if="!orders?.data || orders.data.length === 0"
+                    :title="search || month || selectedStatus ? 'No encontramos órdenes con esos filtros' : 'Aún no tienes órdenes de trabajo'"
+                    :description="search || month || selectedStatus ? 'Limpia los filtros para volver a ver todas las órdenes.' : 'Ingresa el primer vehículo para comenzar a registrar su atención.'"
+                    :action-label="search || month || selectedStatus ? 'Limpiar filtros' : canCreateWorkOrder ? 'Ingresar mi primer vehículo' : null"
+                    @action="search || month || selectedStatus ? (search = '', month = '', selectedStatus = '') : isCreateOrderModalOpen = true"
+                />
 
                 <div v-else class="overflow-x-auto">
                     <table class="w-full border-collapse text-left">

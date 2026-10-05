@@ -6,11 +6,14 @@ import { useFormatting } from '@/composables/useFormatting';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import TenantDailySummary from '@/Components/TenantDailySummary.vue';
 import TenantSetupChecklist from '@/Components/TenantSetupChecklist.vue';
 import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
+    dailySummary: { type: Array, default: () => [] },
+    pendingAppointments: { type: Array, default: () => [] },
     setupChecklist: { type: Object, default: null },
     initialActivities: {
         type: Array,
@@ -56,7 +59,7 @@ const permissions = computed(() => page.props.auth?.user?.permissions ?? []);
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
 const hasPermission = (permission) => permissions.value.includes(permission);
 const canManageAppointments = computed(() => hasPermission('appointments.manage'));
-const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own', 'work-orders.update-status', 'work-orders.manage-items']
+const canViewWorkOrders = computed(() => ['work-orders.view', 'work-orders.view-own']
     .some((permission) => hasPermission(permission)));
 const canManageInventory = computed(() => hasPermission('inventory.manage'));
 const canManageCustomers = computed(() => hasPermission('customers.manage'));
@@ -109,6 +112,8 @@ const recentActivities = ref(
 const getStatusLabel = (status) => ({
     recepcion: 'Recepción',
     diagnostico: 'En diagnóstico',
+    taller: 'En taller',
+    aviso_cliente: 'Avisar al cliente',
     esperando_repuestos: 'Esperando repuestos',
     control_calidad: 'Control de calidad',
     listo: 'Listo',
@@ -131,22 +136,28 @@ const dismissActivity = (activity) => {
 
 const quickLinks = computed(() => ([
     {
-        label: 'Nueva Recepción',
+        label: 'Ingresar vehículo',
         route: 'receptions.create',
         visible: canManageAppointments.value,
         iconPath: 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 10a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
     },
     {
-        label: 'Agenda',
+        label: 'Revisar agenda',
         route: 'appointments.index',
         visible: canManageAppointments.value,
         iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z',
     },
     {
-        label: 'Órdenes',
+        label: 'Ver órdenes',
         route: 'work-orders.index',
         visible: canViewWorkOrders.value,
         iconPath: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2',
+    },
+    {
+        label: 'Crear cotización',
+        route: 'quotes.create',
+        visible: (hasPermission('work-orders.view') || hasPermission('work-orders.view-own')) && commercialQuotesEnabled.value,
+        iconPath: 'M12 5v14m-7-7h14',
     },
     {
         label: 'Inventario',
@@ -161,13 +172,14 @@ const quickLinks = computed(() => ([
         iconPath: 'M9 12h6m-3-3v6m6 5H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.172a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 12.828 8H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2z',
     },
     {
-        label: 'Clientes',
+        label: 'Agregar cliente',
+        params: { create: '1' },
         route: 'clients.index',
         visible: canManageCustomers.value,
         iconPath: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0 .01 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75',
     },
     {
-        label: 'Reportes',
+        label: 'Ver reportes',
         route: 'reports.index',
         visible: canViewReports.value && commercialReportsEnabled.value,
         iconPath: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z',
@@ -179,37 +191,6 @@ const notificationStatusClass = (status) => ({
     arrived: 'bg-emerald-100 text-emerald-800',
     cancelled: 'bg-red-100 text-red-800',
 }[status] ?? 'bg-gray-100 text-gray-700');
-
-const summaryStats = computed(() => ([
-    {
-        label: calendarSchedulingEnabled.value ? 'Citas de hoy' : 'Citas agendadas',
-        value: calendarSchedulingEnabled.value ? props.todayAppointments.length : props.appointments.length,
-        hint: 'Agendamiento',
-        visible: true,
-        alert: false,
-    },
-    {
-        label: 'Movimientos del tablero',
-        value: recentActivities.value.length,
-        hint: 'Actividad reciente',
-        visible: canViewWorkOrders.value,
-        alert: false,
-    },
-    {
-        label: 'Eventos de cotización',
-        value: props.quoteNotifications.length,
-        hint: 'Comercial',
-        visible: commercialQuotesEnabled.value,
-        alert: false,
-    },
-    {
-        label: 'Facturas atrasadas',
-        value: props.overdueInvoices.length,
-        hint: 'Cobranza',
-        visible: isAdmin.value,
-        alert: props.overdueInvoices.length > 0,
-    },
-]).filter((stat) => stat.visible));
 
 onMounted(() => {
     if (!tenantId.value || !window.Echo?.private) {
@@ -257,15 +238,15 @@ onUnmounted(() => {
 
 <template>
 
-    <Head title="Centro de Comando" />
+    <Head title="Inicio" />
 
     <TallerLayout>
         <div class="space-y-6">
             <!-- Header -->
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Dashboard operativo</p>
-                    <h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900">Centro de comando del taller
+                    <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Inicio</p>
+                    <h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900">Tu taller hoy
                     </h1>
                     <p class="mt-1.5 text-sm font-medium text-gray-500">
                         {{ new Date().toLocaleDateString('es-CL', {
@@ -274,29 +255,7 @@ onUnmounted(() => {
                     </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2.5">
-                    <span
-                        class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3.5 py-2">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span
-                                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                        </span>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Sistema
-                            activo</span>
-                    </span>
-
-
-                </div>
             </div>
-
-            <TenantPublicPageCard
-                v-if="tenantPublicUrl"
-                :public-url="tenantPublicUrl"
-                :settings-url="hasPermission('users.manage') ? route('taller.settings', { ...tenantRouteParams, tab: 'website' }) : null"
-            />
-
-            <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
 
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">
@@ -317,24 +276,14 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Resumen del día -->
-            <div class="grid grid-cols-2 gap-3 xl:grid-cols-4" data-tour="dashboard-summary">
-                <div v-for="stat in summaryStats" :key="stat.label" class="rounded-2xl border bg-white p-4 shadow-sm"
-                    :class="stat.alert ? 'border-rose-200' : 'border-gray-100'">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em]"
-                        :class="stat.alert ? 'text-rose-400' : 'text-gray-400'">{{ stat.hint }}</p>
-                    <p class="mt-2 text-3xl font-black tracking-tight"
-                        :class="stat.alert ? 'text-rose-600' : 'text-gray-900'">{{ stat.value }}</p>
-                    <p class="mt-1 text-xs font-semibold text-gray-500">{{ stat.label }}</p>
-                </div>
-            </div>
+            <TenantDailySummary v-if="dailySummary.length" :items="dailySummary" />
 
             <!-- Accesos rápidos -->
             <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400">Accesos rápidos</p>
-                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7"
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
                     data-tour="dashboard-quicklinks">
-                    <Link v-for="item in quickLinks" :key="item.label" :href="route(item.route, tenantRouteParams)"
+                    <Link v-for="item in quickLinks" :key="item.label" :href="route(item.route, { ...tenantRouteParams, ...item.params })"
                         class="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7A00]/30 hover:shadow-md">
                         <div
                             class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00]/10 text-[#FF7A00]">
@@ -343,11 +292,31 @@ onUnmounted(() => {
                                 <path stroke-linecap="round" stroke-linejoin="round" :d="item.iconPath" />
                             </svg>
                         </div>
-                        <p class="truncate text-sm font-black uppercase tracking-tight text-gray-900">{{ item.label }}
+                        <p class="min-w-0 text-sm font-semibold leading-snug text-gray-900">{{ item.label }}
                         </p>
                     </Link>
                 </div>
             </div>
+
+            <section v-if="canManageAppointments" id="pending-appointments" class="scroll-mt-6 rounded-2xl border border-gray-100 bg-white p-5 sm:p-6">
+                <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Citas por revisar</h2>
+                        <p class="mt-1 text-sm text-gray-500">Solicitudes pendientes de hoy y de los próximos días. Contacta al cliente para coordinar la atención.</p>
+                    </div>
+                    <Link :href="route('appointments.index', tenantRouteParams)" class="text-sm font-semibold text-orange-700">Ver agenda →</Link>
+                </div>
+                <AppointmentList :appointments="pendingAppointments" empty-title="No tienes citas pendientes por revisar" empty-description="Comparte tu página de reservas para recibir nuevas solicitudes." />
+                <p v-if="dailySummary.find(item => item.id === 'pending')?.count > pendingAppointments.length" class="mt-3 text-sm text-gray-500">Mostrando las próximas {{ pendingAppointments.length }} solicitudes pendientes.</p>
+            </section>
+
+            <TenantPublicPageCard
+                v-if="tenantPublicUrl"
+                :public-url="tenantPublicUrl"
+                :settings-url="hasPermission('users.manage') ? route('taller.settings', { ...tenantRouteParams, tab: 'website' }) : null"
+            />
+
+            <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
 
             <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm"
                 data-tour="dashboard-agenda">
