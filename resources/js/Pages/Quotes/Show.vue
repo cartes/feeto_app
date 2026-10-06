@@ -34,6 +34,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    whatsAppMessage: {
+        type: String,
+        default: '',
+    },
 });
 
 const planAccess = computed(() => page.props.planAccess ?? null);
@@ -108,14 +112,9 @@ const toggleTax = (value) => {
 const formatUf = (clpValue) => formatUfRaw(clpValue, props.uf_value);
 
 const trackingUrl = computed(() => `${window.location.origin}/cotizacion/${props.quote.uuid}`);
-const whatsAppMessage = computed(() => {
-    const vehicle = `${props.quote.vehicle?.brand ?? ''} ${props.quote.vehicle?.model ?? ''}`.trim();
-
-    return encodeURIComponent(`Hola, tu cotización para ${vehicle} (${props.quote.vehicle?.plate}) está disponible: ${trackingUrl.value}`);
-});
 const whatsAppLink = computed(() => {
     const phone = props.quote.client?.phone ?? '';
-    return `https://wa.me/${phone.replace(/\D/g, '')}?text=${whatsAppMessage.value}`;
+    return `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(props.whatsAppMessage)}`;
 });
 const hasClientPhone = computed(() => Boolean(props.quote.client?.phone));
 const hasClientEmail = computed(() => Boolean(props.quote.client?.email));

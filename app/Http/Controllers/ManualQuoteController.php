@@ -128,6 +128,7 @@ class ManualQuoteController extends Controller
                 'approver_roles' => ['Jefe', 'Supervisor'],
             ],
             'canDeliverQuote' => $this->canDeliverQuote(request()->user()),
+            'whatsAppMessage' => $this->manualQuoteService->buildWhatsAppMessage($quote),
         ]);
     }
 

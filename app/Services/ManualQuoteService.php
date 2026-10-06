@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Models\TenantNotification;
 use App\Models\WorkOrder;
 
 class ManualQuoteService
@@ -105,11 +106,56 @@ class ManualQuoteService
             'notes' => $notes,
         ]);
 
+        $this->notifyTenantOfCustomerResponse($quote, $status);
+
         if ($status === Quote::STATUS_ACCEPTED) {
             return $this->convertToWorkOrder($quote);
         }
 
         return null;
+    }
+
+    /**
+     * Mensaje de WhatsApp con monto y enlace para aprobar la cotización desde el celular.
+     */
+    public function buildWhatsAppMessage(Quote $quote): string
+    {
+        $quote->loadMissing(['client', 'vehicle', 'tenant']);
+
+        $clientName = $quote->client?->name ?? 'cliente';
+        $vehicle = trim(($quote->vehicle?->brand ?? '').' '.($quote->vehicle?->model ?? ''));
+        $plate = $quote->vehicle?->plate;
+        $vehicleLabel = trim($vehicle.($plate ? " ({$plate})" : ''));
+        $tenantName = $quote->tenant?->name ?? 'tu taller';
+        $total = number_format((float) $quote->total_amount, 0, ',', '.');
+        $url = route('quotes.public.show', ['uuid' => $quote->uuid]);
+
+        return "Hola {$clientName}, soy de {$tenantName}. Tu cotización".($vehicleLabel !== '' ? " para {$vehicleLabel}" : '')
+            ." está lista: total \${$total}.\n\nRevísala y apruébala con un toque aquí:\n{$url}";
+    }
+
+    private function notifyTenantOfCustomerResponse(Quote $quote, string $status): void
+    {
+        $accepted = $status === Quote::STATUS_ACCEPTED;
+        $clientName = $quote->client?->name ?? 'El cliente';
+        $plate = $quote->vehicle?->plate ?? 'Sin patente';
+        $total = number_format((float) $quote->total_amount, 0, ',', '.');
+        $minutesToRespond = $quote->sent_at ? (int) $quote->sent_at->diffInMinutes($quote->responded_at) : null;
+
+        TenantNotification::create([
+            'tenant_id' => $quote->tenant_id,
+            'type' => $accepted ? 'quote_accepted' : 'quote_rejected',
+            'title' => $accepted ? 'Cotización aprobada por el cliente' : 'Cotización rechazada por el cliente',
+            'body' => $accepted
+                ? "{$clientName} aprobó la cotización #{$quote->id} ({$plate}) por \${$total}. Ya puedes agendar el ingreso y reponer repuestos."
+                : "{$clientName} rechazó la cotización #{$quote->id} ({$plate}).",
+            'data' => [
+                'quote_id' => $quote->id,
+                'work_order_id' => $quote->work_order_id,
+                'total_amount' => (float) $quote->total_amount,
+                'minutes_to_respond' => $minutesToRespond,
+            ],
+        ]);
     }
 
     public function updateTax(Quote $quote, bool $applyTax, ?float $taxRate = null): Quote

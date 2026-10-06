@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import WorkOrderQuote from '@/Components/WorkOrderQuote.vue';
 
 const props = defineProps({
@@ -40,6 +40,14 @@ const formatDate = (dateString) => {
         year: 'numeric',
     });
 };
+
+const showNotes = ref(false);
+
+const totalLabel = computed(() => new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    maximumFractionDigits: 0,
+}).format(Number(props.quote?.total_amount ?? 0)));
 
 const submitDecision = (decision) => {
     decisionForm.decision = decision;
@@ -104,35 +112,40 @@ const wsLink = `https://wa.me/?text=${whatsappText}`;
                 <div v-if="quote.status === 'pending_customer'" class="mt-6 space-y-4 rounded-3xl border border-orange-100 bg-orange-50/60 p-5">
                     <div>
                         <p class="text-sm font-black text-gray-900">Responder cotización</p>
-                        <p class="mt-1 text-xs font-medium text-gray-500">Puedes aceptarla para autorizar el trabajo o rechazarla para que el taller la ajuste.</p>
+                        <p class="mt-1 text-xs font-medium text-gray-500">Con un toque autorizas el trabajo. Si algo no te cuadra, puedes rechazarla para que el taller la ajuste.</p>
                     </div>
 
-                    <textarea
-                        v-model="decisionForm.notes"
-                        rows="3"
-                        class="w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
-                        placeholder="Comentario opcional para el taller"
-                    />
-                    <p v-if="decisionForm.errors.notes" class="text-[10px] font-semibold text-rose-500">{{ decisionForm.errors.notes }}</p>
+                    <button
+                        type="button"
+                        class="w-full rounded-2xl bg-emerald-500 px-4 py-4 text-base font-black text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 active:scale-95 disabled:opacity-50"
+                        :disabled="decisionForm.processing"
+                        @click="submitDecision('accepted')"
+                    >
+                        Aprobar presupuesto · {{ totalLabel }}
+                    </button>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <button
-                            type="button"
-                            class="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-black text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
-                            :disabled="decisionForm.processing"
-                            @click="submitDecision('accepted')"
-                        >
-                            Aceptar
+                    <div class="flex items-center justify-between gap-3 text-xs font-bold">
+                        <button type="button" class="text-gray-500 underline" @click="showNotes = !showNotes">
+                            {{ showNotes ? 'Ocultar comentario' : 'Agregar comentario' }}
                         </button>
                         <button
                             type="button"
-                            class="rounded-2xl bg-rose-500 px-4 py-3 text-sm font-black text-white transition-colors hover:bg-rose-600 disabled:opacity-50"
+                            class="text-rose-500 underline disabled:opacity-50"
                             :disabled="decisionForm.processing"
                             @click="submitDecision('rejected')"
                         >
                             Rechazar
                         </button>
                     </div>
+
+                    <textarea
+                        v-if="showNotes"
+                        v-model="decisionForm.notes"
+                        rows="3"
+                        class="w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-orange-300"
+                        placeholder="Comentario opcional para el taller"
+                    />
+                    <p v-if="decisionForm.errors.notes" class="text-[10px] font-semibold text-rose-500">{{ decisionForm.errors.notes }}</p>
                 </div>
 
                 <div v-else-if="quote.customer_response_notes" class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">

@@ -9,6 +9,7 @@ use App\Models\Plan;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\Service;
+use App\Models\TenantNotification;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleBrand;
@@ -321,5 +322,71 @@ class ManualQuoteControllerTest extends TestCase
             'quote_id' => $quote->id,
             'event_type' => 'customer_rejected',
         ]);
+    }
+
+    public function test_customer_acceptance_notifies_the_workshop_with_the_amount(): void
+    {
+        $quote = $this->createSentQuote();
+
+        $this->post(route('quotes.public.respond', ['uuid' => $quote->uuid]), [
+            'decision' => 'accepted',
+        ])->assertRedirect();
+
+        $notification = TenantNotification::query()->where('type', 'quote_accepted')->firstOrFail();
+
+        $this->assertSame($quote->tenant_id, $notification->tenant_id);
+        $this->assertSame($quote->id, $notification->data['quote_id']);
+        $this->assertEquals((float) $quote->fresh()->total_amount, $notification->data['total_amount']);
+        $this->assertStringContainsString(number_format((float) $quote->fresh()->total_amount, 0, ',', '.'), $notification->body);
+    }
+
+    public function test_customer_rejection_notifies_the_workshop(): void
+    {
+        $quote = $this->createSentQuote();
+
+        $this->post(route('quotes.public.respond', ['uuid' => $quote->uuid]), [
+            'decision' => 'rejected',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('tenant_notifications', [
+            'tenant_id' => $quote->tenant_id,
+            'type' => 'quote_rejected',
+        ]);
+    }
+
+    public function test_show_exposes_whatsapp_message_with_total_and_public_link(): void
+    {
+        $quote = $this->createSentQuote();
+        $total = number_format((float) $quote->fresh()->total_amount, 0, ',', '.');
+
+        $this->actingAs($this->admin)
+            ->get(route('quotes.show', ['quote' => $quote->id]))
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('Quotes/Show')
+                ->where('whatsAppMessage', fn (string $message) => str_contains($message, '$'.$total)
+                    && str_contains($message, route('quotes.public.show', ['uuid' => $quote->uuid]))
+                    && str_contains($message, 'Cliente Cotizacion Manual')));
+    }
+
+    private function createSentQuote(): Quote
+    {
+        $quote = $this->createDraftQuote();
+
+        $this->actingAs($this->admin)
+            ->post(route('quotes.items.store', ['quote' => $quote->id]), [
+                'service_id' => $this->service->id,
+                'description' => '',
+                'quantity' => 1,
+                'unit_price' => $this->service->selling_price,
+            ])
+            ->assertRedirect();
+
+        $this->actingAs($this->admin)
+            ->post(route('quotes.send', ['quote' => $quote->id]), ['channel' => 'whatsapp'])
+            ->assertRedirect();
+
+        auth()->logout();
+
+        return $quote->fresh();
     }
 }
