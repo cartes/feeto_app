@@ -21,7 +21,25 @@ class TenantWelcomeService
     {
         $state = $tenant->setup_checklist['welcome'] ?? [];
 
-        return ($state['required'] ?? false) && empty($state['deferred_at']) && empty($state['completed_at']);
+        if (! empty($state['deferred_at']) || ! empty($state['completed_at'])) {
+            return false;
+        }
+
+        return ($state['required'] ?? false) || $this->hasMissingProfileData($tenant);
+    }
+
+    /**
+     * Indica si faltan datos obligatorios del taller que el asistente permite completar.
+     */
+    public function hasMissingProfileData(Tenant $tenant): bool
+    {
+        foreach (['name', 'comuna', 'seo_description'] as $field) {
+            if (trim((string) $tenant->{$field}) === '') {
+                return true;
+            }
+        }
+
+        return trim((string) $tenant->phone) === '' && trim((string) $tenant->mainBranch()?->phone) === '';
     }
 
     /** @return array<string, mixed> */

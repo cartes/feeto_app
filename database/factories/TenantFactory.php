@@ -31,6 +31,17 @@ class TenantFactory extends Factory
             'plan_type' => 'gratuito',
             'plan' => 'gratuito',
             'status' => 'active',
+            'comuna' => 'Santiago',
+            'phone' => '+56912345678',
+            'seo_description' => 'Taller automotriz de confianza.',
         ];
+    }
+
+    /**
+     * Taller sin los datos de perfil que completa el asistente de bienvenida.
+     */
+    public function withoutProfileData(): static
+    {
+        return $this->state(fn (): array => ['comuna' => null, 'phone' => null, 'seo_description' => null]);
     }
 }

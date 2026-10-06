@@ -322,8 +322,6 @@ onUnmounted(() => {
                 :settings-url="hasPermission('users.manage') ? route('taller.settings', { ...tenantRouteParams, tab: 'website' }) : null"
             />
 
-            <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
-
             <div class="space-y-6 rounded-[2rem] border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm"
                 data-tour="dashboard-agenda">
                 <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
@@ -560,6 +558,8 @@ onUnmounted(() => {
                     </li>
                 </ul>
             </div>
+
+            <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
         </div>
         <!-- Delete Appointment Confirmation Modal -->
         <div v-if="showDeleteAppointmentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">

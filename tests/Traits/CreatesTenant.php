@@ -19,6 +19,9 @@ trait CreatesTenant
                 'name' => 'Taller Test',
                 'slug' => 'taller-test',
                 'domain' => 'test.tallerflow.test',
+                'comuna' => 'Santiago',
+                'phone' => '+56912345678',
+                'seo_description' => 'Taller de pruebas.',
             ]
         );
 

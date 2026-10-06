@@ -54,6 +54,28 @@ class TenantWelcomeTest extends TestCase
             ->where('welcome.suggested_description', 'Taller Cartes es un taller automotriz en Concepción. Consulta nuestros datos de contacto y solicita una hora desde nuestra página en TallerFlow.'));
     }
 
+    public function test_existing_workshop_with_missing_data_is_sent_to_the_wizard_until_deferred_or_completed(): void
+    {
+        $this->tenant->update(['phone' => null, 'seo_description' => null]);
+        Tenant::forgetCurrent();
+        $this->get($this->url('dashboard'))->assertRedirect($this->url('welcome.show'));
+
+        $this->update(['action' => 'defer'])->assertRedirect($this->url('dashboard'));
+        $this->get($this->url('dashboard'))->assertOk();
+    }
+
+    public function test_workshop_with_complete_data_is_not_sent_to_the_wizard(): void
+    {
+        $this->get($this->url('dashboard'))->assertOk();
+    }
+
+    public function test_main_branch_phone_counts_as_complete_contact_data(): void
+    {
+        $this->tenant->update(['phone' => null]);
+        $this->tenant->mainBranch()->update(['phone' => '+56912345678']);
+        $this->get($this->url('dashboard'))->assertOk();
+    }
+
     public function test_existing_profile_and_public_business_contact_are_prefilled_without_account_email(): void
     {
         $this->tenant->update(['seo_description' => 'Nuestra descripción propia.', 'seo_address' => 'Calle 123']);
