@@ -87,6 +87,7 @@ class PublicTenantDirectoryControllerTest extends TestCase
             'name' => 'Taller Centro',
             'slug' => 'taller-centro',
             'domain' => 'taller-centro.tallerflow.cl',
+            'comuna' => 'Ñuñoa',
         ]);
 
         Tenant::factory()->create([
