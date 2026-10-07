@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Country;
 use App\Models\Tenant;
+use App\Models\TrialRequest;
 use Illuminate\Validation\ValidationException;
 
 class TenantWelcomeService
@@ -47,13 +49,24 @@ class TenantWelcomeService
     {
         $state = $tenant->setup_checklist['welcome'] ?? [];
         $branch = $tenant->mainBranch();
+
+        $trialRequest = TrialRequest::where('tenant_id', $tenant->id)->first()
+            ?? TrialRequest::where('business_name', $tenant->name)->latest()->first();
+
+        $tenantCountry = $tenant->country ?? $trialRequest?->country ?? Country::Chile;
+        $countryCode = $tenantCountry instanceof Country ? $tenantCountry->value : (string) $tenantCountry;
+
+        $initialPhone = $branch?->phone ?: ($tenant->phone ?: ($trialRequest?->phone ?? ''));
+        $initialWhatsapp = $tenant->whatsapp_number ?: ($trialRequest?->phone ?? '');
+        $initialComuna = $tenant->comuna ?: ($trialRequest?->city ?? '');
+
         $profile = array_replace([
             'name' => $tenant->name,
-            'comuna' => $tenant->comuna ?? '',
+            'comuna' => $initialComuna,
             'address' => $tenant->seo_address ?? $branch?->address ?? '',
-            'phone' => $branch?->phone ?? $tenant->phone ?? '',
-            'whatsapp_number' => $tenant->whatsapp_number ?? '',
-            'email' => $branch?->email ?? '',
+            'phone' => $initialPhone,
+            'whatsapp_number' => $initialWhatsapp,
+            'email' => $branch?->email ?? $trialRequest?->email ?? '',
             'description' => $tenant->seo_description ?? '',
         ], $state['draft'] ?? []);
         $location = trim((string) $profile['comuna']);
@@ -61,6 +74,7 @@ class TenantWelcomeService
             .($location !== '' ? ' en '.$location : '').'. Consulta nuestros datos de contacto y solicita una hora desde nuestra página en TallerFlow.';
 
         return [
+            'country' => $countryCode,
             'profile' => $profile,
             'suggested_description' => $suggestedDescription,
             'next_step' => (int) ($state['next_step'] ?? 1),

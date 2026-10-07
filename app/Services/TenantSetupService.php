@@ -68,7 +68,7 @@ class TenantSetupService
                 'name' => 'Casa Matriz',
                 'code' => 'MATRIZ',
                 'address' => $tenant->seo_address ?? $tenant->comuna ?? null,
-                'phone' => $tenant->whatsapp_number ?? null,
+                'phone' => $tenant->phone ?? $tenant->whatsapp_number ?? null,
                 'is_main' => true,
                 'is_active' => true,
             ]);

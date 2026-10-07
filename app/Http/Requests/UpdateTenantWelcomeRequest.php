@@ -20,6 +20,13 @@ class UpdateTenantWelcomeRequest extends FormRequest
             && $user->can('users.manage');
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('whatsapp_number') && trim((string) $this->input('whatsapp_number')) === '') {
+            $this->merge(['whatsapp_number' => null]);
+        }
+    }
+
     /** @return array<string, array<mixed>> */
     public function rules(): array
     {

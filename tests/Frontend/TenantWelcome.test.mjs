@@ -40,12 +40,23 @@ test('welcome is a standalone four-step form with business data and a deferral a
     assert.doesNotMatch(html, /data-tour="tenant-mobile-navigation"/);
 });
 
-test('contact makes publication explicit and allows business email and WhatsApp', async () => {
+test('contact makes publication explicit and allows business email and WhatsApp with country phone prefix selector', async () => {
     const { html } = await render(2);
     assert.match(html, /se mostrarán en tu página pública/);
     assert.match(html, /type="tel"/);
     assert.match(html, /Correo del taller \(opcional\)/);
     assert.match(html, /WhatsApp \(opcional\)/);
+    assert.match(html, /\+56/);
+    assert.match(html, /Prefijo de país/);
+
+    const colombia = await createInertiaApp({
+        page: { component: 'TenantWelcome', props: { welcome: { ...welcome, country: 'CO', next_step: 2, profile: { ...welcome.profile, phone: '+573001234567' } } }, url: welcome.url, version: null },
+        resolve: () => Welcome,
+        setup({ App, props, plugin }) { return createSSRApp({ render: () => h(App, props) }).use(plugin); },
+        render: renderToString,
+    });
+    assert.match(colombia.body, /\+57/);
+    assert.match(colombia.body, /300 123 4567/);
 });
 
 test('description is suggested from saved data and existing custom text is preserved', async () => {

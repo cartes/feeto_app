@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\Country;
 use App\Models\Branch;
 use App\Models\Tenant;
+use App\Models\TrialRequest;
 use App\Models\User;
 use App\Services\TenantSetupChecklistService;
 use App\Services\TenantSetupService;
@@ -197,6 +199,41 @@ class TenantWelcomeTest extends TestCase
         $this->update(['action' => 'defer'])->assertForbidden();
         auth()->logout();
         $this->get($this->url('welcome.show'))->assertRedirect(route('login'));
+    }
+
+    public function test_welcome_prefills_phone_and_country_from_trial_request(): void
+    {
+        $colombianTenant = Tenant::factory()->create([
+            'name' => 'Taller Bogotá Motors',
+            'country' => Country::Colombia,
+            'comuna' => 'Bogotá',
+            'phone' => null,
+            'whatsapp_number' => null,
+        ]);
+        $colombianAdmin = User::factory()->create(['tenant_id' => $colombianTenant->id]);
+        app(TenantSetupService::class)->provisionTenant($colombianTenant, $colombianAdmin);
+
+        TrialRequest::create([
+            'name' => 'Juan Valdez',
+            'email' => 'juan@bogotamotors.co',
+            'phone' => '+573001234567',
+            'business_name' => 'Taller Bogotá Motors',
+            'business_type' => 'Taller mecánico',
+            'city' => 'Bogotá',
+            'country' => Country::Colombia,
+            'tenant_id' => $colombianTenant->id,
+            'status' => 'approved',
+        ]);
+
+        $this->actingAs($colombianAdmin)
+            ->get(route('taller.welcome.show', ['tenantBySlug' => $colombianTenant->slug]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('TenantWelcome')
+                ->where('welcome.country', 'CO')
+                ->where('welcome.profile.phone', '+573001234567')
+                ->where('welcome.profile.whatsapp_number', '+573001234567')
+            );
     }
 
     private function completeSteps(): void

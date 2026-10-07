@@ -48,6 +48,18 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    id: {
+        type: String,
+        default: null,
+    },
+    name: {
+        type: String,
+        default: null,
+    },
+    roundedClass: {
+        type: String,
+        default: 'rounded-xl',
+    },
 });
 
 const emit = defineEmits(['update:modelValue', 'change', 'blur', 'country-change']);
@@ -76,6 +88,18 @@ const currentCountryConfig = computed(() => {
 
 const activePlaceholder = computed(() => {
     return props.placeholder || currentCountryConfig.value.placeholder;
+});
+
+const roundedContainerClass = computed(() => {
+    return props.roundedClass === 'rounded-2xl' ? 'rounded-2xl' : 'rounded-xl';
+});
+
+const roundedLeftClass = computed(() => {
+    return props.roundedClass === 'rounded-2xl' ? 'rounded-l-2xl' : 'rounded-l-xl';
+});
+
+const roundedRightClass = computed(() => {
+    return props.roundedClass === 'rounded-2xl' ? 'rounded-r-2xl' : 'rounded-r-xl';
 });
 
 // Sincronizar desde modelValue entrante
@@ -115,6 +139,18 @@ const emitValue = () => {
 
 const handleInput = (event) => {
     const raw = event.target.value;
+    if (raw && String(raw).trim().startsWith('+')) {
+        const parsed = parsePhoneNumber(raw, selectedCountryCode.value);
+        if (parsed.countryCode) {
+            selectedCountryCode.value = parsed.countryCode;
+            localDigits.value = parsed.nationalDigits;
+            formattedDisplay.value = parsed.formattedNational;
+            emitValue();
+            emit('country-change', currentCountryConfig.value);
+            return;
+        }
+    }
+
     const digits = cleanDigits(raw);
 
     // Limitar longitud según el país para evitar desbordes accidentales
@@ -176,14 +212,17 @@ onUnmounted(() => {
             </span>
         </div>
 
-        <div class="relative flex rounded-2xl shadow-sm">
+        <div :class="['relative flex shadow-sm', roundedContainerClass]">
             <!-- Botón Selector de Prefijo -->
             <button
                 type="button"
                 @click="toggleDropdown"
                 :disabled="disabled"
+                :aria-expanded="isDropdownOpen"
+                :aria-label="`Prefijo de país: ${currentCountryConfig.name} (${currentCountryConfig.prefix})`"
                 :class="[
-                    'relative inline-flex items-center gap-1.5 rounded-l-2xl border border-r-0 bg-gray-50 px-3 py-3 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-100 focus:z-10 focus:outline-none shrink-0',
+                    'relative inline-flex items-center gap-1.5 border border-r-0 bg-gray-50 px-3 py-3 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-100 focus:z-10 focus:outline-none shrink-0',
+                    roundedLeftClass,
                     errorMessage
                         ? 'border-rose-300 bg-rose-50/20'
                         : 'border-gray-200 focus:border-[#FF7A00]',
@@ -234,6 +273,8 @@ onUnmounted(() => {
 
             <!-- Input de número local -->
             <input
+                :id="id"
+                :name="name || id"
                 type="tel"
                 inputmode="numeric"
                 :value="formattedDisplay"
@@ -244,7 +285,8 @@ onUnmounted(() => {
                 @blur="handleBlur"
                 autocomplete="tel-national"
                 :class="[
-                    'w-full rounded-r-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-900 outline-none transition-all placeholder:text-gray-300 focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20',
+                    'w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-900 outline-none transition-all placeholder:text-gray-300 focus:border-[#FF7A00] focus:bg-white focus:ring-2 focus:ring-[#FF7A00]/20',
+                    roundedRightClass,
                     errorMessage
                         ? 'border-rose-300 bg-rose-50/20 focus:ring-rose-400'
                         : '',

@@ -1,7 +1,8 @@
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import PhoneInput from '@/Components/PhoneInput.vue';
 import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
 
 const props = defineProps({ welcome: { type: Object, required: true } });
@@ -12,7 +13,13 @@ const step = computed(() => {
     return Math.max(1, Math.min(requested || props.welcome.next_step, props.welcome.next_step, 4));
 });
 const form = useForm({ ...props.welcome.profile });
-watch(() => props.welcome, welcome => Object.assign(form, welcome.profile));
+const defaultCountry = ref(props.welcome.country || page.props.tenantContext?.country || 'CL');
+watch(() => props.welcome, welcome => {
+    Object.assign(form, welcome.profile);
+    if (welcome.country) {
+        defaultCountry.value = welcome.country;
+    }
+});
 watch(step, value => {
     if (value === 3 && !form.description) form.description = props.welcome.suggested_description;
 }, { immediate: true });
@@ -69,9 +76,36 @@ const inputClass = 'mt-2 block w-full rounded-xl border-gray-300 text-gray-900 f
                 <section v-else-if="step === 2" class="space-y-5" aria-labelledby="contact-title">
                     <h2 id="contact-title" class="text-xl font-bold">¿Cómo pueden contactarte?</h2>
                     <p class="text-sm text-gray-600">Usa los datos de contacto del taller: se mostrarán en tu página pública y se guardarán en tu sucursal principal.</p>
-                    <div><label for="welcome-phone" class="text-sm font-semibold">Teléfono de contacto *</label><input id="welcome-phone" v-model="form.phone" type="tel" :class="inputClass" required maxlength="50" autocomplete="tel" placeholder="Incluye el código de país" /></div>
-                    <div><label for="welcome-whatsapp" class="text-sm font-semibold">WhatsApp (opcional)</label><input id="welcome-whatsapp" v-model="form.whatsapp_number" type="tel" :class="inputClass" maxlength="20" placeholder="Incluye el código de país" /></div>
-                    <div><label for="welcome-email" class="text-sm font-semibold">Correo del taller (opcional)</label><input id="welcome-email" v-model="form.email" type="email" :class="inputClass" maxlength="255" autocomplete="email" /></div>
+                    <div>
+                        <label for="welcome-phone" class="text-sm font-semibold">Teléfono de contacto *</label>
+                        <div class="mt-2">
+                            <PhoneInput
+                                id="welcome-phone"
+                                v-model="form.phone"
+                                :default-country="defaultCountry"
+                                required
+                                rounded-class="rounded-xl"
+                                :error-message="form.errors.phone"
+                                @country-change="c => { if (!form.whatsapp_number) defaultCountry = c.code; }"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="welcome-whatsapp" class="text-sm font-semibold">WhatsApp (opcional)</label>
+                        <div class="mt-2">
+                            <PhoneInput
+                                id="welcome-whatsapp"
+                                v-model="form.whatsapp_number"
+                                :default-country="defaultCountry"
+                                rounded-class="rounded-xl"
+                                :error-message="form.errors.whatsapp_number"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="welcome-email" class="text-sm font-semibold">Correo del taller (opcional)</label>
+                        <input id="welcome-email" v-model="form.email" type="email" :class="inputClass" maxlength="255" autocomplete="email" placeholder="contacto@taller.com" />
+                    </div>
                 </section>
                 <section v-else-if="step === 3" class="space-y-5" aria-labelledby="description-title">
                     <h2 id="description-title" class="text-xl font-bold">Presenta tu taller</h2>
