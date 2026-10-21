@@ -2,7 +2,7 @@
 FROM composer:2 AS composer
 
 # ETAPA 2: Dependencias de PHP (Composer)
-FROM php:8.5-cli-bookworm AS vendor
+FROM php:8.5.12-cli-bookworm AS vendor
 WORKDIR /app
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
@@ -47,7 +47,7 @@ COPY tailwind.config.js ./
 RUN npm run build
 
 # ETAPA 4: Producción (PHP 8.5)
-FROM php:8.5-fpm-bookworm AS runtime
+FROM php:8.5.12-fpm-bookworm AS runtime
 WORKDIR /var/www/html
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
@@ -84,6 +84,11 @@ RUN { \
         echo 'upload_max_filesize=8M'; \
         echo 'post_max_size=8M'; \
     } > /usr/local/etc/php/conf.d/uploads.ini
+
+RUN printf '%s\n' \
+    'session.upload_progress.enabled=0' \
+    'fatal_error_backtraces=0' \
+    > /usr/local/etc/php/conf.d/99-security.ini
 
 # Copiamos archivos desde las etapas anteriores
 COPY --from=composer /usr/bin/composer /usr/bin/composer
