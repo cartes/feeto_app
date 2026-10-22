@@ -2,7 +2,11 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Appointment;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Plan;
+use App\Models\Product;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkOrder;
@@ -170,6 +174,42 @@ class TenantControllerTest extends TestCase
             ->get(route('admin.tenants.create'));
 
         $response->assertStatus(403);
+    }
+
+    public function test_superadmin_can_delete_tenant_and_its_business_data(): void
+    {
+        $tenant = Tenant::factory()->create(['name' => 'Taller que cerró']);
+        $product = Product::factory()->create(['tenant_id' => $tenant->id]);
+        $order = Order::create(['tenant_id' => $tenant->id]);
+        $orderItem = OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'quantity' => 1,
+        ]);
+        $appointment = Appointment::factory()->create(['tenant_id' => $tenant->id]);
+
+        $response = $this->actingAs($this->superAdmin)
+            ->delete(route('admin.tenants.destroy', $tenant));
+
+        $response->assertRedirect(route('admin.tenants.index'));
+        $response->assertSessionHas('success', 'La empresa "Taller que cerró" y sus datos asociados fueron eliminados.');
+        $this->assertDatabaseMissing('tenants', ['id' => $tenant->id]);
+        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+        $this->assertDatabaseMissing('orders', ['id' => $order->id]);
+        $this->assertDatabaseMissing('order_items', ['id' => $orderItem->id]);
+        $this->assertDatabaseMissing('appointments', ['id' => $appointment->id]);
+    }
+
+    public function test_non_superadmin_cannot_delete_tenant(): void
+    {
+        $tenant = Tenant::factory()->create();
+        $user = User::factory()->create(['tenant_id' => $tenant->id]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('admin.tenants.destroy', $tenant));
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('tenants', ['id' => $tenant->id]);
     }
 
     public function test_superadmin_can_create_tenant_with_admin_user(): void

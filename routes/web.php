@@ -543,6 +543,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
         Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit');
         Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
+        Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');
         Route::put('/tenants/{tenant}/admin', [TenantController::class, 'updateAdmin'])->name('tenants.update_admin');
         Route::put('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
         Route::get('/tenants/{tenant}/activity', [TenantActivityController::class, 'show'])->name('tenants.activity');

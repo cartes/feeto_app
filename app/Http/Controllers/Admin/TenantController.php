@@ -10,7 +10,9 @@ use App\Http\Requests\Admin\StoreTenantRequest;
 use App\Http\Requests\Admin\UpdateTenantRequest;
 use App\Models\AuditLog;
 use App\Models\EmailTracking;
+use App\Models\Order;
 use App\Models\Plan;
+use App\Models\Product;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
@@ -258,6 +260,29 @@ class TenantController extends Controller
         ]);
 
         return back()->with('success', 'Taller actualizado correctamente.');
+    }
+
+    public function destroy(Tenant $tenant): RedirectResponse
+    {
+        $tenantName = $tenant->name;
+
+        DB::transaction(function () use ($tenant): void {
+            $tenant->appointments()->delete();
+
+            Order::withoutGlobalScopes()
+                ->where('tenant_id', $tenant->id)
+                ->delete();
+
+            Product::withoutGlobalScopes()
+                ->withTrashed()
+                ->where('tenant_id', $tenant->id)
+                ->forceDelete();
+
+            $tenant->delete();
+        });
+
+        return redirect()->route('admin.tenants.index')
+            ->with('success', "La empresa \"{$tenantName}\" y sus datos asociados fueron eliminados.");
     }
 
     public function updateAdmin(Request $request, Tenant $tenant): RedirectResponse

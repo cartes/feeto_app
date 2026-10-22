@@ -75,6 +75,12 @@ const toggleStatus = (tenant) => {
     }
 };
 
+const deleteTenant = (tenant) => {
+    if (confirm(`¿Seguro que quieres borrar la empresa "${tenant.name}"? Esta acción eliminará también sus datos asociados y no se puede deshacer.`)) {
+        router.delete(route('admin.tenants.destroy', tenant.id), { preserveScroll: true });
+    }
+};
+
 const goToPage = (url) => {
     if (url) {
         router.get(url, {}, { preserveState: true, preserveScroll: true });
@@ -458,6 +464,17 @@ const getSortLabel = () => {
                                         >
                                             Editar
                                         </Link>
+                                        <button
+                                            type="button"
+                                            @click="deleteTenant(tenant)"
+                                            :aria-label="`Borrar empresa ${tenant.name}`"
+                                            :title="`Borrar empresa ${tenant.name}`"
+                                            class="inline-flex items-center rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12m-10 0 1 13h6l1-13M9 7V4h6v3m-5 4v5m4-5v5" />
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
 
