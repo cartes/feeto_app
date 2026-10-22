@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,25 @@ class WelcomeController extends Controller
                 'featured_image_url' => $post->featured_image_url,
             ]);
 
+        $tutorialCategory = BlogCategory::query()->where('name', 'Tutoriales')->first();
+        $tutorialPosts = $tutorialCategory
+            ? $tutorialCategory->posts()
+                ->where('is_published', true)
+                ->with('featuredMedia')
+                ->orderBy('published_at', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get()
+                ->map(fn (BlogPost $post) => [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'summary' => $post->summary,
+                    'published_at' => $post->published_at?->format('d/m/Y') ?? $post->created_at->format('d/m/Y'),
+                    'featured_image_url' => $post->featured_image_url,
+                ])
+            : collect();
+
         $tenants = Tenant::query()
             ->where('is_active', true)
             ->where('status', 'active')
@@ -51,6 +71,8 @@ class WelcomeController extends Controller
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'posts' => $posts,
+            'tutorialPosts' => $tutorialPosts,
+            'tutorialCategorySlug' => $tutorialCategory?->slug,
             'tenants' => $tenants,
             'inventoryImportHighlight' => [
                 'eyebrow' => 'Nuevo en inventario',

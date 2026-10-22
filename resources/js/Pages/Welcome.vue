@@ -13,6 +13,8 @@ const props = defineProps({
     canRegister: { type: Boolean },
     seo: { type: Object, default: () => ({}) },
     posts: { type: Array, default: () => [] },
+    tutorialPosts: { type: Array, default: () => [] },
+    tutorialCategorySlug: { type: String, default: null },
     tenants: { type: Array, default: () => [] },
     inventoryImportHighlight: { type: Object, default: () => ({}) },
 });
@@ -1005,6 +1007,49 @@ onUnmounted(() => {
                         Explorar todo el blog
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </Link>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección dedicada exclusivamente a tutoriales -->
+        <section v-if="tutorialPosts.length > 0 && tutorialCategorySlug" id="tutoriales" class="py-24 bg-slate-950 text-white border-t border-slate-800 font-sans antialiased">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+                    <div class="max-w-3xl">
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#FF9A3C] mb-3 block">Aprende paso a paso</span>
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+                            Tutoriales para <em class="text-[#FF9A3C] not-italic">tu taller.</em>
+                        </h2>
+                        <p class="text-slate-300 mt-4 text-base leading-relaxed">
+                            Guías prácticas para configurar y aprovechar las herramientas de TallerFlow.
+                        </p>
+                    </div>
+                    <Link :href="route('blog.category', { slug: tutorialCategorySlug })" class="inline-flex shrink-0 items-center justify-center gap-2 px-6 py-3 border border-slate-600 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-colors">
+                        Ver todos los tutoriales
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </Link>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <article v-for="post in tutorialPosts" :key="post.id" class="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 hover:border-slate-600 transition-colors">
+                        <Link :href="route('blog.show', { slug: post.slug })" class="block h-full">
+                            <div class="aspect-[16/10] overflow-hidden bg-slate-800">
+                                <img v-if="post.featured_image_url" :src="post.featured_image_url" :alt="post.title" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <div v-else class="w-full h-full flex items-center justify-center text-slate-600">
+                                    <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"/></svg>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ post.published_at }}</p>
+                                <h3 class="mt-2 text-lg font-black leading-snug group-hover:text-[#FF9A3C] transition-colors">{{ post.title }}</h3>
+                                <p class="text-slate-300 text-sm mt-3 leading-relaxed line-clamp-3">{{ post.summary }}</p>
+                                <span class="inline-flex items-center gap-1 mt-5 text-xs font-bold text-[#FF9A3C]">
+                                    Ver tutorial
+                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </span>
+                            </div>
+                        </Link>
+                    </article>
                 </div>
             </div>
         </section>
