@@ -15,6 +15,7 @@ const props = defineProps({
 const isEditing = computed(() => !!props.post);
 
 const form = useForm({
+    content_type: props.post?.content_type || 'article',
     title: props.post?.title || '',
     slug: props.post?.slug || '',
     meta_title: props.post?.meta_title || '',
@@ -30,6 +31,8 @@ const page = usePage();
 const appUrl = computed(() => page.props.ziggy?.url || 'https://tallerflow.cl');
 const seoTitleLength = computed(() => form.meta_title.length);
 const seoDescLength = computed(() => form.meta_description.length);
+
+const postSection = computed(() => form.content_type === 'tutorial' ? 'tutorial' : 'blog');
 
 const slugPreview = computed(() => {
     if (form.slug) {
@@ -138,6 +141,15 @@ const submit = () => {
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 space-y-6">
                     <div>
+                        <label for="content_type" class="block text-sm font-medium text-gray-700">Tipo de contenido</label>
+                        <select id="content_type" v-model="form.content_type" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                            <option value="article">Artículo</option>
+                            <option value="tutorial">Tutorial</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-400">Los tutoriales conservan su dirección /tutorial/ aunque cambies sus categorías.</p>
+                        <div v-if="form.errors.content_type" class="mt-1 text-sm text-red-600">{{ form.errors.content_type }}</div>
+                    </div>
+                    <div>
                         <label for="title" class="block text-sm font-medium text-gray-700">Título del artículo <span class="text-red-500">*</span></label>
                         <input
                             type="text"
@@ -154,7 +166,7 @@ const submit = () => {
                         <label for="slug" class="block text-sm font-medium text-gray-700">Enlace permanente (Slug)</label>
                         <div class="mt-2 flex rounded-md shadow-sm">
                             <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-200 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                                blog/
+                                {{ postSection }}/
                             </span>
                             <input
                                 type="text"
@@ -314,7 +326,7 @@ const submit = () => {
                     {{ form.meta_title || form.title || 'Título del artículo' }}
                 </p>
                 <p class="text-[#006621] text-xs truncate">
-                    {{ appUrl }}/blog/{{ slugPreview }}
+                    {{ appUrl }}/{{ postSection }}/{{ slugPreview }}
                 </p>
                 <p class="text-[#545454] text-sm line-clamp-2 mt-0.5">
                     {{ form.meta_description || form.summary || 'Descripción que aparecerá en los resultados de búsqueda de Google...' }}

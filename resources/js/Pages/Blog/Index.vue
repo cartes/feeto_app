@@ -12,6 +12,7 @@ defineProps({
     seo: Object,
     categories: Array,
     activeCategory: Object,
+    tutorialsOnly: { type: Boolean, default: false },
 });
 
 const showLoginModal = ref(false);
@@ -36,7 +37,11 @@ const formatDate = (dateStr) => {
             <div class="max-w-5xl mx-auto px-6 lg:px-8 text-center mb-16">
                 <span class="text-xs font-bold uppercase tracking-widest text-[#FF7A00] mb-3 block">Recursos y Consejos</span>
                 
-                <template v-if="activeCategory">
+                <template v-if="tutorialsOnly">
+                    <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">Tutoriales de TallerFlow</h1>
+                    <p class="text-slate-500 max-w-2xl mx-auto text-base leading-relaxed">Guías paso a paso para aprender a usar TallerFlow en tu taller.</p>
+                </template>
+                <template v-else-if="activeCategory">
                     <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
                         Categoría: <em class="text-[#FF7A00] not-italic">{{ activeCategory.name }}</em>
                     </h1>
@@ -60,7 +65,7 @@ const formatDate = (dateStr) => {
                     <Link
                         :href="route('blog.index')"
                         class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm duration-200 border"
-                        :class="!activeCategory
+                        :class="!activeCategory && !tutorialsOnly
                             ? 'bg-slate-900 border-slate-900 text-white'
                             : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'"
                     >
@@ -126,7 +131,7 @@ const formatDate = (dateStr) => {
                                     </template>
                                 </div>
                                 <h2 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-[#FF7A00] transition duration-200">
-                                    <Link :href="route('blog.show', post.slug)">
+                                    <Link :href="post.public_url">
                                         {{ post.title }}
                                     </Link>
                                 </h2>
@@ -137,7 +142,7 @@ const formatDate = (dateStr) => {
                         </div>
                         <div class="px-6 pb-6 pt-2">
                             <Link
-                                :href="route('blog.show', post.slug)"
+                                :href="post.public_url"
                                 class="inline-flex items-center gap-1 text-xs font-bold text-[#FF7A00] hover:text-[#CC6200] transition"
                             >
                                 Leer artículo

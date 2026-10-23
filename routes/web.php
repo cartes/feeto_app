@@ -104,6 +104,7 @@ Route::get('/orden-de-trabajo-taller-mecanico', PublicOrdenDeTrabajoController::
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/categoria/{slug}', [PublicBlogController::class, 'category'])->name('blog.category');
 Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
+Route::get('/tutorial/{slug}', [PublicBlogController::class, 'show'])->name('tutorial.show');
 Route::get('/tutoriales', [PublicBlogController::class, 'tutorials'])->name('tutorials.index');
 
 // Directorio público de talleres

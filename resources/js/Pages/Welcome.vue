@@ -14,7 +14,6 @@ const props = defineProps({
     seo: { type: Object, default: () => ({}) },
     posts: { type: Array, default: () => [] },
     tutorialPosts: { type: Array, default: () => [] },
-    tutorialCategorySlug: { type: String, default: null },
     tenants: { type: Array, default: () => [] },
     inventoryImportHighlight: { type: Object, default: () => ({}) },
 });
@@ -983,7 +982,7 @@ onUnmounted(() => {
                         <div class="p-6 flex flex-col flex-grow">
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{{ post.published_at }}</p>
                             <h3 class="text-lg font-black text-slate-900 leading-snug group-hover:text-[#FF7A00] transition-colors line-clamp-2">
-                                <Link :href="route('blog.show', { slug: post.slug })">
+                                <Link :href="post.public_url">
                                     {{ post.title }}
                                 </Link>
                             </h3>
@@ -992,7 +991,7 @@ onUnmounted(() => {
                             </p>
                             <!-- Enlace de lectura -->
                             <div class="mt-auto pt-4 border-t border-slate-50">
-                                <Link :href="route('blog.show', { slug: post.slug })" class="text-xs font-bold text-[#FF7A00] hover:text-[#CC6200] flex items-center gap-1 group/btn transition-colors">
+                                <Link :href="post.public_url" class="text-xs font-bold text-[#FF7A00] hover:text-[#CC6200] flex items-center gap-1 group/btn transition-colors">
                                     Leer artículo
                                     <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                                 </Link>
@@ -1012,7 +1011,7 @@ onUnmounted(() => {
         </section>
 
         <!-- Sección dedicada exclusivamente a tutoriales -->
-        <section v-if="tutorialPosts.length > 0 && tutorialCategorySlug" id="tutoriales" class="py-24 bg-slate-950 text-white border-t border-slate-800 font-sans antialiased">
+        <section v-if="tutorialPosts.length > 0" id="tutoriales" class="py-24 bg-slate-950 text-white border-t border-slate-800 font-sans antialiased">
             <div class="max-w-6xl mx-auto px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
                     <div class="max-w-3xl">
@@ -1024,7 +1023,7 @@ onUnmounted(() => {
                             Guías prácticas para configurar y aprovechar las herramientas de TallerFlow.
                         </p>
                     </div>
-                    <Link :href="route('blog.category', { slug: tutorialCategorySlug })" class="inline-flex shrink-0 items-center justify-center gap-2 px-6 py-3 border border-slate-600 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-colors">
+                    <Link :href="route('tutorials.index')" class="inline-flex shrink-0 items-center justify-center gap-2 px-6 py-3 border border-slate-600 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-colors">
                         Ver todos los tutoriales
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </Link>
@@ -1032,7 +1031,7 @@ onUnmounted(() => {
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <article v-for="post in tutorialPosts" :key="post.id" class="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 hover:border-slate-600 transition-colors">
-                        <Link :href="route('blog.show', { slug: post.slug })" class="block h-full">
+                        <Link :href="post.public_url" class="block h-full">
                             <div class="aspect-[16/10] overflow-hidden bg-slate-800">
                                 <img v-if="post.featured_image_url" :src="post.featured_image_url" :alt="post.title" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div v-else class="w-full h-full flex items-center justify-center text-slate-600">

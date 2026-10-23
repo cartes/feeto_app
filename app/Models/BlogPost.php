@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['title', 'slug', 'meta_title', 'summary', 'meta_description', 'content', 'featured_image', 'featured_media_id', 'is_published', 'published_at'])]
+#[Fillable(['title', 'content_type', 'slug', 'meta_title', 'summary', 'meta_description', 'content', 'featured_image', 'featured_media_id', 'is_published', 'published_at'])]
 class BlogPost extends Model
 {
     /** @var array<string, string> */
@@ -18,6 +18,19 @@ class BlogPost extends Model
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];
+
+    /** @var list<string> */
+    protected $appends = ['public_url'];
+
+    public function isTutorial(): bool
+    {
+        return $this->content_type === 'tutorial';
+    }
+
+    public function getPublicUrlAttribute(): string
+    {
+        return route($this->isTutorial() ? 'tutorial.show' : 'blog.show', ['slug' => $this->slug]);
+    }
 
     public static function generateUniqueSlug(string $title, ?int $excludeId = null): string
     {

@@ -8,6 +8,7 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\MarketingSeoPages;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -320,23 +321,129 @@ class SeoBlogTest extends TestCase
         $response->assertSee('Contenido borrador');
     }
 
-    public function test_tutorials_route_redirects_to_tutorial_category_when_exists(): void
+    public function test_tutorials_index_uses_content_type_without_requiring_a_category(): void
     {
-        $category = BlogCategory::create([
-            'name' => 'Tutoriales',
-            'slug' => 'tutoriales',
-            'color' => '#FF7A00',
-        ]);
+        $this->withoutVite();
+        BlogPost::create(['title' => 'Tutorial', 'slug' => 'tutorial', 'content' => '<p>Guía</p>', 'content_type' => 'tutorial', 'is_published' => true]);
+        BlogPost::create(['title' => 'Artículo', 'slug' => 'articulo', 'content' => '<p>Artículo</p>', 'is_published' => true]);
+        BlogPost::create(['title' => 'Borrador', 'slug' => 'borrador', 'content' => '<p>Borrador</p>', 'content_type' => 'tutorial', 'is_published' => false]);
 
-        $response = $this->get(route('tutorials.index'));
-
-        $response->assertRedirect(route('blog.category', ['slug' => $category->slug]));
+        $this->get(route('tutorials.index'))->assertOk()->assertInertia(fn ($page) => $page
+            ->component('Blog/Index')->where('tutorialsOnly', true)->has('posts', 1)
+            ->where('posts.0.slug', 'tutorial'));
+        $this->get(route('home'))->assertInertia(fn ($page) => $page
+            ->has('tutorialPosts', 1)->where('tutorialPosts.0.slug', 'tutorial'));
     }
 
-    public function test_tutorials_route_redirects_to_blog_index_when_category_does_not_exist(): void
+    public function test_tutorials_index_renders_an_empty_list_when_no_tutorials_exist(): void
     {
-        $response = $this->get(route('tutorials.index'));
+        $this->withoutVite();
+        $this->get(route('tutorials.index'))->assertOk()->assertInertia(fn ($page) => $page
+            ->where('tutorialsOnly', true)->has('posts', 0));
+    }
 
-        $response->assertRedirect(route('blog.index'));
+    public function test_tutorial_urls_remain_stable_when_categories_change_and_redirect_old_paths(): void
+    {
+        $this->withoutVite();
+        $tutorial = BlogCategory::create(['name' => 'Tutoriales', 'slug' => 'tutoriales']);
+        $other = BlogCategory::create(['name' => 'Gestión', 'slug' => 'gestion']);
+        $post = BlogPost::create([
+            'content_type' => 'tutorial',
+            'title' => 'Gestionar una OT',
+            'slug' => 'gestionar-ot',
+            'content' => '<p>Guía de trabajo</p>',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+        $post->categories()->attach($tutorial);
+        $tutorialUrl = route('tutorial.show', $post->slug);
+        $blogUrl = route('blog.show', $post->slug);
+
+        $this->get($blogUrl)->assertStatus(301)->assertRedirect($tutorialUrl);
+        $this->get($tutorialUrl)->assertOk()->assertInertia(fn ($page) => $page
+            ->component('Blog/Show')
+            ->where('post.public_url', $tutorialUrl)
+            ->where('seo.canonical_url', $tutorialUrl)
+            ->where('seo.schema.0.url', $tutorialUrl));
+        $this->get(route('blog.index'))->assertInertia(fn ($page) => $page
+            ->where('posts.0.public_url', $tutorialUrl));
+        $this->get(route('blog.category', $tutorial->slug))->assertInertia(fn ($page) => $page
+            ->where('posts.0.public_url', $tutorialUrl));
+        $this->get(route('home'))->assertInertia(fn ($page) => $page
+            ->where('posts.0.public_url', $tutorialUrl)
+            ->where('tutorialPosts.0.public_url', $tutorialUrl));
+        $this->get(route('sitemap'))->assertSee($tutorialUrl, false)->assertDontSee($blogUrl, false);
+        $this->actingAs($this->superAdmin)->get(route('admin.blog.index'))->assertInertia(fn ($page) => $page
+            ->where('posts.0.public_url', $tutorialUrl));
+        auth()->logout();
+
+        $post->categories()->attach($other);
+        $this->get($tutorialUrl)->assertOk();
+        $this->get($blogUrl)->assertStatus(301)->assertRedirect($tutorialUrl);
+        $post->categories()->sync([$other->id]);
+        $this->get($tutorialUrl)->assertOk();
+        $post->categories()->detach();
+        $this->get($tutorialUrl)->assertOk();
+        $post->update(['content_type' => 'article']);
+        $this->get($tutorialUrl)->assertStatus(301)->assertRedirect($blogUrl);
+        $this->get($blogUrl)->assertOk()->assertInertia(fn ($page) => $page
+            ->where('seo.canonical_url', $blogUrl));
+        $this->get(route('sitemap'))->assertSee($blogUrl, false)->assertDontSee($tutorialUrl, false);
+    }
+
+    public function test_tutorial_routes_do_not_expose_drafts_or_missing_posts(): void
+    {
+        $this->withoutVite();
+        $category = BlogCategory::create(['name' => 'Tutoriales', 'slug' => 'tutoriales']);
+        $post = BlogPost::create([
+            'content_type' => 'tutorial',
+            'title' => 'Tutorial borrador',
+            'slug' => 'tutorial-borrador',
+            'content' => '<p>Contenido privado</p>',
+            'is_published' => false,
+        ]);
+        $post->categories()->attach($category);
+
+        $this->get(route('tutorial.show', $post->slug))->assertNotFound();
+        $this->get(route('blog.show', $post->slug))->assertNotFound();
+        $this->get(route('tutorial.show', 'no-existe'))->assertNotFound();
+        $this->get(route('blog.show', 'no-existe'))->assertNotFound();
+        $this->actingAs($this->superAdmin)->get(route('tutorial.show', $post->slug))
+            ->assertOk()->assertInertia(fn ($page) => $page
+            ->where('seo.robots', MarketingSeoPages::NOINDEX_ROBOTS));
+        $this->get(route('blog.show', $post->slug))
+            ->assertStatus(301)->assertRedirect(route('tutorial.show', $post->slug));
+    }
+
+    public function test_admin_can_choose_content_type_and_categories_do_not_override_it(): void
+    {
+        $category = BlogCategory::create(['name' => 'Gestión', 'slug' => 'gestion']);
+        $data = ['title' => 'Guía de órdenes', 'slug' => 'guia-ordenes', 'content' => '<p>Guía</p>', 'is_published' => true, 'content_type' => 'tutorial', 'category_ids' => [$category->id]];
+        $this->actingAs($this->superAdmin)->post(route('admin.blog.store'), $data)->assertSessionHasNoErrors();
+        $post = BlogPost::query()->where('slug', 'guia-ordenes')->firstOrFail();
+        $this->assertTrue($post->isTutorial());
+        $this->put(route('admin.blog.update', $post), [...$data, 'category_ids' => []])->assertSessionHasNoErrors();
+        $this->assertTrue($post->fresh()->isTutorial());
+        $this->put(route('admin.blog.update', $post), [...$data, 'content_type' => 'article'])->assertSessionHasNoErrors();
+        $this->assertFalse($post->fresh()->isTutorial());
+        $this->post(route('admin.blog.store'), [...$data, 'content_type' => 'invalid'])->assertSessionHasErrors('content_type');
+        $this->put(route('admin.blog.update', $post), [...$data, 'content_type' => 'invalid'])->assertSessionHasErrors('content_type');
+    }
+
+    public function test_migration_preserves_existing_exclusive_tutorials(): void
+    {
+        $category = BlogCategory::create(['name' => 'Tutoriales', 'slug' => 'tutoriales']);
+        $other = BlogCategory::create(['name' => 'Gestión', 'slug' => 'gestion']);
+        $exclusive = BlogPost::create(['title' => 'Tutorial anterior', 'slug' => 'anterior', 'content' => 'Guía']);
+        $mixed = BlogPost::create(['title' => 'Mixto', 'slug' => 'mixto', 'content' => 'Artículo']);
+        $plain = BlogPost::create(['title' => 'Sin categoría', 'slug' => 'sin-categoria', 'content' => 'Artículo']);
+        $exclusive->categories()->attach($category);
+        $mixed->categories()->attach([$category->id, $other->id]);
+        $migration = require database_path('migrations/2026_10_23_143808_add_content_type_to_blog_posts_table.php');
+        $migration->down();
+        $migration->up();
+        $this->assertTrue($exclusive->fresh()->isTutorial());
+        $this->assertFalse($mixed->fresh()->isTutorial());
+        $this->assertFalse($plain->fresh()->isTutorial());
     }
 }

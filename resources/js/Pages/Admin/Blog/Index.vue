@@ -78,7 +78,7 @@ const deletePost = (post) => {
                                         </div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
-                                        /blog/{{ post.slug }}
+                                        {{ post.public_url.replace(/^https?:\/\/[^/]+/, '') }}
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm">
                                         <span v-if="post.is_published" class="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
@@ -97,7 +97,7 @@ const deletePost = (post) => {
                                         {{ formatDate(post.created_at) }}
                                     </td>
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">
-                                        <Link :href="route('blog.show', post.slug)" target="_blank" v-if="post.is_published" class="text-slate-600 hover:text-slate-900 font-semibold">Ver</Link>
+                                        <Link :href="post.public_url" target="_blank" v-if="post.is_published" class="text-slate-600 hover:text-slate-900 font-semibold">Ver</Link>
                                         <Link :href="route('admin.blog.edit', post.id)" class="text-amber-600 hover:text-amber-900 font-semibold">Editar</Link>
                                         <button @click="deletePost(post)" class="text-rose-600 hover:text-rose-900 font-semibold">Eliminar</button>
                                     </td>

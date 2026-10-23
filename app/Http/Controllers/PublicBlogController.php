@@ -18,6 +18,7 @@ class PublicBlogController extends Controller
     public function index(): Response
     {
         $posts = BlogPost::with(['categories', 'featuredMedia'])
+            ->when(request()->routeIs('tutorials.index'), fn ($query) => $query->where('content_type', 'tutorial'))
             ->when(! auth()->check() || ! auth()->user()->is_super_admin, function ($query) {
                 $query->where('is_published', true);
             })
@@ -38,6 +39,11 @@ class PublicBlogController extends Controller
         $canonicalUrl = request()->url();
         $title = Setting::get('seo_blog_title', 'Blog · TallerFlow — Recursos para Talleres Mecánicos');
         $description = Setting::get('seo_blog_description', 'Aprende prácticas para optimizar tiempos, fidelizar clientes y aumentar la rentabilidad de tu taller mecánico en Chile.');
+
+        if (request()->routeIs('tutorials.index')) {
+            $title = 'Tutoriales de TallerFlow';
+            $description = 'Guías paso a paso para aprender a usar TallerFlow en tu taller.';
+        }
         $image = $this->resolveSocialImage(Setting::get('seo_blog_og_image', ''));
         $ogImage = $image['url'];
 
@@ -84,6 +90,7 @@ class PublicBlogController extends Controller
             'seo' => $seo,
             'categories' => $categories,
             'activeCategory' => null,
+            'tutorialsOnly' => request()->routeIs('tutorials.index'),
         ]);
     }
 
@@ -165,7 +172,7 @@ class PublicBlogController extends Controller
         ]);
     }
 
-    public function show(string $slug): Response
+    public function show(string $slug): Response|RedirectResponse
     {
         $post = BlogPost::with(['categories', 'featuredMedia'])
             ->where('slug', $slug)
@@ -174,7 +181,11 @@ class PublicBlogController extends Controller
             })
             ->firstOrFail();
 
-        $canonicalUrl = request()->url();
+        if (request()->routeIs('tutorial.show') !== $post->isTutorial()) {
+            return redirect()->to($post->public_url, 301);
+        }
+
+        $canonicalUrl = $post->public_url;
         $defaultImage = $this->resolveSocialImage(Setting::get('seo_blog_og_image', ''));
         $imageUrl = $post->featured_image_url ?? $defaultImage['url'];
         $imageWidth = $post->featured_image_url ? $post->featuredMedia?->width : $defaultImage['width'];
@@ -259,17 +270,8 @@ class PublicBlogController extends Controller
         ]);
     }
 
-    public function tutorials(): RedirectResponse
+    public function tutorials(): Response
     {
-        $category = BlogCategory::query()
-            ->where('slug', 'tutoriales')
-            ->orWhere('name', 'Tutoriales')
-            ->first();
-
-        if ($category !== null) {
-            return redirect()->route('blog.category', ['slug' => $category->slug]);
-        }
-
-        return redirect()->route('blog.index');
+        return $this->index();
     }
 }

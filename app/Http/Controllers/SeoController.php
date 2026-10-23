@@ -60,6 +60,7 @@ class SeoController extends Controller
             ['loc' => route('pricing'), 'changefreq' => 'monthly', 'priority' => '0.8'],
             ['loc' => route('trial.create'), 'changefreq' => 'monthly', 'priority' => '0.8'],
             ['loc' => route('orden-de-trabajo-taller-mecanico'), 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['loc' => route('tutorials.index'), 'changefreq' => 'weekly', 'priority' => '0.8'],
             ['loc' => route('talleres.index'), 'changefreq' => 'weekly', 'priority' => '0.8'],
             [
                 'loc' => route('blog.index'),
@@ -87,13 +88,14 @@ class SeoController extends Controller
 
         // 3. Artículos del blog
         $posts = BlogPost::query()
+            ->with('categories')
             ->where('is_published', true)
             ->orderByDesc('published_at')
-            ->get(['slug', 'published_at', 'updated_at']);
+            ->get(['id', 'slug', 'content_type', 'published_at', 'updated_at']);
 
         foreach ($posts as $post) {
             $urls[] = [
-                'loc' => route('blog.show', ['slug' => $post->slug]),
+                'loc' => $post->public_url,
                 'lastmod' => ($post->updated_at ?? $post->published_at)?->toAtomString(),
                 'changefreq' => 'monthly',
                 'priority' => '0.6',

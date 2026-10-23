@@ -17,6 +17,7 @@ class UpdateBlogPostRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'content_type' => ['sometimes', 'required', 'string', 'in:article,tutorial'],
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255'],
             'meta_title' => ['nullable', 'string', 'max:70'],
@@ -27,6 +28,15 @@ class UpdateBlogPostRequest extends FormRequest
             'is_published' => ['required', 'boolean'],
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:blog_categories,id'],
+        ];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'content_type.required' => 'Selecciona el tipo de contenido.',
+            'content_type.in' => 'El tipo debe ser Artículo o Tutorial.',
         ];
     }
 }
