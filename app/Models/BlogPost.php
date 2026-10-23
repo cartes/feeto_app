@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\BlogContentSanitizer;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -21,6 +23,14 @@ class BlogPost extends Model
 
     /** @var list<string> */
     protected $appends = ['public_url'];
+
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): string => app(BlogContentSanitizer::class)->sanitize($value),
+            set: fn (?string $value): string => app(BlogContentSanitizer::class)->sanitize($value),
+        );
+    }
 
     public function isTutorial(): bool
     {
