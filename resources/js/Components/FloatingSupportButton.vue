@@ -32,6 +32,18 @@ const SECTION_LABELS = {
 
 const currentSectionLabel = computed(() => props.sectionLabel || SECTION_LABELS[props.section] || 'esta vista');
 
+const tutorialsUrl = computed(() => {
+    try {
+        return route('tutorials.index');
+    } catch {
+        try {
+            return route('blog.category', { slug: 'tutoriales' });
+        } catch {
+            return '/tutoriales';
+        }
+    }
+});
+
 const isOpen = ref(false);
 const faqs = ref([]);
 const loadingFaqs = ref(false);
@@ -144,10 +156,23 @@ const askFaq = (faq) => {
     highlightSelector(faq.selector);
 };
 
+const askTutorials = () => {
+    messages.value.push({ role: 'user', text: '¿Dónde puedo ver los tutoriales y guías del sistema?' });
+    messages.value.push({
+        role: 'assistant',
+        text: 'En nuestro Centro de Tutoriales encontrarás guías paso a paso y videos explicativos para dominar cada módulo de TallerFlow.',
+        selector: null,
+        isTutorial: true,
+    });
+    scrollMessagesToEnd();
+};
+
 const askFreeText = async () => {
     const question = inputText.value.trim();
 
     if (!question || isAsking.value) return;
+
+    const isTutorialQuery = /tutorial|video|gu[ií]a|manual|capacitaci[oó]n|aprender/i.test(question);
 
     messages.value.push({ role: 'user', text: question });
     inputText.value = '';
@@ -160,7 +185,14 @@ const askFreeText = async () => {
             question,
         });
 
-        messages.value.push({ role: 'assistant', text: data.answer, selector: data.selector });
+        const isTutorial = isTutorialQuery || /tutorial|video|gu[ií]a/i.test(data.answer ?? '');
+
+        messages.value.push({
+            role: 'assistant',
+            text: data.answer,
+            selector: data.selector,
+            isTutorial,
+        });
         scrollMessagesToEnd();
 
         if (data.selector) {
@@ -171,6 +203,7 @@ const askFreeText = async () => {
             role: 'assistant',
             text: 'No pude procesar tu pregunta en este momento. Intenta nuevamente en unos segundos.',
             selector: null,
+            isTutorial: isTutorialQuery,
         });
         scrollMessagesToEnd();
     } finally {
@@ -191,8 +224,8 @@ watch(
 
 const handleClickOutside = (event) => {
     if (panelRef.value && !panelRef.value.contains(event.target) && isOpen.value) {
-        // No cerrar si el clic fue en el propio botón flotante (maneja su propio toggle).
-        if (event.target.closest('[data-support-toggle]')) return;
+        // No cerrar si el clic fue en el propio botón flotante o en el botón flotante de tutoriales.
+        if (event.target.closest('[data-support-toggle]') || event.target.closest('[data-tutorials-floating]')) return;
         closePanel();
     }
 };
@@ -206,145 +239,262 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Teleport to="body">
-        <!-- Resalte del elemento sugerido -->
-        <div
-            v-if="highlight.visible"
-            class="pointer-events-none fixed z-[130] rounded-2xl ring-4 ring-[#FF7A00] ring-offset-2 transition-all duration-300"
-            :style="{
-                top: highlight.top + 'px',
-                left: highlight.left + 'px',
-                width: highlight.width + 'px',
-                height: highlight.height + 'px',
-                boxShadow: '0 0 0 9999px rgba(2,6,23,0.25)',
-            }"
-        />
-    </Teleport>
+    <div id="floating-support-root">
+        <Teleport to="body">
+            <!-- Resalte del elemento sugerido -->
+            <div
+                v-if="highlight.visible"
+                class="pointer-events-none fixed z-[130] rounded-2xl ring-4 ring-[#FF7A00] ring-offset-2 transition-all duration-300"
+                :style="{
+                    top: highlight.top + 'px',
+                    left: highlight.left + 'px',
+                    width: highlight.width + 'px',
+                    height: highlight.height + 'px',
+                    boxShadow: '0 0 0 9999px rgba(2,6,23,0.25)',
+                }"
+            />
+        </Teleport>
 
-    <!-- Botón flotante -->
-    <button
-        type="button"
-        data-support-toggle
-        :aria-label="isOpen ? 'Cerrar ayuda' : 'Abrir ayuda de TallerFlow'"
-        class="fixed bottom-5 right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:bottom-6 sm:right-6"
-        @click="togglePanel"
-    >
-        <svg v-if="!isOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.06 0-2.076-.163-3.017-.463L3 21l1.395-3.72C3.512 15.845 3 14.483 3 13c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-        <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </button>
-
-    <!-- Panel de ayuda -->
-    <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 translate-y-4 scale-95"
-        enter-to-class="opacity-100 translate-y-0 scale-100"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0 scale-100"
-        leave-to-class="opacity-0 translate-y-4 scale-95"
-    >
-        <div
-            v-if="isOpen"
-            ref="panelRef"
-            class="fixed bottom-24 right-5 z-[95] flex h-[min(32rem,70vh)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:bottom-28 sm:right-6"
+        <!-- Botón flotante directo a Tutoriales (visible cuando el chatbox está cerrado) -->
+        <Transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="opacity-0 translate-y-2 scale-90"
+            enter-to-class="opacity-100 translate-y-0 scale-100"
+            leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0 scale-100"
+            leave-to-class="opacity-0 translate-y-2 scale-90"
         >
-            <!-- Encabezado -->
-            <div class="flex items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-5 py-4 text-white">
-                <div>
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-white/80">Ayuda TallerFlow</p>
-                    <p class="text-sm font-black leading-tight">{{ currentSectionLabel }}</p>
-                </div>
-                <button type="button" class="rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white" @click="closePanel">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            <a
+                v-if="!isOpen"
+                :href="tutorialsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tutorials-floating
+                aria-label="Abrir tutoriales y guías de TallerFlow"
+                class="group fixed bottom-[5.5rem] right-5 z-[94] flex items-center gap-2 rounded-full border border-orange-200/90 bg-white/95 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-[0_10px_25px_rgba(255,122,0,0.18)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#FF7A00] hover:bg-orange-50/70 hover:text-[#FF7A00] hover:shadow-[0_14px_30px_rgba(255,122,0,0.25)] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/25 sm:bottom-24 sm:right-6"
+            >
+                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-sm transition-transform duration-200 group-hover:scale-110">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     </svg>
-                </button>
-            </div>
+                </span>
+                <span class="font-extrabold tracking-tight">Tutoriales</span>
+                <svg class="h-3 w-3 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+            </a>
+        </Transition>
 
-            <!-- Mensajes / FAQ -->
-            <div class="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                <p class="text-xs font-medium leading-relaxed text-slate-500">
-                    Pregúntame algo sobre <strong>{{ currentSectionLabel }}</strong> o elige una pregunta frecuente.
-                </p>
+        <!-- Botón flotante principal de soporte / preguntas -->
+        <button
+            type="button"
+            data-support-toggle
+            :aria-label="isOpen ? 'Cerrar ayuda' : 'Abrir ayuda y tutoriales de TallerFlow'"
+            class="fixed bottom-5 right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:bottom-6 sm:right-6"
+            @click="togglePanel"
+        >
+            <svg v-if="!isOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.06 0-2.076-.163-3.017-.463L3 21l1.395-3.72C3.512 15.845 3 14.483 3 13c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
 
-                <div v-if="loadingFaqs" class="flex justify-center py-4">
-                    <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#FF7A00]/30 border-t-[#FF7A00]"></div>
-                </div>
-
-                <div v-else-if="faqs.length && messages.length === 0" class="space-y-2">
-                    <button
-                        v-for="faq in faqs"
-                        :key="faq.id"
-                        type="button"
-                        class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-bold text-slate-700 transition-colors hover:border-[#FF7A00]/40 hover:bg-[#FF7A00]/5 hover:text-[#FF7A00]"
-                        @click="askFaq(faq)"
-                    >
-                        {{ faq.question }}
-                    </button>
-                </div>
-
-                <p v-else-if="!loadingFaqs && !faqs.length && messages.length === 0" class="rounded-2xl bg-slate-50 px-4 py-3 text-xs text-slate-400">
-                    Aún no tengo preguntas frecuentes para esta vista. Escribe tu duda abajo y haré lo posible por ayudarte.
-                </p>
-
-                <div
-                    v-for="(message, index) in messages"
-                    :key="index"
-                    class="flex"
-                    :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
-                >
-                    <div
-                        class="max-w-[85%] rounded-2xl px-4 py-2.5 text-xs font-medium leading-relaxed"
-                        :class="message.role === 'user'
-                            ? 'bg-[#FF7A00] text-white'
-                            : 'bg-slate-100 text-slate-700'"
-                    >
-                        {{ message.text }}
-                        <button
-                            v-if="message.role === 'assistant' && message.selector"
-                            type="button"
-                            class="mt-2 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]"
-                            @click="highlightSelector(message.selector)"
+        <!-- Panel de ayuda (chatbox) -->
+        <Transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="opacity-0 translate-y-4 scale-95"
+            enter-to-class="opacity-100 translate-y-0 scale-100"
+            leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0 scale-100"
+            leave-to-class="opacity-0 translate-y-4 scale-95"
+        >
+            <div
+                v-if="isOpen"
+                ref="panelRef"
+                class="fixed bottom-24 right-5 z-[95] flex h-[min(34rem,75vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:bottom-28 sm:right-6"
+            >
+                <!-- Encabezado con link a tutoriales -->
+                <div class="flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-5 py-4 text-white">
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/80">Ayuda TallerFlow</p>
+                        <p class="truncate text-sm font-black leading-tight">{{ currentSectionLabel }}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <a
+                            :href="tutorialsUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ver tutoriales y guías en video"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-2.5 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105 active:scale-95"
                         >
-                            📍 Mostrar en pantalla
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span>Tutoriales</span>
+                            <svg class="h-3 w-3 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                        <button type="button" class="rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white" @click="closePanel">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
-                <div v-if="isAsking" class="flex justify-start">
-                    <div class="flex items-center gap-1 rounded-2xl bg-slate-100 px-4 py-3">
-                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]"></span>
-                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]"></span>
-                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400"></span>
+                <!-- Mensajes / FAQ / Tutoriales -->
+                <div class="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+                    <!-- Banner de Tutoriales dentro del chatbox -->
+                    <div class="rounded-2xl border border-orange-200/90 bg-gradient-to-br from-orange-50 via-white to-amber-50/60 p-3.5 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#E66E00] text-white shadow-md shadow-orange-500/20">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5">
+                                    <h4 class="text-xs font-black text-slate-800">Centro de Tutoriales</h4>
+                                    <span class="rounded-md bg-orange-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-[#FF7A00]">Guías & Videos</span>
+                                </div>
+                                <p class="mt-0.5 text-[11px] leading-snug text-slate-600">
+                                    Aprende a dominar cada módulo con guías prácticas y videos paso a paso.
+                                </p>
+                                <a
+                                    :href="tutorialsUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-[#FF7A00] px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#CC6200] hover:shadow active:scale-95 group"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Ver todos los tutoriales</span>
+                                    <svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
+                    <p class="text-xs font-medium leading-relaxed text-slate-500">
+                        Pregúntame algo sobre <strong>{{ currentSectionLabel }}</strong> o elige una pregunta frecuente.
+                    </p>
+
+                    <div v-if="loadingFaqs" class="flex justify-center py-4">
+                        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#FF7A00]/30 border-t-[#FF7A00]"></div>
+                    </div>
+
+                    <div v-else-if="messages.length === 0" class="space-y-2">
+                        <!-- Opción rápida de tutoriales -->
+                        <button
+                            type="button"
+                            class="flex w-full items-center justify-between rounded-2xl border border-orange-200 bg-orange-50/70 px-4 py-2.5 text-left text-xs font-bold text-[#FF7A00] transition-all hover:border-[#FF7A00] hover:bg-orange-100/60 group"
+                            @click="askTutorials"
+                        >
+                            <span class="flex items-center gap-2">
+                                <span class="text-sm">🎬</span>
+                                <span>¿Dónde veo los tutoriales del sistema?</span>
+                            </span>
+                            <svg class="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                        <button
+                            v-for="faq in faqs"
+                            :key="faq.id"
+                            type="button"
+                            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-bold text-slate-700 transition-colors hover:border-[#FF7A00]/40 hover:bg-[#FF7A00]/5 hover:text-[#FF7A00]"
+                            @click="askFaq(faq)"
+                        >
+                            {{ faq.question }}
+                        </button>
+                    </div>
+
+                    <p v-else-if="!loadingFaqs && !faqs.length && messages.length === 0" class="rounded-2xl bg-slate-50 px-4 py-3 text-xs text-slate-400">
+                        Aún no tengo preguntas frecuentes para esta vista. Escribe tu duda abajo y haré lo posible por ayudarte.
+                    </p>
+
+                    <div
+                        v-for="(message, index) in messages"
+                        :key="index"
+                        class="flex"
+                        :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
+                    >
+                        <div
+                            class="max-w-[85%] rounded-2xl px-4 py-2.5 text-xs font-medium leading-relaxed"
+                            :class="message.role === 'user'
+                                ? 'bg-[#FF7A00] text-white'
+                                : 'bg-slate-100 text-slate-700'"
+                        >
+                            {{ message.text }}
+                            <button
+                                v-if="message.role === 'assistant' && message.selector"
+                                type="button"
+                                class="mt-2 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#FF7A00] hover:text-[#CC6200]"
+                                @click="highlightSelector(message.selector)"
+                            >
+                                📍 Mostrar en pantalla
+                            </button>
+
+                            <!-- Botón de apertura de tutoriales en la respuesta -->
+                            <a
+                                v-if="message.role === 'assistant' && message.isTutorial"
+                                :href="tutorialsUrl"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-[#FF7A00] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-[#CC6200]"
+                            >
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>Abrir Centro de Tutoriales</span>
+                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div v-if="isAsking" class="flex justify-start">
+                        <div class="flex items-center gap-1 rounded-2xl bg-slate-100 px-4 py-3">
+                            <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]"></span>
+                            <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]"></span>
+                            <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400"></span>
+                        </div>
+                    </div>
+
+                    <div ref="messagesEndRef"></div>
                 </div>
 
-                <div ref="messagesEndRef"></div>
+                <!-- Input -->
+                <form class="flex items-center gap-2 border-t border-slate-100 px-3 py-3" @submit.prevent="askFreeText">
+                    <input
+                        v-model="inputText"
+                        type="text"
+                        maxlength="300"
+                        placeholder="Escribe tu pregunta..."
+                        class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30"
+                    />
+                    <button
+                        type="submit"
+                        :disabled="isAsking || !inputText.trim()"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#FF7A00] text-white transition-colors hover:bg-[#CC6200] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </form>
             </div>
-
-            <!-- Input -->
-            <form class="flex items-center gap-2 border-t border-slate-100 px-3 py-3" @submit.prevent="askFreeText">
-                <input
-                    v-model="inputText"
-                    type="text"
-                    maxlength="300"
-                    placeholder="Escribe tu pregunta..."
-                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30"
-                />
-                <button
-                    type="submit"
-                    :disabled="isAsking || !inputText.trim()"
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#FF7A00] text-white transition-colors hover:bg-[#CC6200] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
-            </form>
-        </div>
-    </Transition>
+        </Transition>
+    </div>
 </template>

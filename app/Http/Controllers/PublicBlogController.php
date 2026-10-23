@@ -8,6 +8,7 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Setting;
 use App\Support\MarketingSeoPages;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -256,5 +257,19 @@ class PublicBlogController extends Controller
             'post' => array_merge($post->toArray(), ['featured_image_url' => $imageUrl]),
             'seo' => $seo,
         ]);
+    }
+
+    public function tutorials(): RedirectResponse
+    {
+        $category = BlogCategory::query()
+            ->where('slug', 'tutoriales')
+            ->orWhere('name', 'Tutoriales')
+            ->first();
+
+        if ($category !== null) {
+            return redirect()->route('blog.category', ['slug' => $category->slug]);
+        }
+
+        return redirect()->route('blog.index');
     }
 }

@@ -319,4 +319,24 @@ class SeoBlogTest extends TestCase
         $response->assertSee('Post Borrador Interno');
         $response->assertSee('Contenido borrador');
     }
+
+    public function test_tutorials_route_redirects_to_tutorial_category_when_exists(): void
+    {
+        $category = BlogCategory::create([
+            'name' => 'Tutoriales',
+            'slug' => 'tutoriales',
+            'color' => '#FF7A00',
+        ]);
+
+        $response = $this->get(route('tutorials.index'));
+
+        $response->assertRedirect(route('blog.category', ['slug' => $category->slug]));
+    }
+
+    public function test_tutorials_route_redirects_to_blog_index_when_category_does_not_exist(): void
+    {
+        $response = $this->get(route('tutorials.index'));
+
+        $response->assertRedirect(route('blog.index'));
+    }
 }
