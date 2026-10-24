@@ -35,14 +35,16 @@ class DashboardBoardTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard')
-                ->where('board.workshop.total', 3)
-                ->where('board.workshop.stages', fn ($stages) => collect($stages)->firstWhere('status', 'recepcion')['count'] === 2
-                    && collect($stages)->firstWhere('status', 'listo')['count'] === 1)
-                ->has('board.workshop.vehicles', 3)
-                ->where('board.low_stock.total', 2)
-                ->where('board.low_stock.items.0.name', 'Aceite agotado')
-                ->where('board.low_stock.items.0.depleted', true)
-                ->where('board.low_stock.items.1.name', 'Filtro bajo')
+                ->missing('board')
+                ->loadDeferredProps(fn (Assert $page) => $page
+                    ->where('board.workshop.total', 3)
+                    ->where('board.workshop.stages', fn ($stages) => collect($stages)->firstWhere('status', 'recepcion')['count'] === 2
+                        && collect($stages)->firstWhere('status', 'listo')['count'] === 1)
+                    ->has('board.workshop.vehicles', 3)
+                    ->where('board.low_stock.total', 2)
+                    ->where('board.low_stock.items.0.name', 'Aceite agotado')
+                    ->where('board.low_stock.items.0.depleted', true)
+                    ->where('board.low_stock.items.1.name', 'Filtro bajo'))
             );
     }
 
@@ -59,8 +61,9 @@ class DashboardBoardTest extends TestCase
             ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->where('board.workshop.total', 0)
-                ->where('board.low_stock.total', 0)
+                ->loadDeferredProps(fn (Assert $page) => $page
+                    ->where('board.workshop.total', 0)
+                    ->where('board.low_stock.total', 0))
             );
     }
 
@@ -73,8 +76,9 @@ class DashboardBoardTest extends TestCase
             ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->where('board.workshop', null)
-                ->where('board.low_stock', null)
+                ->loadDeferredProps(fn (Assert $page) => $page
+                    ->where('board.workshop', null)
+                    ->where('board.low_stock', null))
             );
     }
 

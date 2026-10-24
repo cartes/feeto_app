@@ -4,15 +4,15 @@ import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 
 const props = defineProps({
-    board: { type: Object, required: true },
+    board: { type: Object, default: null },
     appointments: { type: Array, default: () => [] },
     canManageAppointments: { type: Boolean, default: false },
 });
 
 const { tenantRouteParams } = useTenantRouting();
 
-const workshop = computed(() => props.board.workshop);
-const lowStock = computed(() => props.board.low_stock);
+const workshop = computed(() => props.board?.workshop ?? null);
+const lowStock = computed(() => props.board?.low_stock ?? null);
 const agenda = computed(() => props.appointments
     .filter((appointment) => appointment.status !== 'cancelled')
     .sort((a, b) => a.time.localeCompare(b.time)));
@@ -44,7 +44,18 @@ const elapsed = (iso) => {
 <template>
     <div class="rounded-[2rem] border-[10px] border-amber-200 bg-white p-5 text-slate-800 shadow-xl dark:border-amber-900/80 dark:bg-slate-800 dark:text-slate-100 sm:p-7"
         data-tour="dashboard-board" role="region" aria-label="Pizarrón del taller">
-        <div class="grid gap-6 xl:grid-cols-2">
+        <div v-if="!board" class="animate-pulse space-y-4" aria-busy="true" aria-label="Cargando pizarrón">
+            <div class="h-6 w-1/3 rounded-full bg-slate-200 dark:bg-slate-600"></div>
+            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div v-for="n in 3" :key="n" class="h-20 rounded-2xl bg-slate-100 dark:bg-slate-700/60"></div>
+            </div>
+            <div class="grid gap-3 xl:grid-cols-2">
+                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-slate-700/60"></div>
+                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-slate-700/60"></div>
+            </div>
+        </div>
+
+        <div v-else class="grid gap-6 xl:grid-cols-2">
             <section v-if="workshop" class="space-y-4 xl:col-span-2" data-tour="dashboard-board-workshop">
                 <div class="flex flex-wrap items-end justify-between gap-3">
                     <div>

@@ -14,7 +14,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
     welcome: { type: Object, default: null },
-    board: { type: Object, default: () => ({ workshop: null, low_stock: null }) },
+    board: { type: Object, default: null },
     dailySummary: { type: Array, default: () => [] },
     pendingAppointments: { type: Array, default: () => [] },
     setupChecklist: { type: Object, default: null },

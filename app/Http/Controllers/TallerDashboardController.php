@@ -133,7 +133,7 @@ class TallerDashboardController extends Controller
                 'url' => route('taller.welcome.show', ['tenantBySlug' => $tenant->slug]),
                 'started' => ($tenant->setup_checklist['welcome']['next_step'] ?? 1) > 1,
             ] : null,
-            'board' => $board->forTenant($tenant, $user),
+            'board' => Inertia::defer(fn (): array => $board->forTenant($tenant, $user)),
             'dailySummary' => $overview['summary'],
             'pendingAppointments' => $overview['pending_appointments']->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))->values(),
             'setupChecklist' => $user->can('users.manage') ? $checklist->forTenant($tenant) : null,
