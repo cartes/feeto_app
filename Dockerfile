@@ -44,6 +44,7 @@ COPY public ./public
 COPY vite.config.js ./
 COPY postcss.config.js ./
 COPY tailwind.config.js ./
+COPY tailwind.dark.js ./
 RUN npm run build
 
 # ETAPA 4: Producción (PHP 8.5)
