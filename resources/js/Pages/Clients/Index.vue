@@ -181,7 +181,7 @@ const submitImport = () => {
             </div>
 
             <!-- Tabla de clientes -->
-            <div class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm">
+            <div class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm" data-tour="clients-table">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>

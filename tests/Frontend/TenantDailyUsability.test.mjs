@@ -68,7 +68,7 @@ test('mobile navigation shows four labeled links and puts every section in the n
     assert.match(nav, /Inicio/);
     assert.match(nav, /Más/);
     assert.match(nav, /aria-current="page"/);
-    assert.match(nav, /data-tour="tenant-mobile-settings"/);
+    assert.match(nav, /data-tour="tenant-mobile-more"/);
     assert.equal((dialog.match(/<a /g) ?? []).length, 10);
     assert.match(dialog, /Todas las secciones/);
 });

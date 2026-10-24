@@ -28,7 +28,7 @@ onUnmounted(() => desktopMedia?.removeEventListener('change', closeOnDesktop));
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" /></svg>
                 <span class="max-w-full truncate">{{ item.label }}</span>
             </Link>
-            <button type="button" @click="openMenu" aria-haspopup="dialog" :data-tour="hasSettings ? 'tenant-mobile-settings' : undefined" class="col-start-5 flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-gray-600 hover:bg-gray-50">
+            <button type="button" @click="openMenu" aria-haspopup="dialog" data-tour="tenant-mobile-more" class="col-start-5 flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-gray-600 hover:bg-gray-50">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h14" /></svg>
                 Más
             </button>

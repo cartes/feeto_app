@@ -2,6 +2,8 @@
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import { useTenantRouting } from '@/composables/useTenantRouting';
+import { TOUR_VARIANTS } from '@/Components/onboardingTourSteps';
+import { ONBOARDING_TOUR_REPLAY_EVENT } from '@/Components/onboardingTourEvents';
 
 const props = defineProps({
     section: {
@@ -31,6 +33,13 @@ const SECTION_LABELS = {
 };
 
 const currentSectionLabel = computed(() => props.sectionLabel || SECTION_LABELS[props.section] || 'esta vista');
+
+const hasSectionTour = computed(() => Boolean(props.section && TOUR_VARIANTS[props.section]));
+
+const replayTour = (variant) => {
+    closePanel();
+    window.dispatchEvent(new CustomEvent(ONBOARDING_TOUR_REPLAY_EVENT, { detail: { variant } }));
+};
 
 const tutorialsUrl = computed(() => {
     try {
@@ -392,6 +401,28 @@ onBeforeUnmount(() => {
                     </div>
 
                     <div v-else-if="messages.length === 0" class="space-y-2">
+                        <div class="grid grid-cols-1 gap-2" :class="hasSectionTour ? 'sm:grid-cols-2' : ''">
+                            <button
+                                type="button"
+                                data-support="replay-general-tour"
+                                class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-left text-xs font-bold text-slate-700 transition-colors hover:border-[#FF7A00]/40 hover:text-[#FF7A00]"
+                                @click="replayTour('tenant')"
+                            >
+                                <span class="text-sm">🧭</span>
+                                <span>Repetir el recorrido de bienvenida</span>
+                            </button>
+                            <button
+                                v-if="hasSectionTour"
+                                type="button"
+                                data-support="replay-section-tour"
+                                class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-left text-xs font-bold text-slate-700 transition-colors hover:border-[#FF7A00]/40 hover:text-[#FF7A00]"
+                                @click="replayTour(section)"
+                            >
+                                <span class="text-sm">💡</span>
+                                <span>Ver la guía de {{ currentSectionLabel }}</span>
+                            </button>
+                        </div>
+
                         <!-- Opción rápida de tutoriales -->
                         <button
                             type="button"

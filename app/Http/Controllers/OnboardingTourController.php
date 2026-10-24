@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompleteOnboardingTourRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class OnboardingTourController extends Controller
 {
-    public function __invoke(Request $request): Response
+    public function __invoke(CompleteOnboardingTourRequest $request): Response
     {
         /** @var User $user */
         $user = $request->user();
 
-        $section = $request->validate([
-            'section' => ['sometimes', 'string', 'max:64'],
-        ])['section'] ?? null;
+        $section = $request->validated('section');
 
         if ($section !== null) {
             $sections = $user->onboarding_sections_completed ?? [];
