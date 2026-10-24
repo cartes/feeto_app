@@ -93,6 +93,19 @@
             <link rel="preload" as="image" href="{{ asset('images/car-hero.webp') }}" fetchpriority="high">
         @endif
 
+        @if (request()->routeIs('admin.*') || request()->is('taller/*'))
+            <script>
+                (function () {
+                    try {
+                        var preference = localStorage.getItem('appearance');
+                        if (preference === 'dark' || (preference === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                            document.documentElement.classList.add('dark');
+                        }
+                    } catch (e) {}
+                })();
+            </script>
+        @endif
+
         <!-- Scripts -->
         @if (request()->routeIs('admin.*'))
             @routes('admin')

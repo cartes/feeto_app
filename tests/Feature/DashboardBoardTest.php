@@ -78,6 +78,18 @@ class DashboardBoardTest extends TestCase
             );
     }
 
+    public function test_tenant_pages_include_the_appearance_bootstrap_script(): void
+    {
+        $this->withoutVite();
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $this->actingAs($admin)
+            ->get(route('taller.dashboard', ['tenantBySlug' => $tenant->slug]))
+            ->assertOk()
+            ->assertSee("localStorage.getItem('appearance')", false);
+    }
+
     private function createAdmin(Tenant $tenant): User
     {
         $admin = User::factory()->create(['tenant_id' => $tenant->id]);

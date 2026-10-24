@@ -26,6 +26,11 @@ export const TOUR_VARIANTS = {
                 description: 'La campana te avisa de nuevas solicitudes de hora, cambios en las órdenes y recordatorios. Si tiene un número, hay algo por revisar.',
             },
             {
+                selectors: ['[data-tour="tenant-appearance"]'],
+                title: 'Modo claro u oscuro',
+                description: 'Cambia la apariencia de todo el panel: Claro, Oscuro o Auto, que sigue la configuración de tu navegador. Tu elección se recuerda.',
+            },
+            {
                 selectors: ['[data-tour="tenant-settings"]'],
                 title: 'Configuración del taller',
                 description: 'Administra usuarios, sucursales y roles, y ajusta los datos de tu taller. Solo lo ven las personas con permiso de administración.',

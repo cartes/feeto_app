@@ -7,6 +7,8 @@ import { Link } from '@inertiajs/vue3';
 import { useTenantRouting } from '@/composables/useTenantRouting';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import BranchSwitcher from '@/Components/BranchSwitcher.vue';
+import AppearanceToggle from '@/Components/AppearanceToggle.vue';
+import { useAppearance } from '@/composables/useAppearance';
 import OnboardingTour from '@/Components/OnboardingTour.vue';
 import FloatingSupportButton from '@/Components/FloatingSupportButton.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
@@ -14,6 +16,7 @@ import Toast from '@/Components/Toast.vue';
 import ErrorBoundary from '@/Components/ErrorBoundary.vue';
 
 const { page, tenantRouteParams } = useTenantRouting();
+useAppearance({ applyToLayout: true });
 const user = computed(() => page.props.auth.user);
 const isSuperAdmin = computed(() => Boolean(user.value?.is_super_admin));
 const permissions = computed(() => user.value?.permissions ?? []);
@@ -133,7 +136,7 @@ watch(
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-[#E2EAF4] via-[#F0F4F8] to-[#E2EAF4] text-slate-800 font-sans selection:bg-[#FF7A00]/30 overflow-x-hidden flex">
+    <div class="min-h-screen bg-gradient-to-br from-[#E2EAF4] via-[#F0F4F8] to-[#E2EAF4] dark:from-[#0b1220] dark:via-[#0f1829] dark:to-[#0b1220] text-slate-800 font-sans selection:bg-[#FF7A00]/30 overflow-x-hidden flex">
         
         <!-- SIDEBAR - Desktop Only -->
         <aside class="hidden lg:flex lg:flex-col lg:w-72 fixed inset-y-0 left-0 bg-white/60 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-50">
@@ -238,7 +241,7 @@ watch(
         <div class="flex-1 flex flex-col min-h-screen relative lg:ml-72 w-full max-w-[100vw] lg:max-w-[calc(100vw-18rem)]">
             
             <!-- HEADER (Mobile & Desktop) -->
-            <header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent">
+            <header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 dark:from-[#0b1220] dark:via-[#0b1220]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent">
                 <!-- Data Izquierda -->
                 <div class="flex items-center gap-3">
                     <img 
@@ -258,6 +261,7 @@ watch(
 
                 <!-- Botones Derecha -->
                 <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                    <AppearanceToggle />
                     <BranchSwitcher />
                     <div data-tour="tenant-notifications" class="flex-shrink-0">
                         <NotificationBell />

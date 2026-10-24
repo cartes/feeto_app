@@ -48,6 +48,12 @@ class SupportFaqCatalog
                     'selector' => '[data-tour="dashboard-tabs"]',
                 ],
                 [
+                    'id' => 'dashboard-appearance',
+                    'question' => '¿Cómo activo el modo oscuro?',
+                    'answer' => 'Arriba a la derecha, junto a la campana, está el selector de apariencia con tres opciones: Claro, Oscuro y Auto. Auto sigue la configuración de modo oscuro de tu navegador o dispositivo. Tu elección se recuerda en este navegador.',
+                    'selector' => '[data-support="appearance-toggle"]',
+                ],
+                [
                     'id' => 'dashboard-summary',
                     'question' => '¿Dónde veo el resumen del día?',
                     'answer' => 'En la pestaña "Resumen" del dashboard hay un bloque con las citas del día, los movimientos del tablero y las facturas atrasadas del taller, todo de un vistazo.',

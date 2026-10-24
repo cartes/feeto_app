@@ -1,5 +1,6 @@
 import defaultTheme from "tailwindcss/defaultTheme";
 import forms from "@tailwindcss/forms";
+import darkTheme from "./tailwind.dark.js";
 
 const brandOrange = {
     50: "#FFF4EB",
@@ -18,6 +19,8 @@ const brandOrange = {
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: "class",
+
     content: [
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./storage/framework/views/*.php",
@@ -46,5 +49,5 @@ export default {
         },
     },
 
-    plugins: [forms],
+    plugins: [forms, darkTheme],
 };

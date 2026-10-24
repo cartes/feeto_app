@@ -4,9 +4,12 @@ import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import Toast from '@/Components/Toast.vue';
 import PasswordChangeModal from '@/Components/PasswordChangeModal.vue';
+import AppearanceToggle from '@/Components/AppearanceToggle.vue';
+import { useAppearance } from '@/composables/useAppearance';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const page = usePage();
+useAppearance({ applyToLayout: true });
 const user = computed(() => page.props.auth.user);
 const flash = computed(() => page.props.flash ?? {});
 
@@ -225,7 +228,8 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
-          <div class="hidden sm:ml-6 sm:flex sm:items-center">
+          <div class="hidden sm:ml-6 sm:flex sm:items-center sm:gap-4">
+            <AppearanceToggle />
             <div class="relative" ref="userMenuRef">
               <button
                 @click="userMenuOpen = !userMenuOpen"
