@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\WorkOrder;
 use App\Services\BranchContext;
 use App\Services\PlanFeatureService;
+use App\Services\TenantBoardService;
 use App\Services\TenantDailyOverviewService;
 use App\Services\TenantSetupChecklistService;
 use App\Services\TenantWelcomeService;
@@ -24,7 +25,7 @@ use Inertia\Response as InertiaResponse;
 
 class TallerDashboardController extends Controller
 {
-    public function __invoke(Request $request, TenantSetupChecklistService $checklist, TenantDailyOverviewService $dailyOverview, TenantWelcomeService $welcome): InertiaResponse|Response|RedirectResponse
+    public function __invoke(Request $request, TenantSetupChecklistService $checklist, TenantDailyOverviewService $dailyOverview, TenantWelcomeService $welcome, TenantBoardService $board): InertiaResponse|Response|RedirectResponse
     {
         $tenant = Tenant::current();
 
@@ -132,6 +133,7 @@ class TallerDashboardController extends Controller
                 'url' => route('taller.welcome.show', ['tenantBySlug' => $tenant->slug]),
                 'started' => ($tenant->setup_checklist['welcome']['next_step'] ?? 1) > 1,
             ] : null,
+            'board' => $board->forTenant($tenant, $user),
             'dailySummary' => $overview['summary'],
             'pendingAppointments' => $overview['pending_appointments']->map(fn (Appointment $appointment): array => $this->serializeAppointment($appointment))->values(),
             'setupChecklist' => $user->can('users.manage') ? $checklist->forTenant($tenant) : null,

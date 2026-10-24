@@ -45,6 +45,21 @@ class SupportAssistantControllerTest extends TestCase
             ->assertJsonPath('faqs.0.selector', '[data-support="work-orders-create-manual"]');
     }
 
+    public function test_faq_endpoint_returns_dashboard_board_faqs(): void
+    {
+        $tenant = $this->setUpTenant();
+        $admin = $this->createAdmin($tenant);
+
+        $response = $this->actingAs($admin)->getJson(route('support.faq', [
+            'tenantBySlug' => $tenant->slug,
+            'section' => 'dashboard',
+        ]));
+
+        $response->assertOk()
+            ->assertJsonPath('faqs.0.id', 'dashboard-board')
+            ->assertJsonPath('faqs.0.selector', '[data-tour="dashboard-board"]');
+    }
+
     public function test_faq_endpoint_returns_empty_list_for_unknown_section(): void
     {
         $tenant = $this->setUpTenant();

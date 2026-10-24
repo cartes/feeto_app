@@ -69,6 +69,26 @@ export const TOUR_VARIANTS = {
     dashboard: {
         common: [
             {
+                selectors: ['[data-tour="dashboard-tabs"]'],
+                title: 'Pizarrón y Resumen',
+                description: 'Al entrar ves el Pizarrón con lo que importa hoy. La pestaña Resumen guarda lo demás: accesos rápidos, citas por revisar, agenda mensual, cobranza y la guía de configuración.',
+            },
+            {
+                selectors: ['[data-tour="dashboard-board-workshop"]'],
+                title: 'Vehículos en el taller',
+                description: 'Cuántos vehículos hay en el taller y en qué etapa está cada uno. Toca una tarjeta para abrir su orden de trabajo.',
+            },
+            {
+                selectors: ['[data-tour="dashboard-board-agenda"]'],
+                title: 'Agenda de hoy',
+                description: 'Las citas programadas para hoy, ordenadas por hora, para saber qué vehículos llegan y cuándo.',
+            },
+            {
+                selectors: ['[data-tour="dashboard-board-stock"]'],
+                title: 'Alertas de inventario',
+                description: 'Los productos que llegaron a su stock mínimo o se agotaron, para reponerlos antes de que falten en una orden.',
+            },
+            {
                 selectors: ['[data-tour="dashboard-summary"]'],
                 title: 'Resumen del día',
                 description: 'Lo primero que conviene mirar cada mañana: citas de hoy, movimiento del tablero de órdenes y facturas atrasadas.',

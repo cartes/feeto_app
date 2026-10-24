@@ -18,21 +18,51 @@ class SupportFaqCatalog
         return [
             'dashboard' => [
                 [
+                    'id' => 'dashboard-board',
+                    'question' => '¿Qué es el pizarrón y qué muestra?',
+                    'answer' => 'Es la pestaña "Pizarrón" del inicio, lo primero que ves al entrar. Reúne en una pantalla los vehículos que hay en el taller con su etapa, las citas programadas para hoy y los productos de inventario bajo su stock mínimo.',
+                    'selector' => '[data-tour="dashboard-board"]',
+                ],
+                [
+                    'id' => 'dashboard-board-workshop',
+                    'question' => '¿Cuántos vehículos hay en el taller y en qué etapa están?',
+                    'answer' => 'En el bloque "En taller" del pizarrón ves el total de vehículos y cuántos hay en cada etapa (recepción, diagnóstico, esperando repuestos, etc.). Toca una tarjeta para abrir su orden de trabajo.',
+                    'selector' => '[data-tour="dashboard-board-workshop"]',
+                ],
+                [
+                    'id' => 'dashboard-board-agenda',
+                    'question' => '¿Dónde veo las citas de hoy?',
+                    'answer' => 'En el bloque "Agenda de hoy" del pizarrón, ordenadas por hora y con su estado (pendiente o llegó). Para ver o gestionar el resto de la agenda usa "Ver agenda".',
+                    'selector' => '[data-tour="dashboard-board-agenda"]',
+                ],
+                [
+                    'id' => 'dashboard-board-stock',
+                    'question' => '¿Cómo sé qué productos están bajos de stock?',
+                    'answer' => 'El bloque "Inventario" del pizarrón lista los productos que llegaron a su stock mínimo o se quedaron sin stock. Toca uno para buscarlo en Inventario y reponerlo.',
+                    'selector' => '[data-tour="dashboard-board-stock"]',
+                ],
+                [
+                    'id' => 'dashboard-tabs',
+                    'question' => '¿Dónde quedó el resto del inicio (accesos rápidos, agenda mensual, cobranza)?',
+                    'answer' => 'Está en la pestaña "Resumen", junto a "Pizarrón" en la parte superior del inicio. Allí siguen los accesos rápidos, las citas por revisar, el calendario, la cobranza y la guía de configuración.',
+                    'selector' => '[data-tour="dashboard-tabs"]',
+                ],
+                [
                     'id' => 'dashboard-summary',
                     'question' => '¿Dónde veo el resumen del día?',
-                    'answer' => 'En la parte superior del dashboard hay un bloque con las citas del día, los movimientos del tablero y las facturas atrasadas del taller, todo de un vistazo.',
+                    'answer' => 'En la pestaña "Resumen" del dashboard hay un bloque con las citas del día, los movimientos del tablero y las facturas atrasadas del taller, todo de un vistazo.',
                     'selector' => '[data-tour="dashboard-summary"]',
                 ],
                 [
                     'id' => 'dashboard-quicklinks',
                     'question' => '¿Cómo llego rápido a recepción, órdenes o clientes?',
-                    'answer' => 'Usa la sección "Accesos rápidos" del dashboard: son tarjetas que te llevan directo a recepción, órdenes, inventario, servicios, clientes y reportes sin pasar por el menú.',
+                    'answer' => 'En la pestaña "Resumen", usa la sección "Accesos rápidos": son tarjetas que te llevan directo a recepción, órdenes, inventario, servicios, clientes y reportes sin pasar por el menú.',
                     'selector' => '[data-tour="dashboard-quicklinks"]',
                 ],
                 [
                     'id' => 'dashboard-agenda',
                     'question' => '¿Cómo veo o agendo una cita?',
-                    'answer' => 'En la sección "Agenda del taller" del dashboard puedes revisar el calendario y hacer clic en "Ver agenda" para ir al módulo completo de citas.',
+                    'answer' => 'En la pestaña "Resumen", en la sección "Agenda del taller", puedes revisar el calendario y hacer clic en "Ver agenda" para ir al módulo completo de citas.',
                     'selector' => '[data-tour="dashboard-agenda"]',
                 ],
             ],

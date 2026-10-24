@@ -6,6 +6,7 @@ import { useFormatting } from '@/composables/useFormatting';
 import AppointmentCalendar from '@/Components/AppointmentCalendar.vue';
 import AppointmentList from '@/Components/AppointmentList.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
+import TenantBoard from '@/Components/TenantBoard.vue';
 import TenantDailySummary from '@/Components/TenantDailySummary.vue';
 import TenantSetupChecklist from '@/Components/TenantSetupChecklist.vue';
 import TenantPublicPageCard from '@/Components/TenantPublicPageCard.vue';
@@ -13,6 +14,7 @@ import TallerLayout from '@/Layouts/TallerLayout.vue';
 
 const props = defineProps({
     welcome: { type: Object, default: null },
+    board: { type: Object, default: () => ({ workshop: null, low_stock: null }) },
     dailySummary: { type: Array, default: () => [] },
     pendingAppointments: { type: Array, default: () => [] },
     setupChecklist: { type: Object, default: null },
@@ -73,6 +75,12 @@ const commercialQuotesEnabled = computed(() => planAccess.value?.commercial_quot
 const commercialReportsEnabled = computed(() => planAccess.value?.commercial_reports_enabled ?? false);
 const calendarUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.calendar_scheduling ?? 'Mejora tu plan para acceder a esta función');
 const aiReceptionUpgradeMessage = computed(() => planAccess.value?.upgrade_messages?.ai_reception ?? 'Mejora tu plan para acceder a esta función');
+
+const activeTab = ref('board');
+const tabs = [
+    { id: 'board', label: 'Pizarrón' },
+    { id: 'summary', label: 'Resumen' },
+];
 
 const inventoryAlerts = ref([]);
 
@@ -258,6 +266,20 @@ onUnmounted(() => {
 
             </div>
 
+            <div class="flex gap-2 border-b border-gray-200" role="tablist" data-tour="dashboard-tabs">
+                <button v-for="tab in tabs" :key="tab.id" type="button" role="tab"
+                    :aria-selected="activeTab === tab.id" :data-support="`dashboard-tab-${tab.id}`"
+                    class="-mb-px border-b-2 px-4 py-2.5 text-sm font-bold transition"
+                    :class="activeTab === tab.id ? 'border-[#FF7A00] text-[#FF7A00]' : 'border-transparent text-gray-500 hover:text-gray-800'"
+                    @click="activeTab = tab.id">
+                    {{ tab.label }}
+                </button>
+            </div>
+
+            <TenantBoard v-show="activeTab === 'board'" :board="board" :appointments="todayAppointments"
+                :can-manage-appointments="canManageAppointments" />
+
+            <div v-show="activeTab === 'summary'" class="space-y-6">
             <!-- Alertas de Inventario -->
             <div v-if="inventoryAlerts.length > 0" class="space-y-3">
                 <div v-for="alert in inventoryAlerts" :key="alert.id" :class="[
@@ -560,6 +582,7 @@ onUnmounted(() => {
             </div>
 
             <TenantSetupChecklist v-if="setupChecklist" :checklist="setupChecklist" />
+            </div>
         </div>
         <!-- Delete Appointment Confirmation Modal -->
         <div v-if="showDeleteAppointmentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
