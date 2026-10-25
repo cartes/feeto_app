@@ -19,30 +19,30 @@ const agenda = computed(() => props.appointments
 
 const STAGE_CONFIG = {
     recepcion: {
-        badge: 'bg-sky-100 text-sky-900 border border-sky-300 dark:bg-sky-950/90 dark:text-sky-200 dark:border-sky-500/80',
-        count: 'bg-sky-200/90 text-sky-950 dark:bg-sky-900 dark:text-sky-100',
+        badge: 'bg-sky-100 text-sky-900 border border-sky-300 dark:bg-[#071324] dark:text-sky-300 dark:border-sky-500/80',
+        count: 'bg-sky-200/90 text-sky-950 dark:bg-sky-900/80 dark:text-sky-100',
     },
     diagnostico: {
-        badge: 'bg-violet-100 text-violet-900 border border-violet-300 dark:bg-violet-950/90 dark:text-violet-200 dark:border-violet-500/80',
-        count: 'bg-violet-200/90 text-violet-950 dark:bg-violet-900 dark:text-violet-100',
+        badge: 'bg-violet-100 text-violet-900 border border-violet-300 dark:bg-[#150a29] dark:text-violet-300 dark:border-violet-500/80',
+        count: 'bg-violet-200/90 text-violet-950 dark:bg-violet-900/80 dark:text-violet-100',
     },
     esperando_repuestos: {
-        badge: 'bg-amber-100 text-amber-950 border border-amber-300 dark:bg-amber-950/90 dark:text-amber-200 dark:border-amber-500/80',
-        count: 'bg-amber-200/90 text-amber-950 dark:bg-amber-900 dark:text-amber-100',
+        badge: 'bg-amber-100 text-amber-950 border border-amber-300 dark:bg-[#1c0f05] dark:text-amber-300 dark:border-amber-500/80',
+        count: 'bg-amber-200/90 text-amber-950 dark:bg-amber-900/80 dark:text-amber-100',
     },
     control_calidad: {
-        badge: 'bg-cyan-100 text-cyan-900 border border-cyan-300 dark:bg-cyan-950/90 dark:text-cyan-200 dark:border-cyan-500/80',
-        count: 'bg-cyan-200/90 text-cyan-950 dark:bg-cyan-900 dark:text-cyan-100',
+        badge: 'bg-cyan-100 text-cyan-900 border border-cyan-300 dark:bg-[#04151c] dark:text-cyan-300 dark:border-cyan-500/80',
+        count: 'bg-cyan-200/90 text-cyan-950 dark:bg-cyan-900/80 dark:text-cyan-100',
     },
     listo: {
-        badge: 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-950/90 dark:text-emerald-200 dark:border-emerald-500/80',
-        count: 'bg-emerald-200/90 text-emerald-950 dark:bg-emerald-900 dark:text-emerald-100',
+        badge: 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-[#051a14] dark:text-emerald-300 dark:border-emerald-500/80',
+        count: 'bg-emerald-200/90 text-emerald-950 dark:bg-emerald-900/80 dark:text-emerald-100',
     },
 };
 
 const DEFAULT_STAGE = {
-    badge: 'bg-orange-100 text-orange-950 border border-orange-300 dark:bg-orange-950/90 dark:text-orange-200 dark:border-orange-500/80',
-    count: 'bg-orange-200/90 text-orange-950 dark:bg-orange-900 dark:text-orange-100',
+    badge: 'bg-orange-100 text-orange-950 border border-orange-300 dark:bg-[#1a0c00] dark:text-orange-300 dark:border-orange-500/80',
+    count: 'bg-orange-200/90 text-orange-950 dark:bg-orange-900/80 dark:text-orange-100',
 };
 
 const stageClass = (status) => (STAGE_CONFIG[status] ?? DEFAULT_STAGE).badge;
@@ -51,15 +51,15 @@ const stageCountClass = (status) => (STAGE_CONFIG[status] ?? DEFAULT_STAGE).coun
 const appointmentStatus = (status) => ({
     pending: {
         label: 'Pendiente',
-        class: 'bg-amber-100 text-amber-950 border border-amber-300 dark:bg-amber-950/90 dark:text-amber-200 dark:border-amber-500/80',
+        class: 'bg-amber-100 text-amber-950 border border-amber-300 dark:bg-[#1c0f05] dark:text-amber-300 dark:border-amber-500/80',
     },
     arrived: {
         label: 'Llegó',
-        class: 'bg-emerald-100 text-emerald-950 border border-emerald-300 dark:bg-emerald-950/90 dark:text-emerald-200 dark:border-emerald-500/80',
+        class: 'bg-emerald-100 text-emerald-950 border border-emerald-300 dark:bg-[#051a14] dark:text-emerald-300 dark:border-emerald-500/80',
     },
 }[status] ?? {
     label: status,
-    class: 'bg-slate-100 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600',
+    class: 'bg-slate-100 text-slate-800 border border-slate-300 dark:bg-[#0c1322] dark:text-slate-200 dark:border-slate-700',
 });
 
 const elapsed = (iso) => {
@@ -74,16 +74,16 @@ const elapsed = (iso) => {
 </script>
 
 <template>
-    <div class="rounded-[2rem] border-[10px] border-amber-200 bg-white p-5 text-slate-800 shadow-xl dark:border-amber-700/80 dark:bg-slate-900 dark:text-slate-100 dark:ring-1 dark:ring-amber-500/20 sm:p-7"
+    <div class="rounded-[2rem] border-[10px] border-amber-200 bg-white p-5 text-slate-800 shadow-xl dark:border-amber-600/90 dark:bg-black dark:text-slate-100 dark:ring-1 dark:ring-amber-500/30 dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] sm:p-7"
         data-tour="dashboard-board" role="region" aria-label="Pizarrón del taller">
         <div v-if="!board" class="animate-pulse space-y-4" aria-busy="true" aria-label="Cargando pizarrón">
-            <div class="h-6 w-1/3 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+            <div class="h-6 w-1/3 rounded-full bg-slate-200 dark:bg-[#1e293b]"></div>
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <div v-for="n in 3" :key="n" class="h-20 rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
+                <div v-for="n in 3" :key="n" class="h-20 rounded-2xl bg-slate-100 dark:bg-[#0c1322]"></div>
             </div>
             <div class="grid gap-3 xl:grid-cols-2">
-                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
-                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
+                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-[#0c1322]"></div>
+                <div class="h-32 rounded-2xl bg-slate-100 dark:bg-[#0c1322]"></div>
             </div>
         </div>
 
@@ -97,7 +97,7 @@ const elapsed = (iso) => {
                         </h2>
                     </div>
                     <Link :href="route('work-orders.index', tenantRouteParams)"
-                        class="rounded-full border border-slate-300 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-slate-700 transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-400 dark:hover:bg-slate-700 dark:hover:text-white">
+                        class="rounded-full border border-slate-300 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-[#0c1322] dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-[#162036] dark:hover:text-white">
                         Ver tablero de órdenes
                     </Link>
                 </div>
@@ -115,14 +115,14 @@ const elapsed = (iso) => {
                 </div>
 
                 <p v-if="workshop.vehicles.length === 0"
-                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-400">
+                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-800 dark:bg-[#060911]/80 dark:text-slate-300">
                     No hay vehículos en el taller por ahora.
                 </p>
 
                 <ul v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     <li v-for="vehicle in workshop.vehicles" :key="vehicle.id">
                         <Link :href="vehicle.url"
-                            class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-400 dark:border-slate-700/80 dark:bg-slate-800/90 dark:hover:border-slate-500 dark:hover:bg-slate-800">
+                            class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-400 dark:border-[#1e293b] dark:bg-[#0c1322] dark:hover:border-slate-500 dark:hover:bg-[#111a2e]">
                             <div class="min-w-0">
                                 <p class="font-mono text-base font-black tracking-widest text-slate-900 dark:text-white">{{ vehicle.plate }}</p>
                                 <p class="truncate text-xs font-medium text-slate-600 dark:text-slate-300">{{ vehicle.vehicle || 'Vehículo sin datos' }}</p>
@@ -150,13 +150,13 @@ const elapsed = (iso) => {
                 </div>
 
                 <p v-if="agenda.length === 0"
-                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-400">
+                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-800 dark:bg-[#060911]/80 dark:text-slate-300">
                     No hay citas para hoy.
                 </p>
 
                 <ul v-else class="space-y-2">
                     <li v-for="appointment in agenda" :key="appointment.id"
-                        class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/80 dark:bg-slate-800/90">
+                        class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-[#1e293b] dark:bg-[#0c1322]">
                         <span class="w-14 shrink-0 text-lg font-black tabular-nums text-orange-600 dark:text-orange-400">{{ appointment.time }}</span>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-bold text-slate-900 dark:text-white">{{ appointment.client.name }}</p>
@@ -188,7 +188,7 @@ const elapsed = (iso) => {
                 </div>
 
                 <p v-if="lowStock.items.length === 0"
-                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-400">
+                    class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-800 dark:bg-[#060911]/80 dark:text-slate-300">
                     Ningún producto está bajo su stock mínimo.
                 </p>
 
@@ -198,7 +198,7 @@ const elapsed = (iso) => {
                             class="flex items-center justify-between gap-3 rounded-2xl border p-3 transition hover:border-slate-400 dark:hover:border-slate-500"
                             :class="item.depleted
                                 ? 'border-red-300 bg-red-50/60 dark:border-red-500/70 dark:bg-red-950/40'
-                                : 'border-slate-200 bg-slate-50 dark:border-slate-700/80 dark:bg-slate-800/90'">
+                                : 'border-slate-200 bg-slate-50 dark:border-[#1e293b] dark:bg-[#0c1322]'">
                             <div class="min-w-0">
                                 <p class="truncate text-sm font-bold text-slate-900 dark:text-white">{{ item.name }}</p>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">SKU <span class="font-mono text-slate-700 dark:text-slate-300">{{ item.sku }}</span></p>
