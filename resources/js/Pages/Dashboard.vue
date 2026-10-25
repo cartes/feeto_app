@@ -266,11 +266,11 @@ onUnmounted(() => {
 
             </div>
 
-            <div class="flex gap-2 border-b border-gray-200" role="tablist" data-tour="dashboard-tabs">
+            <div class="flex gap-2 border-b border-gray-200 dark:border-slate-700" role="tablist" data-tour="dashboard-tabs">
                 <button v-for="tab in tabs" :key="tab.id" type="button" role="tab"
                     :aria-selected="activeTab === tab.id" :data-support="`dashboard-tab-${tab.id}`"
                     class="-mb-px border-b-2 px-4 py-2.5 text-sm font-bold transition"
-                    :class="activeTab === tab.id ? 'border-[#FF7A00] text-[#FF7A00]' : 'border-transparent text-gray-500 hover:text-gray-800'"
+                    :class="activeTab === tab.id ? 'border-[#FF7A00] text-[#FF7A00]' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-200'"
                     @click="activeTab = tab.id">
                     {{ tab.label }}
                 </button>
