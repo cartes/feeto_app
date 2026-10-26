@@ -139,7 +139,7 @@
 
         <!-- Google Analytics -->
         @if (filled($googleAnalyticsCode = \App\Models\Setting::get('analytics_google_analytics_code')))
-            {!! $googleAnalyticsCode !!}
+            {!! \App\Support\GoogleAnalyticsSnippet::deferred($googleAnalyticsCode) !!}
         @endif
     </head>
     <body class="font-sans antialiased">

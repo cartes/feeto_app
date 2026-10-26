@@ -23,7 +23,10 @@ use App\Models\User;
 use App\Observers\OrderItemObserver;
 use App\Observers\OrderObserver;
 use App\Observers\UserObserver;
+use App\Support\Ssr\ZiggyInjectingGateway;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -31,12 +34,17 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Ssr\Gateway;
+use Inertia\Ssr\HttpGateway;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(Gateway::class, fn (Application $app): Gateway => new ZiggyInjectingGateway(
+            $app->make(HttpGateway::class),
+            $app->make(Request::class),
+        ));
     }
 
     public function boot(): void

@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -44,7 +43,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'ziggy' => fn (): array => [
-                ...(new Ziggy($this->ziggyGroup($request)))->toArray(),
+                'url' => rtrim(url('/'), '/'),
                 'location' => $request->url(),
             ],
             'auth' => [
@@ -123,23 +122,6 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $authorization;
-    }
-
-    private function ziggyGroup(Request $request): ?string
-    {
-        if ($request->user()?->is_super_admin) {
-            return null;
-        }
-
-        if ($request->routeIs('admin.*')) {
-            return 'admin';
-        }
-
-        if ($request->routeIs('taller.dashboard', 'taller.welcome.*', 'work-orders.*', 'quotes.*', 'clients.*', 'appointments.*', 'inventory.*', 'product-categories.*', 'services.*', 'invoices.*', 'reports.*', 'taller.settings*', 'taller.roles.*', 'taller.users.*', 'tenant.users.*', 'notifications.*', 'receptions.*', 'subscription.*', 'branches.*', 'profile.*', 'api.*')) {
-            return 'tenant';
-        }
-
-        return 'public';
     }
 
     private function resolveTenant(Request $request, ?User $user): ?Tenant

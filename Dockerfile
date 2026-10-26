@@ -95,6 +95,8 @@ RUN printf '%s\n' \
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app /var/www/html
 COPY --from=frontend /app/public/build /var/www/html/public/build
+COPY --from=frontend /app/bootstrap/ssr /var/www/html/bootstrap/ssr
+COPY --from=frontend /usr/local/bin/node /usr/local/bin/node
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY container-entrypoint.sh /usr/local/bin/container-entrypoint.sh

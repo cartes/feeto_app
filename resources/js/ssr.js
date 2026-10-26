@@ -11,7 +11,7 @@ createServer((page) =>
     createInertiaApp({
         page,
         render: renderToString,
-        title: (title) => `${title} - ${appName}`,
+        title: (title) => (title && title === page.props?.seo?.title ? title : `${title} - ${appName}`),
         resolve: (name) =>
             resolvePageComponent(
                 `./Pages/${name}.vue`,
@@ -20,10 +20,7 @@ createServer((page) =>
         setup({ App, props, plugin }) {
             return createSSRApp({ render: () => h(App, props) })
                 .use(plugin)
-                .use(ZiggyVue, {
-                    ...(props.initialPage.props.ziggy ?? {}),
-                    location: new URL(props.initialPage.url),
-                });
+                .use(ZiggyVue, props.initialPage.props.ziggy);
         },
     }),
 );
