@@ -14,6 +14,7 @@ use App\Models\TenantLead;
 use App\Models\TenantNotification;
 use App\Rules\LicensePlate;
 use App\Support\MarketingSeoPages;
+use App\Support\TenantLandingSchema;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -151,108 +152,13 @@ class PublicBookingController extends Controller
      */
     private function resolveTenantLandingSchema(Tenant $tenant, Collection $branches, string $canonicalUrl, string $description): array
     {
-        $businessSchema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'AutoRepair',
-            '@id' => "{$canonicalUrl}#business",
-            'name' => $tenant->name,
-            'url' => $canonicalUrl,
-            'description' => $description,
-            'image' => $this->resolveSocialImageUrl(),
-            'areaServed' => [
-                '@type' => 'Country',
-                'name' => $tenant->country()->label(),
-            ],
-        ];
-
-        if (filled($tenant->seo_address) || filled($tenant->comuna)) {
-            $businessSchema['address'] = array_filter([
-                '@type' => 'PostalAddress',
-                'streetAddress' => $tenant->seo_address,
-                'addressLocality' => $tenant->comuna,
-                'addressCountry' => $tenant->country()->isoCode(),
-            ], fn ($value): bool => filled($value));
-        }
-
-        if (filled($tenant->phone) || filled($tenant->whatsapp_number)) {
-            $businessSchema['telephone'] = $tenant->phone ?: $tenant->whatsapp_number;
-        }
-
-        if (filled($tenant->website_url)) {
-            $businessSchema['sameAs'] = [$tenant->website_url];
-        }
-
-        if ($branches->isNotEmpty()) {
-            $locations = $branches
-                ->filter(fn (Branch $b): bool => filled($b->address) || filled($b->phone))
-                ->map(function (Branch $b) use ($canonicalUrl, $tenant): array {
-                    $loc = [
-                        '@type' => 'AutoRepair',
-                        'name' => $b->name,
-                        'url' => $canonicalUrl,
-                    ];
-                    if (filled($b->address)) {
-                        $loc['address'] = [
-                            '@type' => 'PostalAddress',
-                            'streetAddress' => $b->address,
-                            'addressCountry' => $tenant->country()->isoCode(),
-                        ];
-                    }
-                    if (filled($b->phone)) {
-                        $loc['telephone'] = $b->phone;
-                    }
-
-                    return $loc;
-                })
-                ->values()
-                ->all();
-
-            if (! empty($locations)) {
-                $businessSchema['location'] = count($locations) === 1 ? $locations[0] : $locations;
-            }
-        }
-
-        $businessSchema['potentialAction'] = [
-            '@type' => 'ReserveAction',
-            'target' => [
-                '@type' => 'EntryPoint',
-                'urlTemplate' => $canonicalUrl,
-                'inLanguage' => 'es-CL',
-                'actionPlatform' => [
-                    'https://schema.org/DesktopWebPlatform',
-                    'https://schema.org/MobileWebPlatform',
-                ],
-            ],
-            'result' => [
-                '@type' => 'Reservation',
-                'name' => 'Reserva de Cita en Taller',
-            ],
-        ];
-
-        return [
-            $businessSchema,
-            [
-                '@context' => 'https://schema.org',
-                '@type' => 'WebPage',
-                '@id' => "{$canonicalUrl}#webpage",
-                'url' => $canonicalUrl,
-                'name' => "Agendamiento - {$tenant->name}",
-                'description' => $description,
-                'about' => [
-                    '@id' => "{$canonicalUrl}#business",
-                ],
-                'primaryImageOfPage' => [
-                    '@type' => 'ImageObject',
-                    'url' => $this->resolveSocialImageUrl(),
-                ],
-                'isPartOf' => [
-                    '@type' => 'WebSite',
-                    '@id' => url('/').'#website',
-                    'url' => url('/'),
-                    'name' => config('app.name', 'TallerFlow'),
-                ],
-            ],
-        ];
+        return TenantLandingSchema::make(
+            $tenant,
+            $branches,
+            $canonicalUrl,
+            $description,
+            $this->resolveSocialImageUrl()
+        );
     }
 
     public function storeContact(Request $request, Tenant $tenantBySlug): RedirectResponse
