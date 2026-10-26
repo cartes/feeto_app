@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import axios from 'axios';
 import { Head, usePage } from '@inertiajs/vue3';
 import PpuScanner from '@/Components/PpuScanner.vue';
 import PlanUpgradeBanner from '@/Components/PlanUpgradeBanner.vue';
@@ -110,7 +111,7 @@ const handleImageUpload = async (event) => {
     formData.append('image', file);
 
     try {
-        const response = await window.axios.post(route('receptions.store', tenantRouteParams.value), formData, {
+        const response = await axios.post(route('receptions.store', tenantRouteParams.value), formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 

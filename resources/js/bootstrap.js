@@ -1,7 +1,7 @@
-import axios from "axios";
-window.axios = axios;
-
-window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+import("axios").then(({ default: axios }) => {
+    axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+    window.axios = axios;
+});
 
 const runtimeReverbConfig = window.laravelReverbConfig || {};
 const reverbEnabled = runtimeReverbConfig.enabled ?? Boolean(import.meta.env.VITE_REVERB_APP_KEY && import.meta.env.VITE_REVERB_HOST);

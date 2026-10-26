@@ -1,9 +1,8 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { ref, computed } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SeoHead from '@/Components/SeoHead.vue';
-import LoginModal from '@/Components/LoginModal.vue';
 import Toast from '@/Components/Toast.vue';
 
 const props = defineProps({
@@ -20,6 +19,7 @@ const props = defineProps({
 const page = usePage();
 const isSuccess = computed(() => page.props.flash?.booking_success === true);
 const isContactSuccess = computed(() => page.props.flash?.contact_success === true);
+const LoginModal = defineAsyncComponent(() => import('@/Components/LoginModal.vue'));
 const showLoginModal = ref(false);
 const activeTab = ref('booking');
 

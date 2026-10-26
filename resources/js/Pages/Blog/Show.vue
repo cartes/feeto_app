@@ -1,10 +1,9 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import SeoHead from '@/Components/SeoHead.vue';
-import { ref } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
-import LoginModal from '@/Components/LoginModal.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 defineProps({
@@ -12,6 +11,7 @@ defineProps({
     seo: Object,
 });
 
+const LoginModal = defineAsyncComponent(() => import('@/Components/LoginModal.vue'));
 const showLoginModal = ref(false);
 
 const formatDate = (dateStr) => {

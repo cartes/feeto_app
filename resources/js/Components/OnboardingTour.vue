@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
 import { TOUR_VARIANTS } from '@/Components/onboardingTourSteps';
 import { ONBOARDING_TOUR_REPLAY_EVENT } from '@/Components/onboardingTourEvents';
@@ -229,7 +230,7 @@ const persistSeen = async () => {
     hasPersisted = true;
 
     try {
-        await window.axios.post(
+        await axios.post(
             route('onboarding-tour.complete'),
             isGlobalVariant.value ? {} : { section: props.variant },
         );

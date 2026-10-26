@@ -2,8 +2,7 @@
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 import SeoHead from '@/Components/SeoHead.vue';
-import { onMounted, onUnmounted, ref } from 'vue';
-import LoginModal from '@/Components/LoginModal.vue';
+import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
 import PublicFooter from '@/Components/PublicFooter.vue';
 import CountryFlagSvg from '@/Components/CountryFlagSvg.vue';
@@ -18,6 +17,7 @@ const props = defineProps({
     inventoryImportHighlight: { type: Object, default: () => ({}) },
 });
 
+const LoginModal = defineAsyncComponent(() => import('@/Components/LoginModal.vue'));
 const showLoginModal = ref(false);
 const activeSection = ref('features');
 
@@ -1579,7 +1579,7 @@ onUnmounted(() => {
 .feat-tag-dim {
     border: 1px solid rgba(255, 255, 255, 0.10);
     background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 @media (max-width: 1100px) {

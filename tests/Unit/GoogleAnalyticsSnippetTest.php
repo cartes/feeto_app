@@ -25,13 +25,13 @@ HTML;
         $this->assertStringContainsString("gtag('config', 'G-ABC123');", $output);
     }
 
-    public function test_it_loads_gtag_after_window_load_with_a_delay(): void
+    public function test_it_loads_gtag_on_first_interaction_with_a_late_fallback(): void
     {
         $output = GoogleAnalyticsSnippet::deferred(self::STANDARD_SNIPPET);
 
-        $this->assertStringContainsString("addEventListener('load'", $output);
+        $this->assertStringContainsString("['scroll','pointerdown','keydown']", $output);
         $this->assertStringContainsString('"https://www.googletagmanager.com/gtag/js?id=G-ABC123"', $output);
-        $this->assertStringContainsString('},2000)', $output);
+        $this->assertStringContainsString('setTimeout(load,10000)', $output);
     }
 
     public function test_it_returns_unrecognised_code_untouched(): void
