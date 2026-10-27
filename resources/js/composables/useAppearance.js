@@ -1,44 +1,57 @@
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { computed, onBeforeUnmount, ref } from "vue";
 
-export const APPEARANCE_STORAGE_KEY = 'appearance';
+export const APPEARANCE_STORAGE_KEY = "appearance";
 export const APPEARANCE_OPTIONS = [
-    { id: 'light', label: 'Claro' },
-    { id: 'dark', label: 'Oscuro' },
-    { id: 'auto', label: 'Auto' },
+    { id: "light", label: "Claro" },
+    { id: "dark", label: "Oscuro" },
+    { id: "auto", label: "Auto" },
 ];
 
-const isBrowser = typeof window !== 'undefined';
+const isBrowser = typeof window !== "undefined";
 
 const readPreference = () => {
     if (!isBrowser) {
-        return 'light';
+        return "light";
     }
 
     try {
         const stored = window.localStorage.getItem(APPEARANCE_STORAGE_KEY);
 
-        return APPEARANCE_OPTIONS.some((option) => option.id === stored) ? stored : 'light';
+        return APPEARANCE_OPTIONS.some((option) => option.id === stored)
+            ? stored
+            : "light";
     } catch {
-        return 'light';
+        return "light";
     }
 };
 
 const preference = ref(readPreference());
-const systemPrefersDark = ref(isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches);
-const isDark = computed(() => preference.value === 'dark' || (preference.value === 'auto' && systemPrefersDark.value));
+const systemPrefersDark = ref(
+    isBrowser && window.matchMedia("(prefers-color-scheme: dark)").matches,
+);
+const isDark = computed(
+    () =>
+        preference.value === "dark" ||
+        (preference.value === "auto" && systemPrefersDark.value),
+);
 let activeLayouts = 0;
 
 const applyClass = () => {
     if (isBrowser) {
-        document.documentElement.classList.toggle('dark', activeLayouts > 0 && isDark.value);
+        document.documentElement.classList.toggle(
+            "dark",
+            activeLayouts > 0 && isDark.value,
+        );
     }
 };
 
 if (isBrowser) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-        systemPrefersDark.value = event.matches;
-        applyClass();
-    });
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", (event) => {
+            systemPrefersDark.value = event.matches;
+            applyClass();
+        });
 }
 
 /**
@@ -68,5 +81,9 @@ export function useAppearance({ applyToLayout = false } = {}) {
         applyClass();
     };
 
-    return { preference, isDark, setPreference };
+    const toggleAppearance = () => {
+        setPreference(isDark.value ? "light" : "dark");
+    };
+
+    return { preference, isDark, setPreference, toggleAppearance };
 }

@@ -320,10 +320,14 @@ function useAppearance({ applyToLayout = false } = {}) {
 		} catch {}
 		applyClass();
 	};
+	const toggleAppearance = () => {
+		setPreference(isDark.value ? "light" : "dark");
+	};
 	return {
 		preference,
 		isDark,
-		setPreference
+		setPreference,
+		toggleAppearance
 	};
 }
 //#endregion
@@ -332,23 +336,21 @@ var _sfc_main$132 = {
 	__name: "AppearanceToggle",
 	__ssrInlineRender: true,
 	setup(__props) {
-		const { preference, setPreference } = useAppearance();
+		const { isDark, toggleAppearance } = useAppearance();
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({
-				class: "inline-flex rounded-full border border-slate-200 bg-white/70 p-0.5 shadow-sm",
-				role: "group",
-				"aria-label": "Apariencia del sitio",
+			_push(`<button${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({
+				type: "button",
+				role: "switch",
+				"aria-checked": (0, vue_exports.unref)(isDark),
+				"aria-label": (0, vue_exports.unref)(isDark) ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
+				title: (0, vue_exports.unref)(isDark) ? "Modo oscuro activado (cambiar a claro)" : "Modo claro activado (cambiar a oscuro)",
 				"data-tour": "tenant-appearance",
-				"data-support": "appearance-toggle"
-			}, _attrs))}><!--[-->`);
-			(0, server_renderer_exports.ssrRenderList)((0, vue_exports.unref)(APPEARANCE_OPTIONS), (option) => {
-				_push(`<button type="button"${(0, server_renderer_exports.ssrRenderAttr)("title", `Apariencia: ${option.label}`)}${(0, server_renderer_exports.ssrRenderAttr)("aria-pressed", (0, vue_exports.unref)(preference) === option.id)} class="${(0, server_renderer_exports.ssrRenderClass)([(0, vue_exports.unref)(preference) === option.id ? "bg-[#FF7A00] text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-800", "flex h-8 w-8 items-center justify-center rounded-full transition"])}"><span class="sr-only">${(0, server_renderer_exports.ssrInterpolate)(option.label)}</span>`);
-				if (option.id === "light") _push(`<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`);
-				else if (option.id === "dark") _push(`<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
-				else _push(`<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`);
-				_push(`</button>`);
-			});
-			_push(`<!--]--></div>`);
+				"data-support": "appearance-toggle",
+				class: "relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center justify-between rounded-full bg-white/80 p-1 shadow-sm ring-1 ring-inset ring-slate-200/90 transition-colors duration-200 hover:ring-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A00]"
+			}, _attrs))}><span class="sr-only">${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(isDark) ? "Cambiar a modo claro" : "Cambiar a modo oscuro")}</span><span class="flex h-6 w-6 items-center justify-center text-slate-400" aria-hidden="true"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></span><span class="flex h-6 w-6 items-center justify-center text-slate-400" aria-hidden="true"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg></span><span class="${(0, server_renderer_exports.ssrRenderClass)([(0, vue_exports.unref)(isDark) ? "translate-x-6" : "translate-x-0", "pointer-events-none absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-sm transition-transform duration-200 ease-in-out"])}" aria-hidden="true">`);
+			if (!(0, vue_exports.unref)(isDark)) _push(`<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`);
+			else _push(`<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`);
+			_push(`</span></button>`);
 		};
 	}
 };
@@ -661,7 +663,9 @@ var _sfc_main$131 = {
 				}, _parent));
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			_push(`</div></div><div class="-mr-2 flex items-center sm:hidden"><button class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 transition-colors"><span class="sr-only">Abrir menú principal</span><svg class="${(0, server_renderer_exports.ssrRenderClass)([{
+			_push(`</div></div><div class="-mr-2 flex items-center gap-2 sm:hidden">`);
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, null, null, _parent));
+			_push(`<button class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 transition-colors"><span class="sr-only">Abrir menú principal</span><svg class="${(0, server_renderer_exports.ssrRenderClass)([{
 				"hidden": showingNavigationDropdown.value,
 				"block": !showingNavigationDropdown.value
 			}, "h-6 w-6"])}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg><svg class="${(0, server_renderer_exports.ssrRenderClass)([{
@@ -10457,6 +10461,8 @@ _sfc_main$105.setup = (props, ctx) => {
 };
 //#endregion
 //#region resources/js/Components/TenantMobileNavigation.vue
+var PRIMARY_SLOTS = 4;
+var HIGHLIGHT_ROUTE = "receptions.create";
 var _sfc_main$104 = {
 	__name: "TenantMobileNavigation",
 	__ssrInlineRender: true,
@@ -10468,11 +10474,30 @@ var _sfc_main$104 = {
 		hasSettings: {
 			type: Boolean,
 			default: false
+		},
+		logoutUrl: {
+			type: String,
+			default: null
+		},
+		primaryRoutes: {
+			type: Array,
+			default: () => [
+				"taller.dashboard",
+				"work-orders.index",
+				HIGHLIGHT_ROUTE,
+				"appointments.index"
+			]
 		}
 	},
 	setup(__props) {
 		const props = __props;
-		const primaryItems = (0, vue_exports.computed)(() => props.items.slice(0, 4));
+		const primaryItems = (0, vue_exports.computed)(() => {
+			const preferred = props.primaryRoutes.map((name) => props.items.find((item) => item.route === name)).filter(Boolean);
+			const fallback = props.items.filter((item) => !preferred.includes(item));
+			return [...preferred, ...fallback].slice(0, PRIMARY_SLOTS);
+		});
+		const secondaryItems = (0, vue_exports.computed)(() => props.items.filter((item) => !primaryItems.value.includes(item)));
+		const isHighlighted = (item) => item.route === HIGHLIGHT_ROUTE;
 		const menu = (0, vue_exports.ref)(null);
 		const closeMenu = () => menu.value?.close();
 		let desktopMedia;
@@ -10485,18 +10510,36 @@ var _sfc_main$104 = {
 		});
 		(0, vue_exports.onUnmounted)(() => desktopMedia?.removeEventListener("change", closeOnDesktop));
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "lg:hidden" }, _attrs))}><nav aria-label="Navegación principal" data-tour="tenant-mobile-navigation" class="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 gap-1 rounded-2xl border border-gray-100 bg-white p-2 shadow-lg"><!--[-->`);
+			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "lg:hidden" }, _attrs))}><nav aria-label="Navegación principal" data-tour="tenant-mobile-navigation" class="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 items-end gap-1 rounded-2xl border border-gray-100 bg-white p-2 shadow-lg"><!--[-->`);
 			(0, server_renderer_exports.ssrRenderList)(primaryItems.value, (item) => {
 				_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					key: item.url,
 					href: item.url,
 					"aria-current": item.active ? "page" : void 0,
-					class: ["flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold", item.active ? "bg-orange-50 text-orange-700" : "text-gray-600 hover:bg-gray-50"]
+					class: ["flex min-h-[3.5rem] min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-semibold", isHighlighted(item) ? "text-[#FF7A00]" : item.active ? "bg-orange-50 text-orange-700" : "text-gray-600 hover:bg-gray-50"]
 				}, {
 					default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-						if (_push) _push(`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round"${(0, server_renderer_exports.ssrRenderAttr)("d", item.icon)}${_scopeId}></path></svg><span class="max-w-full truncate"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(item.label)}</span>`);
-						else return [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
-							class: "h-5 w-5",
+						if (_push) {
+							if (isHighlighted(item)) _push(`<span class="-mt-7 flex h-12 w-12 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-lg ring-4 ring-white"${_scopeId}><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round"${(0, server_renderer_exports.ssrRenderAttr)("d", item.icon)}${_scopeId}></path></svg></span>`);
+							else _push(`<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round"${(0, server_renderer_exports.ssrRenderAttr)("d", item.icon)}${_scopeId}></path></svg>`);
+							_push(`<span class="max-w-full truncate"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(item.label)}</span>`);
+						} else return [isHighlighted(item) ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", {
+							key: 0,
+							class: "-mt-7 flex h-12 w-12 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-lg ring-4 ring-white"
+						}, [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+							class: "h-6 w-6",
+							fill: "none",
+							viewBox: "0 0 24 24",
+							stroke: "currentColor",
+							"stroke-width": "2",
+							"aria-hidden": "true"
+						}, [(0, vue_exports.createVNode)("path", {
+							"stroke-linecap": "round",
+							"stroke-linejoin": "round",
+							d: item.icon
+						}, null, 8, ["d"])]))])) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+							key: 1,
+							class: "h-6 w-6",
 							fill: "none",
 							viewBox: "0 0 24 24",
 							stroke: "currentColor",
@@ -10511,34 +10554,63 @@ var _sfc_main$104 = {
 					_: 2
 				}, _parent));
 			});
-			_push(`<!--]--><button type="button" aria-haspopup="dialog" data-tour="tenant-mobile-more" class="col-start-5 flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-gray-600 hover:bg-gray-50"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h14"></path></svg> Más </button></nav><dialog aria-label="Todas las secciones del taller" class="fixed inset-x-3 bottom-24 top-auto m-auto max-h-[70vh] w-[calc(100%-1.5rem)] max-w-lg overflow-y-auto rounded-2xl border border-gray-100 bg-white p-5 shadow-xl backdrop:bg-slate-900/40"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-lg font-bold text-gray-900">Todas las secciones</h2><button type="button" class="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cerrar</button></div><div class="grid grid-cols-2 gap-2"><!--[-->`);
-			(0, server_renderer_exports.ssrRenderList)(__props.items, (item) => {
-				_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
-					key: item.url,
-					href: item.url,
-					onClick: closeMenu,
-					"aria-current": item.active ? "page" : void 0,
-					class: ["flex items-center gap-2 rounded-xl p-3 text-sm font-semibold", item.active ? "bg-orange-50 text-orange-700" : "text-gray-600 hover:bg-gray-50"]
-				}, {
-					default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-						if (_push) _push(`<svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round"${(0, server_renderer_exports.ssrRenderAttr)("d", item.icon)}${_scopeId}></path></svg><span${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(item.label)}</span>`);
-						else return [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
-							class: "h-5 w-5 shrink-0",
-							fill: "none",
-							viewBox: "0 0 24 24",
-							stroke: "currentColor",
-							"stroke-width": "2",
-							"aria-hidden": "true"
-						}, [(0, vue_exports.createVNode)("path", {
-							"stroke-linecap": "round",
-							"stroke-linejoin": "round",
-							d: item.icon
-						}, null, 8, ["d"])])), (0, vue_exports.createVNode)("span", null, (0, vue_exports.toDisplayString)(item.label), 1)];
-					}),
-					_: 2
-				}, _parent));
-			});
-			_push(`<!--]--></div></dialog></div>`);
+			_push(`<!--]--><button type="button" aria-haspopup="dialog" data-tour="tenant-mobile-more" class="col-start-5 flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-semibold text-gray-600 hover:bg-gray-50"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h14"></path></svg> Más </button></nav><dialog aria-label="Más secciones del taller" class="fixed inset-x-3 bottom-24 top-auto m-auto max-h-[70vh] w-[calc(100%-1.5rem)] max-w-lg overflow-y-auto rounded-2xl border border-gray-100 bg-white p-5 shadow-xl backdrop:bg-slate-900/40"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-lg font-bold text-gray-900">Más</h2><button type="button" class="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cerrar</button></div>`);
+			if (secondaryItems.value.length) {
+				_push(`<div class="grid grid-cols-2 gap-2"><!--[-->`);
+				(0, server_renderer_exports.ssrRenderList)(secondaryItems.value, (item) => {
+					_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+						key: item.url,
+						href: item.url,
+						onClick: closeMenu,
+						"aria-current": item.active ? "page" : void 0,
+						class: ["flex min-h-[3rem] items-center gap-2 rounded-xl p-3 text-sm font-semibold", item.active ? "bg-orange-50 text-orange-700" : "text-gray-600 hover:bg-gray-50"]
+					}, {
+						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+							if (_push) _push(`<svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round"${(0, server_renderer_exports.ssrRenderAttr)("d", item.icon)}${_scopeId}></path></svg><span${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(item.label)}</span>`);
+							else return [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+								class: "h-5 w-5 shrink-0",
+								fill: "none",
+								viewBox: "0 0 24 24",
+								stroke: "currentColor",
+								"stroke-width": "2",
+								"aria-hidden": "true"
+							}, [(0, vue_exports.createVNode)("path", {
+								"stroke-linecap": "round",
+								"stroke-linejoin": "round",
+								d: item.icon
+							}, null, 8, ["d"])])), (0, vue_exports.createVNode)("span", null, (0, vue_exports.toDisplayString)(item.label), 1)];
+						}),
+						_: 2
+					}, _parent));
+				});
+				_push(`<!--]--></div>`);
+			} else _push(`<!---->`);
+			if (__props.logoutUrl) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+				href: __props.logoutUrl,
+				method: "post",
+				as: "button",
+				"data-tour": "tenant-mobile-logout",
+				class: "mt-4 flex min-h-[3rem] w-full items-center justify-center gap-2 rounded-xl border border-rose-100 px-4 py-3 text-sm font-bold text-rose-500 hover:bg-rose-50"
+			}, {
+				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+					if (_push) _push(`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"${_scopeId}></path></svg> Cerrar sesión `);
+					else return [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+						class: "h-5 w-5",
+						fill: "none",
+						viewBox: "0 0 24 24",
+						stroke: "currentColor",
+						"stroke-width": "2",
+						"aria-hidden": "true"
+					}, [(0, vue_exports.createVNode)("path", {
+						"stroke-linecap": "round",
+						"stroke-linejoin": "round",
+						d: "M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+					})])), (0, vue_exports.createTextVNode)(" Cerrar sesión ")];
+				}),
+				_: 1
+			}, _parent));
+			else _push(`<!---->`);
+			_push(`</dialog></div>`);
 		};
 	}
 };
@@ -10746,7 +10818,7 @@ var TOUR_VARIANTS = {
 			{
 				selectors: ["[data-tour=\"tenant-appearance\"]"],
 				title: "Modo claro u oscuro",
-				description: "Cambia la apariencia de todo el panel: Claro, Oscuro o Auto, que sigue la configuración de tu navegador. Tu elección se recuerda."
+				description: "Usa este interruptor para alternar entre el modo claro y el modo oscuro en todo el panel. Tu elección se recuerda."
 			},
 			{
 				selectors: ["[data-tour=\"tenant-settings\"]"],
@@ -11330,14 +11402,14 @@ var _sfc_main$100 = {
 				})}"></div>`);
 				else _push(`<!---->`);
 			}, "body", false, _parent);
-			if (!isOpen.value) _push(`<a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" data-tutorials-floating aria-label="Abrir tutoriales y guías de TallerFlow" class="group fixed bottom-[5.5rem] right-5 z-[94] flex items-center gap-2 rounded-full border border-orange-200/90 bg-white/95 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-[0_10px_25px_rgba(255,122,0,0.18)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#FF7A00] hover:bg-orange-50/70 hover:text-[#FF7A00] hover:shadow-[0_14px_30px_rgba(255,122,0,0.25)] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/25 sm:bottom-24 sm:right-6"><span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-sm transition-transform duration-200 group-hover:scale-110"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg></span><span class="font-extrabold tracking-tight">Tutoriales</span><svg class="h-3 w-3 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>`);
+			if (!isOpen.value) _push(`<a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" data-tutorials-floating aria-label="Abrir tutoriales y guías de TallerFlow" class="group fixed bottom-[11rem] right-5 z-[94] flex items-center gap-2 rounded-full border border-orange-200/90 bg-white/95 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-[0_10px_25px_rgba(255,122,0,0.18)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#FF7A00] hover:bg-orange-50/70 hover:text-[#FF7A00] hover:shadow-[0_14px_30px_rgba(255,122,0,0.25)] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/25 sm:right-6 lg:bottom-24"><span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-sm transition-transform duration-200 group-hover:scale-110"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg></span><span class="font-extrabold tracking-tight">Tutoriales</span><svg class="h-3 w-3 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>`);
 			else _push(`<!---->`);
-			_push(`<button type="button" data-support-toggle${(0, server_renderer_exports.ssrRenderAttr)("aria-label", isOpen.value ? "Cerrar ayuda" : "Abrir ayuda y tutoriales de TallerFlow")} class="fixed bottom-5 right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:bottom-6 sm:right-6">`);
+			_push(`<button type="button" data-support-toggle${(0, server_renderer_exports.ssrRenderAttr)("aria-label", isOpen.value ? "Cerrar ayuda" : "Abrir ayuda y tutoriales de TallerFlow")} class="fixed bottom-[6.75rem] right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:right-6 lg:bottom-6">`);
 			if (!isOpen.value) _push(`<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.06 0-2.076-.163-3.017-.463L3 21l1.395-3.72C3.512 15.845 3 14.483 3 13c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>`);
 			else _push(`<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>`);
 			_push(`</button>`);
 			if (isOpen.value) {
-				_push(`<div class="fixed bottom-24 right-5 z-[95] flex h-[min(34rem,75vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:bottom-28 sm:right-6"><div class="flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-5 py-4 text-white"><div class="min-w-0 flex-1"><p class="text-[10px] font-bold uppercase tracking-widest text-white/80">Ayuda TallerFlow</p><p class="truncate text-sm font-black leading-tight">${(0, server_renderer_exports.ssrInterpolate)(currentSectionLabel.value)}</p></div><div class="flex items-center gap-1.5 shrink-0"><a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" title="Ver tutoriales y guías en video" class="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-2.5 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105 active:scale-95"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span>Tutoriales</span><svg class="h-3 w-3 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a><button type="button" class="rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div><div class="flex-1 space-y-3 overflow-y-auto px-4 py-4"><div class="rounded-2xl border border-orange-200/90 bg-gradient-to-br from-orange-50 via-white to-amber-50/60 p-3.5 shadow-sm"><div class="flex items-start gap-3"><div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#E66E00] text-white shadow-md shadow-orange-500/20"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5"><h4 class="text-xs font-black text-slate-800">Centro de Tutoriales</h4><span class="rounded-md bg-orange-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-[#FF7A00]">Guías &amp; Videos</span></div><p class="mt-0.5 text-[11px] leading-snug text-slate-600"> Aprende a dominar cada módulo con guías prácticas y videos paso a paso. </p><a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" class="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-[#FF7A00] px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#CC6200] hover:shadow active:scale-95 group"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Ver todos los tutoriales</span><svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a></div></div></div><p class="text-xs font-medium leading-relaxed text-slate-500"> Pregúntame algo sobre <strong>${(0, server_renderer_exports.ssrInterpolate)(currentSectionLabel.value)}</strong> o elige una pregunta frecuente. </p>`);
+				_push(`<div class="fixed bottom-[10.5rem] right-5 z-[95] flex h-[min(34rem,70vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:right-6 lg:bottom-28"><div class="flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-5 py-4 text-white"><div class="min-w-0 flex-1"><p class="text-[10px] font-bold uppercase tracking-widest text-white/80">Ayuda TallerFlow</p><p class="truncate text-sm font-black leading-tight">${(0, server_renderer_exports.ssrInterpolate)(currentSectionLabel.value)}</p></div><div class="flex items-center gap-1.5 shrink-0"><a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" title="Ver tutoriales y guías en video" class="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-2.5 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105 active:scale-95"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg><span>Tutoriales</span><svg class="h-3 w-3 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a><button type="button" class="rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div><div class="flex-1 space-y-3 overflow-y-auto px-4 py-4"><div class="rounded-2xl border border-orange-200/90 bg-gradient-to-br from-orange-50 via-white to-amber-50/60 p-3.5 shadow-sm"><div class="flex items-start gap-3"><div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#E66E00] text-white shadow-md shadow-orange-500/20"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5"><h4 class="text-xs font-black text-slate-800">Centro de Tutoriales</h4><span class="rounded-md bg-orange-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-[#FF7A00]">Guías &amp; Videos</span></div><p class="mt-0.5 text-[11px] leading-snug text-slate-600"> Aprende a dominar cada módulo con guías prácticas y videos paso a paso. </p><a${(0, server_renderer_exports.ssrRenderAttr)("href", tutorialsUrl.value)} target="_blank" rel="noopener noreferrer" class="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-[#FF7A00] px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#CC6200] hover:shadow active:scale-95 group"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Ver todos los tutoriales</span><svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a></div></div></div><p class="text-xs font-medium leading-relaxed text-slate-500"> Pregúntame algo sobre <strong>${(0, server_renderer_exports.ssrInterpolate)(currentSectionLabel.value)}</strong> o elige una pregunta frecuente. </p>`);
 				if (loadingFaqs.value) _push(`<div class="flex justify-center py-4"><div class="h-5 w-5 animate-spin rounded-full border-2 border-[#FF7A00]/30 border-t-[#FF7A00]"></div></div>`);
 				else if (messages.value.length === 0) {
 					_push(`<div class="space-y-2"><div class="${(0, server_renderer_exports.ssrRenderClass)([hasSectionTour.value ? "sm:grid-cols-2" : "", "grid grid-cols-1 gap-2"])}"><button type="button" data-support="replay-general-tour" class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-left text-xs font-bold text-slate-700 transition-colors hover:border-[#FF7A00]/40 hover:text-[#FF7A00]"><span class="text-sm">🧭</span><span>Repetir el recorrido de bienvenida</span></button>`);
@@ -11740,10 +11812,10 @@ var _sfc_main$98 = {
 				}),
 				_: 1
 			}, _parent));
-			_push(`</section></aside><div class="flex-1 flex flex-col min-h-screen relative lg:ml-72 w-full max-w-[100vw] lg:max-w-[calc(100vw-18rem)]"><header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 dark:from-[#0b1220] dark:via-[#0b1220]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent"><div class="flex items-center gap-3">`);
-			if (!_ctx.$page.props.isDesktop) _push(`<img${(0, server_renderer_exports.ssrRenderAttr)("src", `https://ui-avatars.com/api/?name=${user.value?.name || "User"}&background=F9A826&color=fff`)} alt="Avatar" class="w-11 h-11 rounded-full border-2 border-white shadow-sm lg:hidden">`);
+			_push(`</section></aside><div class="flex-1 flex flex-col min-h-screen relative lg:ml-72 w-full max-w-[100vw] lg:max-w-[calc(100vw-18rem)]"><header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex flex-wrap items-center gap-x-2 gap-y-3 lg:flex-nowrap lg:justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 dark:from-[#0b1220] dark:via-[#0b1220]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent"><div class="flex min-w-0 flex-1 items-center gap-3">`);
+			if (!_ctx.$page.props.isDesktop) _push(`<img${(0, server_renderer_exports.ssrRenderAttr)("src", `https://ui-avatars.com/api/?name=${user.value?.name || "User"}&background=F9A826&color=fff`)} alt="Avatar" class="w-11 h-11 flex-shrink-0 rounded-full border-2 border-white shadow-sm lg:hidden">`);
 			else _push(`<!---->`);
-			_push(`<div class="lg:hidden"><h2 class="text-[15px] font-bold text-gray-900 leading-tight">${(0, server_renderer_exports.ssrInterpolate)(user.value?.name || "Bienvenido")}</h2><p class="text-[12px] font-medium text-gray-500">Santiago, Chile</p></div>`);
+			_push(`<div class="min-w-0 lg:hidden"><h2 class="truncate text-[15px] font-bold text-gray-900 leading-tight">${(0, server_renderer_exports.ssrInterpolate)(user.value?.name || "Bienvenido")}</h2></div>`);
 			if (searchUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$105, {
 				"search-url": searchUrl.value,
 				label: searchLabel.value,
@@ -11752,17 +11824,18 @@ var _sfc_main$98 = {
 				"data-tour": "tenant-search"
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push(`</div><div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, null, null, _parent));
+			_push(`</div><div class="contents lg:flex lg:items-center lg:gap-3 lg:flex-shrink-0">`);
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, { class: "flex-shrink-0 lg:order-1" }, null, _parent));
+			_push(`<div class="order-last basis-full lg:order-2 lg:basis-auto">`);
 			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$102, null, null, _parent));
-			_push(`<div data-tour="tenant-notifications" class="flex-shrink-0">`);
+			_push(`</div><div data-tour="tenant-notifications" class="flex-shrink-0 lg:order-3">`);
 			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$103, null, null, _parent));
 			_push(`</div>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("logout"),
 				method: "post",
 				as: "button",
-				class: "inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm whitespace-nowrap"
+				class: "hidden lg:order-4 lg:inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm whitespace-nowrap"
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push(`<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"${_scopeId}></path></svg><span${_scopeId}>Cerrar sesión</span>`);
@@ -11800,7 +11873,8 @@ var _sfc_main$98 = {
 			_push(`</main>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$104, {
 				items: mobileItems.value,
-				"has-settings": hasPermission("users.manage")
+				"has-settings": hasPermission("users.manage"),
+				"logout-url": _ctx.route("logout")
 			}, null, _parent));
 			_push(`</div>`);
 			if (user.value?.needs_password_change) _push((0, server_renderer_exports.ssrRenderComponent)(PasswordChangeModal_default, null, null, _parent));
@@ -15936,6 +16010,7 @@ _sfc_main$75.setup = (props, ctx) => {
 };
 //#endregion
 //#region resources/js/Components/TenantBoard.vue
+var STALE_DAYS = 3;
 var _sfc_main$74 = {
 	__name: "TenantBoard",
 	__ssrInlineRender: true,
@@ -15958,6 +16033,7 @@ var _sfc_main$74 = {
 		const { tenantRouteParams } = useTenantRouting();
 		const workshop = (0, vue_exports.computed)(() => props.board?.workshop ?? null);
 		const lowStock = (0, vue_exports.computed)(() => props.board?.low_stock ?? null);
+		const vehicles = (0, vue_exports.computed)(() => [...workshop.value?.vehicles ?? []].sort((a, b) => Number(b.needs_notice) - Number(a.needs_notice)));
 		const agenda = (0, vue_exports.computed)(() => props.appointments.filter((appointment) => appointment.status !== "cancelled").sort((a, b) => a.time.localeCompare(b.time)));
 		const STAGE_CONFIG = {
 			recepcion: {
@@ -16000,14 +16076,16 @@ var _sfc_main$74 = {
 			label: status,
 			class: "bg-slate-100 text-slate-800 border border-slate-300 dark:bg-[#0c1322] dark:text-slate-200 dark:border-slate-700"
 		};
+		const daysSince = (iso) => Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
+		const isStale = (vehicle) => !vehicle.needs_notice && daysSince(vehicle.since) >= STALE_DAYS;
 		const elapsed = (iso) => {
-			const days = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
+			const days = daysSince(iso);
 			if (days < 1) return "Hoy";
 			return days === 1 ? "1 día" : `${days} días`;
 		};
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({
-				class: "rounded-[2rem] border-[10px] border-amber-200 bg-white p-5 text-slate-800 shadow-xl dark:border-amber-600/90 dark:bg-black dark:text-slate-100 dark:ring-1 dark:ring-amber-500/30 dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] sm:p-7",
+				class: "rounded-[1.5rem] border-[6px] border-amber-200 bg-white p-4 text-slate-800 shadow-xl dark:border-amber-600/90 dark:bg-black dark:text-slate-100 dark:ring-1 dark:ring-amber-500/30 dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] sm:rounded-[2rem] sm:border-[10px] sm:p-7",
 				"data-tour": "dashboard-board",
 				role: "region",
 				"aria-label": "Pizarrón del taller"
@@ -16040,23 +16118,56 @@ var _sfc_main$74 = {
 					if (workshop.value.vehicles.length === 0) _push(`<p class="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-800 dark:bg-[#060911]/80 dark:text-slate-300"> No hay vehículos en el taller por ahora. </p>`);
 					else {
 						_push(`<ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><!--[-->`);
-						(0, server_renderer_exports.ssrRenderList)(workshop.value.vehicles, (vehicle) => {
-							_push(`<li>`);
+						(0, server_renderer_exports.ssrRenderList)(vehicles.value, (vehicle) => {
+							_push(`<li class="${(0, server_renderer_exports.ssrRenderClass)([vehicle.needs_notice ? "border-emerald-300 bg-emerald-50/70 dark:border-emerald-500/70" : "border-slate-200 bg-slate-50 dark:border-[#1e293b]", "flex flex-col gap-3 rounded-2xl border p-4 transition dark:bg-[#0c1322]"])}" data-board-vehicle>`);
 							_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 								href: vehicle.url,
-								class: "flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-400 dark:border-[#1e293b] dark:bg-[#0c1322] dark:hover:border-slate-500 dark:hover:bg-[#111a2e]"
+								class: "flex items-start justify-between gap-3"
 							}, {
 								default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-									if (_push) _push(`<div class="min-w-0"${_scopeId}><p class="font-mono text-base font-black tracking-widest text-slate-900 dark:text-white"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.plate)}</p><p class="truncate text-xs font-medium text-slate-600 dark:text-slate-300"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.vehicle || "Vehículo sin datos")}</p><p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400"${_scopeId}>Ingresó: <span class="font-bold text-slate-700 dark:text-slate-200"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(elapsed(vehicle.since))}</span></p></div><span class="${(0, server_renderer_exports.ssrRenderClass)([stageClass(vehicle.status), "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide shadow-sm"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.status_label)}</span>`);
-									else return [(0, vue_exports.createVNode)("div", { class: "min-w-0" }, [
-										(0, vue_exports.createVNode)("p", { class: "font-mono text-base font-black tracking-widest text-slate-900 dark:text-white" }, (0, vue_exports.toDisplayString)(vehicle.plate), 1),
+									if (_push) {
+										_push(`<div class="min-w-0"${_scopeId}><p class="font-mono text-lg font-black tracking-widest text-slate-900 dark:text-white"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.plate)}</p><p class="truncate text-xs font-medium text-slate-600 dark:text-slate-300"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.vehicle || "Vehículo sin datos")}</p>`);
+										if (vehicle.client_name) _push(`<p class="truncate text-sm font-bold text-slate-800 dark:text-slate-100"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.client_name)}</p>`);
+										else _push(`<!---->`);
+										_push(`<p class="${(0, server_renderer_exports.ssrRenderClass)([isStale(vehicle) ? "font-bold text-amber-700 dark:text-amber-400" : "text-slate-500 dark:text-slate-400", "mt-1 text-[11px]"])}"${_scopeId}> Ingresó: <span class="${(0, server_renderer_exports.ssrRenderClass)([isStale(vehicle) ? "" : "text-slate-700 dark:text-slate-200", "font-bold"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(elapsed(vehicle.since))}</span></p></div><span class="${(0, server_renderer_exports.ssrRenderClass)([stageClass(vehicle.status), "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide shadow-sm"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(vehicle.status_label)}</span>`);
+									} else return [(0, vue_exports.createVNode)("div", { class: "min-w-0" }, [
+										(0, vue_exports.createVNode)("p", { class: "font-mono text-lg font-black tracking-widest text-slate-900 dark:text-white" }, (0, vue_exports.toDisplayString)(vehicle.plate), 1),
 										(0, vue_exports.createVNode)("p", { class: "truncate text-xs font-medium text-slate-600 dark:text-slate-300" }, (0, vue_exports.toDisplayString)(vehicle.vehicle || "Vehículo sin datos"), 1),
-										(0, vue_exports.createVNode)("p", { class: "mt-1 text-[11px] text-slate-500 dark:text-slate-400" }, [(0, vue_exports.createTextVNode)("Ingresó: "), (0, vue_exports.createVNode)("span", { class: "font-bold text-slate-700 dark:text-slate-200" }, (0, vue_exports.toDisplayString)(elapsed(vehicle.since)), 1)])
+										vehicle.client_name ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("p", {
+											key: 0,
+											class: "truncate text-sm font-bold text-slate-800 dark:text-slate-100"
+										}, (0, vue_exports.toDisplayString)(vehicle.client_name), 1)) : (0, vue_exports.createCommentVNode)("", true),
+										(0, vue_exports.createVNode)("p", { class: ["mt-1 text-[11px]", isStale(vehicle) ? "font-bold text-amber-700 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"] }, [(0, vue_exports.createTextVNode)(" Ingresó: "), (0, vue_exports.createVNode)("span", { class: ["font-bold", isStale(vehicle) ? "" : "text-slate-700 dark:text-slate-200"] }, (0, vue_exports.toDisplayString)(elapsed(vehicle.since)), 3)], 2)
 									]), (0, vue_exports.createVNode)("span", { class: ["shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide shadow-sm", stageClass(vehicle.status)] }, (0, vue_exports.toDisplayString)(vehicle.status_label), 3)];
 								}),
 								_: 2
 							}, _parent));
-							_push(`</li>`);
+							_push(`<div class="flex items-stretch gap-2" data-board-actions>`);
+							if (vehicle.whatsapp_url) _push(`<!--[--><a${(0, server_renderer_exports.ssrRenderAttr)("href", vehicle.whatsapp_url)} target="_blank" rel="noopener noreferrer"${(0, server_renderer_exports.ssrRenderAttr)("aria-label", vehicle.needs_notice ? "Avisar al cliente por WhatsApp" : "Escribir al cliente por WhatsApp")} class="${(0, server_renderer_exports.ssrRenderClass)([vehicle.needs_notice ? "bg-emerald-600 text-white hover:bg-emerald-700" : "border border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50 dark:border-emerald-500/60 dark:bg-transparent dark:text-emerald-300", "flex min-h-[2.75rem] flex-1 items-center justify-center gap-2 rounded-xl px-3 text-sm font-black transition"])}" data-board-whatsapp><svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4-.83L3 20l1.3-3.9A7.6 7.6 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg> ${(0, server_renderer_exports.ssrInterpolate)(vehicle.needs_notice ? "Avisar" : "Escribir")}</a><a${(0, server_renderer_exports.ssrRenderAttr)("href", vehicle.phone_url)} aria-label="Llamar al cliente" class="flex min-h-[2.75rem] w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-transparent dark:text-slate-200" data-board-call><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.5a1 1 0 01-.5 1.2l-2.26 1.13a11 11 0 005.52 5.52l1.13-2.26a1 1 0 011.2-.5l4.5 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z"></path></svg></a><!--]-->`);
+							else _push(`<p class="flex min-h-[2.75rem] flex-1 items-center rounded-xl border border-dashed border-slate-300 px-3 text-xs font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400" data-board-no-phone> Cliente sin teléfono registrado </p>`);
+							_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+								href: vehicle.url,
+								"aria-label": "Ver orden",
+								class: "flex min-h-[2.75rem] w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-transparent dark:text-slate-200"
+							}, {
+								default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+									if (_push) _push(`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"${_scopeId}></path></svg>`);
+									else return [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+										class: "h-5 w-5",
+										fill: "none",
+										viewBox: "0 0 24 24",
+										stroke: "currentColor",
+										"stroke-width": "2",
+										"aria-hidden": "true"
+									}, [(0, vue_exports.createVNode)("path", {
+										"stroke-linecap": "round",
+										"stroke-linejoin": "round",
+										d: "M9 5l7 7-7 7"
+									})]))];
+								}),
+								_: 2
+							}, _parent));
+							_push(`</div></li>`);
 						});
 						_push(`<!--]--></ul>`);
 					}

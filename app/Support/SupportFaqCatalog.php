@@ -50,7 +50,7 @@ class SupportFaqCatalog
                 [
                     'id' => 'dashboard-appearance',
                     'question' => '¿Cómo activo el modo oscuro?',
-                    'answer' => 'Arriba a la derecha, junto a la campana, está el selector de apariencia con tres opciones: Claro, Oscuro y Auto. Auto sigue la configuración de modo oscuro de tu navegador o dispositivo. Tu elección se recuerda en este navegador.',
+                    'answer' => 'Arriba a la derecha, junto a la campana, encontrarás el interruptor de apariencia para alternar entre modo claro y modo oscuro. Tu elección se recuerda en este navegador.',
                     'selector' => '[data-support="appearance-toggle"]',
                 ],
                 [
