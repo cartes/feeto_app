@@ -241,18 +241,17 @@ watch(
         <div class="flex-1 flex flex-col min-h-screen relative lg:ml-72 w-full max-w-[100vw] lg:max-w-[calc(100vw-18rem)]">
             
             <!-- HEADER (Mobile & Desktop) -->
-            <header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 dark:from-[#0b1220] dark:via-[#0b1220]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent">
+            <header class="pt-8 lg:pt-10 pb-4 px-6 lg:px-10 flex flex-wrap items-center gap-x-2 gap-y-3 lg:flex-nowrap lg:justify-between sticky top-0 z-40 bg-gradient-to-b from-[#E2EAF4] via-[#E2EAF4]/90 dark:from-[#0b1220] dark:via-[#0b1220]/90 to-transparent backdrop-blur-sm lg:backdrop-blur-none lg:bg-transparent">
                 <!-- Data Izquierda -->
-                <div class="flex items-center gap-3">
-                    <img 
-                        v-if="!$page.props.isDesktop" 
-                        :src="`https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=F9A826&color=fff`" 
-                        alt="Avatar" 
-                        class="w-11 h-11 rounded-full border-2 border-white shadow-sm lg:hidden"
+                <div class="flex min-w-0 flex-1 items-center gap-3">
+                    <img
+                        v-if="!$page.props.isDesktop"
+                        :src="`https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=F9A826&color=fff`"
+                        alt="Avatar"
+                        class="w-11 h-11 flex-shrink-0 rounded-full border-2 border-white shadow-sm lg:hidden"
                     />
-                    <div class="lg:hidden">
-                        <h2 class="text-[15px] font-bold text-gray-900 leading-tight">{{ user?.name || 'Bienvenido' }}</h2>
-                        <p class="text-[12px] font-medium text-gray-500">Santiago, Chile</p>
+                    <div class="min-w-0 lg:hidden">
+                        <h2 class="truncate text-[15px] font-bold text-gray-900 leading-tight">{{ user?.name || 'Bienvenido' }}</h2>
                     </div>
 
                     <!-- Buscador global en desktop -->
@@ -260,17 +259,19 @@ watch(
                 </div>
 
                 <!-- Botones Derecha -->
-                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <AppearanceToggle />
-                    <BranchSwitcher />
-                    <div data-tour="tenant-notifications" class="flex-shrink-0">
+                <div class="contents lg:flex lg:items-center lg:gap-3 lg:flex-shrink-0">
+                    <AppearanceToggle class="flex-shrink-0 lg:order-1" />
+                    <div class="order-last basis-full lg:order-2 lg:basis-auto">
+                        <BranchSwitcher />
+                    </div>
+                    <div data-tour="tenant-notifications" class="flex-shrink-0 lg:order-3">
                         <NotificationBell />
                     </div>
                     <Link
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm whitespace-nowrap"
+                        class="hidden lg:order-4 lg:inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-rose-500 shadow-sm transition-all hover:text-rose-600 hover:shadow-md sm:text-sm whitespace-nowrap"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -289,7 +290,7 @@ watch(
                 </ErrorBoundary>
             </main>
 
-            <TenantMobileNavigation :items="mobileItems" :has-settings="hasPermission('users.manage')" />
+            <TenantMobileNavigation :items="mobileItems" :has-settings="hasPermission('users.manage')" :logout-url="route('logout')" />
 
         </div>
         <PasswordChangeModal v-if="user?.needs_password_change" />

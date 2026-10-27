@@ -2,17 +2,18 @@ import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
 import { createServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { createSSRApp } from 'vue';
+import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
-import { router } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { workOrderColumns } from '../../resources/js/utils/workOrderColumns.js';
 
-const server = await createServer({ configFile: false, plugins: [vue()], optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
+const server = await createServer({ configFile: false, plugins: [vue()], resolve: { alias: { '@': '/resources/js' } }, optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
 const components = {};
-for (const name of ['TenantSearch', 'TenantMobileNavigation', 'TenantDailySummary', 'ActionEmptyState']) {
+for (const name of ['TenantSearch', 'TenantMobileNavigation', 'TenantDailySummary', 'ActionEmptyState', 'TenantBoard']) {
     components[name] = (await server.ssrLoadModule(`/resources/js/Components/${name}.vue`)).default;
 }
 after(() => server.close());
+globalThis.route = (name) => `/${name}`;
 
 async function render(name, props) {
     let state;
@@ -60,7 +61,7 @@ test('empty searches do not navigate', async () => {
 });
 
 const navItems = Array.from({ length: 10 }, (_, index) => ({ label: index === 0 ? 'Inicio' : `Sección ${index}`, url: `/section-${index}`, active: index === 0, icon: 'M3 12h18' }));
-test('mobile navigation shows four labeled links and puts every section in the native modal', async () => {
+test('mobile navigation shows four labeled links and puts the remaining sections in the native modal', async () => {
     const { html } = await render('TenantMobileNavigation', { items: navItems, hasSettings: true });
     const nav = html.slice(html.indexOf('<nav'), html.indexOf('</nav>'));
     const dialog = html.slice(html.indexOf('<dialog'));
@@ -69,8 +70,44 @@ test('mobile navigation shows four labeled links and puts every section in the n
     assert.match(nav, /Más/);
     assert.match(nav, /aria-current="page"/);
     assert.match(nav, /data-tour="tenant-mobile-more"/);
-    assert.equal((dialog.match(/<a /g) ?? []).length, 10);
-    assert.match(dialog, /Todas las secciones/);
+    assert.equal((dialog.match(/<a /g) ?? []).length, 6);
+    assert.doesNotMatch(dialog, /Sección 1</);
+    assert.match(dialog, /Sección 9/);
+});
+
+const routedItems = [
+    { label: 'Inicio', route: 'taller.dashboard', url: '/inicio', icon: 'M3 12h18' },
+    { label: 'Agenda', route: 'appointments.index', url: '/agenda', icon: 'M3 12h18' },
+    { label: 'Clientes', route: 'clients.index', url: '/clientes', icon: 'M3 12h18' },
+    { label: 'Órdenes', route: 'work-orders.index', url: '/ordenes', icon: 'M3 12h18' },
+    { label: 'Recepción', route: 'receptions.create', url: '/recepcion', icon: 'M3 12h18' },
+    { label: 'Reportes', route: 'reports.index', url: '/reportes', icon: 'M3 12h18' },
+];
+test('mobile navigation prioritises home, orders, reception and agenda and highlights reception in the center', async () => {
+    const { html } = await render('TenantMobileNavigation', { items: routedItems });
+    const nav = html.slice(html.indexOf('<nav'), html.indexOf('</nav>'));
+    const dialog = html.slice(html.indexOf('<dialog'));
+    const labels = [...nav.matchAll(/<span class="max-w-full truncate">([^<]+)</g)].map(match => match[1]);
+    assert.deepEqual(labels, ['Inicio', 'Órdenes', 'Recepción', 'Agenda']);
+    assert.match(nav, /rounded-full bg-\[#FF7A00\]/);
+    assert.match(dialog, /Clientes/);
+    assert.match(dialog, /Reportes/);
+    assert.doesNotMatch(dialog, /Órdenes/);
+});
+
+test('mobile navigation falls back to available items when priority sections are not permitted', async () => {
+    const { html } = await render('TenantMobileNavigation', { items: [routedItems[0], routedItems[2], routedItems[5]] });
+    const nav = html.slice(html.indexOf('<nav'), html.indexOf('</nav>'));
+    assert.equal((nav.match(/<a /g) ?? []).length, 3);
+    assert.doesNotMatch(nav, /rounded-full bg-\[#FF7A00\]/);
+});
+
+test('mobile menu offers logout only when a logout url is provided', async () => {
+    const withLogout = await render('TenantMobileNavigation', { items: navItems, logoutUrl: '/logout' });
+    assert.match(withLogout.html, /data-tour="tenant-mobile-logout"/);
+    assert.match(withLogout.html, /Cerrar sesión/);
+    const without = await render('TenantMobileNavigation', { items: navItems });
+    assert.doesNotMatch(without.html, /tenant-mobile-logout/);
 });
 
 test('mobile menu opens and closes through native dialog methods', async () => {
@@ -92,6 +129,53 @@ test('mobile navigation uses only the authorized items provided', async () => {
     const { html } = await render('TenantMobileNavigation', { items: [navItems[0]] });
     assert.doesNotMatch(html, /Sección 1/);
     assert.doesNotMatch(html, /tenant-mobile-settings/);
+});
+
+const boardVehicle = (overrides) => ({ id: 1, plate: 'ABCD12', vehicle: 'Toyota Yaris', status: 'recepcion', status_label: 'Recepción', since: new Date().toISOString(), url: '/orders/1', client_name: 'María Pérez', needs_notice: false, whatsapp_url: 'https://wa.me/56912345678?text=Hola', phone_url: 'tel:+56912345678', ...overrides });
+async function renderBoard(board) {
+    const result = await createInertiaApp({
+        page: { component: 'TenantBoard', props: { board, tenant: { slug: 'cartes' } }, url: '/taller/cartes/dashboard', version: null },
+        resolve: () => components.TenantBoard,
+        setup({ App, props, plugin }) {
+            const app = createSSRApp({ render: () => h(App, props) }).use(plugin);
+            app.config.globalProperties.route = globalThis.route;
+            return app;
+        },
+        render: renderToString,
+    });
+    return { html: result.body };
+}
+const boardWith = (vehicles) => ({ workshop: { total: vehicles.length, stages: [], vehicles }, low_stock: null });
+
+test('board cards put vehicles to notify first and offer one-tap WhatsApp, call and order actions', async () => {
+    const { html } = await renderBoard(boardWith([
+        boardVehicle({ id: 1, plate: 'AAAA11' }),
+        boardVehicle({ id: 2, plate: 'BBBB22', status: 'listo', status_label: 'Listo', needs_notice: true, whatsapp_url: 'https://wa.me/56900000000?text=Listo', phone_url: 'tel:+56900000000' }),
+    ]));
+    const plates = [...html.matchAll(/tracking-widest[^>]*>([A-Z0-9]+)</g)].map(match => match[1]);
+    assert.deepEqual(plates, ['BBBB22', 'AAAA11']);
+    assert.equal((html.match(/data-board-vehicle/g) ?? []).length, 2);
+    assert.match(html, /href="https:\/\/wa\.me\/56900000000\?text=Listo"[^>]*target="_blank"/);
+    assert.match(html, /aria-label="Avisar al cliente por WhatsApp"/);
+    assert.match(html, /aria-label="Escribir al cliente por WhatsApp"/);
+    assert.match(html, /href="tel:\+56900000000"/);
+    assert.match(html, /aria-label="Ver orden"/);
+});
+
+test('board cards without a phone explain it instead of showing dead contact buttons', async () => {
+    const { html } = await renderBoard(boardWith([boardVehicle({ whatsapp_url: null, phone_url: null })]));
+    assert.match(html, /data-board-no-phone/);
+    assert.match(html, /Cliente sin teléfono registrado/);
+    assert.doesNotMatch(html, /data-board-whatsapp|data-board-call/);
+});
+
+test('board cards flag vehicles that have been in the workshop for three days or more', async () => {
+    const old = new Date(Date.now() - 4 * 86400000).toISOString();
+    const stale = await renderBoard(boardWith([boardVehicle({ since: old })]));
+    assert.match(stale.html, /4 días/);
+    assert.match(stale.html, /font-bold text-amber-700/);
+    const fresh = await renderBoard(boardWith([boardVehicle()]));
+    assert.doesNotMatch(fresh.html, /text-amber-700 dark:text-amber-400">\s*Ingresó/);
 });
 
 test('daily summary links to pending requests and filtered ready vehicles', async () => {

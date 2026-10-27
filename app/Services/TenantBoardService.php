@@ -14,6 +14,8 @@ class TenantBoardService
 {
     private const LOW_STOCK_LIMIT = 8;
 
+    private const NOTICE_STATUSES = ['aviso_cliente', WorkOrder::STATUS_LISTO];
+
     private const STATUS_LABELS = [
         WorkOrder::STATUS_RECEPCION => 'Recepción',
         WorkOrder::STATUS_DIAGNOSTICO => 'En diagnóstico',
@@ -37,7 +39,7 @@ class TenantBoardService
 
         return [
             'workshop' => $user->can('work-orders.view') || $user->can('work-orders.view-own')
-                ? $this->workshop($routeParams)
+                ? $this->workshop($routeParams, $tenant)
                 : null,
             'low_stock' => $user->can('inventory.manage')
                 ? $this->lowStock($routeParams)
@@ -49,12 +51,12 @@ class TenantBoardService
      * @param  array<string, string>  $routeParams
      * @return array{total: int, stages: list<array<string, mixed>>, vehicles: list<array<string, mixed>>}
      */
-    private function workshop(array $routeParams): array
+    private function workshop(array $routeParams, Tenant $tenant): array
     {
         $branchId = $this->branchContext->id();
 
         $orders = WorkOrder::query()
-            ->with('vehicle')
+            ->with('vehicle.client')
             ->when($branchId !== null, fn ($query) => $query->where('branch_id', $branchId))
             ->orderBy('created_at')
             ->get();
@@ -77,6 +79,10 @@ class TenantBoardService
                 'status_label' => self::STATUS_LABELS[$order->status] ?? Str::headline($order->status),
                 'since' => $order->created_at->toISOString(),
                 'url' => route('work-orders.show', [...$routeParams, 'workOrder' => $order->id]),
+                'client_name' => $order->vehicle?->client?->name,
+                'needs_notice' => in_array($order->status, self::NOTICE_STATUSES, true),
+                'whatsapp_url' => $this->whatsAppUrl($order, $tenant),
+                'phone_url' => $this->phoneUrl($order),
             ])->all(),
         ];
     }
@@ -106,5 +112,42 @@ class TenantBoardService
                     'url' => route('inventory.index', [...$routeParams, 'search' => $product->sku]),
                 ])->all(),
         ];
+    }
+
+    private function clientDigits(WorkOrder $order): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $order->vehicle?->client?->phone) ?? '';
+
+        return $digits === '' ? null : $digits;
+    }
+
+    private function phoneUrl(WorkOrder $order): ?string
+    {
+        $digits = $this->clientDigits($order);
+
+        return $digits === null ? null : 'tel:+'.$digits;
+    }
+
+    /**
+     * Enlace wa.me con el aviso prellenado: retiro si el vehículo está listo, seguimiento en otro caso.
+     */
+    private function whatsAppUrl(WorkOrder $order, Tenant $tenant): ?string
+    {
+        $digits = $this->clientDigits($order);
+
+        if ($digits === null) {
+            return null;
+        }
+
+        $firstName = Str::before(trim((string) $order->vehicle->client->name), ' ');
+        $vehicle = trim(($order->vehicle->brand ?? '').' '.($order->vehicle->model ?? ''));
+        $vehicleLabel = trim($vehicle.' ('.$order->vehicle->plate.')');
+        $trackingUrl = route('tracking.show', ['uuid' => $order->uuid]);
+
+        $message = in_array($order->status, self::NOTICE_STATUSES, true)
+            ? "Hola {$firstName}, tu vehículo {$vehicleLabel} está listo para retiro en {$tenant->name}. Revisa el detalle aquí: {$trackingUrl}"
+            : "Hola {$firstName}, te escribimos desde {$tenant->name} por tu vehículo {$vehicleLabel}. Puedes seguir el avance aquí: {$trackingUrl}";
+
+        return sprintf('https://wa.me/%s?text=%s', $digits, rawurlencode($message));
     }
 }

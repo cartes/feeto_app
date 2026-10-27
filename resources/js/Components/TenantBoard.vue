@@ -13,6 +13,9 @@ const { tenantRouteParams } = useTenantRouting();
 
 const workshop = computed(() => props.board?.workshop ?? null);
 const lowStock = computed(() => props.board?.low_stock ?? null);
+const STALE_DAYS = 3;
+const vehicles = computed(() => [...(workshop.value?.vehicles ?? [])]
+    .sort((a, b) => Number(b.needs_notice) - Number(a.needs_notice)));
 const agenda = computed(() => props.appointments
     .filter((appointment) => appointment.status !== 'cancelled')
     .sort((a, b) => a.time.localeCompare(b.time)));
@@ -62,8 +65,11 @@ const appointmentStatus = (status) => ({
     class: 'bg-slate-100 text-slate-800 border border-slate-300 dark:bg-[#0c1322] dark:text-slate-200 dark:border-slate-700',
 });
 
+const daysSince = (iso) => Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+const isStale = (vehicle) => !vehicle.needs_notice && daysSince(vehicle.since) >= STALE_DAYS;
+
 const elapsed = (iso) => {
-    const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    const days = daysSince(iso);
 
     if (days < 1) {
         return 'Hoy';
@@ -74,7 +80,7 @@ const elapsed = (iso) => {
 </script>
 
 <template>
-    <div class="rounded-[2rem] border-[10px] border-amber-200 bg-white p-5 text-slate-800 shadow-xl dark:border-amber-600/90 dark:bg-black dark:text-slate-100 dark:ring-1 dark:ring-amber-500/30 dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] sm:p-7"
+    <div class="rounded-[1.5rem] border-[6px] border-amber-200 bg-white p-4 text-slate-800 shadow-xl dark:border-amber-600/90 dark:bg-black dark:text-slate-100 dark:ring-1 dark:ring-amber-500/30 dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] sm:rounded-[2rem] sm:border-[10px] sm:p-7"
         data-tour="dashboard-board" role="region" aria-label="Pizarrón del taller">
         <div v-if="!board" class="animate-pulse space-y-4" aria-busy="true" aria-label="Cargando pizarrón">
             <div class="h-6 w-1/3 rounded-full bg-slate-200 dark:bg-[#1e293b]"></div>
@@ -120,19 +126,53 @@ const elapsed = (iso) => {
                 </p>
 
                 <ul v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    <li v-for="vehicle in workshop.vehicles" :key="vehicle.id">
-                        <Link :href="vehicle.url"
-                            class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-400 dark:border-[#1e293b] dark:bg-[#0c1322] dark:hover:border-slate-500 dark:hover:bg-[#111a2e]">
+                    <li v-for="vehicle in vehicles" :key="vehicle.id"
+                        class="flex flex-col gap-3 rounded-2xl border p-4 transition dark:bg-[#0c1322]"
+                        :class="vehicle.needs_notice
+                            ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-500/70'
+                            : 'border-slate-200 bg-slate-50 dark:border-[#1e293b]'"
+                        data-board-vehicle>
+                        <Link :href="vehicle.url" class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <p class="font-mono text-base font-black tracking-widest text-slate-900 dark:text-white">{{ vehicle.plate }}</p>
+                                <p class="font-mono text-lg font-black tracking-widest text-slate-900 dark:text-white">{{ vehicle.plate }}</p>
                                 <p class="truncate text-xs font-medium text-slate-600 dark:text-slate-300">{{ vehicle.vehicle || 'Vehículo sin datos' }}</p>
-                                <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Ingresó: <span class="font-bold text-slate-700 dark:text-slate-200">{{ elapsed(vehicle.since) }}</span></p>
+                                <p v-if="vehicle.client_name" class="truncate text-sm font-bold text-slate-800 dark:text-slate-100">{{ vehicle.client_name }}</p>
+                                <p class="mt-1 text-[11px]" :class="isStale(vehicle) ? 'font-bold text-amber-700 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'">
+                                    Ingresó: <span class="font-bold" :class="isStale(vehicle) ? '' : 'text-slate-700 dark:text-slate-200'">{{ elapsed(vehicle.since) }}</span>
+                                </p>
                             </div>
                             <span class="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide shadow-sm"
                                 :class="stageClass(vehicle.status)">
                                 {{ vehicle.status_label }}
                             </span>
                         </Link>
+
+                        <div class="flex items-stretch gap-2" data-board-actions>
+                            <template v-if="vehicle.whatsapp_url">
+                                <a :href="vehicle.whatsapp_url" target="_blank" rel="noopener noreferrer"
+                                    :aria-label="vehicle.needs_notice ? 'Avisar al cliente por WhatsApp' : 'Escribir al cliente por WhatsApp'"
+                                    class="flex min-h-[2.75rem] flex-1 items-center justify-center gap-2 rounded-xl px-3 text-sm font-black transition"
+                                    :class="vehicle.needs_notice
+                                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                        : 'border border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50 dark:border-emerald-500/60 dark:bg-transparent dark:text-emerald-300'"
+                                    data-board-whatsapp>
+                                    <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4-.83L3 20l1.3-3.9A7.6 7.6 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                    {{ vehicle.needs_notice ? 'Avisar' : 'Escribir' }}
+                                </a>
+                                <a :href="vehicle.phone_url" aria-label="Llamar al cliente"
+                                    class="flex min-h-[2.75rem] w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-transparent dark:text-slate-200"
+                                    data-board-call>
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.5a1 1 0 01-.5 1.2l-2.26 1.13a11 11 0 005.52 5.52l1.13-2.26a1 1 0 011.2-.5l4.5 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z" /></svg>
+                                </a>
+                            </template>
+                            <p v-else class="flex min-h-[2.75rem] flex-1 items-center rounded-xl border border-dashed border-slate-300 px-3 text-xs font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400" data-board-no-phone>
+                                Cliente sin teléfono registrado
+                            </p>
+                            <Link :href="vehicle.url" aria-label="Ver orden"
+                                class="flex min-h-[2.75rem] w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-transparent dark:text-slate-200">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                            </Link>
+                        </div>
                     </li>
                 </ul>
             </section>

@@ -280,7 +280,7 @@ onBeforeUnmount(() => {
                 rel="noopener noreferrer"
                 data-tutorials-floating
                 aria-label="Abrir tutoriales y guías de TallerFlow"
-                class="group fixed bottom-[5.5rem] right-5 z-[94] flex items-center gap-2 rounded-full border border-orange-200/90 bg-white/95 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-[0_10px_25px_rgba(255,122,0,0.18)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#FF7A00] hover:bg-orange-50/70 hover:text-[#FF7A00] hover:shadow-[0_14px_30px_rgba(255,122,0,0.25)] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/25 sm:bottom-24 sm:right-6"
+                class="group fixed bottom-[11rem] right-5 z-[94] flex items-center gap-2 rounded-full border border-orange-200/90 bg-white/95 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-[0_10px_25px_rgba(255,122,0,0.18)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#FF7A00] hover:bg-orange-50/70 hover:text-[#FF7A00] hover:shadow-[0_14px_30px_rgba(255,122,0,0.25)] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/25 sm:right-6 lg:bottom-24"
             >
                 <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-sm transition-transform duration-200 group-hover:scale-110">
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -299,7 +299,7 @@ onBeforeUnmount(() => {
             type="button"
             data-support-toggle
             :aria-label="isOpen ? 'Cerrar ayuda' : 'Abrir ayuda y tutoriales de TallerFlow'"
-            class="fixed bottom-5 right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:bottom-6 sm:right-6"
+            class="fixed bottom-[6.75rem] right-5 z-[95] flex h-14 w-14 items-center justify-center rounded-full bg-[#FF7A00] text-white shadow-[0_15px_35px_rgba(255,122,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#CC6200] focus:outline-none focus:ring-4 focus:ring-[#FF7A00]/30 sm:right-6 lg:bottom-6"
             @click="togglePanel"
         >
             <svg v-if="!isOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -323,7 +323,7 @@ onBeforeUnmount(() => {
             <div
                 v-if="isOpen"
                 ref="panelRef"
-                class="fixed bottom-24 right-5 z-[95] flex h-[min(34rem,75vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:bottom-28 sm:right-6"
+                class="fixed bottom-[10.5rem] right-5 z-[95] flex h-[min(34rem,70vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[2rem] border border-white bg-white shadow-[0_30px_70px_rgba(2,6,23,0.25)] sm:right-6 lg:bottom-28"
             >
                 <!-- Encabezado con link a tutoriales -->
                 <div class="flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-br from-[#FF7A00] to-[#CC6200] px-5 py-4 text-white">
