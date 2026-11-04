@@ -1,6 +1,6 @@
-import { r as __exportAll } from "./assets/rolldown-runtime-DE1ahGrs.js";
-import { a as useForm, c as axios, d as vue_exports, i as link_default, l as server_renderer_exports, n as createInertiaApp, o as usePage, r as head_default, s as router, t as server_default, u as require_server_renderer_cjs_prod } from "./assets/vendor-core-CciLBNgM.js";
-//#region resources/js/Components/ApplicationLogo.vue
+import { r as __exportAll } from "./assets/rolldown-runtime-CBuJxodT.js";
+import { a as useForm, c as axios, d as vue_exports, i as link_default, l as server_renderer_exports, n as createInertiaApp, o as usePage, r as head_default, s as router, t as server_default, u as require_server_renderer_cjs_prod } from "./assets/vendor-core-OVA8xfDF.js";
+// resources/js/Components/ApplicationLogo.vue
 var _sfc_main$138 = {
 	__name: "ApplicationLogo",
 	__ssrInlineRender: true,
@@ -24,8 +24,7 @@ _sfc_main$138.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ApplicationLogo.vue");
 	return _sfc_setup$138 ? _sfc_setup$138(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/Toast.vue
+// resources/js/Components/Toast.vue
 var _sfc_main$137 = {
 	__name: "Toast",
 	__ssrInlineRender: true,
@@ -95,8 +94,7 @@ _sfc_main$137.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Toast.vue");
 	return _sfc_setup$137 ? _sfc_setup$137(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PasswordInput.vue
+// resources/js/Components/PasswordInput.vue
 var _sfc_main$136 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "PasswordInput",
 	__ssrInlineRender: true,
@@ -136,8 +134,7 @@ _sfc_main$136.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PasswordInput.vue");
 	return _sfc_setup$136 ? _sfc_setup$136(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/InputLabel.vue
+// resources/js/Components/InputLabel.vue
 var _sfc_main$135 = {
 	__name: "InputLabel",
 	__ssrInlineRender: true,
@@ -161,8 +158,7 @@ _sfc_main$135.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/InputLabel.vue");
 	return _sfc_setup$135 ? _sfc_setup$135(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/InputError.vue
+// resources/js/Components/InputError.vue
 var _sfc_main$134 = {
 	__name: "InputError",
 	__ssrInlineRender: true,
@@ -179,15 +175,13 @@ _sfc_main$134.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/InputError.vue");
 	return _sfc_setup$134 ? _sfc_setup$134(props, ctx) : void 0;
 };
-//#endregion
-//#region \0plugin-vue:export-helper
+// \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
 	const target = sfc.__vccOpts || sfc;
 	for (const [key, val] of props) target[key] = val;
 	return target;
 };
-//#endregion
-//#region resources/js/Components/PasswordChangeModal.vue
+// resources/js/Components/PasswordChangeModal.vue
 var _sfc_main$133 = {
 	__name: "PasswordChangeModal",
 	__ssrInlineRender: true,
@@ -262,8 +256,7 @@ _sfc_main$133.setup = (props, ctx) => {
 	return _sfc_setup$133 ? _sfc_setup$133(props, ctx) : void 0;
 };
 var PasswordChangeModal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$133, [["__scopeId", "data-v-60d6b883"]]);
-//#endregion
-//#region resources/js/composables/useAppearance.js
+// resources/js/composables/useAppearance.js
 var APPEARANCE_STORAGE_KEY = "appearance";
 var APPEARANCE_OPTIONS = [
 	{
@@ -330,8 +323,7 @@ function useAppearance({ applyToLayout = false } = {}) {
 		toggleAppearance
 	};
 }
-//#endregion
-//#region resources/js/Components/AppearanceToggle.vue
+// resources/js/Components/AppearanceToggle.vue
 var _sfc_main$132 = {
 	__name: "AppearanceToggle",
 	__ssrInlineRender: true,
@@ -360,8 +352,7 @@ _sfc_main$132.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppearanceToggle.vue");
 	return _sfc_setup$132 ? _sfc_setup$132(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Layouts/AdminLayout.vue
+// resources/js/Layouts/AdminLayout.vue
 var _sfc_main$131 = {
 	__name: "AdminLayout",
 	__ssrInlineRender: true,
@@ -853,8 +844,7 @@ _sfc_main$131.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
 	return _sfc_setup$131 ? _sfc_setup$131(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/utils/visits.js
+// resources/js/utils/visits.js
 var PERIOD_OPTIONS = [
 	{
 		key: "7d",
@@ -965,8 +955,7 @@ var toneClasses = {
 	down: "bg-rose-50 text-rose-700 ring-rose-600/20",
 	neutral: "bg-slate-100 text-slate-600 ring-slate-500/10"
 };
-//#endregion
-//#region resources/js/Components/Admin/VisitsTrendChart.vue
+// resources/js/Components/Admin/VisitsTrendChart.vue
 var _sfc_main$130 = {
 	__name: "VisitsTrendChart",
 	__ssrInlineRender: true,
@@ -985,7 +974,7 @@ var _sfc_main$130 = {
 		}
 	},
 	setup(__props) {
-		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-D2KXCOjh.js"));
+		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-BC-z1D4p.js"));
 		const props = __props;
 		const hasData = (0, vue_exports.computed)(() => props.series.some((d) => d.visits > 0 || (d.unique_visitors ?? 0) > 0));
 		const categories = (0, vue_exports.computed)(() => props.series.map((d) => d.date));
@@ -1132,8 +1121,7 @@ _sfc_main$130.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Admin/VisitsTrendChart.vue");
 	return _sfc_setup$130 ? _sfc_setup$130(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/Admin/VisitsSummaryStat.vue
+// resources/js/Components/Admin/VisitsSummaryStat.vue
 var _sfc_main$129 = {
 	__name: "VisitsSummaryStat",
 	__ssrInlineRender: true,
@@ -1192,8 +1180,7 @@ _sfc_main$129.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Admin/VisitsSummaryStat.vue");
 	return _sfc_setup$129 ? _sfc_setup$129(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Analytics/Visits.vue
+// resources/js/Pages/Admin/Analytics/Visits.vue
 var Visits_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$128 });
 var _sfc_main$128 = {
 	__name: "Visits",
@@ -1203,7 +1190,7 @@ var _sfc_main$128 = {
 		required: true
 	} },
 	setup(__props) {
-		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-D2KXCOjh.js"));
+		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-BC-z1D4p.js"));
 		const props = __props;
 		const scopeOptions = [
 			"all",
@@ -1737,8 +1724,7 @@ _sfc_main$128.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Analytics/Visits.vue");
 	return _sfc_setup$128 ? _sfc_setup$128(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/AuditLogs/Index.vue
+// resources/js/Pages/Admin/AuditLogs/Index.vue
 var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$127 });
 var _sfc_main$127 = {
 	__name: "Index",
@@ -1878,8 +1864,7 @@ _sfc_main$127.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/AuditLogs/Index.vue");
 	return _sfc_setup$127 ? _sfc_setup$127(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Blog/Categories/Form.vue
+// resources/js/Pages/Admin/Blog/Categories/Form.vue
 var Form_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$126 });
 var _sfc_main$126 = {
 	__name: "Form",
@@ -2052,8 +2037,7 @@ _sfc_main$126.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Categories/Form.vue");
 	return _sfc_setup$126 ? _sfc_setup$126(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Blog/Categories/Index.vue
+// resources/js/Pages/Admin/Blog/Categories/Index.vue
 var Index_exports$19 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$125 });
 var _sfc_main$125 = {
 	__name: "Index",
@@ -2220,8 +2204,7 @@ _sfc_main$125.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Categories/Index.vue");
 	return _sfc_setup$125 ? _sfc_setup$125(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/MediaPickerModal.vue
+// resources/js/Components/MediaPickerModal.vue
 var _sfc_main$124 = {
 	__name: "MediaPickerModal",
 	__ssrInlineRender: true,
@@ -2293,8 +2276,7 @@ _sfc_main$124.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/MediaPickerModal.vue");
 	return _sfc_setup$124 ? _sfc_setup$124(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Blog/Form.vue
+// resources/js/Pages/Admin/Blog/Form.vue
 var Form_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$123 });
 var _sfc_main$123 = {
 	__name: "Form",
@@ -2307,7 +2289,7 @@ var _sfc_main$123 = {
 		}
 	},
 	setup(__props) {
-		const TipTapEditor = (0, vue_exports.defineAsyncComponent)(() => import("./assets/TipTapEditor-CMK6E9Yj.js"));
+		const TipTapEditor = (0, vue_exports.defineAsyncComponent)(() => import("./assets/TipTapEditor-d5aev-Rc.js"));
 		const props = __props;
 		const isEditing = (0, vue_exports.computed)(() => !!props.post);
 		const form = useForm({
@@ -2345,10 +2327,11 @@ var _sfc_main$123 = {
 		async function loadMedia() {
 			if (mediaFiles.value.length) return;
 			try {
-				mediaFiles.value = (await axios.get(route("admin.media-library.index"), { headers: {
+				const res = await axios.get(route("admin.media-library.index"), { headers: {
 					Accept: "application/json",
 					"X-Inertia": false
-				} })).data?.files || [];
+				} });
+				mediaFiles.value = res.data?.files || [];
 			} catch {
 				mediaFiles.value = [];
 			}
@@ -2808,8 +2791,7 @@ _sfc_main$123.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Form.vue");
 	return _sfc_setup$123 ? _sfc_setup$123(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Blog/Index.vue
+// resources/js/Pages/Admin/Blog/Index.vue
 var Index_exports$18 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$122 });
 var _sfc_main$122 = {
 	__name: "Index",
@@ -3033,8 +3015,7 @@ _sfc_main$122.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Index.vue");
 	return _sfc_setup$122 ? _sfc_setup$122(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Dashboard.vue
+// resources/js/Pages/Admin/Dashboard.vue
 var Dashboard_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$121 });
 var _sfc_main$121 = {
 	__name: "Dashboard",
@@ -3094,7 +3075,7 @@ var _sfc_main$121 = {
 		}
 	},
 	setup(__props) {
-		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-D2KXCOjh.js"));
+		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-BC-z1D4p.js"));
 		const props = __props;
 		const page = usePage();
 		const isOfferModalOpen = (0, vue_exports.ref)(false);
@@ -4212,8 +4193,7 @@ _sfc_main$121.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
 	return _sfc_setup$121 ? _sfc_setup$121(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/LandingPageSeo/Index.vue
+// resources/js/Pages/Admin/LandingPageSeo/Index.vue
 var Index_exports$17 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$120 });
 var _sfc_main$120 = {
 	__name: "Index",
@@ -4654,8 +4634,7 @@ _sfc_main$120.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/LandingPageSeo/Index.vue");
 	return _sfc_setup$120 ? _sfc_setup$120(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/MediaLibrary/Index.vue
+// resources/js/Pages/Admin/MediaLibrary/Index.vue
 var Index_exports$16 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$119 });
 var _sfc_main$119 = {
 	__name: "Index",
@@ -4722,8 +4701,8 @@ var _sfc_main$119 = {
 		}
 		function formatSize(bytes) {
 			if (bytes < 1024) return bytes + " B";
-			if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-			return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+			if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+			return (bytes / 1048576).toFixed(1) + " MB";
 		}
 		function copyUrl(url) {
 			navigator.clipboard.writeText(url);
@@ -4970,8 +4949,7 @@ _sfc_main$119.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/MediaLibrary/Index.vue");
 	return _sfc_setup$119 ? _sfc_setup$119(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/constants/payment.js
+// resources/js/constants/payment.js
 var STATUS_CONFIG = {
 	approved: {
 		label: "Aprobado",
@@ -5001,8 +4979,7 @@ var PAYMENT_TYPE_LABEL = {
 	ticket: "Cupón/Ticket",
 	bank_transfer: "Transferencia"
 };
-//#endregion
-//#region resources/js/Pages/Admin/Payments/Index.vue
+// resources/js/Pages/Admin/Payments/Index.vue
 var Index_exports$15 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$118 });
 var _sfc_main$118 = {
 	__name: "Index",
@@ -5218,8 +5195,7 @@ _sfc_main$118.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Payments/Index.vue");
 	return _sfc_setup$118 ? _sfc_setup$118(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Plans/Form.vue
+// resources/js/Pages/Admin/Plans/Form.vue
 var Form_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$117 });
 var _sfc_main$117 = {
 	__name: "Form",
@@ -5673,8 +5649,7 @@ _sfc_main$117.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Plans/Form.vue");
 	return _sfc_setup$117 ? _sfc_setup$117(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Plans/Index.vue
+// resources/js/Pages/Admin/Plans/Index.vue
 var Index_exports$14 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$116 });
 var _sfc_main$116 = {
 	__name: "Index",
@@ -5905,8 +5880,7 @@ _sfc_main$116.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Plans/Index.vue");
 	return _sfc_setup$116 ? _sfc_setup$116(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Profile.vue
+// resources/js/Pages/Admin/Profile.vue
 var Profile_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$115 });
 var _sfc_main$115 = {
 	__name: "Profile",
@@ -6711,8 +6685,7 @@ _sfc_main$115.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Profile.vue");
 	return _sfc_setup$115 ? _sfc_setup$115(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Tenants/Activity.vue
+// resources/js/Pages/Admin/Tenants/Activity.vue
 var Activity_exports = /* @__PURE__ */ __exportAll({ default: () => Activity_default });
 var _sfc_main$114 = {
 	__name: "Activity",
@@ -6731,7 +6704,7 @@ var _sfc_main$114 = {
 		payments: Array
 	},
 	setup(__props) {
-		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-D2KXCOjh.js"));
+		const VueApexCharts = (0, vue_exports.defineAsyncComponent)(() => import("./assets/vue3-apexcharts-BC-z1D4p.js"));
 		const props = __props;
 		const activeTab = (0, vue_exports.ref)("resumen");
 		const tabs = [
@@ -7364,8 +7337,7 @@ _sfc_main$114.setup = (props, ctx) => {
 	return _sfc_setup$114 ? _sfc_setup$114(props, ctx) : void 0;
 };
 var Activity_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$114, [["__scopeId", "data-v-ddf2728f"]]);
-//#endregion
-//#region resources/js/composables/useIdentification.js
+// resources/js/composables/useIdentification.js
 /**
 * Composable para normalización, formateo (sin puntos) y validación
 * de documentos de identidad con dígito verificador para todos los países soportados.
@@ -7796,8 +7768,7 @@ function useIdentification() {
 		COUNTRY_CONFIGS: COUNTRY_CONFIGS$1
 	};
 }
-//#endregion
-//#region resources/js/Pages/Admin/Tenants/Create.vue
+// resources/js/Pages/Admin/Tenants/Create.vue
 var Create_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$113 });
 var _sfc_main$113 = {
 	__name: "Create",
@@ -8184,8 +8155,7 @@ _sfc_main$113.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Create.vue");
 	return _sfc_setup$113 ? _sfc_setup$113(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Tenants/Edit.vue
+// resources/js/Pages/Admin/Tenants/Edit.vue
 var Edit_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$112 });
 var _sfc_main$112 = {
 	__name: "Edit",
@@ -8726,8 +8696,7 @@ _sfc_main$112.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Edit.vue");
 	return _sfc_setup$112 ? _sfc_setup$112(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Tenants/Index.vue
+// resources/js/Pages/Admin/Tenants/Index.vue
 var Index_exports$13 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$111 });
 var _sfc_main$111 = {
 	__name: "Index",
@@ -9425,8 +9394,7 @@ _sfc_main$111.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Index.vue");
 	return _sfc_setup$111 ? _sfc_setup$111(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/TrialRequests/Index.vue
+// resources/js/Pages/Admin/TrialRequests/Index.vue
 var Index_exports$12 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$110 });
 var _sfc_main$110 = {
 	__name: "Index",
@@ -9809,8 +9777,7 @@ _sfc_main$110.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/TrialRequests/Index.vue");
 	return _sfc_setup$110 ? _sfc_setup$110(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Admin/Users/Index.vue
+// resources/js/Pages/Admin/Users/Index.vue
 var Index_exports$11 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$109 });
 var _sfc_main$109 = {
 	__name: "Index",
@@ -10012,8 +9979,7 @@ _sfc_main$109.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Users/Index.vue");
 	return _sfc_setup$109 ? _sfc_setup$109(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/composables/useTenantRouting.js
+// resources/js/composables/useTenantRouting.js
 /**
 * Composable de enrutamiento multi-tenant.
 *
@@ -10045,8 +10011,7 @@ function useTenantRouting() {
 		tenantRoute
 	};
 }
-//#endregion
-//#region resources/js/Components/AppointmentCalendar.vue
+// resources/js/Components/AppointmentCalendar.vue
 var _sfc_main$108 = {
 	__name: "AppointmentCalendar",
 	__ssrInlineRender: true,
@@ -10204,8 +10169,7 @@ _sfc_main$108.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppointmentCalendar.vue");
 	return _sfc_setup$108 ? _sfc_setup$108(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/composables/useStatusConfig.js
+// resources/js/composables/useStatusConfig.js
 /**
 * Composable de configuración de estados.
 *
@@ -10322,8 +10286,7 @@ function useStatusConfig() {
 		resolveAppointmentStatus
 	};
 }
-//#endregion
-//#region resources/js/Components/AppointmentList.vue
+// resources/js/Components/AppointmentList.vue
 var _sfc_main$107 = {
 	__name: "AppointmentList",
 	__ssrInlineRender: true,
@@ -10393,8 +10356,7 @@ _sfc_main$107.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppointmentList.vue");
 	return _sfc_setup$107 ? _sfc_setup$107(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PlanUpgradeBanner.vue
+// resources/js/Components/PlanUpgradeBanner.vue
 var _sfc_main$106 = {
 	__name: "PlanUpgradeBanner",
 	__ssrInlineRender: true,
@@ -10424,8 +10386,7 @@ _sfc_main$106.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PlanUpgradeBanner.vue");
 	return _sfc_setup$106 ? _sfc_setup$106(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantSearch.vue
+// resources/js/Components/TenantSearch.vue
 var _sfc_main$105 = {
 	__name: "TenantSearch",
 	__ssrInlineRender: true,
@@ -10459,8 +10420,7 @@ _sfc_main$105.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantSearch.vue");
 	return _sfc_setup$105 ? _sfc_setup$105(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantMobileNavigation.vue
+// resources/js/Components/TenantMobileNavigation.vue
 var PRIMARY_SLOTS = 4;
 var HIGHLIGHT_ROUTE = "receptions.create";
 var _sfc_main$104 = {
@@ -10620,8 +10580,7 @@ _sfc_main$104.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantMobileNavigation.vue");
 	return _sfc_setup$104 ? _sfc_setup$104(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/NotificationBell.vue
+// resources/js/Components/NotificationBell.vue
 var _sfc_main$103 = {
 	__name: "NotificationBell",
 	__ssrInlineRender: true,
@@ -10713,8 +10672,7 @@ _sfc_main$103.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/NotificationBell.vue");
 	return _sfc_setup$103 ? _sfc_setup$103(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/BranchSwitcher.vue
+// resources/js/Components/BranchSwitcher.vue
 var _sfc_main$102 = {
 	__name: "BranchSwitcher",
 	__ssrInlineRender: true,
@@ -10786,8 +10744,7 @@ _sfc_main$102.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/BranchSwitcher.vue");
 	return _sfc_setup$102 ? _sfc_setup$102(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/onboardingTourSteps.js
+// resources/js/Components/onboardingTourSteps.js
 /**
 * Contenido de los tours de bienvenida. Un paso sin `selectors` se muestra centrado
 * (bienvenida / cierre); el resto se omite si su elemento no está visible en pantalla
@@ -10985,11 +10942,9 @@ var TOUR_VARIANTS = {
 		description: "Cambia entre usuarios, sucursales, roles y ajustes comerciales del taller."
 	}] }
 };
-//#endregion
-//#region resources/js/Components/onboardingTourEvents.js
+// resources/js/Components/onboardingTourEvents.js
 var ONBOARDING_TOUR_REPLAY_EVENT = "onboarding-tour:replay";
-//#endregion
-//#region resources/js/Components/OnboardingTour.vue
+// resources/js/Components/OnboardingTour.vue
 var CARD_WIDTH = 340;
 var MOBILE_BREAKPOINT = 1024;
 var MAX_START_ATTEMPTS = 5;
@@ -11089,17 +11044,18 @@ var _sfc_main$101 = {
 			spotlightRect.value = {
 				x: Math.max(rect.left - padding, 0),
 				y: Math.max(rect.top - padding, 0),
-				w: rect.width + padding * 2,
-				h: rect.height + padding * 2,
+				w: rect.width + 24,
+				h: rect.height + 24,
 				rx: 14
 			};
 			const cardHeight = cardRef.value?.offsetHeight ?? 200;
 			if (window.innerWidth < MOBILE_BREAKPOINT) {
+				const isTargetInLowerHalf = rect.top + rect.height / 2 > window.innerHeight / 2;
 				cardStyle.value = {
 					position: "fixed",
 					left: "12px",
 					right: "12px",
-					...rect.top + rect.height / 2 > window.innerHeight / 2 ? { top: "16px" } : { bottom: "16px" }
+					...isTargetInLowerHalf ? { top: "16px" } : { bottom: "16px" }
 				};
 				return;
 			}
@@ -11131,7 +11087,8 @@ var _sfc_main$101 = {
 		};
 		const buildSteps = () => {
 			const variantConfig = TOUR_VARIANTS[props.variant] ?? {};
-			activeSteps.value = (variantConfig[viewportMode.value] ?? variantConfig.common ?? []).filter(isStepAvailable);
+			const steps = variantConfig[viewportMode.value] ?? variantConfig.common ?? [];
+			activeSteps.value = steps.filter(isStepAvailable);
 			return activeSteps.value.length > 0;
 		};
 		const rebuildSteps = async () => {
@@ -11272,8 +11229,7 @@ _sfc_main$101.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/OnboardingTour.vue");
 	return _sfc_setup$101 ? _sfc_setup$101(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/FloatingSupportButton.vue
+// resources/js/Components/FloatingSupportButton.vue
 var _sfc_main$100 = {
 	__name: "FloatingSupportButton",
 	__ssrInlineRender: true,
@@ -11354,8 +11310,8 @@ var _sfc_main$100 = {
 			const padding = 8;
 			highlight.top = Math.max(rect.top - padding, 4);
 			highlight.left = Math.max(rect.left - padding, 4);
-			highlight.width = rect.width + padding * 2;
-			highlight.height = rect.height + padding * 2;
+			highlight.width = rect.width + 16;
+			highlight.height = rect.height + 16;
 		};
 		const fetchFaqs = async () => {
 			if (faqsLoadedForSection.value === props.section) return;
@@ -11446,8 +11402,7 @@ _sfc_main$100.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/FloatingSupportButton.vue");
 	return _sfc_setup$100 ? _sfc_setup$100(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/ErrorBoundary.vue
+// resources/js/Components/ErrorBoundary.vue
 var _sfc_main$99 = {
 	__name: "ErrorBoundary",
 	__ssrInlineRender: true,
@@ -11482,8 +11437,7 @@ _sfc_main$99.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ErrorBoundary.vue");
 	return _sfc_setup$99 ? _sfc_setup$99(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Layouts/TallerLayout.vue
+// resources/js/Layouts/TallerLayout.vue
 var _sfc_main$98 = {
 	__name: "TallerLayout",
 	__ssrInlineRender: true,
@@ -11904,8 +11858,7 @@ _sfc_main$98.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/TallerLayout.vue");
 	return _sfc_setup$98 ? _sfc_setup$98(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Appointments/Index.vue
+// resources/js/Pages/Appointments/Index.vue
 var Index_exports$10 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$97 });
 var _sfc_main$97 = {
 	__name: "Index",
@@ -12333,8 +12286,7 @@ _sfc_main$97.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Appointments/Index.vue");
 	return _sfc_setup$97 ? _sfc_setup$97(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Layouts/GuestLayout.vue
+// resources/js/Layouts/GuestLayout.vue
 var _sfc_main$96 = {
 	__name: "GuestLayout",
 	__ssrInlineRender: true,
@@ -12360,8 +12312,7 @@ _sfc_main$96.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/GuestLayout.vue");
 	return _sfc_setup$96 ? _sfc_setup$96(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PrimaryButton.vue
+// resources/js/Components/PrimaryButton.vue
 var _sfc_main$95 = {};
 function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs) {
 	_push(`<button${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900" }, _attrs))}>`);
@@ -12375,8 +12326,7 @@ _sfc_main$95.setup = (props, ctx) => {
 	return _sfc_setup$95 ? _sfc_setup$95(props, ctx) : void 0;
 };
 var PrimaryButton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$95, [["ssrRender", _sfc_ssrRender$2]]);
-//#endregion
-//#region resources/js/Components/TextInput.vue
+// resources/js/Components/TextInput.vue
 var _sfc_main$94 = {
 	__name: "TextInput",
 	__ssrInlineRender: true,
@@ -12411,8 +12361,7 @@ _sfc_main$94.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TextInput.vue");
 	return _sfc_setup$94 ? _sfc_setup$94(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/ConfirmPassword.vue
+// resources/js/Pages/Auth/ConfirmPassword.vue
 var ConfirmPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$93 });
 var _sfc_main$93 = {
 	__name: "ConfirmPassword",
@@ -12498,8 +12447,7 @@ _sfc_main$93.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ConfirmPassword.vue");
 	return _sfc_setup$93 ? _sfc_setup$93(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/ForgotPassword.vue
+// resources/js/Pages/Auth/ForgotPassword.vue
 var ForgotPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$92 });
 var _sfc_main$92 = {
 	__name: "ForgotPassword",
@@ -12595,8 +12543,7 @@ _sfc_main$92.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ForgotPassword.vue");
 	return _sfc_setup$92 ? _sfc_setup$92(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/Checkbox.vue
+// resources/js/Components/Checkbox.vue
 var _sfc_main$91 = {
 	__name: "Checkbox",
 	__ssrInlineRender: true,
@@ -12636,8 +12583,7 @@ _sfc_main$91.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Checkbox.vue");
 	return _sfc_setup$91 ? _sfc_setup$91(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/Login.vue
+// resources/js/Pages/Auth/Login.vue
 var Login_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$90 });
 var _sfc_main$90 = {
 	__name: "Login",
@@ -12805,8 +12751,7 @@ _sfc_main$90.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/Login.vue");
 	return _sfc_setup$90 ? _sfc_setup$90(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/Register.vue
+// resources/js/Pages/Auth/Register.vue
 var Register_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$89 });
 var _sfc_main$89 = {
 	__name: "Register",
@@ -13021,8 +12966,7 @@ _sfc_main$89.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/Register.vue");
 	return _sfc_setup$89 ? _sfc_setup$89(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/ResetPassword.vue
+// resources/js/Pages/Auth/ResetPassword.vue
 var ResetPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$88 });
 var _sfc_main$88 = {
 	__name: "ResetPassword",
@@ -13136,9 +13080,10 @@ var _sfc_main$88 = {
 							disabled: (0, vue_exports.unref)(form).processing
 						}, {
 							default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-								if (_push) if ((0, vue_exports.unref)(form).processing) _push(`<span${_scopeId}>Guardando nueva contraseña...</span>`);
-								else _push(`<span${_scopeId}>Restablecer Contraseña</span>`);
-								else return [(0, vue_exports.unref)(form).processing ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 0 }, "Guardando nueva contraseña...")) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 1 }, "Restablecer Contraseña"))];
+								if (_push) {
+									if ((0, vue_exports.unref)(form).processing) _push(`<span${_scopeId}>Guardando nueva contraseña...</span>`);
+									else _push(`<span${_scopeId}>Restablecer Contraseña</span>`);
+								} else return [(0, vue_exports.unref)(form).processing ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 0 }, "Guardando nueva contraseña...")) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 1 }, "Restablecer Contraseña"))];
 							}),
 							_: 1
 						}, _parent, _scopeId));
@@ -13252,8 +13197,7 @@ _sfc_main$88.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ResetPassword.vue");
 	return _sfc_setup$88 ? _sfc_setup$88(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Auth/VerifyEmail.vue
+// resources/js/Pages/Auth/VerifyEmail.vue
 var VerifyEmail_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$87 });
 var _sfc_main$87 = {
 	__name: "VerifyEmail",
@@ -13333,8 +13277,7 @@ _sfc_main$87.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/VerifyEmail.vue");
 	return _sfc_setup$87 ? _sfc_setup$87(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/SeoHead.vue
+// resources/js/Components/SeoHead.vue
 var SITE_NAME = "TallerFlow";
 var LOCALE = "es_CL";
 var TWITTER_SITE = "@tallerflow";
@@ -13517,8 +13460,7 @@ _sfc_main$86.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/SeoHead.vue");
 	return _sfc_setup$86 ? _sfc_setup$86(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/FloatingWhatsAppButton.vue
+// resources/js/Components/FloatingWhatsAppButton.vue
 var _sfc_main$85 = {
 	__name: "FloatingWhatsAppButton",
 	__ssrInlineRender: true,
@@ -13543,8 +13485,7 @@ _sfc_main$85.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/FloatingWhatsAppButton.vue");
 	return _sfc_setup$85 ? _sfc_setup$85(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PublicNav.vue
+// resources/js/Components/PublicNav.vue
 var _sfc_main$84 = {
 	__name: "PublicNav",
 	__ssrInlineRender: true,
@@ -13560,7 +13501,7 @@ var _sfc_main$84 = {
 	},
 	setup(__props) {
 		const props = __props;
-		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Bmtdi9_T.js"));
+		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Dq24kvFb.js"));
 		const page = usePage();
 		const mobileMenuOpen = (0, vue_exports.ref)(false);
 		const showLoginModal = (0, vue_exports.ref)(false);
@@ -13754,8 +13695,7 @@ _sfc_main$84.setup = (props, ctx) => {
 	return _sfc_setup$84 ? _sfc_setup$84(props, ctx) : void 0;
 };
 var PublicNav_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$84, [["__scopeId", "data-v-c9c10817"]]);
-//#endregion
-//#region resources/js/Components/PublicFooter.vue
+// resources/js/Components/PublicFooter.vue
 var _sfc_main$83 = {
 	__name: "PublicFooter",
 	__ssrInlineRender: true,
@@ -13823,8 +13763,7 @@ _sfc_main$83.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PublicFooter.vue");
 	return _sfc_setup$83 ? _sfc_setup$83(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Blog/Index.vue
+// resources/js/Pages/Blog/Index.vue
 var Index_exports$9 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$82 });
 var _sfc_main$82 = {
 	__name: "Index",
@@ -13840,7 +13779,7 @@ var _sfc_main$82 = {
 		}
 	},
 	setup(__props) {
-		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Bmtdi9_T.js"));
+		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Dq24kvFb.js"));
 		const showLoginModal = (0, vue_exports.ref)(false);
 		const formatDate = (dateStr) => {
 			return new Date(dateStr).toLocaleDateString("es-CL", {
@@ -13973,8 +13912,7 @@ _sfc_main$82.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/Index.vue");
 	return _sfc_setup$82 ? _sfc_setup$82(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Blog/OrdenDeTrabajo.vue
+// resources/js/Pages/Blog/OrdenDeTrabajo.vue
 var OrdenDeTrabajo_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$81 });
 var _sfc_main$81 = {
 	__name: "OrdenDeTrabajo",
@@ -14117,8 +14055,7 @@ _sfc_main$81.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/OrdenDeTrabajo.vue");
 	return _sfc_setup$81 ? _sfc_setup$81(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Blog/Show.vue
+// resources/js/Pages/Blog/Show.vue
 var Show_exports$5 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$80 });
 var _sfc_main$80 = {
 	__name: "Show",
@@ -14128,7 +14065,7 @@ var _sfc_main$80 = {
 		seo: Object
 	},
 	setup(__props) {
-		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Bmtdi9_T.js"));
+		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Dq24kvFb.js"));
 		const showLoginModal = (0, vue_exports.ref)(false);
 		const formatDate = (dateStr) => {
 			return new Date(dateStr).toLocaleDateString("es-CL", {
@@ -14286,8 +14223,7 @@ _sfc_main$80.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/Show.vue");
 	return _sfc_setup$80 ? _sfc_setup$80(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/ActionEmptyState.vue
+// resources/js/Components/ActionEmptyState.vue
 var _sfc_main$79 = {
 	__name: "ActionEmptyState",
 	__ssrInlineRender: true,
@@ -14335,8 +14271,7 @@ _sfc_main$79.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ActionEmptyState.vue");
 	return _sfc_setup$79 ? _sfc_setup$79(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/composables/useFormatting.js
+// resources/js/composables/useFormatting.js
 /**
 * Composable de formato para locale chileno (es-CL / CLP).
 *
@@ -14443,8 +14378,7 @@ function useFormatting() {
 		formatDateTimeShort
 	};
 }
-//#endregion
-//#region resources/js/composables/useDebounce.js
+// resources/js/composables/useDebounce.js
 /**
 * Composable de debounce.
 *
@@ -14469,8 +14403,7 @@ function useDebounce() {
 	};
 	return { debounce };
 }
-//#endregion
-//#region resources/js/Components/CountryFlagSvg.vue
+// resources/js/Components/CountryFlagSvg.vue
 var _sfc_main$78 = {
 	__name: "CountryFlagSvg",
 	__ssrInlineRender: true,
@@ -14513,8 +14446,7 @@ _sfc_main$78.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/CountryFlagSvg.vue");
 	return _sfc_setup$78 ? _sfc_setup$78(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/composables/usePhone.js
+// resources/js/composables/usePhone.js
 /**
 * Composable para manejo, detección inteligente, formateo y normalización
 * de números telefónicos internacionales para Feeto.
@@ -14744,8 +14676,7 @@ function parsePhoneNumber(value, defaultCountry = "CL") {
 		international: digits ? `+${defCfg.dialCode}${digits}` : ""
 	};
 }
-//#endregion
-//#region resources/js/Components/PhoneInput.vue
+// resources/js/Components/PhoneInput.vue
 var _sfc_main$77 = {
 	__name: "PhoneInput",
 	__ssrInlineRender: true,
@@ -14911,8 +14842,7 @@ _sfc_main$77.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PhoneInput.vue");
 	return _sfc_setup$77 ? _sfc_setup$77(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Clients/Index.vue
+// resources/js/Pages/Clients/Index.vue
 var Index_exports$8 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$76 });
 var _sfc_main$76 = {
 	__name: "Index",
@@ -15533,8 +15463,7 @@ _sfc_main$76.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Clients/Index.vue");
 	return _sfc_setup$76 ? _sfc_setup$76(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Clients/Show.vue
+// resources/js/Pages/Clients/Show.vue
 var Show_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$75 });
 var _sfc_main$75 = {
 	__name: "Show",
@@ -16008,8 +15937,7 @@ _sfc_main$75.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Clients/Show.vue");
 	return _sfc_setup$75 ? _sfc_setup$75(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantBoard.vue
+// resources/js/Components/TenantBoard.vue
 var STALE_DAYS = 3;
 var _sfc_main$74 = {
 	__name: "TenantBoard",
@@ -16245,8 +16173,7 @@ _sfc_main$74.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantBoard.vue");
 	return _sfc_setup$74 ? _sfc_setup$74(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantDailySummary.vue
+// resources/js/Components/TenantDailySummary.vue
 var _sfc_main$73 = {
 	__name: "TenantDailySummary",
 	__ssrInlineRender: true,
@@ -16288,8 +16215,7 @@ _sfc_main$73.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantDailySummary.vue");
 	return _sfc_setup$73 ? _sfc_setup$73(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantSetupChecklist.vue
+// resources/js/Components/TenantSetupChecklist.vue
 var _sfc_main$72 = {
 	__name: "TenantSetupChecklist",
 	__ssrInlineRender: true,
@@ -16367,8 +16293,7 @@ _sfc_main$72.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantSetupChecklist.vue");
 	return _sfc_setup$72 ? _sfc_setup$72(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/TenantPublicPageCard.vue
+// resources/js/Components/TenantPublicPageCard.vue
 var _sfc_main$71 = {
 	__name: "TenantPublicPageCard",
 	__ssrInlineRender: true,
@@ -16416,8 +16341,7 @@ _sfc_main$71.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantPublicPageCard.vue");
 	return _sfc_setup$71 ? _sfc_setup$71(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Dashboard.vue
+// resources/js/Pages/Dashboard.vue
 var Dashboard_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$70 });
 var dismissedKey = "dismissed_activities";
 var _sfc_main$70 = {
@@ -17207,8 +17131,7 @@ _sfc_main$70.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Dashboard.vue");
 	return _sfc_setup$70 ? _sfc_setup$70(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Inventory/Index.vue
+// resources/js/Pages/Inventory/Index.vue
 var Index_exports$7 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$69 });
 var _sfc_main$69 = {
 	__name: "Index",
@@ -17322,8 +17245,10 @@ var _sfc_main$69 = {
 			if (form.tax_included === isIncluded) return;
 			const currentPrice = Number(form.selling_price) || 0;
 			const rate = Number(props.defaultTaxRate) || 19;
-			if (currentPrice > 0) if (isIncluded) form.selling_price = Math.round(currentPrice * (1 + rate / 100));
-			else form.selling_price = Math.round(currentPrice / (1 + rate / 100));
+			if (currentPrice > 0) {
+				if (isIncluded) form.selling_price = Math.round(currentPrice * (1 + rate / 100));
+				else form.selling_price = Math.round(currentPrice / (1 + rate / 100));
+			}
 			form.tax_included = isIncluded;
 		};
 		const handleSubmit = () => {
@@ -18322,8 +18247,7 @@ _sfc_main$69.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Inventory/Index.vue");
 	return _sfc_setup$69 ? _sfc_setup$69(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Invoices/Index.vue
+// resources/js/Pages/Invoices/Index.vue
 var Index_exports$6 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$68 });
 var _sfc_main$68 = {
 	__name: "Index",
@@ -18442,8 +18366,7 @@ _sfc_main$68.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Invoices/Index.vue");
 	return _sfc_setup$68 ? _sfc_setup$68(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Invoices/Show.vue
+// resources/js/Pages/Invoices/Show.vue
 var Show_exports$3 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$67 });
 var _sfc_main$67 = {
 	__name: "Show",
@@ -18535,8 +18458,7 @@ _sfc_main$67.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Invoices/Show.vue");
 	return _sfc_setup$67 ? _sfc_setup$67(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Pricing.vue
+// resources/js/Pages/Pricing.vue
 var Pricing_exports = /* @__PURE__ */ __exportAll({ default: () => Pricing_default });
 var _sfc_main$66 = {
 	__name: "Pricing",
@@ -18723,8 +18645,7 @@ _sfc_main$66.setup = (props, ctx) => {
 	return _sfc_setup$66 ? _sfc_setup$66(props, ctx) : void 0;
 };
 var Pricing_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$66, [["__scopeId", "data-v-e3192875"]]);
-//#endregion
-//#region resources/js/Components/Dropdown.vue
+// resources/js/Components/Dropdown.vue
 var _sfc_main$65 = {
 	__name: "Dropdown",
 	__ssrInlineRender: true,
@@ -18773,8 +18694,7 @@ _sfc_main$65.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Dropdown.vue");
 	return _sfc_setup$65 ? _sfc_setup$65(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/DropdownLink.vue
+// resources/js/Components/DropdownLink.vue
 var _sfc_main$64 = {
 	__name: "DropdownLink",
 	__ssrInlineRender: true,
@@ -18803,8 +18723,7 @@ _sfc_main$64.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/DropdownLink.vue");
 	return _sfc_setup$64 ? _sfc_setup$64(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/NavLink.vue
+// resources/js/Components/NavLink.vue
 var _sfc_main$63 = {
 	__name: "NavLink",
 	__ssrInlineRender: true,
@@ -18838,8 +18757,7 @@ _sfc_main$63.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/NavLink.vue");
 	return _sfc_setup$63 ? _sfc_setup$63(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/ResponsiveNavLink.vue
+// resources/js/Components/ResponsiveNavLink.vue
 var _sfc_main$62 = {
 	__name: "ResponsiveNavLink",
 	__ssrInlineRender: true,
@@ -18873,8 +18791,7 @@ _sfc_main$62.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ResponsiveNavLink.vue");
 	return _sfc_setup$62 ? _sfc_setup$62(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Layouts/AuthenticatedLayout.vue
+// resources/js/Layouts/AuthenticatedLayout.vue
 var _sfc_main$61 = {
 	__name: "AuthenticatedLayout",
 	__ssrInlineRender: true,
@@ -19022,8 +18939,7 @@ _sfc_main$61.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AuthenticatedLayout.vue");
 	return _sfc_setup$61 ? _sfc_setup$61(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/DangerButton.vue
+// resources/js/Components/DangerButton.vue
 var _sfc_main$60 = {};
 function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs) {
 	_push(`<button${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-700" }, _attrs))}>`);
@@ -19037,8 +18953,7 @@ _sfc_main$60.setup = (props, ctx) => {
 	return _sfc_setup$60 ? _sfc_setup$60(props, ctx) : void 0;
 };
 var DangerButton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$60, [["ssrRender", _sfc_ssrRender$1]]);
-//#endregion
-//#region resources/js/Components/Modal.vue
+// resources/js/Components/Modal.vue
 var _sfc_main$59 = {
 	__name: "Modal",
 	__ssrInlineRender: true,
@@ -19116,8 +19031,7 @@ _sfc_main$59.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Modal.vue");
 	return _sfc_setup$59 ? _sfc_setup$59(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/SecondaryButton.vue
+// resources/js/Components/SecondaryButton.vue
 var _sfc_main$58 = {
 	__name: "SecondaryButton",
 	__ssrInlineRender: true,
@@ -19142,8 +19056,7 @@ _sfc_main$58.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/SecondaryButton.vue");
 	return _sfc_setup$58 ? _sfc_setup$58(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Profile/Partials/DeleteUserForm.vue
+// resources/js/Pages/Profile/Partials/DeleteUserForm.vue
 var DeleteUserForm_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$57 });
 var _sfc_main$57 = {
 	__name: "DeleteUserForm",
@@ -19273,8 +19186,7 @@ _sfc_main$57.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Profile/Partials/DeleteUserForm.vue");
 	return _sfc_setup$57 ? _sfc_setup$57(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Profile/Partials/UpdatePasswordForm.vue
+// resources/js/Pages/Profile/Partials/UpdatePasswordForm.vue
 var UpdatePasswordForm_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$56 });
 var _sfc_main$56 = {
 	__name: "UpdatePasswordForm",
@@ -19360,8 +19272,7 @@ _sfc_main$56.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Profile/Partials/UpdatePasswordForm.vue");
 	return _sfc_setup$56 ? _sfc_setup$56(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.vue
+// resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.vue
 var UpdateProfileInformationForm_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$55 });
 var _sfc_main$55 = {
 	__name: "UpdateProfileInformationForm",
@@ -19451,8 +19362,7 @@ _sfc_main$55.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.vue");
 	return _sfc_setup$55 ? _sfc_setup$55(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Profile/Edit.vue
+// resources/js/Pages/Profile/Edit.vue
 var Edit_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$54 });
 var _sfc_main$54 = {
 	__name: "Edit",
@@ -19505,8 +19415,7 @@ _sfc_main$54.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Profile/Edit.vue");
 	return _sfc_setup$54 ? _sfc_setup$54(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PlanCard.vue
+// resources/js/Components/PlanCard.vue
 var _sfc_main$53 = {
 	__name: "PlanCard",
 	__ssrInlineRender: true,
@@ -19576,8 +19485,7 @@ _sfc_main$53.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PlanCard.vue");
 	return _sfc_setup$53 ? _sfc_setup$53(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Public/Checkout.vue
+// resources/js/Pages/Public/Checkout.vue
 var Checkout_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$52 });
 var _sfc_main$52 = {
 	__name: "Checkout",
@@ -19639,8 +19547,7 @@ _sfc_main$52.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Checkout.vue");
 	return _sfc_setup$52 ? _sfc_setup$52(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Public/TenantDirectory.vue
+// resources/js/Pages/Public/TenantDirectory.vue
 var TenantDirectory_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$51 });
 var _sfc_main$51 = {
 	__name: "TenantDirectory",
@@ -19794,8 +19701,7 @@ _sfc_main$51.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/TenantDirectory.vue");
 	return _sfc_setup$51 ? _sfc_setup$51(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Public/TenantLanding.vue
+// resources/js/Pages/Public/TenantLanding.vue
 var TenantLanding_exports = /* @__PURE__ */ __exportAll({ default: () => TenantLanding_default });
 var _sfc_main$50 = {
 	__name: "TenantLanding",
@@ -19815,7 +19721,7 @@ var _sfc_main$50 = {
 		const page = usePage();
 		const isSuccess = (0, vue_exports.computed)(() => page.props.flash?.booking_success === true);
 		const isContactSuccess = (0, vue_exports.computed)(() => page.props.flash?.contact_success === true);
-		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Bmtdi9_T.js"));
+		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Dq24kvFb.js"));
 		const showLoginModal = (0, vue_exports.ref)(false);
 		const activeTab = (0, vue_exports.ref)("booking");
 		const toast = (0, vue_exports.ref)({
@@ -20033,8 +19939,7 @@ _sfc_main$50.setup = (props, ctx) => {
 	return _sfc_setup$50 ? _sfc_setup$50(props, ctx) : void 0;
 };
 var TenantLanding_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$50, [["__scopeId", "data-v-931c9a0e"]]);
-//#endregion
-//#region resources/js/composables/useVehicleCatalog.js
+// resources/js/composables/useVehicleCatalog.js
 var MANUAL_SELECTION = "__manual__";
 var normalize = (value) => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, "");
 function useVehicleCatalog({ form, brands, tenantRouteParams, brandField, modelField, brandIdField, modelIdField }) {
@@ -20074,10 +19979,11 @@ function useVehicleCatalog({ form, brands, tenantRouteParams, brandField, modelF
 	const loadModels = async (brandId) => {
 		loadingModels.value = true;
 		try {
-			modelOptions.value = (await axios.get(route("vehicle-catalog.models", {
+			const response = await axios.get(route("vehicle-catalog.models", {
 				...tenantRouteParams.value,
 				vehicleBrand: brandId
-			}))).data.models ?? [];
+			}));
+			modelOptions.value = response.data.models ?? [];
 		} finally {
 			loadingModels.value = false;
 		}
@@ -20151,8 +20057,7 @@ function useVehicleCatalog({ form, brands, tenantRouteParams, brandField, modelF
 		setManualModel
 	};
 }
-//#endregion
-//#region resources/js/Pages/Quotes/Create.vue
+// resources/js/Pages/Quotes/Create.vue
 var Create_exports$3 = /* @__PURE__ */ __exportAll({ default: () => Create_default });
 var _sfc_main$49 = {
 	__name: "Create",
@@ -20225,7 +20130,8 @@ var _sfc_main$49 = {
 			}
 			isSearchingPlate.value = true;
 			try {
-				plateResults.value = (await axios.get(route("quotes.search-plate", tenantRouteParams.value), { params: { plate: normalized } })).data.results || [];
+				const response = await axios.get(route("quotes.search-plate", tenantRouteParams.value), { params: { plate: normalized } });
+				plateResults.value = response.data.results || [];
 				hasSearched.value = true;
 			} catch (error) {
 				plateResults.value = [];
@@ -20952,8 +20858,7 @@ _sfc_main$49.setup = (props, ctx) => {
 	return _sfc_setup$49 ? _sfc_setup$49(props, ctx) : void 0;
 };
 var Create_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$49, [["__scopeId", "data-v-398ce12f"]]);
-//#endregion
-//#region resources/js/Pages/Quotes/Index.vue
+// resources/js/Pages/Quotes/Index.vue
 var Index_exports$5 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$48 });
 var _sfc_main$48 = {
 	__name: "Index",
@@ -21186,8 +21091,7 @@ _sfc_main$48.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Quotes/Index.vue");
 	return _sfc_setup$48 ? _sfc_setup$48(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/WorkOrderQuote.vue
+// resources/js/Components/WorkOrderQuote.vue
 var _sfc_main$47 = {
 	__name: "WorkOrderQuote",
 	__ssrInlineRender: true,
@@ -21248,8 +21152,7 @@ _sfc_main$47.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/WorkOrderQuote.vue");
 	return _sfc_setup$47 ? _sfc_setup$47(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Quotes/PublicShow.vue
+// resources/js/Pages/Quotes/PublicShow.vue
 var PublicShow_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$46 });
 var _sfc_main$46 = {
 	__name: "PublicShow",
@@ -21341,8 +21244,7 @@ _sfc_main$46.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Quotes/PublicShow.vue");
 	return _sfc_setup$46 ? _sfc_setup$46(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/EditCatalogItemModal.vue
+// resources/js/Pages/WorkOrders/Partials/EditCatalogItemModal.vue
 var EditCatalogItemModal_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$45 });
 var _sfc_main$45 = {
 	__name: "EditCatalogItemModal",
@@ -21465,8 +21367,7 @@ _sfc_main$45.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/EditCatalogItemModal.vue");
 	return _sfc_setup$45 ? _sfc_setup$45(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Quotes/Show.vue
+// resources/js/Pages/Quotes/Show.vue
 var Show_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$44 });
 var _sfc_main$44 = {
 	__name: "Show",
@@ -22592,8 +22493,7 @@ _sfc_main$44.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Quotes/Show.vue");
 	return _sfc_setup$44 ? _sfc_setup$44(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PpuScanner.vue
+// resources/js/Components/PpuScanner.vue
 var _sfc_main$43 = {
 	__name: "PpuScanner",
 	__ssrInlineRender: true,
@@ -22656,8 +22556,7 @@ _sfc_main$43.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PpuScanner.vue");
 	return _sfc_setup$43 ? _sfc_setup$43(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/Reception/VehicleDamageDiagram.vue
+// resources/js/Components/Reception/VehicleDamageDiagram.vue
 var _sfc_main$42 = {
 	__name: "VehicleDamageDiagram",
 	__ssrInlineRender: true,
@@ -22751,8 +22650,7 @@ _sfc_main$42.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Reception/VehicleDamageDiagram.vue");
 	return _sfc_setup$42 ? _sfc_setup$42(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/Reception/SignaturePad.vue
+// resources/js/Components/Reception/SignaturePad.vue
 var _sfc_main$41 = {
 	__name: "SignaturePad",
 	__ssrInlineRender: true,
@@ -22818,8 +22716,7 @@ _sfc_main$41.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Reception/SignaturePad.vue");
 	return _sfc_setup$41 ? _sfc_setup$41(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/composables/useLicensePlate.js
+// resources/js/composables/useLicensePlate.js
 /**
 * Composable para detección de origen y validación de placas vehiculares (patentes).
 * Espejo de las reglas de negocio de App\Enums\Country y App\Rules\LicensePlate.
@@ -22987,8 +22884,7 @@ function useLicensePlate() {
 		COUNTRY_PLATE_PATTERNS
 	};
 }
-//#endregion
-//#region resources/js/Components/Reception/CreateWorkOrderModal.vue
+// resources/js/Components/Reception/CreateWorkOrderModal.vue
 var _sfc_main$40 = {
 	__name: "CreateWorkOrderModal",
 	__ssrInlineRender: true,
@@ -23241,7 +23137,8 @@ var _sfc_main$40 = {
 			}
 			isSearchingClients.value = true;
 			try {
-				clientMatches.value = (await axios.get(route("receptions.clients.search", tenantRouteParams.value), { params: { search: normalizedSearch } })).data.clients || [];
+				const response = await axios.get(route("receptions.clients.search", tenantRouteParams.value), { params: { search: normalizedSearch } });
+				clientMatches.value = response.data.clients || [];
 			} catch (error) {
 				clientMatches.value = [];
 			} finally {
@@ -23511,8 +23408,7 @@ _sfc_main$40.setup = (props, ctx) => {
 	return _sfc_setup$40 ? _sfc_setup$40(props, ctx) : void 0;
 };
 var CreateWorkOrderModal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$40, [["__scopeId", "data-v-729640df"]]);
-//#endregion
-//#region resources/js/Pages/Reception/Create.vue
+// resources/js/Pages/Reception/Create.vue
 var Create_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$39 });
 var _sfc_main$39 = {
 	__name: "Create",
@@ -23520,7 +23416,7 @@ var _sfc_main$39 = {
 	setup(__props) {
 		const page = usePage();
 		const tenantId = page.props.tenantId;
-		const maxImageUploadBytes = (0, vue_exports.computed)(() => Number(page.props.maxImageUploadBytes ?? 5 * 1024 * 1024));
+		const maxImageUploadBytes = (0, vue_exports.computed)(() => Number(page.props.maxImageUploadBytes ?? 5242880));
 		const { tenantRouteParams } = useTenantRouting();
 		const planAccess = (0, vue_exports.computed)(() => page.props.planAccess ?? {});
 		const aiReceptionEnabled = (0, vue_exports.computed)(() => planAccess.value?.ai_reception ?? false);
@@ -23536,7 +23432,7 @@ var _sfc_main$39 = {
 		const errorMsg = (0, vue_exports.ref)(null);
 		const formatFileSize = (bytes) => {
 			if (!Number.isFinite(bytes) || bytes <= 0) return "0 MB";
-			return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+			return `${(bytes / 1048576).toFixed(1)} MB`;
 		};
 		const revokePreviewImage = () => {
 			if (previewImageUrl.value) {
@@ -23774,8 +23670,7 @@ _sfc_main$39.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reception/Create.vue");
 	return _sfc_setup$39 ? _sfc_setup$39(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/PrintableReportShell.vue
+// resources/js/Components/PrintableReportShell.vue
 var _sfc_main$38 = {};
 function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
 	_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "report-print-surface space-y-8" }, _attrs))}>`);
@@ -23789,8 +23684,7 @@ _sfc_main$38.setup = (props, ctx) => {
 	return _sfc_setup$38 ? _sfc_setup$38(props, ctx) : void 0;
 };
 var PrintableReportShell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$38, [["ssrRender", _sfc_ssrRender]]);
-//#endregion
-//#region resources/js/Components/ReportsNavigation.vue
+// resources/js/Components/ReportsNavigation.vue
 var _sfc_main$37 = {
 	__name: "ReportsNavigation",
 	__ssrInlineRender: true,
@@ -23851,8 +23745,7 @@ _sfc_main$37.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ReportsNavigation.vue");
 	return _sfc_setup$37 ? _sfc_setup$37(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Components/ReportExportActions.vue
+// resources/js/Components/ReportExportActions.vue
 var _sfc_main$36 = {
 	__name: "ReportExportActions",
 	__ssrInlineRender: true,
@@ -23886,8 +23779,7 @@ _sfc_main$36.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ReportExportActions.vue");
 	return _sfc_setup$36 ? _sfc_setup$36(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Acquisition.vue
+// resources/js/Pages/Reports/Acquisition.vue
 var Acquisition_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$35 });
 var _sfc_main$35 = {
 	__name: "Acquisition",
@@ -24228,8 +24120,7 @@ _sfc_main$35.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Acquisition.vue");
 	return _sfc_setup$35 ? _sfc_setup$35(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Collections.vue
+// resources/js/Pages/Reports/Collections.vue
 var Collections_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$34 });
 var _sfc_main$34 = {
 	__name: "Collections",
@@ -24561,8 +24452,7 @@ _sfc_main$34.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Collections.vue");
 	return _sfc_setup$34 ? _sfc_setup$34(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Customers.vue
+// resources/js/Pages/Reports/Customers.vue
 var Customers_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$33 });
 var _sfc_main$33 = {
 	__name: "Customers",
@@ -24869,8 +24759,7 @@ _sfc_main$33.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Customers.vue");
 	return _sfc_setup$33 ? _sfc_setup$33(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Index.vue
+// resources/js/Pages/Reports/Index.vue
 var Index_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$32 });
 var _sfc_main$32 = {
 	__name: "Index",
@@ -25004,8 +24893,7 @@ _sfc_main$32.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Index.vue");
 	return _sfc_setup$32 ? _sfc_setup$32(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Inventory.vue
+// resources/js/Pages/Reports/Inventory.vue
 var Inventory_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$31 });
 var _sfc_main$31 = {
 	__name: "Inventory",
@@ -25339,8 +25227,7 @@ _sfc_main$31.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Inventory.vue");
 	return _sfc_setup$31 ? _sfc_setup$31(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Sales.vue
+// resources/js/Pages/Reports/Sales.vue
 var Sales_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$30 });
 var _sfc_main$30 = {
 	__name: "Sales",
@@ -25612,8 +25499,7 @@ _sfc_main$30.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Sales.vue");
 	return _sfc_setup$30 ? _sfc_setup$30(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Reports/Supervisors.vue
+// resources/js/Pages/Reports/Supervisors.vue
 var Supervisors_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$29 });
 var _sfc_main$29 = {
 	__name: "Supervisors",
@@ -25834,8 +25720,7 @@ _sfc_main$29.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Reports/Supervisors.vue");
 	return _sfc_setup$29 ? _sfc_setup$29(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Services/Index.vue
+// resources/js/Pages/Services/Index.vue
 var Index_exports$3 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$28 });
 var _sfc_main$28 = {
 	__name: "Index",
@@ -25920,7 +25805,8 @@ var _sfc_main$28 = {
 			importForm.clearErrors();
 		};
 		const handleWorkbookChange = (event) => {
-			importForm.workbook = event.target.files?.[0] ?? null;
+			const file = event.target.files?.[0] ?? null;
+			importForm.workbook = file;
 		};
 		const handleImportSubmit = () => {
 			importForm.post(route("services.import", tenantRouteParams.value), {
@@ -25935,8 +25821,10 @@ var _sfc_main$28 = {
 			if (form.tax_included === isIncluded) return;
 			const currentPrice = Number(form.selling_price) || 0;
 			const rate = Number(props.defaultTaxRate) || 19;
-			if (currentPrice > 0) if (isIncluded) form.selling_price = Math.round(currentPrice * (1 + rate / 100));
-			else form.selling_price = Math.round(currentPrice / (1 + rate / 100));
+			if (currentPrice > 0) {
+				if (isIncluded) form.selling_price = Math.round(currentPrice * (1 + rate / 100));
+				else form.selling_price = Math.round(currentPrice / (1 + rate / 100));
+			}
 			form.tax_included = isIncluded;
 		};
 		const handleSubmit = () => {
@@ -26453,8 +26341,7 @@ _sfc_main$28.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Services/Index.vue");
 	return _sfc_setup$28 ? _sfc_setup$28(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Servicios.vue
+// resources/js/Pages/Servicios.vue
 var Servicios_exports = /* @__PURE__ */ __exportAll({ default: () => Servicios_default });
 var _sfc_main$27 = {
 	__name: "Servicios",
@@ -26719,8 +26606,7 @@ _sfc_main$27.setup = (props, ctx) => {
 	return _sfc_setup$27 ? _sfc_setup$27(props, ctx) : void 0;
 };
 var Servicios_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$27, [["__scopeId", "data-v-8bab02a5"]]);
-//#endregion
-//#region resources/js/Components/SettingsSectionTabs.vue
+// resources/js/Components/SettingsSectionTabs.vue
 var _sfc_main$26 = {
 	__name: "SettingsSectionTabs",
 	__ssrInlineRender: true,
@@ -26883,8 +26769,7 @@ _sfc_main$26.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/SettingsSectionTabs.vue");
 	return _sfc_setup$26 ? _sfc_setup$26(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Layouts/SettingsLayout.vue
+// resources/js/Layouts/SettingsLayout.vue
 var _sfc_main$25 = {
 	__name: "SettingsLayout",
 	__ssrInlineRender: true,
@@ -26976,8 +26861,7 @@ _sfc_main$25.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/SettingsLayout.vue");
 	return _sfc_setup$25 ? _sfc_setup$25(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/UsersTab.vue
+// resources/js/Pages/Settings/Partials/UsersTab.vue
 var UsersTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$24 });
 var _sfc_main$24 = {
 	__name: "UsersTab",
@@ -27086,8 +26970,7 @@ _sfc_main$24.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/UsersTab.vue");
 	return _sfc_setup$24 ? _sfc_setup$24(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/BranchesTab.vue
+// resources/js/Pages/Settings/Partials/BranchesTab.vue
 var BranchesTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$23 });
 var _sfc_main$23 = {
 	__name: "BranchesTab",
@@ -27151,8 +27034,7 @@ _sfc_main$23.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/BranchesTab.vue");
 	return _sfc_setup$23 ? _sfc_setup$23(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/CommercialTab.vue
+// resources/js/Pages/Settings/Partials/CommercialTab.vue
 var CommercialTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$22 });
 var _sfc_main$22 = {
 	__name: "CommercialTab",
@@ -27175,8 +27057,7 @@ _sfc_main$22.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/CommercialTab.vue");
 	return _sfc_setup$22 ? _sfc_setup$22(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/SeoTab.vue
+// resources/js/Pages/Settings/Partials/SeoTab.vue
 var SeoTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$21 });
 var _sfc_main$21 = {
 	__name: "SeoTab",
@@ -27243,8 +27124,7 @@ _sfc_main$21.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/SeoTab.vue");
 	return _sfc_setup$21 ? _sfc_setup$21(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/SchedulingTab.vue
+// resources/js/Pages/Settings/Partials/SchedulingTab.vue
 var SchedulingTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$20 });
 var _sfc_main$20 = {
 	__name: "SchedulingTab",
@@ -27374,7 +27254,8 @@ var _sfc_main$20 = {
 		];
 		const formatBlockedDate = (dateStr) => {
 			const [y, m, d] = dateStr.split("-").map(Number);
-			return `${DAYS_ES[new Date(y, m - 1, d).getDay()]} ${d} de ${MONTHS_LONG_ES[m - 1]} ${y}`;
+			const dt = new Date(y, m - 1, d);
+			return `${DAYS_ES[dt.getDay()]} ${d} de ${MONTHS_LONG_ES[m - 1]} ${y}`;
 		};
 		const futureBlockedSlots = (0, vue_exports.computed)(() => schedulingForm.blocked_slots.filter((s) => s.date && s.date >= todayStr.value).slice().sort((a, b) => `${a.date}${a.start}`.localeCompare(`${b.date}${b.start}`)));
 		const showAddSlotForm = (0, vue_exports.ref)(false);
@@ -27513,8 +27394,7 @@ _sfc_main$20.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/SchedulingTab.vue");
 	return _sfc_setup$20 ? _sfc_setup$20(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Partials/BrandingTab.vue
+// resources/js/Pages/Settings/Partials/BrandingTab.vue
 var BrandingTab_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$19 });
 var _sfc_main$19 = {
 	__name: "BrandingTab",
@@ -27558,8 +27438,7 @@ _sfc_main$19.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Partials/BrandingTab.vue");
 	return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Index.vue
+// resources/js/Pages/Settings/Index.vue
 var Index_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$18 });
 var _sfc_main$18 = {
 	__name: "Index",
@@ -27735,8 +27614,7 @@ _sfc_main$18.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Index.vue");
 	return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Roles/Create.vue
+// resources/js/Pages/Settings/Roles/Create.vue
 var Create_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$17 });
 var _sfc_main$17 = {
 	__name: "Create",
@@ -27922,8 +27800,7 @@ _sfc_main$17.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Roles/Create.vue");
 	return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Roles/Edit.vue
+// resources/js/Pages/Settings/Roles/Edit.vue
 var Edit_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$16 });
 var _sfc_main$16 = {
 	__name: "Edit",
@@ -28124,8 +28001,7 @@ _sfc_main$16.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Roles/Edit.vue");
 	return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Settings/Roles/Index.vue
+// resources/js/Pages/Settings/Roles/Index.vue
 var Index_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$15 });
 var _sfc_main$15 = {
 	__name: "Index",
@@ -28349,8 +28225,7 @@ _sfc_main$15.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Settings/Roles/Index.vue");
 	return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Subscription/Billing.vue
+// resources/js/Pages/Subscription/Billing.vue
 var Billing_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$14 });
 var _sfc_main$14 = {
 	__name: "Billing",
@@ -28376,7 +28251,7 @@ var _sfc_main$14 = {
 		const daysLeft = (0, vue_exports.computed)(() => {
 			if (!subscriptionEndsAt.value) return null;
 			const diff = new Date(subscriptionEndsAt.value) - /* @__PURE__ */ new Date();
-			return Math.ceil(diff / (1e3 * 60 * 60 * 24));
+			return Math.ceil(diff / 864e5);
 		});
 		const renewalDate = (0, vue_exports.computed)(() => {
 			if (!subscriptionEndsAt.value) return null;
@@ -28607,8 +28482,7 @@ _sfc_main$14.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Subscription/Billing.vue");
 	return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Subscription/Plans.vue
+// resources/js/Pages/Subscription/Plans.vue
 var Plans_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$13 });
 var _sfc_main$13 = {
 	__name: "Plans",
@@ -28777,8 +28651,7 @@ _sfc_main$13.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Subscription/Plans.vue");
 	return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/TenantWelcome.vue
+// resources/js/Pages/TenantWelcome.vue
 var TenantWelcome_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$12 });
 var inputClass = "mt-2 block w-full rounded-xl border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500";
 var _sfc_main$12 = {
@@ -28910,8 +28783,7 @@ _sfc_main$12.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/TenantWelcome.vue");
 	return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Tracking/Show.vue
+// resources/js/Pages/Tracking/Show.vue
 var Show_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$11 });
 var _sfc_main$11 = {
 	__name: "Show",
@@ -29033,8 +28905,7 @@ _sfc_main$11.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Tracking/Show.vue");
 	return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Trial/Create.vue
+// resources/js/Pages/Trial/Create.vue
 var Create_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$10 });
 var _sfc_main$10 = {
 	__name: "Create",
@@ -29153,8 +29024,7 @@ _sfc_main$10.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Trial/Create.vue");
 	return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Trial/Success.vue
+// resources/js/Pages/Trial/Success.vue
 var Success_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$9 });
 var _sfc_main$9 = {
 	__name: "Success",
@@ -29219,8 +29089,7 @@ _sfc_main$9.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Trial/Success.vue");
 	return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/Welcome.vue
+// resources/js/Pages/Welcome.vue
 var Welcome_exports = /* @__PURE__ */ __exportAll({ default: () => Welcome_default });
 var _sfc_main$8 = {
 	__name: "Welcome",
@@ -29251,7 +29120,7 @@ var _sfc_main$8 = {
 	},
 	setup(__props) {
 		const props = __props;
-		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Bmtdi9_T.js"));
+		const LoginModal = (0, vue_exports.defineAsyncComponent)(() => import("./assets/LoginModal-Dq24kvFb.js"));
 		const showLoginModal = (0, vue_exports.ref)(false);
 		const activeSection = (0, vue_exports.ref)("features");
 		const supportedCountries = [
@@ -29839,8 +29708,7 @@ _sfc_main$8.setup = (props, ctx) => {
 	return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
 var Welcome_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$8, [["__scopeId", "data-v-0fd2efde"]]);
-//#endregion
-//#region resources/js/utils/workOrderColumns.js
+// resources/js/utils/workOrderColumns.js
 var columnConfig = {
 	recepcion: {
 		title: "Recepción",
@@ -29880,8 +29748,7 @@ function workOrderColumns(statuses) {
 		}
 	}));
 }
-//#endregion
-//#region resources/js/Pages/WorkOrders/Index.vue
+// resources/js/Pages/WorkOrders/Index.vue
 var Index_exports = /* @__PURE__ */ __exportAll({ default: () => Index_default });
 var _sfc_main$7 = {
 	__name: "Index",
@@ -31678,8 +31545,7 @@ _sfc_main$7.setup = (props, ctx) => {
 	return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
 var Index_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$7, [["__scopeId", "data-v-b5db271b"]]);
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/AddQuoteItemForm.vue
+// resources/js/Pages/WorkOrders/Partials/AddQuoteItemForm.vue
 var AddQuoteItemForm_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$6 });
 var _sfc_main$6 = {
 	__name: "AddQuoteItemForm",
@@ -31817,8 +31683,7 @@ _sfc_main$6.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/AddQuoteItemForm.vue");
 	return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/ApproveManuallyModal.vue
+// resources/js/Pages/WorkOrders/Partials/ApproveManuallyModal.vue
 var ApproveManuallyModal_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$5 });
 var _sfc_main$5 = {
 	__name: "ApproveManuallyModal",
@@ -31842,8 +31707,7 @@ _sfc_main$5.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/ApproveManuallyModal.vue");
 	return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/DeleteWorkOrderModal.vue
+// resources/js/Pages/WorkOrders/Partials/DeleteWorkOrderModal.vue
 var DeleteWorkOrderModal_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$4 });
 var _sfc_main$4 = {
 	__name: "DeleteWorkOrderModal",
@@ -31867,8 +31731,7 @@ _sfc_main$4.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/DeleteWorkOrderModal.vue");
 	return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/QuoteHistoryCard.vue
+// resources/js/Pages/WorkOrders/Partials/QuoteHistoryCard.vue
 var QuoteHistoryCard_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$3 });
 var _sfc_main$3 = {
 	__name: "QuoteHistoryCard",
@@ -31905,8 +31768,7 @@ _sfc_main$3.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/QuoteHistoryCard.vue");
 	return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/QuoteItemsTable.vue
+// resources/js/Pages/WorkOrders/Partials/QuoteItemsTable.vue
 var QuoteItemsTable_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$2 });
 var _sfc_main$2 = {
 	__name: "QuoteItemsTable",
@@ -31991,8 +31853,7 @@ _sfc_main$2.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/QuoteItemsTable.vue");
 	return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Partials/QuoteSidebar.vue
+// resources/js/Pages/WorkOrders/Partials/QuoteSidebar.vue
 var QuoteSidebar_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$1 });
 var _sfc_main$1 = {
 	__name: "QuoteSidebar",
@@ -32110,8 +31971,7 @@ _sfc_main$1.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Partials/QuoteSidebar.vue");
 	return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-//#endregion
-//#region resources/js/Pages/WorkOrders/Show.vue
+// resources/js/Pages/WorkOrders/Show.vue
 var Show_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main });
 var _sfc_main = {
 	__name: "Show",
@@ -32443,8 +32303,7 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/WorkOrders/Show.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-//#endregion
-//#region node_modules/laravel-vite-plugin/inertia-helpers/index.js
+// node_modules/laravel-vite-plugin/inertia-helpers/index.js
 var import_server_renderer_cjs_prod = require_server_renderer_cjs_prod();
 async function resolvePageComponent(path, pages) {
 	for (const p of Array.isArray(path) ? path : [path]) {
@@ -32454,8 +32313,7 @@ async function resolvePageComponent(path, pages) {
 	}
 	throw new Error(`Page not found: ${path}`);
 }
-//#endregion
-//#region vendor/tightenco/ziggy/dist/index.esm.js
+// vendor/tightenco/ziggy/dist/index.esm.js
 function t(t, e) {
 	for (var n = 0; n < e.length; n++) {
 		var r = e[n];
@@ -32537,7 +32395,9 @@ function f(t) {
 		} }), i(n, t);
 	}, f(t);
 }
-var c = String.prototype.replace, a = /%20/g, l = {
+var c = String.prototype.replace;
+var a = /%20/g;
+var l = {
 	RFC1738: function(t) {
 		return c.call(t, a, "+");
 	},
@@ -32546,7 +32406,9 @@ var c = String.prototype.replace, a = /%20/g, l = {
 	}
 };
 var s = "RFC3986";
-var p = Object.prototype.hasOwnProperty, y = Array.isArray, d = /* @__PURE__ */ new WeakMap();
+var p = Object.prototype.hasOwnProperty;
+var y = Array.isArray;
+var d = /* @__PURE__ */ new WeakMap();
 var b = function(t, e) {
 	return d.set(t, e), t;
 };
@@ -32555,18 +32417,21 @@ function v(t) {
 }
 var h$1 = function(t) {
 	return d.get(t);
-}, m = function(t, e) {
+};
+var m = function(t, e) {
 	d.set(t, e);
 };
 var g = function() {
 	const t = [];
 	for (let e = 0; e < 256; ++e) t.push("%" + ((e < 16 ? "0" : "") + e.toString(16)).toUpperCase());
 	return t;
-}(), w = function(t, e) {
+}();
+var w = function(t, e) {
 	const n = e && e.plainObjects ? Object.create(null) : {};
 	for (let e = 0; e < t.length; ++e) void 0 !== t[e] && (n[e] = t[e]);
 	return n;
-}, j = function t(e, n, r) {
+};
+var j = function t(e, n, r) {
 	if (!n) return e;
 	if ("object" != typeof n) {
 		if (y(e)) e.push(n);
@@ -32599,21 +32464,26 @@ var g = function() {
 		const i = n[o];
 		return e[o] = p.call(e, o) ? t(e[o], i, r) : i, e;
 	}, c);
-}, O = 1024, E = function(t, e, n, r) {
+};
+var O = 1024;
+var E = function(t, e, n, r) {
 	if (v(t)) {
 		var o = h$1(t) + 1;
 		return t[o] = e, m(t, o), t;
 	}
 	var i = [].concat(t, e);
 	return i.length > n ? b(w(i, { plainObjects: r }), i.length - 1) : i;
-}, T = function(t, e) {
+};
+var T = function(t, e) {
 	if (y(t)) {
 		const n = [];
 		for (let r = 0; r < t.length; r += 1) n.push(e(t[r]));
 		return n;
 	}
 	return e(t);
-}, R = Object.prototype.hasOwnProperty, k = {
+};
+var R = Object.prototype.hasOwnProperty;
+var k = {
 	brackets: function(t) {
 		return t + "[]";
 	},
@@ -32624,9 +32494,14 @@ var g = function() {
 	repeat: function(t) {
 		return t;
 	}
-}, S = Array.isArray, I = Array.prototype.push, A = function(t, e) {
+};
+var S = Array.isArray;
+var I = Array.prototype.push;
+var A = function(t, e) {
 	I.apply(t, S(e) ? e : [e]);
-}, D = Date.prototype.toISOString, $ = {
+};
+var D = Date.prototype.toISOString;
+var $ = {
 	addQueryPrefix: !1,
 	allowDots: !1,
 	allowEmptyArrays: !1,
@@ -32662,7 +32537,9 @@ var g = function() {
 	},
 	skipNulls: !1,
 	strictNullHandling: !1
-}, N = {}, _ = function(t, e, n, r, o, i, u, f, c, a, l, s, p, y, d, b, v, h) {
+};
+var N = {};
+var _ = function(t, e, n, r, o, i, u, f, c, a, l, s, p, y, d, b, v, h) {
 	let m = t, g = h, w = 0, j = !1;
 	for (; void 0 !== (g = g.get(N)) && !j;) {
 		const e = g.get(t);
@@ -32702,7 +32579,10 @@ var g = function() {
 		k.set(N, h), A(E, _(j, T, n, r, o, i, u, f, "comma" === n && b && S(m) ? null : c, a, l, s, p, y, d, b, v, k));
 	}
 	return E;
-}, x = Object.prototype.hasOwnProperty, C = Array.isArray, P = {
+};
+var x = Object.prototype.hasOwnProperty;
+var C = Array.isArray;
+var P = {
 	allowDots: !1,
 	allowEmptyArrays: !1,
 	allowPrototypes: !1,
@@ -32730,13 +32610,16 @@ var g = function() {
 	parseArrays: !0,
 	plainObjects: !1,
 	strictNullHandling: !1
-}, Z = function(t) {
+};
+var Z = function(t) {
 	return t.replace(/&#(\d+);/g, function(t, e) {
 		return String.fromCharCode(parseInt(e, 10));
 	});
-}, F = function(t, e) {
+};
+var F = function(t, e) {
 	return t && "string" == typeof t && e.comma && t.indexOf(",") > -1 ? t.split(",") : t;
-}, U = function(t, e, n, r) {
+};
+var U = function(t, e, n, r) {
 	if (!t) return;
 	const o = n.allowDots ? t.replace(/\.([^.[]+)/g, "[$1]") : t, i = /(\[[^[\]]*])/g;
 	let u = n.depth > 0 && /(\[[^[\]]*])/.exec(o);
@@ -32904,7 +32787,8 @@ var K = /*#__PURE__*/ function() {
 			}
 		}
 	]);
-}(), z = /*#__PURE__*/ function(t) {
+}();
+var z = /*#__PURE__*/ function(t) {
 	function r(e, r, o, i) {
 		var u;
 		if (void 0 === o && (o = !0), (u = t.call(this) || this).t = null != i ? i : "undefined" != typeof Ziggy ? Ziggy : null == globalThis ? void 0 : globalThis.Ziggy, !u.t && "undefined" != typeof document && document.getElementById("ziggy-routes-json") && (globalThis.Ziggy = JSON.parse(document.getElementById("ziggy-routes-json").textContent), u.t = globalThis.Ziggy), u.t = n({}, u.t, { absolute: o }), e) {
@@ -33098,8 +32982,7 @@ var M = { install: function(t, e) {
 	};
 	parseInt(t.version) > 2 ? (t.config.globalProperties.route = n, t.provide("route", n)) : t.mixin({ methods: { route: n } });
 } };
-//#endregion
-//#region resources/js/ssr.js
+// resources/js/ssr.js
 var appName = "TallerFlow";
 server_default((page) => createInertiaApp({
 	page,
@@ -33194,5 +33077,4 @@ server_default((page) => createInertiaApp({
 		return (0, vue_exports.createSSRApp)({ render: () => (0, vue_exports.h)(App, props) }).use(plugin).use(M, props.initialPage.props.ziggy);
 	}
 }));
-//#endregion
 export { _sfc_main$134 as a, PrimaryButton_default as i, _sfc_main$91 as n, _sfc_main$135 as o, _sfc_main$94 as r, _sfc_main$136 as s, _sfc_main$59 as t };

@@ -1,6 +1,6 @@
-import { d as vue_exports } from "./vendor-core-CciLBNgM.js";
-import { t as ApexCharts } from "./vendor-charts-BwICsk0G.js";
-//#region node_modules/vue3-apexcharts/dist/vue3-apexcharts.js
+import { d as vue_exports } from "./vendor-core-OVA8xfDF.js";
+import { t as ApexCharts } from "./vendor-charts-DhwCsp1Z.js";
+// node_modules/vue3-apexcharts/dist/vue3-apexcharts.js
 var C = [
 	"animationEnd",
 	"beforeMount",
@@ -20,7 +20,8 @@ var C = [
 	"zoomed",
 	"scrolled",
 	"brushScrolled"
-], x = (0, vue_exports.defineComponent)({
+];
+var x = (0, vue_exports.defineComponent)({
 	name: "apexchart",
 	props: {
 		options: { type: Object },
@@ -152,11 +153,13 @@ var C = [
 	render() {
 		return (0, vue_exports.h)("div", { class: "vue-apexcharts" });
 	}
-}), oe = (t, s) => {
+});
+var oe = (t, s) => {
 	const r = t.__vccOpts || t;
 	for (const [n, l] of s) r[n] = l;
 	return r;
-}, ae = (0, vue_exports.defineComponent)({
+};
+var ae = (0, vue_exports.defineComponent)({
 	name: "apexchart-server",
 	props: {
 		type: {
@@ -188,7 +191,7 @@ var C = [
 		const s = (0, vue_exports.ref)("");
 		return (0, vue_exports.onServerPrefetch)(async () => {
 			try {
-				const { default: r } = await import("./apexcharts.ssr.esm-fe46cd2d-BxjMxXpV.js"), n = Object.assign({}, t.options, {
+				const { default: r } = await import("./apexcharts.ssr.esm-fe46cd2d-BYqJyev-.js"), n = Object.assign({}, t.options, {
 					chart: Object.assign({}, t.options.chart, {
 						type: t.type,
 						width: t.width,
@@ -205,14 +208,16 @@ var C = [
 			}
 		}), { chartHTML: s };
 	}
-}), re = ["innerHTML"];
+});
+var re = ["innerHTML"];
 function se(t, s, r, n, l, g) {
 	return (0, vue_exports.openBlock)(), (0, vue_exports.createElementBlock)("div", {
 		innerHTML: t.chartHTML,
 		class: (0, vue_exports.normalizeClass)(t.className)
 	}, null, 10, re);
 }
-var M = /* @__PURE__ */ oe(ae, [["render", se]]), P = (0, vue_exports.defineComponent)({
+var M = /* @__PURE__ */ oe(ae, [["render", se]]);
+var P = (0, vue_exports.defineComponent)({
 	name: "apexchart-hydrate",
 	props: {
 		clientOptions: {
@@ -228,7 +233,7 @@ var M = /* @__PURE__ */ oe(ae, [["render", se]]), P = (0, vue_exports.defineComp
 		let s = [];
 		(0, vue_exports.onMounted)(async () => {
 			try {
-				const { default: r } = await import("./apexcharts.ssr.esm-fe46cd2d-BxjMxXpV.js");
+				const { default: r } = await import("./apexcharts.ssr.esm-fe46cd2d-BYqJyev-.js");
 				s = r.hydrateAll(t.selector, t.clientOptions);
 			} catch (r) {
 				console.error("Failed to hydrate ApexCharts:", r);
@@ -242,9 +247,9 @@ var M = /* @__PURE__ */ oe(ae, [["render", se]]), P = (0, vue_exports.defineComp
 	render() {
 		return null;
 	}
-}), ie = (t) => {
+});
+var ie = (t) => {
 	t.component(x.name, x), t.component(M.name, M), t.component(P.name, P);
 };
 x.install = ie;
-//#endregion
 export { P as ApexChartsHydrate, M as ApexChartsServer, x as default };

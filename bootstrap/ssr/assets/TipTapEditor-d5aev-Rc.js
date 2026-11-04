@@ -1,6 +1,6 @@
-import { d as vue_exports, l as server_renderer_exports } from "./vendor-core-CciLBNgM.js";
-import { a as index_default$2, c as index_default, d as EditorContent, f as useEditor, i as Table, l as index_default$1, n as index_default$7, o as index_default$5, r as index_default$6, s as index_default$4, t as index_default$8, u as index_default$3 } from "./vendor-tiptap-K-jxAda9.js";
-//#region resources/js/Components/TipTapEditor.vue
+import { d as vue_exports, l as server_renderer_exports } from "./vendor-core-OVA8xfDF.js";
+import { a as src_default$2, c as src_default, d as EditorContent, f as useEditor, i as Table, l as src_default$1, n as src_default$7, o as src_default$5, r as src_default$6, s as src_default$4, t as src_default$8, u as src_default$3 } from "./vendor-tiptap-BJWo1OeY.js";
+// resources/js/Components/TipTapEditor.vue
 var _sfc_main = {
 	__name: "TipTapEditor",
 	__ssrInlineRender: true,
@@ -21,25 +21,25 @@ var _sfc_main = {
 		const editor = useEditor({
 			content: props.modelValue,
 			extensions: [
-				index_default.configure({
+				src_default.configure({
 					link: false,
 					underline: false
 				}),
-				index_default$1,
-				index_default$2.configure({ types: ["heading", "paragraph"] }),
-				index_default$3.configure({
+				src_default$1,
+				src_default$2.configure({ types: ["heading", "paragraph"] }),
+				src_default$3.configure({
 					openOnClick: false,
 					HTMLAttributes: { class: "tiptap-link" }
 				}),
-				index_default$4.configure({ HTMLAttributes: { class: "tiptap-image" } }),
-				index_default$5.configure({ placeholder: props.placeholder }),
+				src_default$4.configure({ HTMLAttributes: { class: "tiptap-image" } }),
+				src_default$5.configure({ placeholder: props.placeholder }),
 				Table.configure({
 					resizable: true,
 					HTMLAttributes: { class: "tiptap-table" }
 				}),
-				index_default$6,
-				index_default$7,
-				index_default$8
+				src_default$6,
+				src_default$7,
+				src_default$8
 			],
 			onUpdate: ({ editor }) => {
 				emit("update:modelValue", editor.getHTML());
@@ -75,5 +75,4 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TipTapEditor.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-//#endregion
 export { _sfc_main as default };

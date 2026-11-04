@@ -1,14 +1,24 @@
-//#region node_modules/vue3-apexcharts/dist/apexcharts.ssr.esm-fe46cd2d.js
-var De = Object.defineProperty, Te = Object.defineProperties, Me = Object.getOwnPropertyDescriptors, Vt = Object.getOwnPropertySymbols, Pe = Object.prototype.hasOwnProperty, Fe = Object.prototype.propertyIsEnumerable, Xt = (A, t, e) => t in A ? De(A, t, {
+// node_modules/vue3-apexcharts/dist/apexcharts.ssr.esm-fe46cd2d.js
+var De = Object.defineProperty;
+var Te = Object.defineProperties;
+var Me = Object.getOwnPropertyDescriptors;
+var Vt = Object.getOwnPropertySymbols;
+var Pe = Object.prototype.hasOwnProperty;
+var Fe = Object.prototype.propertyIsEnumerable;
+var Xt = (A, t, e) => t in A ? De(A, t, {
 	enumerable: !0,
 	configurable: !0,
 	writable: !0,
 	value: e
-}) : A[t] = e, I = (A, t) => {
+}) : A[t] = e;
+var I = (A, t) => {
 	for (var e in t || (t = {})) Pe.call(t, e) && Xt(A, e, t[e]);
 	if (Vt) for (var e of Vt(t)) Fe.call(t, e) && Xt(A, e, t[e]);
 	return A;
-}, O = (A, t) => Te(A, Me(t)), Ee = (A, t, e) => Xt(A, typeof t != "symbol" ? t + "" : t, e), Ut = (A, t, e) => new Promise((s, i) => {
+};
+var O = (A, t) => Te(A, Me(t));
+var Ee = (A, t, e) => Xt(A, typeof t != "symbol" ? t + "" : t, e);
+var Ut = (A, t, e) => new Promise((s, i) => {
 	var a = (n) => {
 		try {
 			r(e.next(n));
@@ -254,7 +264,9 @@ var Re = class {
 		} };
 	}
 };
-var j = null, ot = null, rt = null;
+var j = null;
+var ot = null;
+var rt = null;
 var N = class {
 	/**
 	* Initialize the SSR shim if in SSR environment
@@ -812,9 +824,7 @@ var q = class {
 			case this.months31.indexOf(t) > -1:
 				s = 31;
 				break;
-			default:
-				s = 31;
-				break;
+			default: s = 31;
 		}
 		return s;
 	}
@@ -901,7 +911,8 @@ var Ft = ({ isTimeline: A, seriesIndex: t, dataPointIndex: e, y1: s, y2: i, w: a
 		color: x,
 		seriesName: c
 	};
-}, Et = (A) => {
+};
+var Et = (A) => {
 	let { color: t, seriesName: e, ylabel: s, start: i, end: a, seriesIndex: o, dataPointIndex: r } = A;
 	const n = A.w.globals.tooltip.tooltipLabels.getFormatters(o);
 	i = n.yLbFormatter(i), a = n.yLbFormatter(a);
@@ -2813,7 +2824,8 @@ var yt = class {
 		return (e.chart.type === "bar" || e.chart.type === "rangeBar") && e.tooltip.shared && e.xaxis.crosshairs.width === "barWidth" && e.series.length > 1 && (e.xaxis.crosshairs.width = "tickWidth"), (e.chart.type === "candlestick" || e.chart.type === "boxPlot") && e.yaxis[0].reversed && (console.warn(`Reversed y-axis in ${e.chart.type} chart is not supported.`), e.yaxis[0].reversed = !1), e;
 	}
 };
-var ce = 1.618, he = [[
+var ce = 1.618;
+var he = [[
 	1,
 	1,
 	2,
@@ -2837,7 +2849,8 @@ var ce = 1.618, he = [[
 	10,
 	10,
 	10
-]], Rt = [
+]];
+var Rt = [
 	1,
 	2,
 	4,
@@ -4129,12 +4142,10 @@ var P = class P {
 				i = i / 1.1, a = `M ${t - i} ${e} 
            L ${t + i} ${e}`;
 				break;
-			default:
-				i = i * 2, a = `M ${t}, ${e} 
+			default: i = i * 2, a = `M ${t}, ${e} 
            m -${i / 2}, 0 
            a ${i / 2},${i / 2} 0 1,0 ${i},0 
            a ${i / 2},${i / 2} 0 1,0 -${i},0`;
-				break;
 		}
 		return a;
 	}
@@ -4203,7 +4214,7 @@ var P = class P {
 				dataPointIndex: o,
 				w: s
 			}
-		]), !(s.config.states.active.filter.type !== "none" && t.node.getAttribute("selected") === "true") && s.config.states.hover.filter.type !== "none" && i.getDefaultFilter(t, a);
+		]), (s.config.states.active.filter.type === "none" || t.node.getAttribute("selected") !== "true") && s.config.states.hover.filter.type !== "none" && i.getDefaultFilter(t, a);
 	}
 	pathMouseDown(t, e) {
 		const s = this.w, i = new Z(this.w), a = parseInt(t.node.getAttribute("index"), 10), o = parseInt(t.node.getAttribute("j"), 10);
@@ -4583,7 +4594,7 @@ var ge = class {
 			let d = e + 1, p = !0;
 			e === 0 && h === 0 && (d = 0), e === 0 && h === 1 && (d = 1);
 			let g = i.globals.markers.size[o];
-			if (n !== Infinity) {
+			if (n !== 1 / 0) {
 				const m = i.config.plotOptions.bubble;
 				g = i.seriesData.seriesZ[o][d], m.zScaling && (g /= n), m.minBubbleRadius && g < m.minBubbleRadius && (g = m.minBubbleRadius), m.maxBubbleRadius && g > m.maxBubbleRadius && (g = m.maxBubbleRadius);
 			}
@@ -5494,9 +5505,7 @@ var It = class {
 						case "candlestick":
 							typeof this.w.candleData.seriesCandleC[u][v] < "u" && (d = Math.max(d, this.w.candleData.seriesCandleH[u][v]), e = Math.min(e, this.w.candleData.seriesCandleL[u][v]));
 							break;
-						case "boxPlot":
-							typeof this.w.candleData.seriesCandleC[u][v] < "u" && (d = Math.max(d, this.w.candleData.seriesCandleC[u][v]), e = Math.min(e, this.w.candleData.seriesCandleO[u][v]));
-							break;
+						case "boxPlot": typeof this.w.candleData.seriesCandleC[u][v] < "u" && (d = Math.max(d, this.w.candleData.seriesCandleC[u][v]), e = Math.min(e, this.w.candleData.seriesCandleO[u][v]));
 					}
 					y && y !== "candlestick" && y !== "boxPlot" && y !== "rangeArea" && y !== "rangeBar" && (d = Math.max(d, this.w.seriesData.series[u][v]), e = Math.min(e, this.w.seriesData.series[u][v])), this.w.seriesData.seriesGoals[u] && this.w.seriesData.seriesGoals[u][v] && Array.isArray(this.w.seriesData.seriesGoals[u][v]) && this.w.seriesData.seriesGoals[u][v].forEach((D) => {
 						d = Math.max(d, D.value), e = Math.min(e, D.value);
@@ -5533,9 +5542,7 @@ var It = class {
 				case "line":
 					t.lineGroups.push(a.group);
 					break;
-				case "area":
-					t.areaGroups.push(a.group);
-					break;
+				case "area": t.areaGroups.push(a.group);
 			}
 		}), t.barGroups = t.barGroups.filter((a, o, r) => r.indexOf(a) === o), t.lineGroups = t.lineGroups.filter((a, o, r) => r.indexOf(a) === o), t.areaGroups = t.areaGroups.filter((a, o, r) => r.indexOf(a) === o), {
 			minY: t.minY,
@@ -6866,7 +6873,9 @@ var Dt = class {
 		}), this.yAxisWidth < h && (this.yAxisWidth = h), this.yAxisWidth > d && (this.yAxisWidth = d);
 	}
 };
-var ue = 1440, Nt = ue * 60, Ze = 10 / Nt;
+var ue = 1440;
+var Nt = ue * 60;
+var Ze = 10 / Nt;
 var je = class {
 	constructor(t, e) {
 		this.w = t, this.ctx = e, this.timeScaleArray = [], this.utc = this.w.config.xaxis.labels.datetimeUTC;
@@ -6928,9 +6937,7 @@ var je = class {
 				break;
 			case "seconds_tens":
 			case "seconds_fives":
-			case "seconds":
-				this.generateSecondScale(k);
-				break;
+			case "seconds": this.generateSecondScale(k);
 		}
 		const F = this.timeScaleArray.map((M) => {
 			const E = {
@@ -6989,9 +6996,7 @@ var je = class {
 				case "seconds_tens":
 					R % 10 !== 0 && (z = !0);
 					break;
-				case "seconds_fives":
-					R % 5 !== 0 && (z = !0);
-					break;
+				case "seconds_fives": R % 5 !== 0 && (z = !0);
 			}
 			if (this.tickInterval === "hours" || this.tickInterval === "minutes_fives" || this.tickInterval === "seconds_tens" || this.tickInterval === "seconds_fives") {
 				if (!z) return !0;
@@ -7043,9 +7048,7 @@ var je = class {
 			case a > 20:
 				this.tickInterval = "seconds_fives";
 				break;
-			default:
-				this.tickInterval = "seconds";
-				break;
+			default: this.tickInterval = "seconds";
 		}
 	}
 	generateYearScale({ firstVal: t, currentMonth: e, currentYear: s, daysWidthOnXAxis: i, numberOfYears: a }) {
@@ -8140,7 +8143,7 @@ var be = class {
 	}
 	closestInMultiArray(t, e, s, i) {
 		const a = this.w, o = (c) => a.globals.collapsedSeriesIndices.indexOf(c) === -1 && a.globals.ancillaryCollapsedSeriesIndices.indexOf(c) === -1;
-		let r = Infinity, n = null, l = null;
+		let r = 1 / 0, n = null, l = null;
 		for (let c = 0; c < s.length; c++) {
 			if (!o(c)) continue;
 			const h = s[c], d = i[c], p = Math.min(h.length, d.length);
@@ -9023,7 +9026,7 @@ var as = class {
 		this.lastHoverTime = Date.now();
 		let s = [];
 		const i = this.w;
-		i.config.chart.group && (s = this.ctx.getGroupedCharts()), !(i.globals.axisCharts && (i.globals.minX === -Infinity && i.globals.maxX === Infinity || i.globals.dataPoints === 0)) && (s.length ? s.forEach((a) => {
+		i.config.chart.group && (s = this.ctx.getGroupedCharts()), !(i.globals.axisCharts && (i.globals.minX === -1 / 0 && i.globals.maxX === 1 / 0 || i.globals.dataPoints === 0)) && (s.length ? s.forEach((a) => {
 			const o = this.getElTooltip(a), r = {
 				paths: t.paths,
 				tooltipEl: o,
@@ -9378,7 +9381,8 @@ var tt = class dt {
 	filterer() {
 		return this._filter;
 	}
-}, os = 0;
+};
+var os = 0;
 var rs = class extends tt {
 	constructor(t, e, s) {
 		const i = e === "radial" ? "radialGradient" : "linearGradient", a = N.createElementNS(G, i);
@@ -9671,13 +9675,13 @@ function qt(A) {
 	]), t;
 }
 function Zt(A) {
-	let t = Infinity, e = Infinity, s = -Infinity, i = -Infinity;
+	let t = 1 / 0, e = 1 / 0, s = -1 / 0, i = -1 / 0;
 	return A.forEach((a) => {
 		for (let o = 1; o < a.length; o += 2) if (o + 1 <= a.length) {
 			const r = a[o], n = a[o + 1];
 			typeof r == "number" && typeof n == "number" && (r < t && (t = r), r > s && (s = r), n < e && (e = n), n > i && (i = n));
 		}
-	}), t === Infinity ? {
+	}), t === 1 / 0 ? {
 		x: 0,
 		y: 0,
 		width: 0,
@@ -9707,9 +9711,7 @@ function jt(A) {
 		case "T":
 			A[0] = "Q", A[3] = A[1], A[4] = A[2], A[1] = this.reflection[1], A[2] = this.reflection[0];
 			break;
-		case "S":
-			A[0] = "C", A[6] = A[4], A[5] = A[3], A[4] = A[2], A[3] = A[1], A[2] = this.reflection[1], A[1] = this.reflection[0];
-			break;
+		case "S": A[0] = "C", A[6] = A[4], A[5] = A[3], A[4] = A[2], A[3] = A[1], A[2] = this.reflection[1], A[1] = this.reflection[0];
 	}
 	return A;
 }
@@ -9727,9 +9729,7 @@ function Jt(A) {
 		case "Q":
 			A[6] = A[4], A[5] = A[3], A[4] = A[4] * 1 / 3 + A[2] * 2 / 3, A[3] = A[3] * 1 / 3 + A[1] * 2 / 3, A[2] = this.pos[1] * 1 / 3 + A[2] * 2 / 3, A[1] = this.pos[0] * 1 / 3 + A[1] * 2 / 3;
 			break;
-		case "A":
-			t = ms(this.pos, A), A = t[0];
-			break;
+		case "A": t = ms(this.pos, A), A = t[0];
 	}
 	return A[0] = "C", this.pos = [A[5], A[6]], this.reflection = [2 * A[5] - A[3], 2 * A[6] - A[4]], t;
 }
@@ -10000,9 +10000,10 @@ function ks(A) {
 		n.forEach((c, h) => {
 			const d = new At(document.createElementNS(G, "g"));
 			a.appendChild(d.node);
+			const p = s(d, [0, 0], h, [], c);
 			r[c] = {
 				group: d,
-				handle: s(d, [0, 0], h, [], c)
+				handle: p
 			};
 		});
 		const l = () => {
@@ -11249,8 +11250,8 @@ var K = class K {
 	static initOnLoad() {
 		const t = document.querySelectorAll("[data-apexcharts]");
 		for (let e = 0; e < t.length; e++) {
-			const s = t[e];
-			new K(s, JSON.parse(t[e].getAttribute("data-options"))).render();
+			const s = t[e], i = JSON.parse(t[e].getAttribute("data-options"));
+			new K(s, i).render();
 		}
 	}
 	/**
@@ -12017,25 +12018,31 @@ var Fs = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org
         <use overflow="visible" xlink:href="#a"/>
     </clipPath>
     <path clip-path="url(#b)" d="M23 5.5V20c0 2.2-1.8 4-4 4h-7.3c-1.08 0-2.1-.43-2.85-1.19L1 14.83s1.26-1.23 1.3-1.25c.22-.19.49-.29.79-.29.22 0 .42.06.6.16.04.01 4.31 2.46 4.31 2.46V4c0-.83.67-1.5 1.5-1.5S11 3.17 11 4v7h1V1.5c0-.83.67-1.5 1.5-1.5S15 .67 15 1.5V11h1V2.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V11h1V5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5z"/>
-</svg>`, Es = `<svg xmlns="http://www.w3.org/2000/svg" fill="#000000" height="24" viewBox="0 0 24 24" width="24">
+</svg>`;
+var Es = `<svg xmlns="http://www.w3.org/2000/svg" fill="#000000" height="24" viewBox="0 0 24 24" width="24">
     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
     <path d="M0 0h24v24H0V0z" fill="none"/>
     <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
-</svg>`, Xs = `<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+</svg>`;
+var Xs = `<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     <path d="M0 0h24v24H0z" fill="none"/>
-</svg>`, Rs = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+</svg>`;
+var Rs = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path d="M0 0h24v24H0z" fill="none"/>
     <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
 </svg>
-`, Is = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+`;
+var Is = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path d="M0 0h24v24H0z" fill="none"/>
     <path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
 </svg>
-`, Ys = `<svg fill="#6E8192" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+`;
+var Ys = `<svg fill="#6E8192" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
     <path d="M0 0h24v24H0z" fill="none"/>
     <path d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z"/>
-</svg>`, Bs = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z\"/></svg>";
+</svg>`;
+var Bs = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z\"/></svg>";
 var Ce = class {
 	constructor(t, e) {
 		this.w = t, this.ctx = e, this.ev = this.w.config.chart.events, this.selectedClass = "apexcharts-selected", this.localeValues = this.w.globals.locale.toolbar, this.minX = t.globals.minX, this.maxX = t.globals.maxX;
@@ -12256,12 +12263,10 @@ var Ce = class {
 			case "png":
 				s.exportToPng(this.ctx);
 				break;
-			case "csv":
-				s.exportToCSV({
-					series: e.config.series,
-					columnDelimiter: e.config.chart.toolbar.export.csv.columnDelimiter
-				});
-				break;
+			case "csv": s.exportToCSV({
+				series: e.config.series,
+				columnDelimiter: e.config.chart.toolbar.export.csv.columnDelimiter
+			});
 		}
 	}
 	handleZoomReset() {
@@ -12940,9 +12945,7 @@ var _s = class {
 			case "yaxis":
 				this.addYaxisAnnotation(d, n, l);
 				break;
-			case "point":
-				this.addPointAnnotation(d, n, l);
-				break;
+			case "point": this.addPointAnnotation(d, n, l);
 		}
 		const p = r.dom.baseEl.querySelector(`.apexcharts-${i}-annotations .apexcharts-${i}-annotation-label[rel='${l}']`), g = this.helpers.addBackgroundToAnno(p, d);
 		return g && n.insertBefore(g.node, p), e && r.globals.memory.methodsToExec.push({
@@ -13033,9 +13036,7 @@ var Ws = class {
 			case " ":
 				t.preventDefault(), this._fireClick();
 				break;
-			case "Escape":
-				t.preventDefault(), this.active = !1, this._hideFocus();
-				break;
+			case "Escape": t.preventDefault(), this.active = !1, this._hideFocus();
 		}
 	}
 	_move(t, e) {
@@ -13459,9 +13460,7 @@ var Gs = class {
 			case "bottom":
 				C ? k ? d = F - l + u : d = F + l - u : k ? d = F - l + c.height + x + u : d = F + l - c.height / 2 + x - u;
 				break;
-			case "top":
-				C ? k ? d = F + u : d = F - u : k ? d = F - c.height / 2 - u : d = F + c.height + u;
-				break;
+			case "top": C ? k ? d = F + u : d = F - u : k ? d = F - c.height / 2 - u : d = F + c.height + u;
 		}
 		let T = F;
 		if (e.labelData.seriesGroups.forEach((M) => {
@@ -13508,9 +13507,7 @@ var Gs = class {
 			case "bottom":
 				D ? h = S + l - d - x : h = S - l + d + x;
 				break;
-			case "top":
-				D ? h = S - d - x : h = S - d + x;
-				break;
+			case "top": D ? h = S - d - x : h = S - d + x;
 		}
 		let k = S;
 		if (e.labelData.seriesGroups.forEach((F) => {
@@ -14718,14 +14715,16 @@ var Zs = (A) => {
 	for (let l = 0; l < e; l++) r = Ot(A[l], A[l + 1]), Math.abs(r) < s ? t[l] = t[l + 1] = 0 : (a = t[l] / r, o = t[l + 1] / r, n = a * a + o * o, n > 9 && (n = r * 3 / Math.sqrt(n), t[l] = n * a, t[l + 1] = n * o));
 	for (let l = 0; l <= e; l++) n = (A[Math.min(e, l + 1)][0] - A[Math.max(0, l - 1)][0]) / (6 * (1 + t[l] * t[l])), i.push([n || 0, t[l] * n || 0]);
 	return i;
-}, js = (A) => {
+};
+var js = (A) => {
 	let t = "";
 	for (let e = 0; e < A.length; e++) {
 		const s = A[e], i = s.length;
 		i > 4 ? (t += `C${s[0]}, ${s[1]}`, t += `, ${s[2]}, ${s[3]}`, t += `, ${s[4]}, ${s[5]}`) : i > 2 && (t += `S${s[0]}, ${s[1]}`, t += `, ${s[2]}, ${s[3]}`);
 	}
 	return t;
-}, ie = {
+};
+var ie = {
 	/**
 	* Convert 'points' to bezier
 	* @param {Array} points
@@ -15072,7 +15071,7 @@ var mt = class {
 				curve: H,
 				isRangeStart: y
 			});
-			p = it.areaPaths, d = it.linePaths, l = it.pX, c = it.pY, _ = it.pathState, $ = it.segmentStartX, T = it.areaPath, F = it.linePath, this.appendPathFrom && !C.globals.hasNullValues && !(H === "monotoneCubic" && t === "rangeArea") && (M += D.line(r, this.areaBottomY), E += D.line(r, this.areaBottomY)), this.handleNullDataPoints(e, $t, o, W, i), this._handleMarkersAndLabels({
+			p = it.areaPaths, d = it.linePaths, l = it.pX, c = it.pY, _ = it.pathState, $ = it.segmentStartX, T = it.areaPath, F = it.linePath, this.appendPathFrom && !C.globals.hasNullValues && (H !== "monotoneCubic" || t !== "rangeArea") && (M += D.line(r, this.areaBottomY), E += D.line(r, this.areaBottomY)), this.handleNullDataPoints(e, $t, o, W, i), this._handleMarkersAndLabels({
 				type: t,
 				pointsPos: $t,
 				i: o,
@@ -15173,13 +15172,11 @@ var mt = class {
 							f += k, x += k;
 							break;
 						}
-					case 1:
-						if (e[s][i + 1] === null) D ? f += w.line(h, l) : f += w.move(h, d), x += w.line(h, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1;
-						else {
-							const k = w.curve(h + S, d, a - S, o, a, o);
-							f += k, x += k, i >= e[s].length - 2 && (D && (f += w.curve(a, o, a, o, a, l) + w.move(a, l)), x += w.curve(a, o, a, o, a, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1);
-						}
-						break;
+					case 1: if (e[s][i + 1] === null) D ? f += w.line(h, l) : f += w.move(h, d), x += w.line(h, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1;
+					else {
+						const k = w.curve(h + S, d, a - S, o, a, o);
+						f += k, x += k, i >= e[s].length - 2 && (D && (f += w.curve(a, o, a, o, a, l) + w.move(a, l)), x += w.curve(a, o, a, o, a, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1);
+					}
 				}
 				h = a, d = o;
 				break;
@@ -15194,9 +15191,7 @@ var mt = class {
 						case "linestep":
 							M = w.line(null, T, "V") + w.line(F, null, "H");
 							break;
-						case "straight":
-							M = w.line(F, T);
-							break;
+						case "straight": M = w.line(F, T);
 					}
 					return M;
 				};
@@ -15212,13 +15207,11 @@ var mt = class {
 							f += k, x += k;
 							break;
 						}
-					case 1:
-						if (e[s][i + 1] === null) D ? f += w.line(h, l) : f += w.move(h, d), x += w.line(h, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1;
-						else {
-							const k = S(y, a, o);
-							f += k, x += k, i >= e[s].length - 2 && (D && (f += w.line(a, l)), x += w.line(a, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1);
-						}
-						break;
+					case 1: if (e[s][i + 1] === null) D ? f += w.line(h, l) : f += w.move(h, d), x += w.line(h, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1;
+					else {
+						const k = S(y, a, o);
+						f += k, x += k, i >= e[s].length - 2 && (D && (f += w.line(a, l)), x += w.line(a, v) + w.line(g, v) + "z", m.push(f), u.push(x), p = -1);
+					}
 				}
 				h = a, d = o;
 				break;
@@ -16351,7 +16344,7 @@ function ne(A, t, e, s, i) {
 	const a = [], o = A.length;
 	if (o === 0) return a;
 	const r = new Array(o);
-	let n = 0, l = 0, c = Infinity, h = -Infinity, d = 0;
+	let n = 0, l = 0, c = 1 / 0, h = -1 / 0, d = 0;
 	for (; d < o;) {
 		const p = Math.min(s, i), g = A[d];
 		if (ei(n, c, h, l, g, p)) r[n] = g, n++, l += g, g < c && (c = g), g > h && (h = g), d++;
@@ -16363,7 +16356,7 @@ function ne(A, t, e, s, i) {
 				const f = l / s;
 				e += f, i -= f;
 			}
-			n = 0, l = 0, c = Infinity, h = -Infinity;
+			n = 0, l = 0, c = 1 / 0, h = -1 / 0;
 		}
 	}
 	return n > 0 && re(a, r, n, l, t, e, s, i), a;
@@ -16411,10 +16404,10 @@ var ai = class {
 				new Z(this.w).dropShadow(a, g, l);
 			}
 			const h = s.group({ class: "apexcharts-data-labels" }), d = {
-				xMin: Infinity,
-				yMin: Infinity,
-				xMax: -Infinity,
-				yMax: -Infinity
+				xMin: 1 / 0,
+				yMin: 1 / 0,
+				xMax: -1 / 0,
+				yMax: -1 / 0
 			};
 			n.forEach((g, f) => {
 				const x = g[0], m = g[1], u = g[2], y = g[3];
@@ -16476,7 +16469,7 @@ var ai = class {
 			const p = e.config.plotOptions.treemap.seriesTitle;
 			if (e.config.series.length > 1 && p && p.show) {
 				const g = e.config.series[l].name || "";
-				if (g && d.xMin < Infinity && d.yMin < Infinity) {
+				if (g && d.xMin < 1 / 0 && d.yMin < 1 / 0) {
 					const { offsetX: f, offsetY: x, borderColor: m, borderWidth: u, borderRadius: y, style: b } = p, w = b.color || e.config.chart.foreColor, v = {
 						left: b.padding.left,
 						right: b.padding.right,
@@ -16858,5 +16851,4 @@ K.renderToHTML = Mt.renderToHTML.bind(Mt);
 K.hydrate = pt.hydrate.bind(pt);
 K.hydrateAll = pt.hydrateAll.bind(pt);
 K.isHydrated = pt.isHydrated.bind(pt);
-//#endregion
 export { K as default };
