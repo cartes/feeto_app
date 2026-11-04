@@ -300,20 +300,22 @@ const resetPage = (i) => {
 
                 <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="space-y-5">
-                        <div class="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
                             <div>
                                 <p class="text-sm font-semibold text-slate-900">Activar botón fijo</p>
                                 <p class="mt-1 text-xs text-slate-500">Se mostrará en la esquina inferior derecha del sitio público.</p>
                             </div>
                             <button
                                 type="button"
+                                role="switch"
+                                :aria-checked="whatsappForm.marketing_whatsapp_enabled"
                                 @click="whatsappForm.marketing_whatsapp_enabled = !whatsappForm.marketing_whatsapp_enabled"
                                 :class="whatsappForm.marketing_whatsapp_enabled ? 'bg-emerald-500' : 'bg-slate-300'"
-                                class="relative inline-flex h-7 w-12 shrink-0 rounded-full transition-colors"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                             >
                                 <span
-                                    :class="whatsappForm.marketing_whatsapp_enabled ? 'translate-x-5' : 'translate-x-0.5'"
-                                    class="inline-block h-6 w-6 transform rounded-full bg-white shadow transition"
+                                    :class="whatsappForm.marketing_whatsapp_enabled ? 'translate-x-5' : 'translate-x-0'"
+                                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
                                 ></span>
                             </button>
                         </div>
