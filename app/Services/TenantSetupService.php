@@ -32,7 +32,7 @@ class TenantSetupService
         $serviceSeeder = new DefaultServiceSeeder;
         $serviceSeeder->run();
 
-        $this->ensureMainBranch($tenant);
+        $this->ensureMainBranch($tenant, $adminUser);
 
         if ($adminUser !== null) {
             $this->assignAdminRole($adminUser);
@@ -57,7 +57,7 @@ class TenantSetupService
     /**
      * Asegura que el taller tenga su Casa Matriz creada.
      */
-    public function ensureMainBranch(Tenant $tenant): Branch
+    public function ensureMainBranch(Tenant $tenant, ?User $adminUser = null): Branch
     {
         $mainBranch = $tenant->branches()->where('is_main', true)->first()
             ?? $tenant->branches()->first();
@@ -69,9 +69,12 @@ class TenantSetupService
                 'code' => 'MATRIZ',
                 'address' => $tenant->seo_address ?? $tenant->comuna ?? null,
                 'phone' => $tenant->phone ?? $tenant->whatsapp_number ?? null,
+                'email' => $adminUser?->email,
                 'is_main' => true,
                 'is_active' => true,
             ]);
+        } elseif (! filled($mainBranch->email) && filled($adminUser?->email)) {
+            $mainBranch->update(['email' => $adminUser->email]);
         }
 
         return $mainBranch;

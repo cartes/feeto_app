@@ -380,12 +380,14 @@ class Tenant extends SpatieTenant
 
         $email = $branch?->email;
 
-        if (! $email) {
-            $adminUser = $this->users()->first();
+        if (! filled($email)) {
+            $adminUser = $this->users()
+                ->whereHas('roles', static fn ($q) => $q->where('name', 'Admin'))
+                ->first() ?? $this->users()->first();
             $email = $adminUser?->email;
         }
 
-        return $email ?? (string) config('mail.from.address');
+        return filled($email) ? (string) $email : (string) config('mail.from.address');
     }
 
     public function emailTrackings(): HasMany

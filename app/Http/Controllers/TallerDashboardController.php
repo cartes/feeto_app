@@ -169,7 +169,7 @@ class TallerDashboardController extends Controller
             'date' => $appointment->appointment_date->toDateString(),
             'time' => $appointment->appointment_date->format('H:i'),
             'status' => $appointment->status,
-            'notes' => $appointment->notes,
+            'notes' => $appointment->notes ?: $appointment->pre_check_notes,
             'scheduled_at' => $appointment->appointment_date->toISOString(),
             'client' => [
                 'id' => $appointment->client?->id,

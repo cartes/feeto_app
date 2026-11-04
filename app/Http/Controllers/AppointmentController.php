@@ -83,7 +83,7 @@ class AppointmentController extends Controller
             'appointment_date' => $appointment->appointment_date->format('H:i'),
             'scheduled_at' => $appointment->appointment_date->toISOString(),
             'status' => $appointment->status,
-            'notes' => $appointment->notes,
+            'notes' => $appointment->notes ?: $appointment->pre_check_notes,
             'client' => [
                 'id' => $appointment->client?->id,
                 'name' => $clientName,

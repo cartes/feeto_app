@@ -1,12 +1,16 @@
+<x-mail::message>
 # Nueva cita agendada en tu taller
 
 Hola,
 
-Se ha agendado una nueva hora de atención en **TallerFlow**.
+Se ha agendado una nueva hora de atención en **{{ $appointment->tenant?->name ?? 'TallerFlow' }}**.
 
 ## Información de la Cita
 - **Cliente:** {{ $appointment->customer_name }}
 - **Teléfono:** {{ $appointment->phone }}
+@if($appointment->email)
+- **Correo:** {{ $appointment->email }}
+@endif
 - **Patente:** {{ $appointment->plate }}
 - **Fecha y Hora:** {{ $appointment->appointment_date->locale('es_CL')->translatedFormat('d \d\e F, Y \a \l\a\s H:i \h\r\s') }}
 
@@ -15,5 +19,12 @@ Se ha agendado una nueva hora de atención en **TallerFlow**.
 {{ $appointment->pre_check_notes }}
 @endif
 
+@if($appointment->tenant)
+<x-mail::button :url="route('appointments.index', ['tenantBySlug' => $appointment->tenant->slug])">
+Ver Agenda del Taller
+</x-mail::button>
+@endif
+
 ---
 Este correo fue enviado automáticamente por la plataforma Taller Flow.
+</x-mail::message>

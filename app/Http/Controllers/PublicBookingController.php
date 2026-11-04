@@ -114,6 +114,7 @@ class PublicBookingController extends Controller
 
         $appointment = Appointment::create([
             'tenant_id' => $tenantBySlug->id,
+            'branch_id' => $tenantBySlug->mainBranch()?->id,
             'plate' => strtoupper($validated['plate']),
             'customer_name' => $validated['customer_name'],
             'phone' => $validated['phone'],

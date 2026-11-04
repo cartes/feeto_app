@@ -10,6 +10,7 @@ use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\TenantSetupService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -283,6 +284,74 @@ class PublicBookingControllerTest extends TestCase
                 ->where('tenant.comuna', 'Providencia')
                 ->where('tenant.seo_address', 'Av. Providencia 1234')
                 ->where('tenant.website_url', 'https://mitaller.cl')
+            );
+    }
+
+    public function test_booking_creates_in_app_notification_and_displays_in_tenant_agenda(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create([
+            'tenant_id' => $this->tenant->id,
+            'email' => 'admin@test-taller.cl',
+            'needs_password_change' => false,
+        ]);
+
+        app(TenantSetupService::class)->provisionTenant($this->tenant, $admin);
+        $mainBranch = $this->tenant->mainBranch();
+
+        $appointmentDate = now()->addHours(2);
+
+        $response = $this->post("/taller/{$this->tenant->slug}/booking", [
+            'customer_name' => 'María González',
+            'phone' => '+56987654321',
+            'email' => 'maria@cliente.cl',
+            'plate' => 'BCDF12',
+            'appointment_date' => $appointmentDate->format('Y-m-d H:i'),
+            'pre_check_notes' => 'Ruido al frenar en ruedas delanteras',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('booking_success', true);
+
+        $appointment = Appointment::query()->where('plate', 'BCDF12')->firstOrFail();
+        $this->assertSame($mainBranch?->id, $appointment->branch_id);
+
+        // 1. Verificar notificación por correo al Tenant con botón a la agenda
+        Mail::assertSent(AppointmentScheduledMail::class, function (AppointmentScheduledMail $mail) use ($appointment): bool {
+            $mail->assertSeeInHtml('María González');
+            $mail->assertSeeInHtml('Ruido al frenar en ruedas delanteras');
+            $mail->assertSeeInHtml(route('appointments.index', ['tenantBySlug' => $this->tenant->slug]));
+
+            return $mail->hasTo('admin@test-taller.cl') && $mail->appointment->id === $appointment->id;
+        });
+
+        // 2. Verificar notificación interna (campana del panel) para el Tenant
+        $this->assertDatabaseHas('tenant_notifications', [
+            'tenant_id' => $this->tenant->id,
+            'type' => 'new_appointment',
+            'title' => 'Nueva cita agendada',
+        ]);
+
+        $notificationsResponse = $this->actingAs($admin)
+            ->getJson(route('notifications.index', ['tenantBySlug' => $this->tenant->slug]));
+
+        $notificationsResponse->assertOk()
+            ->assertJsonPath('unread_count', 1)
+            ->assertJsonPath('notifications.0.type', 'new_appointment')
+            ->assertJsonPath('notifications.0.title', 'Nueva cita agendada');
+
+        // 3. Verificar que la cita y sus notas de pre-check aparecen en la agenda del Tenant
+        $agendaResponse = $this->actingAs($admin)
+            ->get(route('appointments.index', ['tenantBySlug' => $this->tenant->slug]));
+
+        $agendaResponse->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Appointments/Index')
+                ->has('appointments', 1)
+                ->where('appointments.0.plate', 'BCDF12')
+                ->where('appointments.0.notes', 'Ruido al frenar en ruedas delanteras')
+                ->has('appointmentNotifications', 1)
             );
     }
 }
