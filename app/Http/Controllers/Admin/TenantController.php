@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Country;
+use App\Enums\MarketingEmailTemplate;
 use App\Enums\TenantPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SendMarketingEmailRequest;
 use App\Http\Requests\Admin\SendRenewalOfferRequest;
 use App\Http\Requests\Admin\StoreTenantRequest;
 use App\Http\Requests\Admin\UpdateTenantRequest;
@@ -16,6 +18,7 @@ use App\Models\Product;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
+use App\Notifications\TenantMarketingNotification;
 use App\Services\TenantSetupService;
 use App\Services\TenantWelcomeService;
 use Illuminate\Http\RedirectResponse;
@@ -113,6 +116,7 @@ class TenantController extends Controller
                 'sort_direction' => $sortDirection,
                 'per_page' => $perPage,
             ],
+            'marketingTemplates' => MarketingEmailTemplate::options(),
         ]);
     }
 
@@ -336,13 +340,7 @@ class TenantController extends Controller
         $discountPercent = isset($validated['discount_percent']) ? (int) $validated['discount_percent'] : null;
         $customMessage = $validated['custom_message'] ?? null;
 
-        $tenant->makeCurrent();
-
-        $admin = User::where('tenant_id', $tenant->id)
-            ->whereHas('roles', fn ($q) => $q->where('name', 'Admin'))
-            ->first() ?? User::where('tenant_id', $tenant->id)->first();
-
-        Tenant::forgetCurrent();
+        $admin = $this->resolveTenantAdmin($tenant);
 
         if (! $admin) {
             return back()->with('error', "No se encontró un usuario administrador para '{$tenant->name}'.");
@@ -384,5 +382,91 @@ class TenantController extends Controller
         );
 
         return back()->with('success', "Recordatorio/oferta enviado exitosamente a {$admin->email}.");
+    }
+
+    /**
+     * Envía una plantilla de marketing al administrador de cada taller seleccionado.
+     */
+    public function sendMarketingEmail(SendMarketingEmailRequest $request): RedirectResponse
+    {
+        $template = MarketingEmailTemplate::from($request->validated('template'));
+        $sentCount = 0;
+        $skippedNames = [];
+        $optedOutNames = [];
+
+        $tenants = Tenant::query()->whereIn('id', $request->validated('tenant_ids'))->get();
+
+        foreach ($tenants as $tenant) {
+            if ($tenant->marketing_opt_out_at !== null) {
+                $optedOutNames[] = $tenant->name;
+
+                continue;
+            }
+
+            $admin = $this->resolveTenantAdmin($tenant);
+
+            if (! $admin || blank($admin->email)) {
+                $skippedNames[] = $tenant->name;
+
+                continue;
+            }
+
+            $subject = $template->subject($tenant->name);
+
+            EmailTracking::create([
+                'tenant_id' => $tenant->id,
+                'user_id' => $admin->id,
+                'type' => $template->trackingType(),
+                'recipient_email' => $admin->email,
+                'token' => Str::random(40),
+                'subject' => $subject,
+                'metadata' => [
+                    'template' => $template->value,
+                    'bulk_send' => true,
+                    'sent_by' => $request->user()?->name ?? 'Admin',
+                ],
+                'sent_at' => now(),
+            ]);
+
+            $admin->notify((new TenantMarketingNotification($tenant, $template))->delay(now()->addSeconds($sentCount * 2)));
+
+            $sentCount++;
+        }
+
+        if ($sentCount > 0) {
+            AuditLog::record(
+                'marketing.bulk_email_sent',
+                "Correo masivo '{$template->label()}' enviado a {$sentCount} taller(es)."
+            );
+        }
+
+        if ($sentCount === 0) {
+            return back()->with('error', 'No se envió ningún correo: los talleres seleccionados no tienen un administrador con correo o pidieron no recibir correos.');
+        }
+
+        $message = "Correo enviado a {$sentCount} taller(es).";
+
+        if ($skippedNames !== []) {
+            $message .= ' Sin administrador: '.implode(', ', $skippedNames).'.';
+        }
+
+        if ($optedOutNames !== []) {
+            $message .= ' Dados de baja: '.implode(', ', $optedOutNames).'.';
+        }
+
+        return back()->with('success', $message);
+    }
+
+    private function resolveTenantAdmin(Tenant $tenant): ?User
+    {
+        $tenant->makeCurrent();
+
+        $admin = User::where('tenant_id', $tenant->id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'Admin'))
+            ->first() ?? User::where('tenant_id', $tenant->id)->first();
+
+        Tenant::forgetCurrent();
+
+        return $admin;
     }
 }

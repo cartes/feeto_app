@@ -34,6 +34,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\ManualQuoteController;
 use App\Http\Controllers\ManualQuoteTrackingController;
+use App\Http\Controllers\MarketingUnsubscribeController;
 use App\Http\Controllers\OcrController;
 use App\Http\Controllers\OnboardingTourController;
 use App\Http\Controllers\ProductCategoryController;
@@ -137,6 +138,7 @@ Route::get('/mail/click/{token}', [EmailTrackingController::class, 'trackClick']
 
 // Landing page pública del taller — embudo de conversión con Pre-Check ALPR
 Route::get('/taller/{tenantBySlug}', [PublicBookingController::class, 'show'])->name('taller.landing');
+Route::get('/marketing/baja/{tenant}', MarketingUnsubscribeController::class)->middleware('signed')->name('marketing.unsubscribe');
 Route::post('/taller/{tenantBySlug}/booking', [PublicBookingController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('taller.booking.store');
@@ -543,6 +545,7 @@ Route::middleware(['auth', 'verified', IsSuperAdmin::class])
         Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
         Route::get('/tenants/create', [TenantController::class, 'create'])->name('tenants.create');
         Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
+        Route::post('/tenants/send-marketing-email', [TenantController::class, 'sendMarketingEmail'])->name('tenants.send-marketing-email');
         Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit');
         Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
         Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');

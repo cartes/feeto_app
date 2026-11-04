@@ -1,12 +1,55 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
     tenants: Object,
     filters: Object,
+    marketingTemplates: { type: Array, default: () => [] },
 });
+
+const selectedIds = ref([]);
+const showMarketingModal = ref(false);
+const selectedTemplate = ref(props.marketingTemplates[0]?.value ?? '');
+const isSending = ref(false);
+
+const pageIds = computed(() => props.tenants.data.map((tenant) => tenant.id));
+const selectedCount = computed(() => selectedIds.value.length);
+const allPageSelected = computed(
+    () => pageIds.value.length > 0 && pageIds.value.every((id) => selectedIds.value.includes(id)),
+);
+
+const toggleAllOnPage = () => {
+    if (allPageSelected.value) {
+        selectedIds.value = selectedIds.value.filter((id) => !pageIds.value.includes(id));
+    } else {
+        selectedIds.value = [...new Set([...selectedIds.value, ...pageIds.value])];
+    }
+};
+
+const clearSelection = () => {
+    selectedIds.value = [];
+};
+
+const sendMarketingEmail = () => {
+    if (isSending.value || selectedCount.value === 0 || !selectedTemplate.value) return;
+
+    router.post(
+        route('admin.tenants.send-marketing-email'),
+        { tenant_ids: selectedIds.value, template: selectedTemplate.value },
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onStart: () => { isSending.value = true; },
+            onFinish: () => { isSending.value = false; },
+            onSuccess: () => {
+                showMarketingModal.value = false;
+                clearSelection();
+            },
+        },
+    );
+};
 
 const search = ref(props.filters?.search ?? '');
 const sortBy = ref(props.filters?.sort_by ?? 'usage');
@@ -187,14 +230,52 @@ const getSortLabel = () => {
             </div>
         </div>
 
+        <!-- Barra de selección -->
+        <div
+            v-if="selectedCount > 0"
+            class="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+            <p class="text-sm font-medium text-amber-900">
+                {{ selectedCount }} taller{{ selectedCount !== 1 ? 'es' : '' }} seleccionado{{ selectedCount !== 1 ? 's' : '' }}
+            </p>
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    @click="clearSelection"
+                    class="rounded-lg px-3 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors"
+                >
+                    Limpiar selección
+                </button>
+                <button
+                    type="button"
+                    @click="showMarketingModal = true"
+                    class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Enviar correo
+                </button>
+            </div>
+        </div>
+
         <!-- Tabla de Talleres -->
         <div class="flow-root">
             <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-left">
                     <thead class="bg-slate-50">
                         <tr>
+                            <th scope="col" class="w-10 py-3.5 pl-4 pr-0 sm:pl-6">
+                                <input
+                                    type="checkbox"
+                                    :checked="allPageSelected"
+                                    @change="toggleAllOnPage"
+                                    aria-label="Seleccionar todos los talleres de esta página"
+                                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                                />
+                            </th>
                             <!-- Nombre de Taller (Columna Bloqueada) -->
-                            <th scope="col" class="sticky left-0 z-20 bg-slate-50 py-3.5 pl-4 pr-3 text-sm sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap">
+                            <th scope="col" class="sticky left-0 z-20 bg-slate-50 py-3.5 pl-3 pr-3 text-sm min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap">
                                 <button
                                     @click="handleSort('name')"
                                     type="button"
@@ -356,8 +437,17 @@ const getSortLabel = () => {
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
                         <tr v-for="tenant in tenants.data" :key="tenant.id" class="group hover:bg-slate-50/70 transition-colors">
+                            <td class="w-10 py-4 pl-4 pr-0 sm:pl-6">
+                                <input
+                                    type="checkbox"
+                                    v-model="selectedIds"
+                                    :value="tenant.id"
+                                    :aria-label="`Seleccionar ${tenant.name}`"
+                                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                                />
+                            </td>
                             <!-- Nombre / RUT / Dominio (Columna Bloqueada) -->
-                            <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors">
+                            <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-3 pr-3 text-sm font-medium text-slate-900 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors">
                                 <div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]" :title="tenant.name">{{ tenant.name }}</div>
                                 <div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap">
                                     <span>RUT: {{ tenant.rut_taller || 'N/D' }}</span>
@@ -480,7 +570,7 @@ const getSortLabel = () => {
 
                                 <!-- Empty state -->
                                 <tr v-if="tenants.data.length === 0">
-                                    <td colspan="8" class="py-12 text-center text-sm text-slate-500">
+                                    <td colspan="9" class="py-12 text-center text-sm text-slate-500">
                                         <div class="flex flex-col items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -530,6 +620,57 @@ const getSortLabel = () => {
                                 : 'bg-slate-50 border border-slate-200/60 text-slate-300 cursor-not-allowed',
                     ]"
                 />
+            </div>
+        </div>
+
+        <!-- Modal: envío de correo masivo -->
+        <div
+            v-if="showMarketingModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="marketing-modal-title"
+            @keydown.esc="showMarketingModal = false"
+        >
+            <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h2 id="marketing-modal-title" class="text-lg font-bold text-slate-900">Enviar correo a talleres</h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    Se enviará al administrador de {{ selectedCount }} taller{{ selectedCount !== 1 ? 'es' : '' }}.
+                </p>
+
+                <fieldset class="mt-5 space-y-2">
+                    <legend class="text-sm font-semibold text-slate-700">Plantilla</legend>
+                    <label
+                        v-for="template in marketingTemplates"
+                        :key="template.value"
+                        :class="[
+                            'flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors',
+                            selectedTemplate === template.value ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:bg-slate-50',
+                        ]"
+                    >
+                        <input v-model="selectedTemplate" type="radio" :value="template.value" class="mt-0.5 text-slate-900 focus:ring-slate-900" />
+                        <span class="font-medium text-slate-900">{{ template.label }}</span>
+                    </label>
+                </fieldset>
+
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="showMarketingModal = false"
+                        :disabled="isSending"
+                        class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        @click="sendMarketingEmail"
+                        :disabled="isSending || !selectedTemplate"
+                        class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 transition-colors"
+                    >
+                        {{ isSending ? 'Enviando…' : 'Enviar ahora' }}
+                    </button>
+                </div>
             </div>
         </div>
     </AdminLayout>

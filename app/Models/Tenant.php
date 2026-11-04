@@ -41,6 +41,7 @@ class Tenant extends SpatieTenant
         'billing_api_key' => 'encrypted',
         'whatsapp_api_token' => 'encrypted',
         'subscription_ends_at' => 'datetime',
+        'marketing_opt_out_at' => 'datetime',
         'kanban_columns' => 'array',
         'max_discount_without_approval' => 'decimal:2',
         'scheduling_config' => 'array',
