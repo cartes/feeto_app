@@ -1,4 +1,3 @@
-368=5
 <x-mail::layout>
     {{-- Header --}}
     <x-slot:header>
