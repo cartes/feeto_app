@@ -21,11 +21,12 @@ class TenantFactory extends Factory
     public function definition(): array
     {
         $name = fake()->company();
+        $slug = Str::slug($name).'-'.fake()->unique()->numberBetween(1, 99999);
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1, 9999),
-            'domain' => Str::slug($name).'.tallerflow.cl',
+            'slug' => $slug,
+            'domain' => $slug.'.tallerflow.cl',
             'rut_taller' => fake()->numerify('##.###.###-#'),
             'is_active' => true,
             'plan_type' => 'gratuito',
