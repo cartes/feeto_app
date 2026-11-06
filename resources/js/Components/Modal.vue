@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
     show: {
@@ -20,21 +20,35 @@ const emit = defineEmits(['close']);
 const dialog = ref();
 const showSlot = ref(props.show);
 
+const openModal = () => {
+    document.body.style.overflow = 'hidden';
+    showSlot.value = true;
+
+    nextTick(() => {
+        if (dialog.value && !dialog.value.open) {
+            dialog.value.showModal();
+        }
+    });
+};
+
+const closeModal = () => {
+    document.body.style.overflow = '';
+
+    setTimeout(() => {
+        if (dialog.value && dialog.value.open) {
+            dialog.value.close();
+        }
+        showSlot.value = false;
+    }, 200);
+};
+
 watch(
     () => props.show,
-    () => {
-        if (props.show) {
-            document.body.style.overflow = 'hidden';
-            showSlot.value = true;
-
-            dialog.value?.showModal();
+    (show) => {
+        if (show) {
+            openModal();
         } else {
-            document.body.style.overflow = '';
-
-            setTimeout(() => {
-                dialog.value?.close();
-                showSlot.value = false;
-            }, 200);
+            closeModal();
         }
     },
 );
@@ -55,12 +69,22 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape);
+
+    if (props.show) {
+        openModal();
+    }
+});
 
 onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
 
     document.body.style.overflow = '';
+
+    if (dialog.value && dialog.value.open) {
+        dialog.value.close();
+    }
 });
 
 const maxWidthClass = computed(() => {

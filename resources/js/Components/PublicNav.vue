@@ -32,9 +32,27 @@ const isActive = (item) => {
     return false;
 };
 
+const cleanLoginParam = () => {
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('login')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('login');
+        const cleanPath = url.pathname + (url.search ? url.search : '') + url.hash;
+        window.history.replaceState({}, '', cleanPath);
+    }
+};
+
+const handleCloseLoginModal = () => {
+    showLoginModal.value = false;
+    cleanLoginParam();
+};
+
 onMounted(() => {
     if (new URLSearchParams(window.location.search).get('login')) {
-        showLoginModal.value = true;
+        if (!page.props.auth?.user) {
+            showLoginModal.value = true;
+        } else {
+            cleanLoginParam();
+        }
     }
 });
 </script>
@@ -134,7 +152,7 @@ onMounted(() => {
         </div>
     </div>
 
-    <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
+    <LoginModal :show="showLoginModal" @close="handleCloseLoginModal" />
     <FloatingWhatsAppButton />
 </template>
 

@@ -8705,10 +8705,48 @@ var _sfc_main$111 = {
 	__ssrInlineRender: true,
 	props: {
 		tenants: Object,
-		filters: Object
+		filters: Object,
+		marketingTemplates: {
+			type: Array,
+			default: () => []
+		}
 	},
 	setup(__props) {
 		const props = __props;
+		const selectedIds = (0, vue_exports.ref)([]);
+		const showMarketingModal = (0, vue_exports.ref)(false);
+		const selectedTemplate = (0, vue_exports.ref)(props.marketingTemplates[0]?.value ?? "");
+		const isSending = (0, vue_exports.ref)(false);
+		const pageIds = (0, vue_exports.computed)(() => props.tenants.data.map((tenant) => tenant.id));
+		const selectedCount = (0, vue_exports.computed)(() => selectedIds.value.length);
+		const allPageSelected = (0, vue_exports.computed)(() => pageIds.value.length > 0 && pageIds.value.every((id) => selectedIds.value.includes(id)));
+		const toggleAllOnPage = () => {
+			if (allPageSelected.value) selectedIds.value = selectedIds.value.filter((id) => !pageIds.value.includes(id));
+			else selectedIds.value = [.../* @__PURE__ */ new Set([...selectedIds.value, ...pageIds.value])];
+		};
+		const clearSelection = () => {
+			selectedIds.value = [];
+		};
+		const sendMarketingEmail = () => {
+			if (isSending.value || selectedCount.value === 0 || !selectedTemplate.value) return;
+			router.post(route("admin.tenants.send-marketing-email"), {
+				tenant_ids: selectedIds.value,
+				template: selectedTemplate.value
+			}, {
+				preserveScroll: true,
+				preserveState: true,
+				onStart: () => {
+					isSending.value = true;
+				},
+				onFinish: () => {
+					isSending.value = false;
+				},
+				onSuccess: () => {
+					showMarketingModal.value = false;
+					clearSelection();
+				}
+			});
+		};
 		const search = (0, vue_exports.ref)(props.filters?.search ?? "");
 		const sortBy = (0, vue_exports.ref)(props.filters?.sort_by ?? "usage");
 		const sortDirection = (0, vue_exports.ref)(props.filters?.sort_direction ?? "desc");
@@ -8825,7 +8863,10 @@ var _sfc_main$111 = {
 						], (size) => {
 							_push(`<button type="button" class="${(0, server_renderer_exports.ssrRenderClass)(["px-2.5 py-1 text-xs font-semibold rounded-md transition-colors", perPage.value === size ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(size)}</button>`);
 						});
-						_push(`<!--]--></div><span class="text-xs text-slate-400"${_scopeId}>talleres</span></div></div></div><div class="flow-root"${_scopeId}><div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto"${_scopeId}><table class="min-w-full divide-y divide-slate-200 text-left"${_scopeId}><thead class="bg-slate-50"${_scopeId}><tr${_scopeId}><th scope="col" class="sticky left-0 z-20 bg-slate-50 py-3.5 pl-4 pr-3 text-sm sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap"${_scopeId}><button type="button" class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"${_scopeId}> Nombre de Taller <span class="${(0, server_renderer_exports.ssrRenderClass)([sortBy.value === "name" ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600", "transition-colors"])}"${_scopeId}>`);
+						_push(`<!--]--></div><span class="text-xs text-slate-400"${_scopeId}>talleres</span></div></div></div>`);
+						if (selectedCount.value > 0) _push(`<div class="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"${_scopeId}><p class="text-sm font-medium text-amber-900"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(selectedCount.value)} taller${(0, server_renderer_exports.ssrInterpolate)(selectedCount.value !== 1 ? "es" : "")} seleccionado${(0, server_renderer_exports.ssrInterpolate)(selectedCount.value !== 1 ? "s" : "")}</p><div class="flex items-center gap-2"${_scopeId}><button type="button" class="rounded-lg px-3 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors"${_scopeId}> Limpiar selección </button><button type="button" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"${_scopeId}><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"${_scopeId}></path></svg> Enviar correo </button></div></div>`);
+						else _push(`<!---->`);
+						_push(`<div class="flow-root"${_scopeId}><div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto"${_scopeId}><table class="min-w-full divide-y divide-slate-200 text-left"${_scopeId}><thead class="bg-slate-50"${_scopeId}><tr${_scopeId}><th scope="col" class="w-10 py-3.5 pl-4 pr-0 sm:pl-6"${_scopeId}><input type="checkbox"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(allPageSelected.value) ? " checked" : ""} aria-label="Seleccionar todos los talleres de esta página" class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"${_scopeId}></th><th scope="col" class="sticky left-0 z-20 bg-slate-50 py-3.5 pl-3 pr-3 text-sm min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap"${_scopeId}><button type="button" class="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-700"${_scopeId}> Nombre de Taller <span class="${(0, server_renderer_exports.ssrRenderClass)([sortBy.value === "name" ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600", "transition-colors"])}"${_scopeId}>`);
 						if (sortBy.value === "name" && sortDirection.value === "asc") _push(`<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"${_scopeId}><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"${_scopeId}></path></svg>`);
 						else if (sortBy.value === "name" && sortDirection.value === "desc") _push(`<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"${_scopeId}><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"${_scopeId}></path></svg>`);
 						else _push(`<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor"${_scopeId}><path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"${_scopeId}></path></svg>`);
@@ -8855,7 +8896,7 @@ var _sfc_main$111 = {
 						else _push(`<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-40 group-hover:opacity-100" viewBox="0 0 20 20" fill="currentColor"${_scopeId}><path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"${_scopeId}></path></svg>`);
 						_push(`</span></button></th><th scope="col" class="relative whitespace-nowrap py-3.5 pl-3 pr-4 sm:pr-6 text-right text-sm font-semibold text-slate-900"${_scopeId}> Acciones </th></tr></thead><tbody class="divide-y divide-slate-200 bg-white"${_scopeId}><!--[-->`);
 						(0, server_renderer_exports.ssrRenderList)(__props.tenants.data, (tenant) => {
-							_push(`<tr class="group hover:bg-slate-50/70 transition-colors"${_scopeId}><td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors"${_scopeId}><div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]"${(0, server_renderer_exports.ssrRenderAttr)("title", tenant.name)}${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tenant.name)}</div><div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap"${_scopeId}><span${_scopeId}>RUT: ${(0, server_renderer_exports.ssrInterpolate)(tenant.rut_taller || "N/D")}</span>`);
+							_push(`<tr class="group hover:bg-slate-50/70 transition-colors"${_scopeId}><td class="w-10 py-4 pl-4 pr-0 sm:pl-6"${_scopeId}><input type="checkbox"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(Array.isArray(selectedIds.value) ? (0, server_renderer_exports.ssrLooseContain)(selectedIds.value, tenant.id) : selectedIds.value) ? " checked" : ""}${(0, server_renderer_exports.ssrRenderAttr)("value", tenant.id)}${(0, server_renderer_exports.ssrRenderAttr)("aria-label", `Seleccionar ${tenant.name}`)} class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"${_scopeId}></td><td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-3 pr-3 text-sm font-medium text-slate-900 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors"${_scopeId}><div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]"${(0, server_renderer_exports.ssrRenderAttr)("title", tenant.name)}${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tenant.name)}</div><div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap"${_scopeId}><span${_scopeId}>RUT: ${(0, server_renderer_exports.ssrInterpolate)(tenant.rut_taller || "N/D")}</span>`);
 							if (tenant.domain) _push(`<span class="text-slate-400 truncate max-w-[140px]"${(0, server_renderer_exports.ssrRenderAttr)("title", tenant.domain)}${_scopeId}>• ${(0, server_renderer_exports.ssrInterpolate)(tenant.domain)}</span>`);
 							else _push(`<!---->`);
 							_push(`</div></td><td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500"${_scopeId}><div class="flex items-center gap-1.5"${_scopeId}><code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-mono text-slate-700"${_scopeId}>/taller/${(0, server_renderer_exports.ssrInterpolate)(tenant.slug)}</code><a${(0, server_renderer_exports.ssrRenderAttr)("href", "/taller/" + tenant.slug + "/dashboard")} target="_blank" class="text-slate-400 hover:text-amber-600 transition-colors p-0.5 rounded hover:bg-slate-100" title="Abrir taller en nueva pestaña"${_scopeId}><svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"${_scopeId}></path></svg></a></div></td><td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500"${_scopeId}><span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-500/10 uppercase tracking-wide"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tenant.plan || "Básico")}</span></td><td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600"${_scopeId}><div class="font-medium text-slate-900"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tenant.users_count || 0)} <span class="text-slate-400 font-normal"${_scopeId}>/ ${(0, server_renderer_exports.ssrInterpolate)(tenant.max_users || "∞")}</span></div></td><td class="whitespace-nowrap px-3 py-4 text-sm"${_scopeId}><div class="flex items-center gap-2"${_scopeId}><span class="${(0, server_renderer_exports.ssrRenderClass)(["inline-flex items-center gap-1 font-semibold text-xs px-2 py-0.5 rounded-md font-mono border", (tenant.work_orders_count || 0) > 0 ? "bg-amber-50 text-amber-900 border-amber-200" : "bg-slate-50 text-slate-500 border-slate-200"])}" title="Órdenes de Trabajo creadas"${_scopeId}><svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"${_scopeId}></path></svg> ${(0, server_renderer_exports.ssrInterpolate)(tenant.work_orders_count || 0)} OT${(0, server_renderer_exports.ssrInterpolate)((tenant.work_orders_count || 0) !== 1 ? "s" : "")}</span>`);
@@ -8893,7 +8934,7 @@ var _sfc_main$111 = {
 						});
 						_push(`<!--]-->`);
 						if (__props.tenants.data.length === 0) {
-							_push(`<tr${_scopeId}><td colspan="8" class="py-12 text-center text-sm text-slate-500"${_scopeId}><div class="flex flex-col items-center justify-center"${_scopeId}><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"${_scopeId}></path></svg><p class="font-medium text-slate-700"${_scopeId}>No se encontraron talleres</p><p class="text-xs text-slate-400 mt-1"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(search.value ? "Intenta con otro término de búsqueda o limpia el filtro." : "No hay talleres registrados en la plataforma.")}</p>`);
+							_push(`<tr${_scopeId}><td colspan="9" class="py-12 text-center text-sm text-slate-500"${_scopeId}><div class="flex flex-col items-center justify-center"${_scopeId}><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"${_scopeId}></path></svg><p class="font-medium text-slate-700"${_scopeId}>No se encontraron talleres</p><p class="text-xs text-slate-400 mt-1"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(search.value ? "Intenta con otro término de búsqueda o limpia el filtro." : "No hay talleres registrados en la plataforma.")}</p>`);
 							if (search.value) _push(`<button type="button" class="mt-3 text-xs font-semibold text-indigo-600 hover:text-indigo-800"${_scopeId}> Limpiar búsqueda </button>`);
 							else _push(`<!---->`);
 							_push(`</div></td></tr>`);
@@ -8907,6 +8948,13 @@ var _sfc_main$111 = {
 							_push(`<!--]--></div>`);
 						} else _push(`<!---->`);
 						_push(`</div>`);
+						if (showMarketingModal.value) {
+							_push(`<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" role="dialog" aria-modal="true" aria-labelledby="marketing-modal-title"${_scopeId}><div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"${_scopeId}><h2 id="marketing-modal-title" class="text-lg font-bold text-slate-900"${_scopeId}>Enviar correo a talleres</h2><p class="mt-1 text-sm text-slate-500"${_scopeId}> Se enviará al administrador de ${(0, server_renderer_exports.ssrInterpolate)(selectedCount.value)} taller${(0, server_renderer_exports.ssrInterpolate)(selectedCount.value !== 1 ? "es" : "")}. </p><fieldset class="mt-5 space-y-2"${_scopeId}><legend class="text-sm font-semibold text-slate-700"${_scopeId}>Plantilla</legend><!--[-->`);
+							(0, server_renderer_exports.ssrRenderList)(__props.marketingTemplates, (template) => {
+								_push(`<label class="${(0, server_renderer_exports.ssrRenderClass)(["flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors", selectedTemplate.value === template.value ? "border-slate-900 bg-slate-50" : "border-slate-200 hover:bg-slate-50"])}"${_scopeId}><input${(0, server_renderer_exports.ssrIncludeBooleanAttr)((0, server_renderer_exports.ssrLooseEqual)(selectedTemplate.value, template.value)) ? " checked" : ""} type="radio"${(0, server_renderer_exports.ssrRenderAttr)("value", template.value)} class="mt-0.5 text-slate-900 focus:ring-slate-900"${_scopeId}><span class="font-medium text-slate-900"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(template.label)}</span></label>`);
+							});
+							_push(`<!--]--></fieldset><div class="mt-6 flex justify-end gap-2"${_scopeId}><button type="button"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(isSending.value) ? " disabled" : ""} class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"${_scopeId}> Cancelar </button><button type="button"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(isSending.value || !selectedTemplate.value) ? " disabled" : ""} class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 transition-colors"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(isSending.value ? "Enviando…" : "Enviar ahora")}</button></div></div></div>`);
+						} else _push(`<!---->`);
 					} else return [
 						(0, vue_exports.createVNode)("div", { class: "sm:flex sm:items-center sm:justify-between mb-6" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("h1", { class: "text-2xl font-bold text-slate-900 tracking-tight" }, "Gestión de Talleres"), (0, vue_exports.createVNode)("p", { class: "mt-1 text-sm text-slate-500" }, (0, vue_exports.toDisplayString)(__props.tenants.total) + " taller" + (0, vue_exports.toDisplayString)(__props.tenants.total !== 1 ? "es" : "") + " registrado" + (0, vue_exports.toDisplayString)(__props.tenants.total !== 1 ? "s" : "") + ". ", 1)]), (0, vue_exports.createVNode)("div", { class: "mt-4 sm:ml-16 sm:mt-0 sm:flex-none" }, [(0, vue_exports.createVNode)((0, vue_exports.unref)(link_default), {
 							href: _ctx.route("admin.tenants.create"),
@@ -8981,10 +9029,43 @@ var _sfc_main$111 = {
 							}), 64))]),
 							(0, vue_exports.createVNode)("span", { class: "text-xs text-slate-400" }, "talleres")
 						])])]),
+						selectedCount.value > 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
+							key: 0,
+							class: "mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+						}, [(0, vue_exports.createVNode)("p", { class: "text-sm font-medium text-amber-900" }, (0, vue_exports.toDisplayString)(selectedCount.value) + " taller" + (0, vue_exports.toDisplayString)(selectedCount.value !== 1 ? "es" : "") + " seleccionado" + (0, vue_exports.toDisplayString)(selectedCount.value !== 1 ? "s" : ""), 1), (0, vue_exports.createVNode)("div", { class: "flex items-center gap-2" }, [(0, vue_exports.createVNode)("button", {
+							type: "button",
+							onClick: clearSelection,
+							class: "rounded-lg px-3 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-100 transition-colors"
+						}, " Limpiar selección "), (0, vue_exports.createVNode)("button", {
+							type: "button",
+							onClick: ($event) => showMarketingModal.value = true,
+							class: "inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+						}, [((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+							xmlns: "http://www.w3.org/2000/svg",
+							class: "h-4 w-4",
+							fill: "none",
+							viewBox: "0 0 24 24",
+							stroke: "currentColor",
+							"stroke-width": "2"
+						}, [(0, vue_exports.createVNode)("path", {
+							"stroke-linecap": "round",
+							"stroke-linejoin": "round",
+							d: "M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+						})])), (0, vue_exports.createTextVNode)(" Enviar correo ")], 8, ["onClick"])])])) : (0, vue_exports.createCommentVNode)("", true),
 						(0, vue_exports.createVNode)("div", { class: "flow-root" }, [(0, vue_exports.createVNode)("div", { class: "rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto" }, [(0, vue_exports.createVNode)("table", { class: "min-w-full divide-y divide-slate-200 text-left" }, [(0, vue_exports.createVNode)("thead", { class: "bg-slate-50" }, [(0, vue_exports.createVNode)("tr", null, [
 							(0, vue_exports.createVNode)("th", {
 								scope: "col",
-								class: "sticky left-0 z-20 bg-slate-50 py-3.5 pl-4 pr-3 text-sm sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap"
+								class: "w-10 py-3.5 pl-4 pr-0 sm:pl-6"
+							}, [(0, vue_exports.createVNode)("input", {
+								type: "checkbox",
+								checked: allPageSelected.value,
+								onChange: toggleAllOnPage,
+								"aria-label": "Seleccionar todos los talleres de esta página",
+								class: "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+							}, null, 40, ["checked"])]),
+							(0, vue_exports.createVNode)("th", {
+								scope: "col",
+								class: "sticky left-0 z-20 bg-slate-50 py-3.5 pl-3 pr-3 text-sm min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] whitespace-nowrap"
 							}, [(0, vue_exports.createVNode)("button", {
 								onClick: ($event) => handleSort("name"),
 								type: "button",
@@ -9230,7 +9311,18 @@ var _sfc_main$111 = {
 								key: tenant.id,
 								class: "group hover:bg-slate-50/70 transition-colors"
 							}, [
-								(0, vue_exports.createVNode)("td", { class: "sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors" }, [(0, vue_exports.createVNode)("div", {
+								(0, vue_exports.createVNode)("td", { class: "w-10 py-4 pl-4 pr-0 sm:pl-6" }, [(0, vue_exports.withDirectives)((0, vue_exports.createVNode)("input", {
+									type: "checkbox",
+									"onUpdate:modelValue": ($event) => selectedIds.value = $event,
+									value: tenant.id,
+									"aria-label": `Seleccionar ${tenant.name}`,
+									class: "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+								}, null, 8, [
+									"onUpdate:modelValue",
+									"value",
+									"aria-label"
+								]), [[vue_exports.vModelCheckbox, selectedIds.value]])]),
+								(0, vue_exports.createVNode)("td", { class: "sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-3 pr-3 text-sm font-medium text-slate-900 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors" }, [(0, vue_exports.createVNode)("div", {
 									class: "font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]",
 									title: tenant.name
 								}, (0, vue_exports.toDisplayString)(tenant.name), 9, ["title"]), (0, vue_exports.createVNode)("div", { class: "text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap" }, [(0, vue_exports.createVNode)("span", null, "RUT: " + (0, vue_exports.toDisplayString)(tenant.rut_taller || "N/D"), 1), tenant.domain ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", {
@@ -9334,7 +9426,7 @@ var _sfc_main$111 = {
 								])
 							]);
 						}), 128)), __props.tenants.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("tr", { key: 0 }, [(0, vue_exports.createVNode)("td", {
-							colspan: "8",
+							colspan: "9",
 							class: "py-12 text-center text-sm text-slate-500"
 						}, [(0, vue_exports.createVNode)("div", { class: "flex flex-col items-center justify-center" }, [
 							((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
@@ -9381,7 +9473,43 @@ var _sfc_main$111 = {
 								"disabled",
 								"innerHTML"
 							]);
-						}), 128))])) : (0, vue_exports.createCommentVNode)("", true)])
+						}), 128))])) : (0, vue_exports.createCommentVNode)("", true)]),
+						showMarketingModal.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
+							key: 1,
+							class: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4",
+							role: "dialog",
+							"aria-modal": "true",
+							"aria-labelledby": "marketing-modal-title",
+							onKeydown: (0, vue_exports.withKeys)(($event) => showMarketingModal.value = false, ["esc"])
+						}, [(0, vue_exports.createVNode)("div", { class: "w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" }, [
+							(0, vue_exports.createVNode)("h2", {
+								id: "marketing-modal-title",
+								class: "text-lg font-bold text-slate-900"
+							}, "Enviar correo a talleres"),
+							(0, vue_exports.createVNode)("p", { class: "mt-1 text-sm text-slate-500" }, " Se enviará al administrador de " + (0, vue_exports.toDisplayString)(selectedCount.value) + " taller" + (0, vue_exports.toDisplayString)(selectedCount.value !== 1 ? "es" : "") + ". ", 1),
+							(0, vue_exports.createVNode)("fieldset", { class: "mt-5 space-y-2" }, [(0, vue_exports.createVNode)("legend", { class: "text-sm font-semibold text-slate-700" }, "Plantilla"), ((0, vue_exports.openBlock)(true), (0, vue_exports.createBlock)(vue_exports.Fragment, null, (0, vue_exports.renderList)(__props.marketingTemplates, (template) => {
+								return (0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("label", {
+									key: template.value,
+									class: ["flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors", selectedTemplate.value === template.value ? "border-slate-900 bg-slate-50" : "border-slate-200 hover:bg-slate-50"]
+								}, [(0, vue_exports.withDirectives)((0, vue_exports.createVNode)("input", {
+									"onUpdate:modelValue": ($event) => selectedTemplate.value = $event,
+									type: "radio",
+									value: template.value,
+									class: "mt-0.5 text-slate-900 focus:ring-slate-900"
+								}, null, 8, ["onUpdate:modelValue", "value"]), [[vue_exports.vModelRadio, selectedTemplate.value]]), (0, vue_exports.createVNode)("span", { class: "font-medium text-slate-900" }, (0, vue_exports.toDisplayString)(template.label), 1)], 2);
+							}), 128))]),
+							(0, vue_exports.createVNode)("div", { class: "mt-6 flex justify-end gap-2" }, [(0, vue_exports.createVNode)("button", {
+								type: "button",
+								onClick: ($event) => showMarketingModal.value = false,
+								disabled: isSending.value,
+								class: "rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+							}, " Cancelar ", 8, ["onClick", "disabled"]), (0, vue_exports.createVNode)("button", {
+								type: "button",
+								onClick: sendMarketingEmail,
+								disabled: isSending.value || !selectedTemplate.value,
+								class: "rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 transition-colors"
+							}, (0, vue_exports.toDisplayString)(isSending.value ? "Enviando…" : "Enviar ahora"), 9, ["disabled"])])
+						])], 40, ["onKeydown"])) : (0, vue_exports.createCommentVNode)("", true)
 					];
 				}),
 				_: 1
@@ -13523,11 +13651,26 @@ var _sfc_main$84 = {
 			if (item === "talleres") return isDirectory.value;
 			return false;
 		};
+		const cleanLoginParam = () => {
+			if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("login")) {
+				const url = new URL(window.location.href);
+				url.searchParams.delete("login");
+				const cleanPath = url.pathname + (url.search ? url.search : "") + url.hash;
+				window.history.replaceState({}, "", cleanPath);
+			}
+		};
+		const handleCloseLoginModal = () => {
+			showLoginModal.value = false;
+			cleanLoginParam();
+		};
 		(0, vue_exports.onMounted)(() => {
-			if (new URLSearchParams(window.location.search).get("login")) showLoginModal.value = true;
+			if (new URLSearchParams(window.location.search).get("login")) {
+				if (!page.props.auth?.user) showLoginModal.value = true;
+				else cleanLoginParam();
+			}
 		});
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<!--[--><div class="pub-nav-wrap" data-v-c9c10817><nav class="pub-nav" data-v-c9c10817>`);
+			_push(`<!--[--><div class="pub-nav-wrap" data-v-17689eb4><nav class="pub-nav" data-v-17689eb4>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("home"),
 				class: "pub-brand"
@@ -13538,7 +13681,7 @@ var _sfc_main$84 = {
 							class: "pub-brand-mark",
 							alt: "Taller Flow"
 						}, null, _parent, _scopeId));
-						_push(` Taller<span class="pub-brand-flow" data-v-c9c10817${_scopeId}>Flow</span>`);
+						_push(` Taller<span class="pub-brand-flow" data-v-17689eb4${_scopeId}>Flow</span>`);
 					} else return [
 						(0, vue_exports.createVNode)(_sfc_main$138, {
 							class: "pub-brand-mark",
@@ -13550,7 +13693,7 @@ var _sfc_main$84 = {
 				}),
 				_: 1
 			}, _parent));
-			_push(`<div class="pub-nav-links" data-v-c9c10817><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("features") }])}" data-v-c9c10817>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("servicios") }])}" data-v-c9c10817> Servicios </a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("benefits") }])}" data-v-c9c10817>Beneficios</a>`);
+			_push(`<div class="pub-nav-links" data-v-17689eb4><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("features") }])}" data-v-17689eb4>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("servicios") }])}" data-v-17689eb4> Servicios </a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("benefits") }])}" data-v-17689eb4>Beneficios</a>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("pricing"),
 				class: ["pub-link", { "pub-link-active": isActive("planes") }]
@@ -13581,7 +13724,7 @@ var _sfc_main$84 = {
 				}),
 				_: 1
 			}, _parent));
-			_push(`</div><div class="pub-nav-cta" data-v-c9c10817>`);
+			_push(`</div><div class="pub-nav-cta" data-v-17689eb4>`);
 			if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("dashboard"),
 				class: "pub-btn-ghost"
@@ -13594,7 +13737,7 @@ var _sfc_main$84 = {
 			}, _parent));
 			else {
 				_push(`<!--[-->`);
-				if (__props.canLogin) _push(`<button class="pub-btn-ghost" type="button" data-v-c9c10817><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-v-c9c10817><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" data-v-c9c10817></path><polyline points="10 17 15 12 10 7" data-v-c9c10817></polyline><line x1="15" y1="12" x2="3" y2="12" data-v-c9c10817></line></svg> Iniciar sesión </button>`);
+				if (__props.canLogin) _push(`<button class="pub-btn-ghost" type="button" data-v-17689eb4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-v-17689eb4><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" data-v-17689eb4></path><polyline points="10 17 15 12 10 7" data-v-17689eb4></polyline><line x1="15" y1="12" x2="3" y2="12" data-v-17689eb4></line></svg> Iniciar sesión </button>`);
 				else _push(`<!---->`);
 				if (!isTrial.value) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("trial.create"),
@@ -13609,12 +13752,12 @@ var _sfc_main$84 = {
 				else _push(`<!---->`);
 				_push(`<!--]-->`);
 			}
-			_push(`<button class="pub-mobile-toggle" type="button"${(0, server_renderer_exports.ssrRenderAttr)("aria-expanded", mobileMenuOpen.value)} aria-label="Abrir menú" data-v-c9c10817>`);
-			if (!mobileMenuOpen.value) _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-c9c10817><line x1="4" y1="7" x2="20" y2="7" data-v-c9c10817></line><line x1="4" y1="12" x2="20" y2="12" data-v-c9c10817></line><line x1="4" y1="17" x2="20" y2="17" data-v-c9c10817></line></svg>`);
-			else _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-c9c10817><line x1="6" y1="6" x2="18" y2="18" data-v-c9c10817></line><line x1="18" y1="6" x2="6" y2="18" data-v-c9c10817></line></svg>`);
+			_push(`<button class="pub-mobile-toggle" type="button"${(0, server_renderer_exports.ssrRenderAttr)("aria-expanded", mobileMenuOpen.value)} aria-label="Abrir menú" data-v-17689eb4>`);
+			if (!mobileMenuOpen.value) _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-17689eb4><line x1="4" y1="7" x2="20" y2="7" data-v-17689eb4></line><line x1="4" y1="12" x2="20" y2="12" data-v-17689eb4></line><line x1="4" y1="17" x2="20" y2="17" data-v-17689eb4></line></svg>`);
+			else _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-17689eb4><line x1="6" y1="6" x2="18" y2="18" data-v-17689eb4></line><line x1="18" y1="6" x2="6" y2="18" data-v-17689eb4></line></svg>`);
 			_push(`</button></div></nav>`);
 			if (mobileMenuOpen.value) {
-				_push(`<div class="pub-mobile-menu" id="pub-mobile-menu" data-v-c9c10817><div class="pub-mobile-links" data-v-c9c10817><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("features") }, "pub-mobile-link"])}" data-v-c9c10817>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("servicios") }, "pub-mobile-link"])}" data-v-c9c10817>Servicios</a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("benefits") }, "pub-mobile-link"])}" data-v-c9c10817>Beneficios</a>`);
+				_push(`<div class="pub-mobile-menu" id="pub-mobile-menu" data-v-17689eb4><div class="pub-mobile-links" data-v-17689eb4><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("features") }, "pub-mobile-link"])}" data-v-17689eb4>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("servicios") }, "pub-mobile-link"])}" data-v-17689eb4>Servicios</a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("benefits") }, "pub-mobile-link"])}" data-v-17689eb4>Beneficios</a>`);
 				_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("pricing"),
 					class: ["pub-mobile-link", { "pub-mobile-link-active": isActive("planes") }],
@@ -13648,7 +13791,7 @@ var _sfc_main$84 = {
 					}),
 					_: 1
 				}, _parent));
-				_push(`</div><div class="pub-mobile-actions" data-v-c9c10817>`);
+				_push(`</div><div class="pub-mobile-actions" data-v-17689eb4>`);
 				if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("dashboard"),
 					class: "pub-mobile-btn pub-mobile-btn-ghost",
@@ -13662,7 +13805,7 @@ var _sfc_main$84 = {
 				}, _parent));
 				else {
 					_push(`<!--[-->`);
-					if (__props.canLogin) _push(`<button type="button" class="pub-mobile-btn pub-mobile-btn-ghost" data-v-c9c10817>Iniciar sesión</button>`);
+					if (__props.canLogin) _push(`<button type="button" class="pub-mobile-btn pub-mobile-btn-ghost" data-v-17689eb4>Iniciar sesión</button>`);
 					else _push(`<!---->`);
 					if (!isTrial.value) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 						href: _ctx.route("trial.create"),
@@ -13683,7 +13826,7 @@ var _sfc_main$84 = {
 			_push(`</div>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(LoginModal), {
 				show: showLoginModal.value,
-				onClose: ($event) => showLoginModal.value = false
+				onClose: handleCloseLoginModal
 			}, null, _parent));
 			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$85, null, null, _parent));
 			_push(`<!--]-->`);
@@ -13696,7 +13839,7 @@ _sfc_main$84.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PublicNav.vue");
 	return _sfc_setup$84 ? _sfc_setup$84(props, ctx) : void 0;
 };
-var PublicNav_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$84, [["__scopeId", "data-v-c9c10817"]]);
+var PublicNav_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$84, [["__scopeId", "data-v-17689eb4"]]);
 // resources/js/Components/PublicFooter.vue
 var _sfc_main$83 = {
 	__name: "PublicFooter",
@@ -18979,18 +19122,23 @@ var _sfc_main$59 = {
 		const emit = __emit;
 		const dialog = (0, vue_exports.ref)();
 		const showSlot = (0, vue_exports.ref)(props.show);
-		(0, vue_exports.watch)(() => props.show, () => {
-			if (props.show) {
-				document.body.style.overflow = "hidden";
-				showSlot.value = true;
-				dialog.value?.showModal();
-			} else {
-				document.body.style.overflow = "";
-				setTimeout(() => {
-					dialog.value?.close();
-					showSlot.value = false;
-				}, 200);
-			}
+		const openModal = () => {
+			document.body.style.overflow = "hidden";
+			showSlot.value = true;
+			(0, vue_exports.nextTick)(() => {
+				if (dialog.value && !dialog.value.open) dialog.value.showModal();
+			});
+		};
+		const closeModal = () => {
+			document.body.style.overflow = "";
+			setTimeout(() => {
+				if (dialog.value && dialog.value.open) dialog.value.close();
+				showSlot.value = false;
+			}, 200);
+		};
+		(0, vue_exports.watch)(() => props.show, (show) => {
+			if (show) openModal();
+			else closeModal();
 		});
 		const close = () => {
 			if (props.closeable) emit("close");
@@ -19001,10 +19149,14 @@ var _sfc_main$59 = {
 				if (props.show) close();
 			}
 		};
-		(0, vue_exports.onMounted)(() => document.addEventListener("keydown", closeOnEscape));
+		(0, vue_exports.onMounted)(() => {
+			document.addEventListener("keydown", closeOnEscape);
+			if (props.show) openModal();
+		});
 		(0, vue_exports.onUnmounted)(() => {
 			document.removeEventListener("keydown", closeOnEscape);
 			document.body.style.overflow = "";
+			if (dialog.value && dialog.value.open) dialog.value.close();
 		});
 		const maxWidthClass = (0, vue_exports.computed)(() => {
 			return {
