@@ -428,7 +428,7 @@ class TenantController extends Controller
                 'sent_at' => now(),
             ]);
 
-            $admin->notify((new TenantMarketingNotification($tenant, $template))->delay(now()->addSeconds($sentCount * 2)));
+            $admin->notify(new TenantMarketingNotification($tenant, $template));
 
             $sentCount++;
         }

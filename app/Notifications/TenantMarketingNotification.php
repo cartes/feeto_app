@@ -8,12 +8,11 @@ use App\Enums\MarketingEmailTemplate;
 use App\Models\Tenant;
 use App\Services\MarketingWhatsAppService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class TenantMarketingNotification extends Notification implements ShouldQueue
+class TenantMarketingNotification extends Notification
 {
     use Queueable;
 
@@ -33,6 +32,8 @@ class TenantMarketingNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $contactEmail = (string) config('mail.from.address');
+        $bookingUrl = route('taller.landing', ['tenantBySlug' => $this->tenant->slug]);
+        $tutorialsUrl = route('tutorials.index');
 
         return (new MailMessage)
             ->subject($this->template->subject($this->tenant->name))
@@ -40,7 +41,10 @@ class TenantMarketingNotification extends Notification implements ShouldQueue
             ->view($this->template->view(), [
                 'tenant' => $this->tenant,
                 'recipientName' => $notifiable->name,
+                'recipientEmail' => $notifiable->email ?? null,
                 'loginUrl' => route('login'),
+                'bookingUrl' => $bookingUrl,
+                'tutorialsUrl' => $tutorialsUrl,
                 'contactEmail' => $contactEmail,
                 'unsubscribeUrl' => URL::signedRoute('marketing.unsubscribe', ['tenant' => $this->tenant->id]),
                 'whatsappUrl' => app(MarketingWhatsAppService::class)->settings()['href'],

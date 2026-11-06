@@ -107,8 +107,8 @@ class TenantMarketingEmailTest extends TestCase
 
     public function test_email_renders_with_tenant_data(): void
     {
-        $tenant = Tenant::factory()->create(['name' => 'Taller Prueba']);
-        $admin = User::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Juan']);
+        $tenant = Tenant::factory()->create(['name' => 'Taller Prueba', 'slug' => 'cartes-2']);
+        $admin = User::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Juan', 'email' => 'juan@cartes.cl']);
 
         $mail = (new TenantMarketingNotification($tenant, MarketingEmailTemplate::CustomTool))->toMail($admin);
         $html = (string) view($mail->view, $mail->viewData)->render();
@@ -118,10 +118,28 @@ class TenantMarketingEmailTest extends TestCase
         $this->assertStringContainsString('herramienta', mb_strtolower($mail->subject));
     }
 
+    public function test_tutorials_email_renders_with_tutorial_steps_and_booking_link(): void
+    {
+        $tenant = Tenant::factory()->create(['name' => 'Taller Cartes 2', 'slug' => 'cartes-2']);
+        $admin = User::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Cristian', 'email' => 'cristiancartesa@gmail.com']);
+
+        $mail = (new TenantMarketingNotification($tenant, MarketingEmailTemplate::Tutorials))->toMail($admin);
+        $html = (string) view($mail->view, $mail->viewData)->render();
+
+        $this->assertStringContainsString('Taller Cartes 2', $html);
+        $this->assertStringContainsString('Cristian', $html);
+        $this->assertStringContainsString('cristiancartesa@gmail.com', $html);
+        $this->assertStringContainsString(route('taller.landing', ['tenantBySlug' => 'cartes-2']), $html);
+        $this->assertStringContainsString(route('tutorials.index'), $html);
+        $this->assertStringContainsString('¿Qué hace Taller Flow y cómo aprovecharlo?', $html);
+        $this->assertStringContainsString('/marketing/baja/'.$tenant->id.'?signature=', $html);
+        $this->assertStringContainsString('tutorial', mb_strtolower($mail->subject));
+    }
+
     public function test_index_exposes_marketing_templates(): void
     {
         $this->actingAs($this->superAdmin)->get(route('admin.tenants.index'))
-            ->assertInertia(fn ($page) => $page->has('marketingTemplates', 1));
+            ->assertInertia(fn ($page) => $page->has('marketingTemplates', 2));
     }
 
     public function test_opted_out_tenants_are_not_emailed(): void
