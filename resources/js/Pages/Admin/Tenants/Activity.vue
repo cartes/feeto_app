@@ -161,11 +161,34 @@ const statusBadge = {
                     {{ tenant.plan || 'Básico' }}
                 </span>
             </div>
-            <p class="mt-1 text-sm text-slate-500">
-                <span class="font-mono">{{ tenant.domain }}</span>
-                <span v-if="tenant.rut_taller" class="ml-3 text-slate-400">RUT: {{ tenant.rut_taller }}</span>
-                <span v-if="tenant.subscription_ends_at" class="ml-3 text-slate-400">Suscripción: {{ formatDate(tenant.subscription_ends_at) }}</span>
-            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500">
+                <div class="flex items-center gap-1.5">
+                    <a
+                        :href="tenant.public_url || ('/taller/' + tenant.slug)"
+                        target="_blank"
+                        class="inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md border border-amber-200 transition-colors"
+                        title="Ver página pública del taller"
+                    >
+                        <span>/taller/{{ tenant.slug }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                    <a
+                        :href="tenant.dashboard_url || ('/taller/' + tenant.slug + '/dashboard')"
+                        target="_blank"
+                        class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-0.5 rounded-md hover:bg-slate-100 transition-colors"
+                        title="Abrir panel del taller en nueva pestaña"
+                    >
+                        <span>Panel</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                </div>
+                <span v-if="tenant.rut_taller" class="text-slate-400">RUT: {{ tenant.rut_taller }}</span>
+                <span v-if="tenant.subscription_ends_at" class="text-slate-400">Suscripción: {{ formatDate(tenant.subscription_ends_at) }}</span>
+            </div>
         </div>
 
         <!-- Tabs -->

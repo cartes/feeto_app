@@ -37,6 +37,8 @@ class TenantActivityControllerTest extends TestCase
             ->component('Admin/Tenants/Activity')
             ->where('tenant.id', $this->tenant->id)
             ->where('tenant.name', 'Taller Activo')
+            ->where('tenant.public_url', route('taller.landing', ['tenantBySlug' => $this->tenant->slug]))
+            ->where('tenant.dashboard_url', route('taller.dashboard', ['tenantBySlug' => $this->tenant->slug]))
         );
     }
 

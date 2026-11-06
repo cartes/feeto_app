@@ -141,7 +141,11 @@ class TenantActivityController extends Controller
             ->get(['id', 'user_id', 'ip', 'created_at']);
 
         return Inertia::render('Admin/Tenants/Activity', [
-            'tenant' => $tenant->only(['id', 'name', 'slug', 'domain', 'plan', 'status', 'is_active', 'subscription_ends_at', 'rut_taller']),
+            'tenant' => [
+                ...$tenant->only(['id', 'name', 'slug', 'domain', 'plan', 'status', 'is_active', 'subscription_ends_at', 'rut_taller']),
+                'public_url' => route('taller.landing', ['tenantBySlug' => $tenant->slug]),
+                'dashboard_url' => route('taller.dashboard', ['tenantBySlug' => $tenant->slug]),
+            ],
             'stats' => $stats,
             'charts' => [
                 'work_orders_by_day' => $workOrdersByDay,
