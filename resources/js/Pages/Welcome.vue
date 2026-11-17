@@ -883,8 +883,9 @@ onUnmounted(() => {
                             <p class="text-sm text-white/80 mt-1 font-medium leading-snug">instalaciones requeridas</p>
                         </div>
                         <div class="bg-gray-900 rounded-3xl p-6 col-span-2">
-                            <p class="text-4xl font-black text-white">+200</p>
-                            <p class="text-sm text-gray-400 mt-1 font-medium">talleres mecánicos ya confían en Taller Flow</p>
+                            <p class="text-4xl font-black text-white">100%</p>
+                            <p class="text-sm font-bold text-white mt-1">Ordena tu taller desde el primer día</p>
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Elígenos como tu organizador de taller: dile adiós al papel, centraliza tus órdenes de trabajo y lleva el control total de tu negocio.</p>
                         </div>
                     </div>
                 </div>
