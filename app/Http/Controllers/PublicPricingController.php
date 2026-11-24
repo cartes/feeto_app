@@ -43,6 +43,16 @@ class PublicPricingController extends Controller
             'plans' => $plans,
             'canLogin' => Route::has('login'),
             'seo' => $this->resolveMarketingSeo('pricing'),
+            'christmasOffer' => [
+                'active' => true,
+                'offer_price' => 19990,
+                'deadline_date' => '2026-12-31T23:59:59',
+                'deadline_label' => '31 de diciembre',
+                'duration_label' => '1 año completo',
+                'target_plan_slug' => 'empresa',
+                'title' => 'Oferta Navideña TallerFlow',
+                'description' => 'Todos los talleres que contraten hasta el 31 de diciembre tendrán todas las funcionalidades por 1 año a $19.990.',
+            ],
         ]);
     }
 }

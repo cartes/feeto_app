@@ -1281,6 +1281,30 @@
     "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
     "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
   ],
+  "resources/js/Components/ChristmasBanner.vue": [
+    "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
+    "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-DCLoHMFv.woff2",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-C4q0W15T.woff",
+    "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
+    "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
+  ],
+  "resources/js/Components/ChristmasBanner.vue?vue&type=style&index=0&scoped=c8ed252b&lang.css": [
+    "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
+    "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-DCLoHMFv.woff2",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-C4q0W15T.woff",
+    "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
+    "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
+  ],
+  "resources/js/Components/ChristmasTopBar.vue": [
+    "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
+    "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-DCLoHMFv.woff2",
+    "/build/assets/archivo-narrow-latin-ext-700-normal-C4q0W15T.woff",
+    "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
+    "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
+  ],
   "resources/js/Components/CountryFlagSvg.vue": [
     "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
     "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
@@ -1495,7 +1519,7 @@
     "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
     "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
   ],
-  "resources/js/Components/PublicNav.vue?vue&type=style&index=0&scoped=17689eb4&lang.css": [
+  "resources/js/Components/PublicNav.vue?vue&type=style&index=0&scoped=abefb29d&lang.css": [
     "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
     "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
     "/build/assets/archivo-narrow-latin-ext-700-normal-DCLoHMFv.woff2",
@@ -2031,7 +2055,7 @@
     "/build/assets/archivo-narrow-latin-700-normal-DtADLsoy.woff2",
     "/build/assets/archivo-narrow-latin-700-normal-DxmyBkwC.woff"
   ],
-  "resources/js/Pages/Pricing.vue?vue&type=style&index=0&scoped=e3192875&lang.css": [
+  "resources/js/Pages/Pricing.vue?vue&type=style&index=0&scoped=df8231f7&lang.css": [
     "/build/assets/archivo-narrow-vietnamese-700-normal-VsvP8OcS.woff2",
     "/build/assets/archivo-narrow-vietnamese-700-normal-CB0yIOvF.woff",
     "/build/assets/archivo-narrow-latin-ext-700-normal-DCLoHMFv.woff2",

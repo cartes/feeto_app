@@ -1,5 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import ChristmasTopBar from '@/Components/ChristmasTopBar.vue';
 import FloatingWhatsAppButton from '@/Components/FloatingWhatsAppButton.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
@@ -59,6 +60,7 @@ onMounted(() => {
 
 <template>
     <div class="pub-nav-wrap">
+        <ChristmasTopBar />
         <nav class="pub-nav">
             <!-- Logo -->
             <Link :href="route('home')" class="pub-brand">
@@ -159,10 +161,13 @@ onMounted(() => {
 <style scoped>
 .pub-nav-wrap {
     position: fixed;
-    top: 18px;
+    top: 14px;
     left: 18px;
     right: 18px;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .pub-nav {

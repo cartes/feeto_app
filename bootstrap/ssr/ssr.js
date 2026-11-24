@@ -1,7 +1,7 @@
 import { r as __exportAll } from "./assets/rolldown-runtime-CBuJxodT.js";
 import { a as useForm, c as axios, d as vue_exports, i as link_default, l as server_renderer_exports, n as createInertiaApp, o as usePage, r as head_default, s as router, t as server_default, u as require_server_renderer_cjs_prod } from "./assets/vendor-core-OVA8xfDF.js";
 // resources/js/Components/ApplicationLogo.vue
-var _sfc_main$138 = {
+var _sfc_main$140 = {
 	__name: "ApplicationLogo",
 	__ssrInlineRender: true,
 	props: { alt: {
@@ -18,14 +18,14 @@ var _sfc_main$138 = {
 		};
 	}
 };
-var _sfc_setup$138 = _sfc_main$138.setup;
-_sfc_main$138.setup = (props, ctx) => {
+var _sfc_setup$140 = _sfc_main$140.setup;
+_sfc_main$140.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ApplicationLogo.vue");
-	return _sfc_setup$138 ? _sfc_setup$138(props, ctx) : void 0;
+	return _sfc_setup$140 ? _sfc_setup$140(props, ctx) : void 0;
 };
 // resources/js/Components/Toast.vue
-var _sfc_main$137 = {
+var _sfc_main$139 = {
 	__name: "Toast",
 	__ssrInlineRender: true,
 	props: {
@@ -88,14 +88,14 @@ var _sfc_main$137 = {
 		};
 	}
 };
-var _sfc_setup$137 = _sfc_main$137.setup;
-_sfc_main$137.setup = (props, ctx) => {
+var _sfc_setup$139 = _sfc_main$139.setup;
+_sfc_main$139.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Toast.vue");
-	return _sfc_setup$137 ? _sfc_setup$137(props, ctx) : void 0;
+	return _sfc_setup$139 ? _sfc_setup$139(props, ctx) : void 0;
 };
 // resources/js/Components/PasswordInput.vue
-var _sfc_main$136 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
+var _sfc_main$138 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "PasswordInput",
 	__ssrInlineRender: true,
 	props: {
@@ -128,14 +128,14 @@ var _sfc_main$136 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 		};
 	}
 });
-var _sfc_setup$136 = _sfc_main$136.setup;
-_sfc_main$136.setup = (props, ctx) => {
+var _sfc_setup$138 = _sfc_main$138.setup;
+_sfc_main$138.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PasswordInput.vue");
-	return _sfc_setup$136 ? _sfc_setup$136(props, ctx) : void 0;
+	return _sfc_setup$138 ? _sfc_setup$138(props, ctx) : void 0;
 };
 // resources/js/Components/InputLabel.vue
-var _sfc_main$135 = {
+var _sfc_main$137 = {
 	__name: "InputLabel",
 	__ssrInlineRender: true,
 	props: { value: { type: String } },
@@ -152,14 +152,14 @@ var _sfc_main$135 = {
 		};
 	}
 };
-var _sfc_setup$135 = _sfc_main$135.setup;
-_sfc_main$135.setup = (props, ctx) => {
+var _sfc_setup$137 = _sfc_main$137.setup;
+_sfc_main$137.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/InputLabel.vue");
-	return _sfc_setup$135 ? _sfc_setup$135(props, ctx) : void 0;
+	return _sfc_setup$137 ? _sfc_setup$137(props, ctx) : void 0;
 };
 // resources/js/Components/InputError.vue
-var _sfc_main$134 = {
+var _sfc_main$136 = {
 	__name: "InputError",
 	__ssrInlineRender: true,
 	props: { message: { type: String } },
@@ -169,11 +169,11 @@ var _sfc_main$134 = {
 		};
 	}
 };
-var _sfc_setup$134 = _sfc_main$134.setup;
-_sfc_main$134.setup = (props, ctx) => {
+var _sfc_setup$136 = _sfc_main$136.setup;
+_sfc_main$136.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/InputError.vue");
-	return _sfc_setup$134 ? _sfc_setup$134(props, ctx) : void 0;
+	return _sfc_setup$136 ? _sfc_setup$136(props, ctx) : void 0;
 };
 // \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -182,7 +182,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 	return target;
 };
 // resources/js/Components/PasswordChangeModal.vue
-var _sfc_main$133 = {
+var _sfc_main$135 = {
 	__name: "PasswordChangeModal",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -192,12 +192,12 @@ var _sfc_main$133 = {
 		});
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "fixed inset-0 bg-slate-900/80 backdrop-blur-lg flex items-center justify-center z-[9999] p-4 animate-fade-in" }, _attrs))} data-v-60d6b883><div class="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-8 max-w-md w-full border border-slate-100/50 flex flex-col relative transform transition-all scale-100" data-v-60d6b883><div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-orange-50 mb-6 border border-orange-100" data-v-60d6b883><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-[#FF7A00]" data-v-60d6b883><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" data-v-60d6b883></path></svg></div><h2 class="text-2xl font-bold text-center text-slate-800 mb-2" data-v-60d6b883>Actualiza tu contraseña</h2><p class="text-sm text-slate-500 text-center mb-6 leading-relaxed" data-v-60d6b883> Por motivos de seguridad, debes actualizar la contraseña temporal asignada a tu cuenta antes de continuar navegando. </p><form class="space-y-5" data-v-60d6b883><div data-v-60d6b883>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "force_password",
 				value: "Nueva contraseña",
 				class: "font-semibold text-slate-700 mb-1"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 				id: "force_password",
 				modelValue: (0, vue_exports.unref)(form).password,
 				"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).password = $event,
@@ -206,17 +206,17 @@ var _sfc_main$133 = {
 				required: "",
 				autocomplete: "new-password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				message: (0, vue_exports.unref)(form).errors.password,
 				class: "mt-1 text-xs"
 			}, null, _parent));
 			_push(`</div><div data-v-60d6b883>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "force_password_confirmation",
 				value: "Confirmar nueva contraseña",
 				class: "font-semibold text-slate-700 mb-1"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 				id: "force_password_confirmation",
 				modelValue: (0, vue_exports.unref)(form).password_confirmation,
 				"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).password_confirmation = $event,
@@ -225,7 +225,7 @@ var _sfc_main$133 = {
 				required: "",
 				autocomplete: "new-password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				message: (0, vue_exports.unref)(form).errors.password_confirmation,
 				class: "mt-1 text-xs"
 			}, null, _parent));
@@ -249,13 +249,13 @@ var _sfc_main$133 = {
 		};
 	}
 };
-var _sfc_setup$133 = _sfc_main$133.setup;
-_sfc_main$133.setup = (props, ctx) => {
+var _sfc_setup$135 = _sfc_main$135.setup;
+_sfc_main$135.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PasswordChangeModal.vue");
-	return _sfc_setup$133 ? _sfc_setup$133(props, ctx) : void 0;
+	return _sfc_setup$135 ? _sfc_setup$135(props, ctx) : void 0;
 };
-var PasswordChangeModal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$133, [["__scopeId", "data-v-60d6b883"]]);
+var PasswordChangeModal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$135, [["__scopeId", "data-v-60d6b883"]]);
 // resources/js/composables/useAppearance.js
 var APPEARANCE_STORAGE_KEY = "appearance";
 var APPEARANCE_OPTIONS = [
@@ -324,7 +324,7 @@ function useAppearance({ applyToLayout = false } = {}) {
 	};
 }
 // resources/js/Components/AppearanceToggle.vue
-var _sfc_main$132 = {
+var _sfc_main$134 = {
 	__name: "AppearanceToggle",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -346,14 +346,14 @@ var _sfc_main$132 = {
 		};
 	}
 };
-var _sfc_setup$132 = _sfc_main$132.setup;
-_sfc_main$132.setup = (props, ctx) => {
+var _sfc_setup$134 = _sfc_main$134.setup;
+_sfc_main$134.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppearanceToggle.vue");
-	return _sfc_setup$132 ? _sfc_setup$132(props, ctx) : void 0;
+	return _sfc_setup$134 ? _sfc_setup$134(props, ctx) : void 0;
 };
 // resources/js/Layouts/AdminLayout.vue
-var _sfc_main$131 = {
+var _sfc_main$133 = {
 	__name: "AdminLayout",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -430,9 +430,9 @@ var _sfc_main$131 = {
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" }, null, _parent, _scopeId));
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" }, null, _parent, _scopeId));
 						_push(`<div class="flex items-center gap-2 text-2xl font-bold tracking-tight"${_scopeId}><span class="text-white"${_scopeId}>Taller</span><span class="text-amber-400"${_scopeId}>Flow</span></div>`);
-					} else return [(0, vue_exports.createVNode)(_sfc_main$138, { class: "h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" }), (0, vue_exports.createVNode)("div", { class: "flex items-center gap-2 text-2xl font-bold tracking-tight" }, [(0, vue_exports.createVNode)("span", { class: "text-white" }, "Taller"), (0, vue_exports.createVNode)("span", { class: "text-amber-400" }, "Flow")])];
+					} else return [(0, vue_exports.createVNode)(_sfc_main$140, { class: "h-10 w-10 rounded-xl shadow-sm ring-1 ring-white/10" }), (0, vue_exports.createVNode)("div", { class: "flex items-center gap-2 text-2xl font-bold tracking-tight" }, [(0, vue_exports.createVNode)("span", { class: "text-white" }, "Taller"), (0, vue_exports.createVNode)("span", { class: "text-amber-400" }, "Flow")])];
 				}),
 				_: 1
 			}, _parent));
@@ -601,7 +601,7 @@ var _sfc_main$131 = {
 				_push(`</div>`);
 			} else _push(`<!---->`);
 			_push(`</div></div></div><div class="hidden sm:ml-6 sm:flex sm:items-center sm:gap-4">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, null, null, _parent));
 			_push(`<div class="relative"><button class="flex items-center gap-3 text-sm focus:outline-none hover:opacity-80 transition-opacity"><span class="text-slate-300">${(0, server_renderer_exports.ssrInterpolate)(user.value?.name)}</span><div class="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center text-white font-semibold ring-1 ring-white/10">${(0, server_renderer_exports.ssrInterpolate)(user.value?.name?.charAt(0).toUpperCase())}</div></button>`);
 			if (userMenuOpen.value) {
 				_push(`<div class="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg ring-1 ring-black/5 z-50 overflow-hidden">`);
@@ -655,7 +655,7 @@ var _sfc_main$131 = {
 				_push(`</div>`);
 			} else _push(`<!---->`);
 			_push(`</div></div><div class="-mr-2 flex items-center gap-2 sm:hidden">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, null, null, _parent));
 			_push(`<button class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 transition-colors"><span class="sr-only">Abrir menú principal</span><svg class="${(0, server_renderer_exports.ssrRenderClass)([{
 				"hidden": showingNavigationDropdown.value,
 				"block": !showingNavigationDropdown.value
@@ -827,7 +827,7 @@ var _sfc_main$131 = {
 			_push(`</div></div></div></nav><main class="py-10"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">`);
 			(0, server_renderer_exports.ssrRenderSlot)(_ctx.$slots, "default", {}, null, _push, _parent);
 			_push(`</div></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$139, {
 				message: toast.value.message,
 				type: toast.value.type,
 				onDismiss: ($event) => toast.value.message = ""
@@ -838,11 +838,11 @@ var _sfc_main$131 = {
 		};
 	}
 };
-var _sfc_setup$131 = _sfc_main$131.setup;
-_sfc_main$131.setup = (props, ctx) => {
+var _sfc_setup$133 = _sfc_main$133.setup;
+_sfc_main$133.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
-	return _sfc_setup$131 ? _sfc_setup$131(props, ctx) : void 0;
+	return _sfc_setup$133 ? _sfc_setup$133(props, ctx) : void 0;
 };
 // resources/js/utils/visits.js
 var PERIOD_OPTIONS = [
@@ -956,7 +956,7 @@ var toneClasses = {
 	neutral: "bg-slate-100 text-slate-600 ring-slate-500/10"
 };
 // resources/js/Components/Admin/VisitsTrendChart.vue
-var _sfc_main$130 = {
+var _sfc_main$132 = {
 	__name: "VisitsTrendChart",
 	__ssrInlineRender: true,
 	props: {
@@ -1115,14 +1115,14 @@ var _sfc_main$130 = {
 		};
 	}
 };
-var _sfc_setup$130 = _sfc_main$130.setup;
-_sfc_main$130.setup = (props, ctx) => {
+var _sfc_setup$132 = _sfc_main$132.setup;
+_sfc_main$132.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Admin/VisitsTrendChart.vue");
-	return _sfc_setup$130 ? _sfc_setup$130(props, ctx) : void 0;
+	return _sfc_setup$132 ? _sfc_setup$132(props, ctx) : void 0;
 };
 // resources/js/Components/Admin/VisitsSummaryStat.vue
-var _sfc_main$129 = {
+var _sfc_main$131 = {
 	__name: "VisitsSummaryStat",
 	__ssrInlineRender: true,
 	props: {
@@ -1174,15 +1174,15 @@ var _sfc_main$129 = {
 		};
 	}
 };
-var _sfc_setup$129 = _sfc_main$129.setup;
-_sfc_main$129.setup = (props, ctx) => {
+var _sfc_setup$131 = _sfc_main$131.setup;
+_sfc_main$131.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Admin/VisitsSummaryStat.vue");
-	return _sfc_setup$129 ? _sfc_setup$129(props, ctx) : void 0;
+	return _sfc_setup$131 ? _sfc_setup$131(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Analytics/Visits.vue
-var Visits_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$128 });
-var _sfc_main$128 = {
+var Visits_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$130 });
+var _sfc_main$130 = {
 	__name: "Visits",
 	__ssrInlineRender: true,
 	props: { report: {
@@ -1312,7 +1312,7 @@ var _sfc_main$128 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Visitas al sitio" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"${_scopeId}><div${_scopeId}><nav class="mb-1 flex items-center gap-1.5 text-xs text-slate-400"${_scopeId}>`);
@@ -1335,7 +1335,7 @@ var _sfc_main$128 = {
 							_push(`<button type="button" role="tab"${(0, server_renderer_exports.ssrRenderAttr)("aria-selected", __props.report.period === p.key)} class="${(0, server_renderer_exports.ssrRenderClass)(["rounded-lg px-3 py-1.5 text-xs font-semibold transition-all", __props.report.period === p.key ? "bg-slate-900 text-white shadow-sm" : "text-slate-500 hover:text-slate-900"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(p.label)}</button>`);
 						});
 						_push(`<!--]--></div></div></div><div class="grid grid-cols-2 gap-4 lg:grid-cols-4"${_scopeId}><div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Visitas",
 							value: summary.value.visits ?? 0,
 							change: summary.value.change?.visits ?? null,
@@ -1344,7 +1344,7 @@ var _sfc_main$128 = {
 							accent: scopeMeta.value.color
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Visitantes únicos",
 							value: summary.value.unique_visitors ?? 0,
 							change: summary.value.change?.unique_visitors ?? null,
@@ -1353,19 +1353,19 @@ var _sfc_main$128 = {
 							accent: "#3b82f6"
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Páginas por visitante",
 							value: summary.value.pages_per_visitor ?? "—",
 							hint: "Promedio de páginas vistas por persona y día"
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Mejor día",
 							value: summary.value.best_day ? (0, vue_exports.unref)(formatNumber)(summary.value.best_day.visits) : "—",
 							hint: summary.value.best_day ? `${(0, vue_exports.unref)(formatShortDate)(summary.value.best_day.date)} · ${(0, vue_exports.unref)(formatNumber)(summary.value.best_day.unique_visitors)} únicos` : "Sin visitas en el período"
 						}, null, _parent, _scopeId));
 						_push(`</div></div><div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5"${_scopeId}><div class="flex items-center justify-between border-b border-slate-100 px-6 py-4"${_scopeId}><div${_scopeId}><h2 class="text-sm font-semibold text-slate-900"${_scopeId}>Tendencia diaria</h2><p class="mt-0.5 text-xs text-slate-500"${_scopeId}>Visitas totales y personas distintas por día.</p></div></div><div class="p-6"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$130, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, {
 							series: __props.report.by_day,
 							color: scopeMeta.value.color,
 							height: 300
@@ -1509,7 +1509,7 @@ var _sfc_main$128 = {
 							}, (0, vue_exports.toDisplayString)(p.label), 11, ["aria-selected", "onClick"]);
 						}), 128))])])]),
 						(0, vue_exports.createVNode)("div", { class: "grid grid-cols-2 gap-4 lg:grid-cols-4" }, [
-							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 								label: "Visitas",
 								value: summary.value.visits ?? 0,
 								change: summary.value.change?.visits ?? null,
@@ -1523,7 +1523,7 @@ var _sfc_main$128 = {
 								"hint",
 								"accent"
 							])]),
-							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 								label: "Visitantes únicos",
 								value: summary.value.unique_visitors ?? 0,
 								change: summary.value.change?.unique_visitors ?? null,
@@ -1536,18 +1536,18 @@ var _sfc_main$128 = {
 								"previous",
 								"hint"
 							])]),
-							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 								label: "Páginas por visitante",
 								value: summary.value.pages_per_visitor ?? "—",
 								hint: "Promedio de páginas vistas por persona y día"
 							}, null, 8, ["value"])]),
-							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+							(0, vue_exports.createVNode)("div", { class: "rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 								label: "Mejor día",
 								value: summary.value.best_day ? (0, vue_exports.unref)(formatNumber)(summary.value.best_day.visits) : "—",
 								hint: summary.value.best_day ? `${(0, vue_exports.unref)(formatShortDate)(summary.value.best_day.date)} · ${(0, vue_exports.unref)(formatNumber)(summary.value.best_day.unique_visitors)} únicos` : "Sin visitas en el período"
 							}, null, 8, ["value", "hint"])])
 						]),
-						(0, vue_exports.createVNode)("div", { class: "mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)("div", { class: "flex items-center justify-between border-b border-slate-100 px-6 py-4" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("h2", { class: "text-sm font-semibold text-slate-900" }, "Tendencia diaria"), (0, vue_exports.createVNode)("p", { class: "mt-0.5 text-xs text-slate-500" }, "Visitas totales y personas distintas por día.")])]), (0, vue_exports.createVNode)("div", { class: "p-6" }, [(0, vue_exports.createVNode)(_sfc_main$130, {
+						(0, vue_exports.createVNode)("div", { class: "mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5" }, [(0, vue_exports.createVNode)("div", { class: "flex items-center justify-between border-b border-slate-100 px-6 py-4" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("h2", { class: "text-sm font-semibold text-slate-900" }, "Tendencia diaria"), (0, vue_exports.createVNode)("p", { class: "mt-0.5 text-xs text-slate-500" }, "Visitas totales y personas distintas por día.")])]), (0, vue_exports.createVNode)("div", { class: "p-6" }, [(0, vue_exports.createVNode)(_sfc_main$132, {
 							series: __props.report.by_day,
 							color: scopeMeta.value.color,
 							height: 300
@@ -1718,15 +1718,15 @@ var _sfc_main$128 = {
 		};
 	}
 };
-var _sfc_setup$128 = _sfc_main$128.setup;
-_sfc_main$128.setup = (props, ctx) => {
+var _sfc_setup$130 = _sfc_main$130.setup;
+_sfc_main$130.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Analytics/Visits.vue");
-	return _sfc_setup$128 ? _sfc_setup$128(props, ctx) : void 0;
+	return _sfc_setup$130 ? _sfc_setup$130(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/AuditLogs/Index.vue
-var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$127 });
-var _sfc_main$127 = {
+var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$129 });
+var _sfc_main$129 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: { logs: Object },
@@ -1750,7 +1750,7 @@ var _sfc_main$127 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Auditoría" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8"${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Registro de Auditoría</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Historial de acciones realizadas en el sistema.</p></div><div class="flow-root"${_scopeId}><div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"${_scopeId}><div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"${_scopeId}><div class="overflow-hidden shadow-sm ring-1 ring-slate-900/5 sm:rounded-lg"${_scopeId}><table class="min-w-full divide-y divide-slate-200"${_scopeId}><thead class="bg-slate-50"${_scopeId}><tr${_scopeId}><th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6"${_scopeId}>Fecha</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Usuario</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Acción</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Descripción</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>IP</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Modelo</th></tr></thead><tbody class="divide-y divide-slate-200 bg-white"${_scopeId}><!--[-->`);
@@ -1858,15 +1858,15 @@ var _sfc_main$127 = {
 		};
 	}
 };
-var _sfc_setup$127 = _sfc_main$127.setup;
-_sfc_main$127.setup = (props, ctx) => {
+var _sfc_setup$129 = _sfc_main$129.setup;
+_sfc_main$129.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/AuditLogs/Index.vue");
-	return _sfc_setup$127 ? _sfc_setup$127(props, ctx) : void 0;
+	return _sfc_setup$129 ? _sfc_setup$129(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Blog/Categories/Form.vue
-var Form_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$126 });
-var _sfc_main$126 = {
+var Form_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$128 });
+var _sfc_main$128 = {
 	__name: "Form",
 	__ssrInlineRender: true,
 	props: { category: Object },
@@ -1898,7 +1898,7 @@ var _sfc_main$126 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: isEditing.value ? `Editar: ${__props.category.name}` : "Nueva Categoría" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center gap-4"${_scopeId}>`);
@@ -2031,15 +2031,15 @@ var _sfc_main$126 = {
 		};
 	}
 };
-var _sfc_setup$126 = _sfc_main$126.setup;
-_sfc_main$126.setup = (props, ctx) => {
+var _sfc_setup$128 = _sfc_main$128.setup;
+_sfc_main$128.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Categories/Form.vue");
-	return _sfc_setup$126 ? _sfc_setup$126(props, ctx) : void 0;
+	return _sfc_setup$128 ? _sfc_setup$128(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Blog/Categories/Index.vue
-var Index_exports$19 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$125 });
-var _sfc_main$125 = {
+var Index_exports$19 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$127 });
+var _sfc_main$127 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: { categories: Array },
@@ -2053,7 +2053,7 @@ var _sfc_main$125 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Categorías del Blog" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center justify-between"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Categorías</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Organiza los artículos del blog por temáticas.</p></div>`);
@@ -2198,14 +2198,14 @@ var _sfc_main$125 = {
 		};
 	}
 };
-var _sfc_setup$125 = _sfc_main$125.setup;
-_sfc_main$125.setup = (props, ctx) => {
+var _sfc_setup$127 = _sfc_main$127.setup;
+_sfc_main$127.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Categories/Index.vue");
-	return _sfc_setup$125 ? _sfc_setup$125(props, ctx) : void 0;
+	return _sfc_setup$127 ? _sfc_setup$127(props, ctx) : void 0;
 };
 // resources/js/Components/MediaPickerModal.vue
-var _sfc_main$124 = {
+var _sfc_main$126 = {
 	__name: "MediaPickerModal",
 	__ssrInlineRender: true,
 	props: {
@@ -2270,15 +2270,15 @@ var _sfc_main$124 = {
 		};
 	}
 };
-var _sfc_setup$124 = _sfc_main$124.setup;
-_sfc_main$124.setup = (props, ctx) => {
+var _sfc_setup$126 = _sfc_main$126.setup;
+_sfc_main$126.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/MediaPickerModal.vue");
-	return _sfc_setup$124 ? _sfc_setup$124(props, ctx) : void 0;
+	return _sfc_setup$126 ? _sfc_setup$126(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Blog/Form.vue
-var Form_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$123 });
-var _sfc_main$123 = {
+var Form_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$125 });
+var _sfc_main$125 = {
 	__name: "Form",
 	__ssrInlineRender: true,
 	props: {
@@ -2369,7 +2369,7 @@ var _sfc_main$123 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: isEditing.value ? `Editar Artículo: ${__props.post.title}` : "Nuevo Artículo de Blog" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center gap-4"${_scopeId}>`);
@@ -2475,7 +2475,7 @@ var _sfc_main$123 = {
 						if ((0, vue_exports.unref)(form).errors.meta_description) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(form).errors.meta_description)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div></div><div class="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-start gap-2"${_scopeId}><svg class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"${_scopeId}></path></svg><p class="text-xs text-blue-600"${_scopeId}> La <strong${_scopeId}>imagen destacada</strong> se usará como imagen para Open Graph (Facebook, LinkedIn) y Twitter Card. Recomendada: 1200×630 px. </p></div></div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$124, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$126, {
 							show: showMediaPicker.value,
 							files: mediaFiles.value,
 							mode: mediaPurpose.value,
@@ -2761,7 +2761,7 @@ var _sfc_main$123 = {
 								(0, vue_exports.createTextVNode)(" se usará como imagen para Open Graph (Facebook, LinkedIn) y Twitter Card. Recomendada: 1200×630 px. ")
 							])])
 						]),
-						(0, vue_exports.createVNode)(_sfc_main$124, {
+						(0, vue_exports.createVNode)(_sfc_main$126, {
 							show: showMediaPicker.value,
 							files: mediaFiles.value,
 							mode: mediaPurpose.value,
@@ -2785,15 +2785,15 @@ var _sfc_main$123 = {
 		};
 	}
 };
-var _sfc_setup$123 = _sfc_main$123.setup;
-_sfc_main$123.setup = (props, ctx) => {
+var _sfc_setup$125 = _sfc_main$125.setup;
+_sfc_main$125.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Form.vue");
-	return _sfc_setup$123 ? _sfc_setup$123(props, ctx) : void 0;
+	return _sfc_setup$125 ? _sfc_setup$125(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Blog/Index.vue
-var Index_exports$18 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$122 });
-var _sfc_main$122 = {
+var Index_exports$18 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$124 });
+var _sfc_main$124 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: { posts: Array },
@@ -2814,7 +2814,7 @@ var _sfc_main$122 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Artículos de Blog" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="sm:flex sm:items-center sm:justify-between mb-8"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Artículos de Blog</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Administra las publicaciones del blog público de TallerFlow.</p></div><div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none"${_scopeId}>`);
@@ -3009,15 +3009,15 @@ var _sfc_main$122 = {
 		};
 	}
 };
-var _sfc_setup$122 = _sfc_main$122.setup;
-_sfc_main$122.setup = (props, ctx) => {
+var _sfc_setup$124 = _sfc_main$124.setup;
+_sfc_main$124.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Blog/Index.vue");
-	return _sfc_setup$122 ? _sfc_setup$122(props, ctx) : void 0;
+	return _sfc_setup$124 ? _sfc_setup$124(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Dashboard.vue
-var Dashboard_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$121 });
-var _sfc_main$121 = {
+var Dashboard_exports$1 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$123 });
+var _sfc_main$123 = {
 	__name: "Dashboard",
 	__ssrInlineRender: true,
 	props: {
@@ -3291,7 +3291,7 @@ var _sfc_main$121 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Panel de Administración Global" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Panel de Administración Global</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Métricas principales de toda la plataforma SaaS.</p></div><div class="flex items-center gap-3"${_scopeId}><button type="button"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(isSendingReport.value) ? " disabled" : ""} class="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-50 transition-all cursor-pointer" title="Genera un reporte diario de prueba y lo envía al correo configurado"${_scopeId}>`);
@@ -3360,7 +3360,7 @@ var _sfc_main$121 = {
 							_: 1
 						}, _parent, _scopeId));
 						_push(`</div></div><div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4"${_scopeId}><div class="min-w-0 lg:col-span-3"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$130, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, {
 							series: __props.visits.by_day,
 							color: visitsScopeMeta.value.color,
 							height: 260
@@ -3372,7 +3372,7 @@ var _sfc_main$121 = {
 							_push(`</p>`);
 						} else _push(`<!---->`);
 						_push(`</div><div class="flex flex-col gap-5 rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-950/5"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Visitas",
 							value: visitsSummary.value.visits ?? 0,
 							change: visitsSummary.value.change?.visits ?? null,
@@ -3381,7 +3381,7 @@ var _sfc_main$121 = {
 							accent: visitsScopeMeta.value.color
 						}, null, _parent, _scopeId));
 						_push(`<div class="border-t border-slate-200/80 pt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Visitantes únicos",
 							value: visitsSummary.value.unique_visitors ?? 0,
 							change: visitsSummary.value.change?.unique_visitors ?? null,
@@ -3390,11 +3390,11 @@ var _sfc_main$121 = {
 							accent: "#3b82f6"
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="grid grid-cols-2 gap-4 border-t border-slate-200/80 pt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Págs./visitante",
 							value: visitsSummary.value.pages_per_visitor ?? "—"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$129, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, {
 							label: "Mejor día",
 							value: visitsSummary.value.best_day ? (0, vue_exports.unref)(formatNumber)(visitsSummary.value.best_day.visits) : "—",
 							hint: visitsSummary.value.best_day ? (0, vue_exports.unref)(formatShortDate)(visitsSummary.value.best_day.date) : ""
@@ -3743,7 +3743,7 @@ var _sfc_main$121 = {
 									_: 1
 								}, 8, ["href"])
 							])]),
-							(0, vue_exports.createVNode)("div", { class: "grid grid-cols-1 gap-6 p-6 lg:grid-cols-4" }, [(0, vue_exports.createVNode)("div", { class: "min-w-0 lg:col-span-3" }, [(0, vue_exports.createVNode)(_sfc_main$130, {
+							(0, vue_exports.createVNode)("div", { class: "grid grid-cols-1 gap-6 p-6 lg:grid-cols-4" }, [(0, vue_exports.createVNode)("div", { class: "min-w-0 lg:col-span-3" }, [(0, vue_exports.createVNode)(_sfc_main$132, {
 								series: __props.visits.by_day,
 								color: visitsScopeMeta.value.color,
 								height: 260
@@ -3761,7 +3761,7 @@ var _sfc_main$121 = {
 								"stroke-linejoin": "round",
 								d: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 							})])), visitorsPartialSince.value === "sin datos aún" ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 0 }, "El conteo de visitantes únicos empezará a registrarse con las próximas visitas.")) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("span", { key: 1 }, "Los visitantes únicos se registran desde el " + (0, vue_exports.toDisplayString)(visitorsPartialSince.value) + "; los días anteriores solo tienen visitas totales.", 1))])) : (0, vue_exports.createCommentVNode)("", true)]), (0, vue_exports.createVNode)("div", { class: "flex flex-col gap-5 rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-950/5" }, [
-								(0, vue_exports.createVNode)(_sfc_main$129, {
+								(0, vue_exports.createVNode)(_sfc_main$131, {
 									label: "Visitas",
 									value: visitsSummary.value.visits ?? 0,
 									change: visitsSummary.value.change?.visits ?? null,
@@ -3775,7 +3775,7 @@ var _sfc_main$121 = {
 									"hint",
 									"accent"
 								]),
-								(0, vue_exports.createVNode)("div", { class: "border-t border-slate-200/80 pt-4" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+								(0, vue_exports.createVNode)("div", { class: "border-t border-slate-200/80 pt-4" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 									label: "Visitantes únicos",
 									value: visitsSummary.value.unique_visitors ?? 0,
 									change: visitsSummary.value.change?.unique_visitors ?? null,
@@ -3787,10 +3787,10 @@ var _sfc_main$121 = {
 									"change",
 									"previous"
 								])]),
-								(0, vue_exports.createVNode)("div", { class: "grid grid-cols-2 gap-4 border-t border-slate-200/80 pt-4" }, [(0, vue_exports.createVNode)(_sfc_main$129, {
+								(0, vue_exports.createVNode)("div", { class: "grid grid-cols-2 gap-4 border-t border-slate-200/80 pt-4" }, [(0, vue_exports.createVNode)(_sfc_main$131, {
 									label: "Págs./visitante",
 									value: visitsSummary.value.pages_per_visitor ?? "—"
-								}, null, 8, ["value"]), (0, vue_exports.createVNode)(_sfc_main$129, {
+								}, null, 8, ["value"]), (0, vue_exports.createVNode)(_sfc_main$131, {
 									label: "Mejor día",
 									value: visitsSummary.value.best_day ? (0, vue_exports.unref)(formatNumber)(visitsSummary.value.best_day.visits) : "—",
 									hint: visitsSummary.value.best_day ? (0, vue_exports.unref)(formatShortDate)(visitsSummary.value.best_day.date) : ""
@@ -4187,15 +4187,15 @@ var _sfc_main$121 = {
 		};
 	}
 };
-var _sfc_setup$121 = _sfc_main$121.setup;
-_sfc_main$121.setup = (props, ctx) => {
+var _sfc_setup$123 = _sfc_main$123.setup;
+_sfc_main$123.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
-	return _sfc_setup$121 ? _sfc_setup$121(props, ctx) : void 0;
+	return _sfc_setup$123 ? _sfc_setup$123(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/LandingPageSeo/Index.vue
-var Index_exports$17 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$120 });
-var _sfc_main$120 = {
+var Index_exports$17 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$122 });
+var _sfc_main$122 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -4294,7 +4294,7 @@ var _sfc_main$120 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "SEO Páginas Públicas · Admin" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-start justify-between gap-4 flex-wrap"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>SEO — Páginas Públicas</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Configura los meta tags, descripción y OG image para cada página pública del sitio.</p></div><button${(0, server_renderer_exports.ssrIncludeBooleanAttr)((0, vue_exports.unref)(form).processing) ? " disabled" : ""} class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow hover:bg-slate-800 transition-colors disabled:opacity-60"${_scopeId}>`);
@@ -4630,15 +4630,15 @@ var _sfc_main$120 = {
 		};
 	}
 };
-var _sfc_setup$120 = _sfc_main$120.setup;
-_sfc_main$120.setup = (props, ctx) => {
+var _sfc_setup$122 = _sfc_main$122.setup;
+_sfc_main$122.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/LandingPageSeo/Index.vue");
-	return _sfc_setup$120 ? _sfc_setup$120(props, ctx) : void 0;
+	return _sfc_setup$122 ? _sfc_setup$122(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/MediaLibrary/Index.vue
-var Index_exports$16 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$119 });
-var _sfc_main$119 = {
+var Index_exports$16 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$121 });
+var _sfc_main$121 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: { files: Array },
@@ -4712,7 +4712,7 @@ var _sfc_main$119 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Banco de Imágenes" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center justify-between"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Banco de Imágenes</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Sube, organiza y reutiliza imágenes en tus artículos.</p></div><label class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 transition-colors"${_scopeId}><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"${_scopeId}></path></svg> Subir imágenes <input type="file" accept="image/*" multiple class="hidden"${(0, server_renderer_exports.ssrIncludeBooleanAttr)(uploading.value) ? " disabled" : ""}${_scopeId}></label></div>`);
@@ -4945,11 +4945,11 @@ var _sfc_main$119 = {
 		};
 	}
 };
-var _sfc_setup$119 = _sfc_main$119.setup;
-_sfc_main$119.setup = (props, ctx) => {
+var _sfc_setup$121 = _sfc_main$121.setup;
+_sfc_main$121.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/MediaLibrary/Index.vue");
-	return _sfc_setup$119 ? _sfc_setup$119(props, ctx) : void 0;
+	return _sfc_setup$121 ? _sfc_setup$121(props, ctx) : void 0;
 };
 // resources/js/constants/payment.js
 var STATUS_CONFIG = {
@@ -4982,8 +4982,8 @@ var PAYMENT_TYPE_LABEL = {
 	bank_transfer: "Transferencia"
 };
 // resources/js/Pages/Admin/Payments/Index.vue
-var Index_exports$15 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$118 });
-var _sfc_main$118 = {
+var Index_exports$15 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$120 });
+var _sfc_main$120 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -5022,7 +5022,7 @@ var _sfc_main$118 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Historial de Pagos" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-6 flex items-center justify-between"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Historial de Pagos</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Desglose de ingresos, comisiones MP e IVA.</p></div></div><div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4"${_scopeId}><div class="rounded-xl bg-white ring-1 ring-slate-900/5 shadow-sm p-4"${_scopeId}><p class="text-xs font-medium text-slate-500 uppercase tracking-wide"${_scopeId}>Ingresos Brutos</p><p class="mt-1 text-xl font-bold text-slate-900"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(clp(__props.totals?.gross))}</p><p class="text-xs text-slate-400"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.totals?.transactions ?? 0)} transacciones</p></div><div class="rounded-xl bg-white ring-1 ring-slate-900/5 shadow-sm p-4"${_scopeId}><p class="text-xs font-medium text-slate-500 uppercase tracking-wide"${_scopeId}>Comisión MP (neto)</p><p class="mt-1 text-xl font-bold text-rose-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(clp(__props.totals?.fees_net))}</p><p class="text-xs text-slate-400"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(pct(__props.totals?.fees_net, __props.totals?.gross))} del bruto</p></div><div class="rounded-xl bg-white ring-1 ring-slate-900/5 shadow-sm p-4"${_scopeId}><p class="text-xs font-medium text-slate-500 uppercase tracking-wide"${_scopeId}>IVA Comisión (19%)</p><p class="mt-1 text-xl font-bold text-orange-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(clp(__props.totals?.fees_vat))}</p><p class="text-xs text-slate-400"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(pct(__props.totals?.fees_vat, __props.totals?.gross))} del bruto</p></div><div class="rounded-xl bg-white ring-1 ring-slate-900/5 shadow-sm p-4"${_scopeId}><p class="text-xs font-medium text-slate-500 uppercase tracking-wide"${_scopeId}>Neto Recibido</p><p class="mt-1 text-xl font-bold text-emerald-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(clp(__props.totals?.net))}</p><p class="text-xs text-slate-400"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(pct(__props.totals?.net, __props.totals?.gross))} del bruto</p></div></div>`);
@@ -5191,15 +5191,15 @@ var _sfc_main$118 = {
 		};
 	}
 };
-var _sfc_setup$118 = _sfc_main$118.setup;
-_sfc_main$118.setup = (props, ctx) => {
+var _sfc_setup$120 = _sfc_main$120.setup;
+_sfc_main$120.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Payments/Index.vue");
-	return _sfc_setup$118 ? _sfc_setup$118(props, ctx) : void 0;
+	return _sfc_setup$120 ? _sfc_setup$120(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Plans/Form.vue
-var Form_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$117 });
-var _sfc_main$117 = {
+var Form_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$119 });
+var _sfc_main$119 = {
 	__name: "Form",
 	__ssrInlineRender: true,
 	props: {
@@ -5256,7 +5256,7 @@ var _sfc_main$117 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: isEditing.value ? `Editar Plan: ${__props.plan.name}` : "Nuevo Plan" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center gap-4"${_scopeId}>`);
@@ -5645,15 +5645,15 @@ var _sfc_main$117 = {
 		};
 	}
 };
-var _sfc_setup$117 = _sfc_main$117.setup;
-_sfc_main$117.setup = (props, ctx) => {
+var _sfc_setup$119 = _sfc_main$119.setup;
+_sfc_main$119.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Plans/Form.vue");
-	return _sfc_setup$117 ? _sfc_setup$117(props, ctx) : void 0;
+	return _sfc_setup$119 ? _sfc_setup$119(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Plans/Index.vue
-var Index_exports$14 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$116 });
-var _sfc_main$116 = {
+var Index_exports$14 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$118 });
+var _sfc_main$118 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -5675,7 +5675,7 @@ var _sfc_main$116 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Planes de Suscripción" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="sm:flex sm:items-center sm:justify-between mb-8"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Planes de Suscripción</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Administra los planes disponibles para los talleres.</p></div><div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none"${_scopeId}>`);
@@ -5876,15 +5876,15 @@ var _sfc_main$116 = {
 		};
 	}
 };
-var _sfc_setup$116 = _sfc_main$116.setup;
-_sfc_main$116.setup = (props, ctx) => {
+var _sfc_setup$118 = _sfc_main$118.setup;
+_sfc_main$118.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Plans/Index.vue");
-	return _sfc_setup$116 ? _sfc_setup$116(props, ctx) : void 0;
+	return _sfc_setup$118 ? _sfc_setup$118(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Profile.vue
-var Profile_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$115 });
-var _sfc_main$115 = {
+var Profile_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$117 });
+var _sfc_main$117 = {
 	__name: "Profile",
 	__ssrInlineRender: true,
 	props: {
@@ -5948,7 +5948,7 @@ var _sfc_main$115 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Mi Perfil" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8"${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Mi Perfil</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Gestiona tu cuenta y credenciales de la plataforma.</p></div><div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden"${_scopeId}><div class="border-b border-gray-200 bg-gray-50/50 px-4 sm:px-6"${_scopeId}><nav class="-mb-px flex space-x-8" aria-label="Tabs"${_scopeId}><button class="${(0, server_renderer_exports.ssrRenderClass)([activeTab.value === "profile" ? "border-orange-500 text-orange-600 font-semibold" : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-medium", "whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"])}"${_scopeId}> Mi Perfil </button><button class="${(0, server_renderer_exports.ssrRenderClass)([activeTab.value === "security" ? "border-orange-500 text-orange-600 font-semibold" : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-medium", "whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"])}"${_scopeId}> Seguridad </button><button class="${(0, server_renderer_exports.ssrRenderClass)([activeTab.value === "api" ? "border-orange-500 text-orange-600 font-semibold" : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-medium", "whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"])}"${_scopeId}> API Keys &amp; Credenciales </button><button class="${(0, server_renderer_exports.ssrRenderClass)([activeTab.value === "analytics" ? "border-orange-500 text-orange-600 font-semibold" : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-medium", "whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"])}"${_scopeId}> Seguimiento &amp; Analytics </button></nav></div><div class="p-6 sm:p-8"${_scopeId}><div style="${(0, server_renderer_exports.ssrRenderStyle)(activeTab.value === "profile" ? null : { display: "none" })}"${_scopeId}><form class="space-y-6 max-w-lg"${_scopeId}><div${_scopeId}><label for="name" class="block text-sm font-medium text-gray-700"${_scopeId}>Nombre</label><input type="text" id="name"${(0, server_renderer_exports.ssrRenderAttr)("value", (0, vue_exports.unref)(profileForm).name)} class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"${_scopeId}>`);
@@ -5958,7 +5958,7 @@ var _sfc_main$115 = {
 						if ((0, vue_exports.unref)(profileForm).errors.email) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(profileForm).errors.email)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div><div class="pt-4 border-t border-gray-100 flex justify-end"${_scopeId}><button type="submit"${(0, server_renderer_exports.ssrIncludeBooleanAttr)((0, vue_exports.unref)(profileForm).processing) ? " disabled" : ""} class="inline-flex justify-center rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"${_scopeId}> Guardar Cambios </button></div></form></div><div style="${(0, server_renderer_exports.ssrRenderStyle)(activeTab.value === "security" ? null : { display: "none" })}"${_scopeId}><form class="space-y-6 max-w-lg"${_scopeId}><div${_scopeId}><label for="current_password" class="block text-sm font-medium text-gray-700"${_scopeId}>Contraseña actual</label>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "current_password",
 							modelValue: (0, vue_exports.unref)(passwordForm).current_password,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).current_password = $event,
@@ -5968,7 +5968,7 @@ var _sfc_main$115 = {
 						if ((0, vue_exports.unref)(passwordForm).errors.current_password) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(passwordForm).errors.current_password)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div><div${_scopeId}><label for="password" class="block text-sm font-medium text-gray-700"${_scopeId}>Nueva contraseña</label>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							modelValue: (0, vue_exports.unref)(passwordForm).password,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password = $event,
@@ -5978,7 +5978,7 @@ var _sfc_main$115 = {
 						if ((0, vue_exports.unref)(passwordForm).errors.password) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(passwordForm).errors.password)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div><div${_scopeId}><label for="password_confirmation" class="block text-sm font-medium text-gray-700"${_scopeId}>Confirmar nueva contraseña</label>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password_confirmation",
 							modelValue: (0, vue_exports.unref)(passwordForm).password_confirmation,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password_confirmation = $event,
@@ -5997,7 +5997,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.ai_settings, "gemini_api_key")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurada</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurada</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "gemini_api_key",
 							modelValue: (0, vue_exports.unref)(apiForm).gemini_api_key,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).gemini_api_key = $event,
@@ -6012,7 +6012,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.ai_settings, "openai_api_key")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurada</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurada</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "openai_api_key",
 							modelValue: (0, vue_exports.unref)(apiForm).openai_api_key,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).openai_api_key = $event,
@@ -6027,7 +6027,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.ai_settings, "anthropic_api_key")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurada</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurada</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "anthropic_api_key",
 							modelValue: (0, vue_exports.unref)(apiForm).anthropic_api_key,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).anthropic_api_key = $event,
@@ -6042,7 +6042,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.integration_settings, "boostr_api_key")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurada</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurada</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "boostr_api_key",
 							modelValue: (0, vue_exports.unref)(apiForm).boostr_api_key,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).boostr_api_key = $event,
@@ -6060,7 +6060,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.payment_settings, "mp_access_token")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurado</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurado</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "mp_access_token",
 							modelValue: (0, vue_exports.unref)(apiForm).mp_access_token,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_access_token = $event,
@@ -6075,7 +6075,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.payment_settings, "mp_public_key")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurada</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurada</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "mp_public_key",
 							modelValue: (0, vue_exports.unref)(apiForm).mp_public_key,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_public_key = $event,
@@ -6090,7 +6090,7 @@ var _sfc_main$115 = {
 						if (hasSetting(__props.payment_settings, "mp_webhook_secret")) _push(`<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"${_scopeId}>Configurado</span>`);
 						else _push(`<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"${_scopeId}>No configurado</span>`);
 						_push(`</div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "mp_webhook_secret",
 							modelValue: (0, vue_exports.unref)(apiForm).mp_webhook_secret,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_webhook_secret = $event,
@@ -6192,7 +6192,7 @@ var _sfc_main$115 = {
 									for: "current_password",
 									class: "block text-sm font-medium text-gray-700"
 								}, "Contraseña actual"),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "current_password",
 									modelValue: (0, vue_exports.unref)(passwordForm).current_password,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).current_password = $event,
@@ -6209,7 +6209,7 @@ var _sfc_main$115 = {
 									for: "password",
 									class: "block text-sm font-medium text-gray-700"
 								}, "Nueva contraseña"),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "password",
 									modelValue: (0, vue_exports.unref)(passwordForm).password,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password = $event,
@@ -6226,7 +6226,7 @@ var _sfc_main$115 = {
 									for: "password_confirmation",
 									class: "block text-sm font-medium text-gray-700"
 								}, "Confirmar nueva contraseña"),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "password_confirmation",
 									modelValue: (0, vue_exports.unref)(passwordForm).password_confirmation,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password_confirmation = $event,
@@ -6301,7 +6301,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurada"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "gemini_api_key",
 											modelValue: (0, vue_exports.unref)(apiForm).gemini_api_key,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).gemini_api_key = $event,
@@ -6330,7 +6330,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurada"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "openai_api_key",
 											modelValue: (0, vue_exports.unref)(apiForm).openai_api_key,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).openai_api_key = $event,
@@ -6359,7 +6359,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurada"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "anthropic_api_key",
 											modelValue: (0, vue_exports.unref)(apiForm).anthropic_api_key,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).anthropic_api_key = $event,
@@ -6394,7 +6394,7 @@ var _sfc_main$115 = {
 										key: 1,
 										class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 									}, "No configurada"))]),
-									(0, vue_exports.createVNode)(_sfc_main$136, {
+									(0, vue_exports.createVNode)(_sfc_main$138, {
 										id: "boostr_api_key",
 										modelValue: (0, vue_exports.unref)(apiForm).boostr_api_key,
 										"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).boostr_api_key = $event,
@@ -6452,7 +6452,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurado"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "mp_access_token",
 											modelValue: (0, vue_exports.unref)(apiForm).mp_access_token,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_access_token = $event,
@@ -6481,7 +6481,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurada"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "mp_public_key",
 											modelValue: (0, vue_exports.unref)(apiForm).mp_public_key,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_public_key = $event,
@@ -6510,7 +6510,7 @@ var _sfc_main$115 = {
 											key: 1,
 											class: "inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20"
 										}, "No configurado"))]),
-										(0, vue_exports.createVNode)(_sfc_main$136, {
+										(0, vue_exports.createVNode)(_sfc_main$138, {
 											id: "mp_webhook_secret",
 											modelValue: (0, vue_exports.unref)(apiForm).mp_webhook_secret,
 											"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(apiForm).mp_webhook_secret = $event,
@@ -6681,15 +6681,15 @@ var _sfc_main$115 = {
 		};
 	}
 };
-var _sfc_setup$115 = _sfc_main$115.setup;
-_sfc_main$115.setup = (props, ctx) => {
+var _sfc_setup$117 = _sfc_main$117.setup;
+_sfc_main$117.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Profile.vue");
-	return _sfc_setup$115 ? _sfc_setup$115(props, ctx) : void 0;
+	return _sfc_setup$117 ? _sfc_setup$117(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Tenants/Activity.vue
 var Activity_exports = /* @__PURE__ */ __exportAll({ default: () => Activity_default });
-var _sfc_main$114 = {
+var _sfc_main$116 = {
 	__name: "Activity",
 	__ssrInlineRender: true,
 	props: {
@@ -6899,7 +6899,7 @@ var _sfc_main$114 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `Actividad — ${__props.tenant.name}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-6" data-v-38c70c6c${_scopeId}><div class="flex items-center gap-2 text-sm text-slate-500 mb-2" data-v-38c70c6c${_scopeId}>`);
@@ -7364,13 +7364,13 @@ var _sfc_main$114 = {
 		};
 	}
 };
-var _sfc_setup$114 = _sfc_main$114.setup;
-_sfc_main$114.setup = (props, ctx) => {
+var _sfc_setup$116 = _sfc_main$116.setup;
+_sfc_main$116.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Activity.vue");
-	return _sfc_setup$114 ? _sfc_setup$114(props, ctx) : void 0;
+	return _sfc_setup$116 ? _sfc_setup$116(props, ctx) : void 0;
 };
-var Activity_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$114, [["__scopeId", "data-v-38c70c6c"]]);
+var Activity_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$116, [["__scopeId", "data-v-38c70c6c"]]);
 // resources/js/composables/useIdentification.js
 /**
 * Composable para normalización, formateo (sin puntos) y validación
@@ -7803,8 +7803,8 @@ function useIdentification() {
 	};
 }
 // resources/js/Pages/Admin/Tenants/Create.vue
-var Create_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$113 });
-var _sfc_main$113 = {
+var Create_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$115 });
+var _sfc_main$115 = {
 	__name: "Create",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -7839,7 +7839,7 @@ var _sfc_main$113 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Nuevo Taller" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center gap-4"${_scopeId}>`);
@@ -7906,7 +7906,7 @@ var _sfc_main$113 = {
 						if ((0, vue_exports.unref)(form).errors.admin_email) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(form).errors.admin_email)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div><div${_scopeId}><label for="admin_password" class="block text-sm font-medium text-gray-700"${_scopeId}>Contraseña <span class="text-red-500"${_scopeId}>*</span></label>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "admin_password",
 							modelValue: (0, vue_exports.unref)(form).admin_password,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).admin_password = $event,
@@ -8148,7 +8148,7 @@ var _sfc_main$113 = {
 										for: "admin_password",
 										class: "block text-sm font-medium text-gray-700"
 									}, [(0, vue_exports.createTextVNode)("Contraseña "), (0, vue_exports.createVNode)("span", { class: "text-red-500" }, "*")]),
-									(0, vue_exports.createVNode)(_sfc_main$136, {
+									(0, vue_exports.createVNode)(_sfc_main$138, {
 										id: "admin_password",
 										modelValue: (0, vue_exports.unref)(form).admin_password,
 										"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).admin_password = $event,
@@ -8183,15 +8183,15 @@ var _sfc_main$113 = {
 		};
 	}
 };
-var _sfc_setup$113 = _sfc_main$113.setup;
-_sfc_main$113.setup = (props, ctx) => {
+var _sfc_setup$115 = _sfc_main$115.setup;
+_sfc_main$115.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Create.vue");
-	return _sfc_setup$113 ? _sfc_setup$113(props, ctx) : void 0;
+	return _sfc_setup$115 ? _sfc_setup$115(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Tenants/Edit.vue
-var Edit_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$112 });
-var _sfc_main$112 = {
+var Edit_exports$2 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$114 });
+var _sfc_main$114 = {
 	__name: "Edit",
 	__ssrInlineRender: true,
 	props: {
@@ -8278,7 +8278,7 @@ var _sfc_main$112 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `Editar Taller: ${__props.tenant.name}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-8 flex items-center justify-between"${_scopeId}><div class="flex items-center gap-4"${_scopeId}>`);
@@ -8366,7 +8366,7 @@ var _sfc_main$112 = {
 						if ((0, vue_exports.unref)(adminForm).errors.email) _push(`<div class="mt-1 text-sm text-red-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(adminForm).errors.email)}</div>`);
 						else _push(`<!---->`);
 						_push(`</div><div${_scopeId}><label for="admin_password" class="block text-sm font-medium text-gray-700"${_scopeId}>Contraseña</label>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "admin_password",
 							modelValue: (0, vue_exports.unref)(adminForm).password,
 							"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(adminForm).password = $event,
@@ -8698,7 +8698,7 @@ var _sfc_main$112 = {
 								for: "admin_password",
 								class: "block text-sm font-medium text-gray-700"
 							}, "Contraseña"),
-							(0, vue_exports.createVNode)(_sfc_main$136, {
+							(0, vue_exports.createVNode)(_sfc_main$138, {
 								id: "admin_password",
 								modelValue: (0, vue_exports.unref)(adminForm).password,
 								"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(adminForm).password = $event,
@@ -8724,15 +8724,15 @@ var _sfc_main$112 = {
 		};
 	}
 };
-var _sfc_setup$112 = _sfc_main$112.setup;
-_sfc_main$112.setup = (props, ctx) => {
+var _sfc_setup$114 = _sfc_main$114.setup;
+_sfc_main$114.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Edit.vue");
-	return _sfc_setup$112 ? _sfc_setup$112(props, ctx) : void 0;
+	return _sfc_setup$114 ? _sfc_setup$114(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Tenants/Index.vue
-var Index_exports$13 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$111 });
-var _sfc_main$111 = {
+var Index_exports$13 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$113 });
+var _sfc_main$113 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -8859,7 +8859,7 @@ var _sfc_main$111 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Gestión de Talleres" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="sm:flex sm:items-center sm:justify-between mb-6"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Gestión de Talleres</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.tenants.total)} taller${(0, server_renderer_exports.ssrInterpolate)(__props.tenants.total !== 1 ? "es" : "")} registrado${(0, server_renderer_exports.ssrInterpolate)(__props.tenants.total !== 1 ? "s" : "")}. </p></div><div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none"${_scopeId}>`);
@@ -9550,15 +9550,15 @@ var _sfc_main$111 = {
 		};
 	}
 };
-var _sfc_setup$111 = _sfc_main$111.setup;
-_sfc_main$111.setup = (props, ctx) => {
+var _sfc_setup$113 = _sfc_main$113.setup;
+_sfc_main$113.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Tenants/Index.vue");
-	return _sfc_setup$111 ? _sfc_setup$111(props, ctx) : void 0;
+	return _sfc_setup$113 ? _sfc_setup$113(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/TrialRequests/Index.vue
-var Index_exports$12 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$110 });
-var _sfc_main$110 = {
+var Index_exports$12 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$112 });
+var _sfc_main$112 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -9636,7 +9636,7 @@ var _sfc_main$110 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Solicitudes de prueba · Admin" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-6 flex items-center justify-between"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Solicitudes de Prueba Gratuita</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Gestiona las solicitudes de acceso al sistema.</p></div>`);
@@ -9676,7 +9676,7 @@ var _sfc_main$110 = {
 								_push(`</td></tr>`);
 								if (approvingId.value === req.id) {
 									_push(`<tr class="bg-emerald-50"${_scopeId}><td colspan="7" class="px-6 py-4"${_scopeId}><div class="flex items-end gap-4 flex-wrap"${_scopeId}><div class="flex-1 min-w-64"${_scopeId}><p class="text-sm font-semibold text-slate-800 mb-1"${_scopeId}>Aprobar solicitud de <strong${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(req.name)}</strong></p><p class="text-xs text-slate-500 mb-3"${_scopeId}> Se creará el taller &quot;${(0, server_renderer_exports.ssrInterpolate)(req.business_name)}&quot; y el usuario administrador con el email ${(0, server_renderer_exports.ssrInterpolate)(req.email)}. Se activará un trial de 14 días con plan Básico. </p><label class="block text-xs font-semibold text-slate-700 mb-1"${_scopeId}>Contraseña provisional del administrador</label>`);
-									_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+									_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 										modelValue: (0, vue_exports.unref)(approveForm).admin_password,
 										"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(approveForm).admin_password = $event,
 										placeholder: "Mínimo 8 caracteres",
@@ -9813,7 +9813,7 @@ var _sfc_main$110 = {
 									(0, vue_exports.createVNode)("p", { class: "text-sm font-semibold text-slate-800 mb-1" }, [(0, vue_exports.createTextVNode)("Aprobar solicitud de "), (0, vue_exports.createVNode)("strong", null, (0, vue_exports.toDisplayString)(req.name), 1)]),
 									(0, vue_exports.createVNode)("p", { class: "text-xs text-slate-500 mb-3" }, " Se creará el taller \"" + (0, vue_exports.toDisplayString)(req.business_name) + "\" y el usuario administrador con el email " + (0, vue_exports.toDisplayString)(req.email) + ". Se activará un trial de 14 días con plan Básico. ", 1),
 									(0, vue_exports.createVNode)("label", { class: "block text-xs font-semibold text-slate-700 mb-1" }, "Contraseña provisional del administrador"),
-									(0, vue_exports.createVNode)(_sfc_main$136, {
+									(0, vue_exports.createVNode)(_sfc_main$138, {
 										modelValue: (0, vue_exports.unref)(approveForm).admin_password,
 										"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(approveForm).admin_password = $event,
 										placeholder: "Mínimo 8 caracteres",
@@ -9933,15 +9933,15 @@ var _sfc_main$110 = {
 		};
 	}
 };
-var _sfc_setup$110 = _sfc_main$110.setup;
-_sfc_main$110.setup = (props, ctx) => {
+var _sfc_setup$112 = _sfc_main$112.setup;
+_sfc_main$112.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/TrialRequests/Index.vue");
-	return _sfc_setup$110 ? _sfc_setup$110(props, ctx) : void 0;
+	return _sfc_setup$112 ? _sfc_setup$112(props, ctx) : void 0;
 };
 // resources/js/Pages/Admin/Users/Index.vue
-var Index_exports$11 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$109 });
-var _sfc_main$109 = {
+var Index_exports$11 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$111 });
+var _sfc_main$111 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: { users: Object },
@@ -9970,7 +9970,7 @@ var _sfc_main$109 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Usuarios Globales" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$131, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$133, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="sm:flex sm:items-center sm:justify-between mb-8"${_scopeId}><div${_scopeId}><h1 class="text-2xl font-bold text-slate-900 tracking-tight"${_scopeId}>Usuarios Globales</h1><p class="mt-1 text-sm text-slate-500"${_scopeId}>Todos los usuarios del sistema a través de todos los talleres.</p></div></div><div class="mt-8 flow-root"${_scopeId}><div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"${_scopeId}><div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"${_scopeId}><div class="overflow-hidden shadow-sm ring-1 ring-slate-900/5 sm:rounded-lg"${_scopeId}><table class="min-w-full divide-y divide-slate-200"${_scopeId}><thead class="bg-slate-50"${_scopeId}><tr${_scopeId}><th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6"${_scopeId}>Usuario</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Email</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Rol</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900"${_scopeId}>Taller Asociado</th><th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"${_scopeId}><span class="sr-only"${_scopeId}>Acciones</span></th></tr></thead><tbody class="divide-y divide-slate-200 bg-white"${_scopeId}><!--[-->`);
@@ -9993,7 +9993,7 @@ var _sfc_main$109 = {
 						(0, server_renderer_exports.ssrRenderTeleport)(_push, (_push) => {
 							if (showPasswordModal.value) {
 								_push(`<div class="fixed inset-0 z-50 flex items-center justify-center"${_scopeId}><div class="absolute inset-0 bg-black/50"${_scopeId}></div><div class="relative z-10 w-full max-w-md mx-4 bg-white rounded-xl shadow-xl"${_scopeId}><div class="p-6"${_scopeId}><div class="flex items-center justify-between mb-6"${_scopeId}><div${_scopeId}><h2 class="text-lg font-bold text-slate-900"${_scopeId}>Cambiar contraseña</h2><p class="text-sm text-slate-500 mt-0.5"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(selectedUser.value?.name)}</p></div><button type="button" class="text-slate-400 hover:text-slate-600 transition-colors"${_scopeId}><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"${_scopeId}></path></svg></button></div><form class="space-y-4"${_scopeId}><div${_scopeId}><label class="block text-sm font-medium text-slate-700 mb-1.5"${_scopeId}>Nueva contraseña</label>`);
-								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 									modelValue: (0, vue_exports.unref)(passwordForm).password,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password = $event,
 									class: "block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900",
@@ -10003,7 +10003,7 @@ var _sfc_main$109 = {
 								if ((0, vue_exports.unref)(passwordForm).errors.password) _push(`<p class="mt-1 text-xs text-rose-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(passwordForm).errors.password)}</p>`);
 								else _push(`<!---->`);
 								_push(`</div><div${_scopeId}><label class="block text-sm font-medium text-slate-700 mb-1.5"${_scopeId}>Confirmar contraseña</label>`);
-								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 									modelValue: (0, vue_exports.unref)(passwordForm).password_confirmation,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password_confirmation = $event,
 									class: "block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900",
@@ -10091,7 +10091,7 @@ var _sfc_main$109 = {
 						}, [
 							(0, vue_exports.createVNode)("div", null, [
 								(0, vue_exports.createVNode)("label", { class: "block text-sm font-medium text-slate-700 mb-1.5" }, "Nueva contraseña"),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									modelValue: (0, vue_exports.unref)(passwordForm).password,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password = $event,
 									class: "block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900",
@@ -10105,7 +10105,7 @@ var _sfc_main$109 = {
 							]),
 							(0, vue_exports.createVNode)("div", null, [
 								(0, vue_exports.createVNode)("label", { class: "block text-sm font-medium text-slate-700 mb-1.5" }, "Confirmar contraseña"),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									modelValue: (0, vue_exports.unref)(passwordForm).password_confirmation,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(passwordForm).password_confirmation = $event,
 									class: "block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none text-slate-900",
@@ -10135,11 +10135,11 @@ var _sfc_main$109 = {
 		};
 	}
 };
-var _sfc_setup$109 = _sfc_main$109.setup;
-_sfc_main$109.setup = (props, ctx) => {
+var _sfc_setup$111 = _sfc_main$111.setup;
+_sfc_main$111.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Users/Index.vue");
-	return _sfc_setup$109 ? _sfc_setup$109(props, ctx) : void 0;
+	return _sfc_setup$111 ? _sfc_setup$111(props, ctx) : void 0;
 };
 // resources/js/composables/useTenantRouting.js
 /**
@@ -10174,7 +10174,7 @@ function useTenantRouting() {
 	};
 }
 // resources/js/Components/AppointmentCalendar.vue
-var _sfc_main$108 = {
+var _sfc_main$110 = {
 	__name: "AppointmentCalendar",
 	__ssrInlineRender: true,
 	props: {
@@ -10325,11 +10325,11 @@ var _sfc_main$108 = {
 		};
 	}
 };
-var _sfc_setup$108 = _sfc_main$108.setup;
-_sfc_main$108.setup = (props, ctx) => {
+var _sfc_setup$110 = _sfc_main$110.setup;
+_sfc_main$110.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppointmentCalendar.vue");
-	return _sfc_setup$108 ? _sfc_setup$108(props, ctx) : void 0;
+	return _sfc_setup$110 ? _sfc_setup$110(props, ctx) : void 0;
 };
 // resources/js/composables/useStatusConfig.js
 /**
@@ -10449,7 +10449,7 @@ function useStatusConfig() {
 	};
 }
 // resources/js/Components/AppointmentList.vue
-var _sfc_main$107 = {
+var _sfc_main$109 = {
 	__name: "AppointmentList",
 	__ssrInlineRender: true,
 	props: {
@@ -10512,14 +10512,14 @@ var _sfc_main$107 = {
 		};
 	}
 };
-var _sfc_setup$107 = _sfc_main$107.setup;
-_sfc_main$107.setup = (props, ctx) => {
+var _sfc_setup$109 = _sfc_main$109.setup;
+_sfc_main$109.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/AppointmentList.vue");
-	return _sfc_setup$107 ? _sfc_setup$107(props, ctx) : void 0;
+	return _sfc_setup$109 ? _sfc_setup$109(props, ctx) : void 0;
 };
 // resources/js/Components/PlanUpgradeBanner.vue
-var _sfc_main$106 = {
+var _sfc_main$108 = {
 	__name: "PlanUpgradeBanner",
 	__ssrInlineRender: true,
 	props: {
@@ -10542,14 +10542,14 @@ var _sfc_main$106 = {
 		};
 	}
 };
-var _sfc_setup$106 = _sfc_main$106.setup;
-_sfc_main$106.setup = (props, ctx) => {
+var _sfc_setup$108 = _sfc_main$108.setup;
+_sfc_main$108.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PlanUpgradeBanner.vue");
-	return _sfc_setup$106 ? _sfc_setup$106(props, ctx) : void 0;
+	return _sfc_setup$108 ? _sfc_setup$108(props, ctx) : void 0;
 };
 // resources/js/Components/TenantSearch.vue
-var _sfc_main$105 = {
+var _sfc_main$107 = {
 	__name: "TenantSearch",
 	__ssrInlineRender: true,
 	props: {
@@ -10576,16 +10576,16 @@ var _sfc_main$105 = {
 		};
 	}
 };
-var _sfc_setup$105 = _sfc_main$105.setup;
-_sfc_main$105.setup = (props, ctx) => {
+var _sfc_setup$107 = _sfc_main$107.setup;
+_sfc_main$107.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantSearch.vue");
-	return _sfc_setup$105 ? _sfc_setup$105(props, ctx) : void 0;
+	return _sfc_setup$107 ? _sfc_setup$107(props, ctx) : void 0;
 };
 // resources/js/Components/TenantMobileNavigation.vue
 var PRIMARY_SLOTS = 4;
 var HIGHLIGHT_ROUTE = "receptions.create";
-var _sfc_main$104 = {
+var _sfc_main$106 = {
 	__name: "TenantMobileNavigation",
 	__ssrInlineRender: true,
 	props: {
@@ -10736,14 +10736,14 @@ var _sfc_main$104 = {
 		};
 	}
 };
-var _sfc_setup$104 = _sfc_main$104.setup;
-_sfc_main$104.setup = (props, ctx) => {
+var _sfc_setup$106 = _sfc_main$106.setup;
+_sfc_main$106.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantMobileNavigation.vue");
-	return _sfc_setup$104 ? _sfc_setup$104(props, ctx) : void 0;
+	return _sfc_setup$106 ? _sfc_setup$106(props, ctx) : void 0;
 };
 // resources/js/Components/NotificationBell.vue
-var _sfc_main$103 = {
+var _sfc_main$105 = {
 	__name: "NotificationBell",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -10828,14 +10828,14 @@ var _sfc_main$103 = {
 		};
 	}
 };
-var _sfc_setup$103 = _sfc_main$103.setup;
-_sfc_main$103.setup = (props, ctx) => {
+var _sfc_setup$105 = _sfc_main$105.setup;
+_sfc_main$105.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/NotificationBell.vue");
-	return _sfc_setup$103 ? _sfc_setup$103(props, ctx) : void 0;
+	return _sfc_setup$105 ? _sfc_setup$105(props, ctx) : void 0;
 };
 // resources/js/Components/BranchSwitcher.vue
-var _sfc_main$102 = {
+var _sfc_main$104 = {
 	__name: "BranchSwitcher",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -10900,11 +10900,11 @@ var _sfc_main$102 = {
 		};
 	}
 };
-var _sfc_setup$102 = _sfc_main$102.setup;
-_sfc_main$102.setup = (props, ctx) => {
+var _sfc_setup$104 = _sfc_main$104.setup;
+_sfc_main$104.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/BranchSwitcher.vue");
-	return _sfc_setup$102 ? _sfc_setup$102(props, ctx) : void 0;
+	return _sfc_setup$104 ? _sfc_setup$104(props, ctx) : void 0;
 };
 // resources/js/Components/onboardingTourSteps.js
 /**
@@ -11111,7 +11111,7 @@ var CARD_WIDTH = 340;
 var MOBILE_BREAKPOINT = 1024;
 var MAX_START_ATTEMPTS = 5;
 var START_RETRY_MS = 400;
-var _sfc_main$101 = {
+var _sfc_main$103 = {
 	__name: "OnboardingTour",
 	__ssrInlineRender: true,
 	props: { variant: {
@@ -11385,14 +11385,14 @@ var _sfc_main$101 = {
 		};
 	}
 };
-var _sfc_setup$101 = _sfc_main$101.setup;
-_sfc_main$101.setup = (props, ctx) => {
+var _sfc_setup$103 = _sfc_main$103.setup;
+_sfc_main$103.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/OnboardingTour.vue");
-	return _sfc_setup$101 ? _sfc_setup$101(props, ctx) : void 0;
+	return _sfc_setup$103 ? _sfc_setup$103(props, ctx) : void 0;
 };
 // resources/js/Components/FloatingSupportButton.vue
-var _sfc_main$100 = {
+var _sfc_main$102 = {
 	__name: "FloatingSupportButton",
 	__ssrInlineRender: true,
 	props: {
@@ -11558,14 +11558,14 @@ var _sfc_main$100 = {
 		};
 	}
 };
-var _sfc_setup$100 = _sfc_main$100.setup;
-_sfc_main$100.setup = (props, ctx) => {
+var _sfc_setup$102 = _sfc_main$102.setup;
+_sfc_main$102.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/FloatingSupportButton.vue");
-	return _sfc_setup$100 ? _sfc_setup$100(props, ctx) : void 0;
+	return _sfc_setup$102 ? _sfc_setup$102(props, ctx) : void 0;
 };
 // resources/js/Components/ErrorBoundary.vue
-var _sfc_main$99 = {
+var _sfc_main$101 = {
 	__name: "ErrorBoundary",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -11593,14 +11593,14 @@ var _sfc_main$99 = {
 		};
 	}
 };
-var _sfc_setup$99 = _sfc_main$99.setup;
-_sfc_main$99.setup = (props, ctx) => {
+var _sfc_setup$101 = _sfc_main$101.setup;
+_sfc_main$101.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ErrorBoundary.vue");
-	return _sfc_setup$99 ? _sfc_setup$99(props, ctx) : void 0;
+	return _sfc_setup$101 ? _sfc_setup$101(props, ctx) : void 0;
 };
 // resources/js/Layouts/TallerLayout.vue
-var _sfc_main$98 = {
+var _sfc_main$100 = {
 	__name: "TallerLayout",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -11798,7 +11798,7 @@ var _sfc_main$98 = {
 		}, { immediate: true });
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "min-h-screen bg-gradient-to-br from-[#E2EAF4] via-[#F0F4F8] to-[#E2EAF4] dark:from-[#0b1220] dark:via-[#0f1829] dark:to-[#0b1220] text-slate-800 font-sans selection:bg-[#FF7A00]/30 overflow-x-hidden flex" }, _attrs))}><aside class="hidden lg:flex lg:flex-col lg:w-72 fixed inset-y-0 left-0 bg-white/60 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-50"><div class="px-8 py-6 flex flex-col gap-2" data-tour="tenant-brand"><div class="flex items-center gap-3">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-10 w-10 rounded-[14px] flex-shrink-0 shadow-sm" }, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-10 w-10 rounded-[14px] flex-shrink-0 shadow-sm" }, null, _parent));
 			_push(`<div class="flex items-center gap-1.5 text-[1.75rem] font-bold tracking-tight leading-none"><span class="text-slate-900">Taller</span><span class="text-[#FF7A00]">Flow</span></div></div><div class="flex items-center gap-2 mt-1"><span class="inline-flex items-center rounded-md bg-orange-50 px-2 py-0.5 text-xs font-semibold text-[#FF7A00] ring-1 ring-inset ring-orange-500/20 uppercase tracking-wider"> Plan ${(0, server_renderer_exports.ssrInterpolate)(planAccess.value?.plan_name || "Básico")}</span>`);
 			if (isSuperAdmin.value) _push(`<span class="inline-flex items-center rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider"> Super-Admin </span>`);
 			else _push(`<!---->`);
@@ -11932,7 +11932,7 @@ var _sfc_main$98 = {
 			if (!_ctx.$page.props.isDesktop) _push(`<img${(0, server_renderer_exports.ssrRenderAttr)("src", `https://ui-avatars.com/api/?name=${user.value?.name || "User"}&background=F9A826&color=fff`)} alt="Avatar" class="w-11 h-11 flex-shrink-0 rounded-full border-2 border-white shadow-sm lg:hidden">`);
 			else _push(`<!---->`);
 			_push(`<div class="min-w-0 lg:hidden"><h2 class="truncate text-[15px] font-bold text-gray-900 leading-tight">${(0, server_renderer_exports.ssrInterpolate)(user.value?.name || "Bienvenido")}</h2></div>`);
-			if (searchUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$105, {
+			if (searchUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
 				"search-url": searchUrl.value,
 				label: searchLabel.value,
 				"list-view": canSearchWorkOrders.value,
@@ -11941,11 +11941,11 @@ var _sfc_main$98 = {
 			}, null, _parent));
 			else _push(`<!---->`);
 			_push(`</div><div class="contents lg:flex lg:items-center lg:gap-3 lg:flex-shrink-0">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$132, { class: "flex-shrink-0 lg:order-1" }, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, { class: "flex-shrink-0 lg:order-1" }, null, _parent));
 			_push(`<div class="order-last basis-full lg:order-2 lg:basis-auto">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$102, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$104, null, null, _parent));
 			_push(`</div><div data-tour="tenant-notifications" class="flex-shrink-0 lg:order-3">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$103, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$105, null, null, _parent));
 			_push(`</div>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("logout"),
@@ -11971,7 +11971,7 @@ var _sfc_main$98 = {
 				_: 1
 			}, _parent));
 			_push(`</div></header><main class="flex-1 px-6 lg:px-10 pb-28 lg:pb-12 flex flex-col gap-6">`);
-			if (searchUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$105, {
+			if (searchUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
 				"search-url": searchUrl.value,
 				label: searchLabel.value,
 				"list-view": canSearchWorkOrders.value,
@@ -11979,7 +11979,7 @@ var _sfc_main$98 = {
 				"data-tour": "tenant-mobile-search"
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$99, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$101, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) (0, server_renderer_exports.ssrRenderSlot)(_ctx.$slots, "default", {}, null, _push, _parent, _scopeId);
 					else return [(0, vue_exports.renderSlot)(_ctx.$slots, "default")];
@@ -11987,7 +11987,7 @@ var _sfc_main$98 = {
 				_: 3
 			}, _parent));
 			_push(`</main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$104, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
 				items: mobileItems.value,
 				"has-settings": hasPermission("users.manage"),
 				"logout-url": _ctx.route("logout")
@@ -11995,18 +11995,18 @@ var _sfc_main$98 = {
 			_push(`</div>`);
 			if (user.value?.needs_password_change) _push((0, server_renderer_exports.ssrRenderComponent)(PasswordChangeModal_default, null, null, _parent));
 			else _push(`<!---->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$139, {
 				message: toast.value.message,
 				type: toast.value.type,
 				onDismiss: ($event) => toast.value.message = ""
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$101, { variant: "tenant" }, null, _parent));
-			if (sectionTourKey.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$101, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$103, { variant: "tenant" }, null, _parent));
+			if (sectionTourKey.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$103, {
 				key: sectionTourKey.value,
 				variant: sectionTourKey.value
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$102, {
 				key: sectionTourKey.value,
 				section: sectionTourKey.value
 			}, null, _parent));
@@ -12014,15 +12014,15 @@ var _sfc_main$98 = {
 		};
 	}
 };
-var _sfc_setup$98 = _sfc_main$98.setup;
-_sfc_main$98.setup = (props, ctx) => {
+var _sfc_setup$100 = _sfc_main$100.setup;
+_sfc_main$100.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/TallerLayout.vue");
-	return _sfc_setup$98 ? _sfc_setup$98(props, ctx) : void 0;
+	return _sfc_setup$100 ? _sfc_setup$100(props, ctx) : void 0;
 };
 // resources/js/Pages/Appointments/Index.vue
-var Index_exports$10 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$97 });
-var _sfc_main$97 = {
+var Index_exports$10 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$99 });
+var _sfc_main$99 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -12115,7 +12115,7 @@ var _sfc_main$97 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Agendamiento y Recepción" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col justify-between gap-4 md:flex-row md:items-end"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400"${_scopeId}>Agendamiento</p><h1 class="mt-2 text-3xl font-black tracking-tight text-gray-900"${_scopeId}>Agenda y Recepción</h1><p class="mt-2 text-sm font-medium text-gray-500"${_scopeId}> Seguimiento diario de citas y recepción asistida por patente. </p></div><div class="flex flex-wrap items-center gap-3"${_scopeId}><span class="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-500 shadow-sm"${_scopeId}> Hoy ${(0, server_renderer_exports.ssrInterpolate)(__props.today)}</span>`);
@@ -12130,21 +12130,21 @@ var _sfc_main$97 = {
 							_: 1
 						}, _parent, _scopeId));
 						_push(`</div></div>`);
-						if (!calendarSchedulingEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+						if (!calendarSchedulingEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 							title: "Calendario interactivo no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage.value}`
 						}, null, _parent, _scopeId));
 						else _push(`<!---->`);
 						if (calendarSchedulingEnabled.value) {
 							_push(`<div class="space-y-6"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$110, {
 								appointments: __props.appointments,
 								today: __props.today,
 								"can-delete": canManageAppointments.value,
 								onDelete: confirmDeleteAppointment
 							}, null, _parent, _scopeId));
 							_push(`<div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]"${_scopeId}><div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm"${_scopeId}><div class="mb-4 flex items-center justify-between gap-3"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Resumen del día</p><h2 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Citas de hoy</h2></div><span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.todayAppointments.length)} cita${(0, server_renderer_exports.ssrInterpolate)(__props.todayAppointments.length !== 1 ? "s" : "")}</span></div>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 								appointments: __props.todayAppointments,
 								"empty-title": "Sin citas para hoy",
 								"empty-description": "No hay ingresos programados para la jornada actual.",
@@ -12164,7 +12164,7 @@ var _sfc_main$97 = {
 							_push(`</div></div></div>`);
 						} else {
 							_push(`<div class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]"${_scopeId}><div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm"${_scopeId}><div class="mb-4 flex items-center justify-between gap-3"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Agenda básica</p><h2 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Listado de citas</h2></div><span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.appointments.length)} cita${(0, server_renderer_exports.ssrInterpolate)(__props.appointments.length !== 1 ? "s" : "")}</span></div>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 								appointments: __props.appointments,
 								"empty-title": "Sin citas en el mes actual",
 								"empty-description": "Aún no hay citas registradas en este periodo.",
@@ -12183,7 +12183,7 @@ var _sfc_main$97 = {
 							_push(`</div></div>`);
 						}
 						_push(`<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]"${_scopeId}><div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm"${_scopeId}><div class="mb-4"${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Recepción inteligente</p><h2 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Escaneo por patente</h2><p class="mt-2 text-sm text-gray-500"${_scopeId}> Captura la patente con la cámara y cruza la información contra las citas del día. </p></div>`);
-						if (!aiReceptionEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+						if (!aiReceptionEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 							title: "Escáner con IA no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`
 						}, null, _parent, _scopeId));
@@ -12214,7 +12214,7 @@ var _sfc_main$97 = {
 							_push(`</div>`);
 						}
 						_push(`</div><div class="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm"${_scopeId}><div class="mb-4"${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Resumen rápido</p><h2 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Citas de hoy</h2></div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 							appointments: __props.todayAppointments,
 							"empty-title": "Jornada sin citas",
 							"empty-description": "No hay recepciones agendadas para el día de hoy.",
@@ -12241,7 +12241,7 @@ var _sfc_main$97 = {
 							default: (0, vue_exports.withCtx)(() => [(0, vue_exports.createTextVNode)(" Ir a Recepción ")]),
 							_: 1
 						}, 8, ["href"])])]),
-						!calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$106, {
+						!calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$108, {
 							key: 0,
 							title: "Calendario interactivo no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage.value}`
@@ -12249,7 +12249,7 @@ var _sfc_main$97 = {
 						calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 							key: 1,
 							class: "space-y-6"
-						}, [(0, vue_exports.createVNode)(_sfc_main$108, {
+						}, [(0, vue_exports.createVNode)(_sfc_main$110, {
 							appointments: __props.appointments,
 							today: __props.today,
 							"can-delete": canManageAppointments.value,
@@ -12258,7 +12258,7 @@ var _sfc_main$97 = {
 							"appointments",
 							"today",
 							"can-delete"
-						]), (0, vue_exports.createVNode)("div", { class: "grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]" }, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Resumen del día"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas de hoy")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.todayAppointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.todayAppointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$107, {
+						]), (0, vue_exports.createVNode)("div", { class: "grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]" }, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Resumen del día"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas de hoy")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.todayAppointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.todayAppointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$109, {
 							appointments: __props.todayAppointments,
 							"empty-title": "Sin citas para hoy",
 							"empty-description": "No hay ingresos programados para la jornada actual.",
@@ -12279,7 +12279,7 @@ var _sfc_main$97 = {
 						}), 128))]))])])])) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 							key: 2,
 							class: "grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]"
-						}, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Agenda básica"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Listado de citas")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.appointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.appointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$107, {
+						}, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Agenda básica"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Listado de citas")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.appointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.appointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$109, {
 							appointments: __props.appointments,
 							"empty-title": "Sin citas en el mes actual",
 							"empty-description": "Aún no hay citas registradas en este periodo.",
@@ -12301,7 +12301,7 @@ var _sfc_main$97 = {
 							(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Recepción inteligente"),
 							(0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Escaneo por patente"),
 							(0, vue_exports.createVNode)("p", { class: "mt-2 text-sm text-gray-500" }, " Captura la patente con la cámara y cruza la información contra las citas del día. ")
-						]), !aiReceptionEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$106, {
+						]), !aiReceptionEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$108, {
 							key: 0,
 							title: "Escáner con IA no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`
@@ -12387,7 +12387,7 @@ var _sfc_main$97 = {
 								key: 1,
 								class: "bg-amber-50 p-4"
 							}, [(0, vue_exports.createVNode)("p", { class: "text-sm font-bold text-amber-800" }, "Sin cita agendada para hoy"), (0, vue_exports.createVNode)("p", { class: "mt-1 text-xs text-amber-700" }, " La patente " + (0, vue_exports.toDisplayString)(scanResult.value.plate) + " no tiene una cita registrada en la jornada actual. ", 1)]))])) : (0, vue_exports.createCommentVNode)("", true)
-						]))]), (0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4" }, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Resumen rápido"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas de hoy")]), (0, vue_exports.createVNode)(_sfc_main$107, {
+						]))]), (0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm" }, [(0, vue_exports.createVNode)("div", { class: "mb-4" }, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Resumen rápido"), (0, vue_exports.createVNode)("h2", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas de hoy")]), (0, vue_exports.createVNode)(_sfc_main$109, {
 							appointments: __props.todayAppointments,
 							"empty-title": "Jornada sin citas",
 							"empty-description": "No hay recepciones agendadas para el día de hoy.",
@@ -12442,14 +12442,14 @@ var _sfc_main$97 = {
 		};
 	}
 };
-var _sfc_setup$97 = _sfc_main$97.setup;
-_sfc_main$97.setup = (props, ctx) => {
+var _sfc_setup$99 = _sfc_main$99.setup;
+_sfc_main$99.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Appointments/Index.vue");
-	return _sfc_setup$97 ? _sfc_setup$97(props, ctx) : void 0;
+	return _sfc_setup$99 ? _sfc_setup$99(props, ctx) : void 0;
 };
 // resources/js/Layouts/GuestLayout.vue
-var _sfc_main$96 = {
+var _sfc_main$98 = {
 	__name: "GuestLayout",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -12457,8 +12457,8 @@ var _sfc_main$96 = {
 			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0" }, _attrs))}><div>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), { href: "/" }, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-20 w-20 rounded-[1.75rem] shadow-sm" }, null, _parent, _scopeId));
-					else return [(0, vue_exports.createVNode)(_sfc_main$138, { class: "h-20 w-20 rounded-[1.75rem] shadow-sm" })];
+					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-20 w-20 rounded-[1.75rem] shadow-sm" }, null, _parent, _scopeId));
+					else return [(0, vue_exports.createVNode)(_sfc_main$140, { class: "h-20 w-20 rounded-[1.75rem] shadow-sm" })];
 				}),
 				_: 1
 			}, _parent));
@@ -12468,28 +12468,28 @@ var _sfc_main$96 = {
 		};
 	}
 };
-var _sfc_setup$96 = _sfc_main$96.setup;
-_sfc_main$96.setup = (props, ctx) => {
+var _sfc_setup$98 = _sfc_main$98.setup;
+_sfc_main$98.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/GuestLayout.vue");
-	return _sfc_setup$96 ? _sfc_setup$96(props, ctx) : void 0;
+	return _sfc_setup$98 ? _sfc_setup$98(props, ctx) : void 0;
 };
 // resources/js/Components/PrimaryButton.vue
-var _sfc_main$95 = {};
+var _sfc_main$97 = {};
 function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs) {
 	_push(`<button${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900" }, _attrs))}>`);
 	(0, server_renderer_exports.ssrRenderSlot)(_ctx.$slots, "default", {}, null, _push, _parent);
 	_push(`</button>`);
 }
-var _sfc_setup$95 = _sfc_main$95.setup;
-_sfc_main$95.setup = (props, ctx) => {
+var _sfc_setup$97 = _sfc_main$97.setup;
+_sfc_main$97.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PrimaryButton.vue");
-	return _sfc_setup$95 ? _sfc_setup$95(props, ctx) : void 0;
+	return _sfc_setup$97 ? _sfc_setup$97(props, ctx) : void 0;
 };
-var PrimaryButton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$95, [["ssrRender", _sfc_ssrRender$2]]);
+var PrimaryButton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$97, [["ssrRender", _sfc_ssrRender$2]]);
 // resources/js/Components/TextInput.vue
-var _sfc_main$94 = {
+var _sfc_main$96 = {
 	__name: "TextInput",
 	__ssrInlineRender: true,
 	props: {
@@ -12517,15 +12517,15 @@ var _sfc_main$94 = {
 		};
 	}
 };
-var _sfc_setup$94 = _sfc_main$94.setup;
-_sfc_main$94.setup = (props, ctx) => {
+var _sfc_setup$96 = _sfc_main$96.setup;
+_sfc_main$96.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TextInput.vue");
-	return _sfc_setup$94 ? _sfc_setup$94(props, ctx) : void 0;
+	return _sfc_setup$96 ? _sfc_setup$96(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/ConfirmPassword.vue
-var ConfirmPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$93 });
-var _sfc_main$93 = {
+var ConfirmPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$95 });
+var _sfc_main$95 = {
 	__name: "ConfirmPassword",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -12534,16 +12534,16 @@ var _sfc_main$93 = {
 			form.post(route("password.confirm"), { onFinish: () => form.reset() });
 		};
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Confirm Password" }, null, _parent, _scopeId));
 						_push(`<div class="mb-4 text-sm text-gray-600"${_scopeId}> This is a secure area of the application. Please confirm your password before continuing. </div><form${_scopeId}><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password",
 							value: "Password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							class: "mt-1 block w-full",
 							modelValue: (0, vue_exports.unref)(form).password,
@@ -12552,7 +12552,7 @@ var _sfc_main$93 = {
 							autocomplete: "current-password",
 							autofocus: ""
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password
 						}, null, _parent, _scopeId));
@@ -12572,11 +12572,11 @@ var _sfc_main$93 = {
 						(0, vue_exports.createVNode)((0, vue_exports.unref)(head_default), { title: "Confirm Password" }),
 						(0, vue_exports.createVNode)("div", { class: "mb-4 text-sm text-gray-600" }, " This is a secure area of the application. Please confirm your password before continuing. "),
 						(0, vue_exports.createVNode)("form", { onSubmit: (0, vue_exports.withModifiers)(submit, ["prevent"]) }, [(0, vue_exports.createVNode)("div", null, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "password",
 								value: "Password"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$136, {
+							(0, vue_exports.createVNode)(_sfc_main$138, {
 								id: "password",
 								class: "mt-1 block w-full",
 								modelValue: (0, vue_exports.unref)(form).password,
@@ -12585,7 +12585,7 @@ var _sfc_main$93 = {
 								autocomplete: "current-password",
 								autofocus: ""
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.password
 							}, null, 8, ["message"])
@@ -12603,15 +12603,15 @@ var _sfc_main$93 = {
 		};
 	}
 };
-var _sfc_setup$93 = _sfc_main$93.setup;
-_sfc_main$93.setup = (props, ctx) => {
+var _sfc_setup$95 = _sfc_main$95.setup;
+_sfc_main$95.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ConfirmPassword.vue");
-	return _sfc_setup$93 ? _sfc_setup$93(props, ctx) : void 0;
+	return _sfc_setup$95 ? _sfc_setup$95(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/ForgotPassword.vue
-var ForgotPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$92 });
-var _sfc_main$92 = {
+var ForgotPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$94 });
+var _sfc_main$94 = {
 	__name: "ForgotPassword",
 	__ssrInlineRender: true,
 	props: { status: { type: String } },
@@ -12621,7 +12621,7 @@ var _sfc_main$92 = {
 			form.post(route("password.email"));
 		};
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Forgot Password" }, null, _parent, _scopeId));
@@ -12629,11 +12629,11 @@ var _sfc_main$92 = {
 						if (__props.status) _push(`<div class="mb-4 text-sm font-medium text-green-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.status)}</div>`);
 						else _push(`<!---->`);
 						_push(`<form${_scopeId}><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "email",
 							value: "Email"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "email",
 							type: "email",
 							class: "mt-1 block w-full",
@@ -12643,7 +12643,7 @@ var _sfc_main$92 = {
 							autofocus: "",
 							autocomplete: "username"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.email
 						}, null, _parent, _scopeId));
@@ -12667,11 +12667,11 @@ var _sfc_main$92 = {
 							class: "mb-4 text-sm font-medium text-green-600"
 						}, (0, vue_exports.toDisplayString)(__props.status), 1)) : (0, vue_exports.createCommentVNode)("", true),
 						(0, vue_exports.createVNode)("form", { onSubmit: (0, vue_exports.withModifiers)(submit, ["prevent"]) }, [(0, vue_exports.createVNode)("div", null, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "email",
 								value: "Email"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$94, {
+							(0, vue_exports.createVNode)(_sfc_main$96, {
 								id: "email",
 								type: "email",
 								class: "mt-1 block w-full",
@@ -12681,7 +12681,7 @@ var _sfc_main$92 = {
 								autofocus: "",
 								autocomplete: "username"
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.email
 							}, null, 8, ["message"])
@@ -12699,14 +12699,14 @@ var _sfc_main$92 = {
 		};
 	}
 };
-var _sfc_setup$92 = _sfc_main$92.setup;
-_sfc_main$92.setup = (props, ctx) => {
+var _sfc_setup$94 = _sfc_main$94.setup;
+_sfc_main$94.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ForgotPassword.vue");
-	return _sfc_setup$92 ? _sfc_setup$92(props, ctx) : void 0;
+	return _sfc_setup$94 ? _sfc_setup$94(props, ctx) : void 0;
 };
 // resources/js/Components/Checkbox.vue
-var _sfc_main$91 = {
+var _sfc_main$93 = {
 	__name: "Checkbox",
 	__ssrInlineRender: true,
 	props: {
@@ -12739,15 +12739,15 @@ var _sfc_main$91 = {
 		};
 	}
 };
-var _sfc_setup$91 = _sfc_main$91.setup;
-_sfc_main$91.setup = (props, ctx) => {
+var _sfc_setup$93 = _sfc_main$93.setup;
+_sfc_main$93.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/Checkbox.vue");
-	return _sfc_setup$91 ? _sfc_setup$91(props, ctx) : void 0;
+	return _sfc_setup$93 ? _sfc_setup$93(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/Login.vue
-var Login_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$90 });
-var _sfc_main$90 = {
+var Login_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$92 });
+var _sfc_main$92 = {
 	__name: "Login",
 	__ssrInlineRender: true,
 	props: {
@@ -12764,18 +12764,18 @@ var _sfc_main$90 = {
 			form.post(route("login"), { onFinish: () => form.reset("password") });
 		};
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Log in" }, null, _parent, _scopeId));
 						if (__props.status) _push(`<div class="mb-4 text-sm font-medium text-green-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.status)}</div>`);
 						else _push(`<!---->`);
 						_push(`<form${_scopeId}><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "email",
 							value: "Email"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "email",
 							type: "email",
 							class: "mt-1 block w-full",
@@ -12785,16 +12785,16 @@ var _sfc_main$90 = {
 							autofocus: "",
 							autocomplete: "username"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.email
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="mt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password",
 							value: "Password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							class: "mt-1 block w-full",
 							modelValue: (0, vue_exports.unref)(form).password,
@@ -12802,12 +12802,12 @@ var _sfc_main$90 = {
 							required: "",
 							autocomplete: "current-password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="mt-4 block"${_scopeId}><label class="flex items-center"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$91, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$93, {
 							name: "remember",
 							checked: (0, vue_exports.unref)(form).remember,
 							"onUpdate:checked": ($event) => (0, vue_exports.unref)(form).remember = $event
@@ -12843,11 +12843,11 @@ var _sfc_main$90 = {
 						}, (0, vue_exports.toDisplayString)(__props.status), 1)) : (0, vue_exports.createCommentVNode)("", true),
 						(0, vue_exports.createVNode)("form", { onSubmit: (0, vue_exports.withModifiers)(submit, ["prevent"]) }, [
 							(0, vue_exports.createVNode)("div", null, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "email",
 									value: "Email"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$94, {
+								(0, vue_exports.createVNode)(_sfc_main$96, {
 									id: "email",
 									type: "email",
 									class: "mt-1 block w-full",
@@ -12857,17 +12857,17 @@ var _sfc_main$90 = {
 									autofocus: "",
 									autocomplete: "username"
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.email
 								}, null, 8, ["message"])
 							]),
 							(0, vue_exports.createVNode)("div", { class: "mt-4" }, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "password",
 									value: "Password"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "password",
 									class: "mt-1 block w-full",
 									modelValue: (0, vue_exports.unref)(form).password,
@@ -12875,12 +12875,12 @@ var _sfc_main$90 = {
 									required: "",
 									autocomplete: "current-password"
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.password
 								}, null, 8, ["message"])
 							]),
-							(0, vue_exports.createVNode)("div", { class: "mt-4 block" }, [(0, vue_exports.createVNode)("label", { class: "flex items-center" }, [(0, vue_exports.createVNode)(_sfc_main$91, {
+							(0, vue_exports.createVNode)("div", { class: "mt-4 block" }, [(0, vue_exports.createVNode)("label", { class: "flex items-center" }, [(0, vue_exports.createVNode)(_sfc_main$93, {
 								name: "remember",
 								checked: (0, vue_exports.unref)(form).remember,
 								"onUpdate:checked": ($event) => (0, vue_exports.unref)(form).remember = $event
@@ -12907,15 +12907,15 @@ var _sfc_main$90 = {
 		};
 	}
 };
-var _sfc_setup$90 = _sfc_main$90.setup;
-_sfc_main$90.setup = (props, ctx) => {
+var _sfc_setup$92 = _sfc_main$92.setup;
+_sfc_main$92.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/Login.vue");
-	return _sfc_setup$90 ? _sfc_setup$90(props, ctx) : void 0;
+	return _sfc_setup$92 ? _sfc_setup$92(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/Register.vue
-var Register_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$89 });
-var _sfc_main$89 = {
+var Register_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$91 });
+var _sfc_main$91 = {
 	__name: "Register",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -12929,16 +12929,16 @@ var _sfc_main$89 = {
 			form.post(route("register"), { onFinish: () => form.reset("password", "password_confirmation") });
 		};
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Register" }, null, _parent, _scopeId));
 						_push(`<form${_scopeId}><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "name",
 							value: "Name"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "name",
 							type: "text",
 							class: "mt-1 block w-full",
@@ -12948,16 +12948,16 @@ var _sfc_main$89 = {
 							autofocus: "",
 							autocomplete: "name"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.name
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="mt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "email",
 							value: "Email"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "email",
 							type: "email",
 							class: "mt-1 block w-full",
@@ -12966,16 +12966,16 @@ var _sfc_main$89 = {
 							required: "",
 							autocomplete: "username"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.email
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="mt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password",
 							value: "Password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							class: "mt-1 block w-full",
 							modelValue: (0, vue_exports.unref)(form).password,
@@ -12983,16 +12983,16 @@ var _sfc_main$89 = {
 							required: "",
 							autocomplete: "new-password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password
 						}, null, _parent, _scopeId));
 						_push(`</div><div class="mt-4"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password_confirmation",
 							value: "Confirm Password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password_confirmation",
 							class: "mt-1 block w-full",
 							modelValue: (0, vue_exports.unref)(form).password_confirmation,
@@ -13000,7 +13000,7 @@ var _sfc_main$89 = {
 							required: "",
 							autocomplete: "new-password"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password_confirmation
 						}, null, _parent, _scopeId));
@@ -13028,11 +13028,11 @@ var _sfc_main$89 = {
 						_push(`</div></form>`);
 					} else return [(0, vue_exports.createVNode)((0, vue_exports.unref)(head_default), { title: "Register" }), (0, vue_exports.createVNode)("form", { onSubmit: (0, vue_exports.withModifiers)(submit, ["prevent"]) }, [
 						(0, vue_exports.createVNode)("div", null, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "name",
 								value: "Name"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$94, {
+							(0, vue_exports.createVNode)(_sfc_main$96, {
 								id: "name",
 								type: "text",
 								class: "mt-1 block w-full",
@@ -13042,17 +13042,17 @@ var _sfc_main$89 = {
 								autofocus: "",
 								autocomplete: "name"
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.name
 							}, null, 8, ["message"])
 						]),
 						(0, vue_exports.createVNode)("div", { class: "mt-4" }, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "email",
 								value: "Email"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$94, {
+							(0, vue_exports.createVNode)(_sfc_main$96, {
 								id: "email",
 								type: "email",
 								class: "mt-1 block w-full",
@@ -13061,17 +13061,17 @@ var _sfc_main$89 = {
 								required: "",
 								autocomplete: "username"
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.email
 							}, null, 8, ["message"])
 						]),
 						(0, vue_exports.createVNode)("div", { class: "mt-4" }, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "password",
 								value: "Password"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$136, {
+							(0, vue_exports.createVNode)(_sfc_main$138, {
 								id: "password",
 								class: "mt-1 block w-full",
 								modelValue: (0, vue_exports.unref)(form).password,
@@ -13079,17 +13079,17 @@ var _sfc_main$89 = {
 								required: "",
 								autocomplete: "new-password"
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.password
 							}, null, 8, ["message"])
 						]),
 						(0, vue_exports.createVNode)("div", { class: "mt-4" }, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "password_confirmation",
 								value: "Confirm Password"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$136, {
+							(0, vue_exports.createVNode)(_sfc_main$138, {
 								id: "password_confirmation",
 								class: "mt-1 block w-full",
 								modelValue: (0, vue_exports.unref)(form).password_confirmation,
@@ -13097,7 +13097,7 @@ var _sfc_main$89 = {
 								required: "",
 								autocomplete: "new-password"
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								class: "mt-2",
 								message: (0, vue_exports.unref)(form).errors.password_confirmation
 							}, null, 8, ["message"])
@@ -13122,15 +13122,15 @@ var _sfc_main$89 = {
 		};
 	}
 };
-var _sfc_setup$89 = _sfc_main$89.setup;
-_sfc_main$89.setup = (props, ctx) => {
+var _sfc_setup$91 = _sfc_main$91.setup;
+_sfc_main$91.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/Register.vue");
-	return _sfc_setup$89 ? _sfc_setup$89(props, ctx) : void 0;
+	return _sfc_setup$91 ? _sfc_setup$91(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/ResetPassword.vue
-var ResetPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$88 });
-var _sfc_main$88 = {
+var ResetPassword_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$90 });
+var _sfc_main$90 = {
 	__name: "ResetPassword",
 	__ssrInlineRender: true,
 	props: {
@@ -13155,17 +13155,17 @@ var _sfc_main$88 = {
 			form.post(route("password.store"), { onFinish: () => form.reset("password", "password_confirmation") });
 		};
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Restablecer Contraseña" }, null, _parent, _scopeId));
 						_push(`<div class="mb-6 text-center"${_scopeId}><h2 class="text-2xl font-black text-gray-900"${_scopeId}>Restablecer Contraseña</h2><p class="text-sm text-gray-500 mt-1"${_scopeId}>Ingresa tu nueva contraseña para actualizar el acceso a tu cuenta.</p></div><form class="space-y-4"${_scopeId}><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "token",
 							value: "Código / Token de verificación",
 							class: "font-semibold text-gray-700"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "token",
 							type: "text",
 							class: "mt-1 block w-full bg-gray-50 font-mono text-sm border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
@@ -13174,17 +13174,17 @@ var _sfc_main$88 = {
 							required: "",
 							readonly: ""
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.token
 						}, null, _parent, _scopeId));
 						_push(`</div><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "email",
 							value: "Correo electrónico",
 							class: "font-semibold text-gray-700"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 							id: "email",
 							type: "email",
 							class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
@@ -13194,17 +13194,17 @@ var _sfc_main$88 = {
 							autofocus: "",
 							autocomplete: "username"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.email
 						}, null, _parent, _scopeId));
 						_push(`</div><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password",
 							value: "Nueva contraseña",
 							class: "font-semibold text-gray-700"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
 							modelValue: (0, vue_exports.unref)(form).password,
@@ -13213,17 +13213,17 @@ var _sfc_main$88 = {
 							autocomplete: "new-password",
 							placeholder: "••••••••"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password
 						}, null, _parent, _scopeId));
 						_push(`</div><div${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password_confirmation",
 							value: "Confirmar nueva contraseña",
 							class: "font-semibold text-gray-700"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password_confirmation",
 							class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
 							modelValue: (0, vue_exports.unref)(form).password_confirmation,
@@ -13232,7 +13232,7 @@ var _sfc_main$88 = {
 							autocomplete: "new-password",
 							placeholder: "••••••••"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							class: "mt-2",
 							message: (0, vue_exports.unref)(form).errors.password_confirmation
 						}, null, _parent, _scopeId));
@@ -13258,12 +13258,12 @@ var _sfc_main$88 = {
 							class: "space-y-4"
 						}, [
 							(0, vue_exports.createVNode)("div", null, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "token",
 									value: "Código / Token de verificación",
 									class: "font-semibold text-gray-700"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$94, {
+								(0, vue_exports.createVNode)(_sfc_main$96, {
 									id: "token",
 									type: "text",
 									class: "mt-1 block w-full bg-gray-50 font-mono text-sm border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
@@ -13272,18 +13272,18 @@ var _sfc_main$88 = {
 									required: "",
 									readonly: ""
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.token
 								}, null, 8, ["message"])
 							]),
 							(0, vue_exports.createVNode)("div", null, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "email",
 									value: "Correo electrónico",
 									class: "font-semibold text-gray-700"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$94, {
+								(0, vue_exports.createVNode)(_sfc_main$96, {
 									id: "email",
 									type: "email",
 									class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
@@ -13293,18 +13293,18 @@ var _sfc_main$88 = {
 									autofocus: "",
 									autocomplete: "username"
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.email
 								}, null, 8, ["message"])
 							]),
 							(0, vue_exports.createVNode)("div", null, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "password",
 									value: "Nueva contraseña",
 									class: "font-semibold text-gray-700"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "password",
 									class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
 									modelValue: (0, vue_exports.unref)(form).password,
@@ -13313,18 +13313,18 @@ var _sfc_main$88 = {
 									autocomplete: "new-password",
 									placeholder: "••••••••"
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.password
 								}, null, 8, ["message"])
 							]),
 							(0, vue_exports.createVNode)("div", null, [
-								(0, vue_exports.createVNode)(_sfc_main$135, {
+								(0, vue_exports.createVNode)(_sfc_main$137, {
 									for: "password_confirmation",
 									value: "Confirmar nueva contraseña",
 									class: "font-semibold text-gray-700"
 								}),
-								(0, vue_exports.createVNode)(_sfc_main$136, {
+								(0, vue_exports.createVNode)(_sfc_main$138, {
 									id: "password_confirmation",
 									class: "mt-1 block w-full border-gray-200 focus:border-tech-orange focus:ring-tech-orange rounded-xl shadow-sm h-11",
 									modelValue: (0, vue_exports.unref)(form).password_confirmation,
@@ -13333,7 +13333,7 @@ var _sfc_main$88 = {
 									autocomplete: "new-password",
 									placeholder: "••••••••"
 								}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-								(0, vue_exports.createVNode)(_sfc_main$134, {
+								(0, vue_exports.createVNode)(_sfc_main$136, {
 									class: "mt-2",
 									message: (0, vue_exports.unref)(form).errors.password_confirmation
 								}, null, 8, ["message"])
@@ -13353,15 +13353,15 @@ var _sfc_main$88 = {
 		};
 	}
 };
-var _sfc_setup$88 = _sfc_main$88.setup;
-_sfc_main$88.setup = (props, ctx) => {
+var _sfc_setup$90 = _sfc_main$90.setup;
+_sfc_main$90.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/ResetPassword.vue");
-	return _sfc_setup$88 ? _sfc_setup$88(props, ctx) : void 0;
+	return _sfc_setup$90 ? _sfc_setup$90(props, ctx) : void 0;
 };
 // resources/js/Pages/Auth/VerifyEmail.vue
-var VerifyEmail_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$87 });
-var _sfc_main$87 = {
+var VerifyEmail_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$89 });
+var _sfc_main$89 = {
 	__name: "VerifyEmail",
 	__ssrInlineRender: true,
 	props: { status: { type: String } },
@@ -13373,7 +13373,7 @@ var _sfc_main$87 = {
 		};
 		const verificationLinkSent = (0, vue_exports.computed)(() => props.status === "verification-link-sent");
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Email Verification" }, null, _parent, _scopeId));
@@ -13433,18 +13433,18 @@ var _sfc_main$87 = {
 		};
 	}
 };
-var _sfc_setup$87 = _sfc_main$87.setup;
-_sfc_main$87.setup = (props, ctx) => {
+var _sfc_setup$89 = _sfc_main$89.setup;
+_sfc_main$89.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Auth/VerifyEmail.vue");
-	return _sfc_setup$87 ? _sfc_setup$87(props, ctx) : void 0;
+	return _sfc_setup$89 ? _sfc_setup$89(props, ctx) : void 0;
 };
 // resources/js/Components/SeoHead.vue
 var SITE_NAME = "TallerFlow";
 var LOCALE = "es_CL";
 var TWITTER_SITE = "@tallerflow";
 var DEFAULT_ROBOTS = "index, follow, max-image-preview:large, max-snippet:-1";
-var _sfc_main$86 = {
+var _sfc_main$88 = {
 	__name: "SeoHead",
 	__ssrInlineRender: true,
 	props: {
@@ -13616,14 +13616,58 @@ var _sfc_main$86 = {
 		};
 	}
 };
-var _sfc_setup$86 = _sfc_main$86.setup;
-_sfc_main$86.setup = (props, ctx) => {
+var _sfc_setup$88 = _sfc_main$88.setup;
+_sfc_main$88.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/SeoHead.vue");
-	return _sfc_setup$86 ? _sfc_setup$86(props, ctx) : void 0;
+	return _sfc_setup$88 ? _sfc_setup$88(props, ctx) : void 0;
+};
+// resources/js/Components/ChristmasTopBar.vue
+var storageKey = "tallerflow_christmas_topbar_dismissed";
+var _sfc_main$87 = {
+	__name: "ChristmasTopBar",
+	__ssrInlineRender: true,
+	setup(__props) {
+		const isDismissed = (0, vue_exports.ref)(false);
+		(0, vue_exports.onMounted)(() => {
+			if (typeof window !== "undefined" && window.sessionStorage) isDismissed.value = window.sessionStorage.getItem(storageKey) === "true";
+		});
+		return (_ctx, _push, _parent, _attrs) => {
+			if (!isDismissed.value) {
+				_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-900 via-rose-900 to-emerald-950 border border-red-500/30 text-white px-3.5 py-2.5 shadow-lg backdrop-blur-md transition-all duration-300" }, _attrs))}><div class="pointer-events-none absolute -right-6 -top-6 w-20 h-20 rounded-full bg-red-500/20 blur-xl"></div><div class="pointer-events-none absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-emerald-500/20 blur-xl"></div><div class="relative flex items-center justify-between gap-3 text-xs md:text-sm"><div class="flex items-center gap-2.5 flex-1 min-w-0"><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/30 text-base flex-shrink-0 animate-bounce"> 🎄 </span><p class="truncate font-medium text-white/90"><strong class="text-amber-300 font-bold uppercase tracking-wider text-[11px] md:text-xs mr-1.5 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-300/30"> Especial Navidad </strong><span class="hidden sm:inline">Todos los talleres que contraten hasta el 31 de diciembre: </span><span class="text-amber-200 font-semibold">¡Todas las funcionalidades por 1 año a \$19.990/mes!</span></p></div><div class="flex items-center gap-2 flex-shrink-0">`);
+				_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+					href: _ctx.route("pricing"),
+					class: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition-colors shadow-sm"
+				}, {
+					default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+						if (_push) _push(`<span${_scopeId}>Ver Oferta</span><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"${_scopeId}></path></svg>`);
+						else return [(0, vue_exports.createVNode)("span", null, "Ver Oferta"), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+							class: "w-3.5 h-3.5",
+							fill: "none",
+							viewBox: "0 0 24 24",
+							stroke: "currentColor",
+							"stroke-width": "2.5"
+						}, [(0, vue_exports.createVNode)("path", {
+							"stroke-linecap": "round",
+							"stroke-linejoin": "round",
+							d: "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+						})]))];
+					}),
+					_: 1
+				}, _parent));
+				_push(`<button type="button" class="p-1 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="Cerrar anuncio navideño"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div></div>`);
+			} else _push(`<!---->`);
+		};
+	}
+};
+var _sfc_setup$87 = _sfc_main$87.setup;
+_sfc_main$87.setup = (props, ctx) => {
+	const ssrContext = (0, vue_exports.useSSRContext)();
+	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ChristmasTopBar.vue");
+	return _sfc_setup$87 ? _sfc_setup$87(props, ctx) : void 0;
 };
 // resources/js/Components/FloatingWhatsAppButton.vue
-var _sfc_main$85 = {
+var _sfc_main$86 = {
 	__name: "FloatingWhatsAppButton",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -13641,14 +13685,14 @@ var _sfc_main$85 = {
 		};
 	}
 };
-var _sfc_setup$85 = _sfc_main$85.setup;
-_sfc_main$85.setup = (props, ctx) => {
+var _sfc_setup$86 = _sfc_main$86.setup;
+_sfc_main$86.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/FloatingWhatsAppButton.vue");
-	return _sfc_setup$85 ? _sfc_setup$85(props, ctx) : void 0;
+	return _sfc_setup$86 ? _sfc_setup$86(props, ctx) : void 0;
 };
 // resources/js/Components/PublicNav.vue
-var _sfc_main$84 = {
+var _sfc_main$85 = {
 	__name: "PublicNav",
 	__ssrInlineRender: true,
 	props: {
@@ -13702,20 +13746,22 @@ var _sfc_main$84 = {
 			}
 		});
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<!--[--><div class="pub-nav-wrap" data-v-17689eb4><nav class="pub-nav" data-v-17689eb4>`);
+			_push(`<!--[--><div class="pub-nav-wrap" data-v-abefb29d>`);
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$87, null, null, _parent));
+			_push(`<nav class="pub-nav" data-v-abefb29d>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("home"),
 				class: "pub-brand"
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, {
 							class: "pub-brand-mark",
 							alt: "Taller Flow"
 						}, null, _parent, _scopeId));
-						_push(` Taller<span class="pub-brand-flow" data-v-17689eb4${_scopeId}>Flow</span>`);
+						_push(` Taller<span class="pub-brand-flow" data-v-abefb29d${_scopeId}>Flow</span>`);
 					} else return [
-						(0, vue_exports.createVNode)(_sfc_main$138, {
+						(0, vue_exports.createVNode)(_sfc_main$140, {
 							class: "pub-brand-mark",
 							alt: "Taller Flow"
 						}),
@@ -13725,7 +13771,7 @@ var _sfc_main$84 = {
 				}),
 				_: 1
 			}, _parent));
-			_push(`<div class="pub-nav-links" data-v-17689eb4><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("features") }])}" data-v-17689eb4>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("servicios") }])}" data-v-17689eb4> Servicios </a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("benefits") }])}" data-v-17689eb4>Beneficios</a>`);
+			_push(`<div class="pub-nav-links" data-v-abefb29d><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("features") }])}" data-v-abefb29d>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("servicios") }])}" data-v-abefb29d> Servicios </a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)(["pub-link", { "pub-link-active": isActive("benefits") }])}" data-v-abefb29d>Beneficios</a>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("pricing"),
 				class: ["pub-link", { "pub-link-active": isActive("planes") }]
@@ -13756,7 +13802,7 @@ var _sfc_main$84 = {
 				}),
 				_: 1
 			}, _parent));
-			_push(`</div><div class="pub-nav-cta" data-v-17689eb4>`);
+			_push(`</div><div class="pub-nav-cta" data-v-abefb29d>`);
 			if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("dashboard"),
 				class: "pub-btn-ghost"
@@ -13769,7 +13815,7 @@ var _sfc_main$84 = {
 			}, _parent));
 			else {
 				_push(`<!--[-->`);
-				if (__props.canLogin) _push(`<button class="pub-btn-ghost" type="button" data-v-17689eb4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-v-17689eb4><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" data-v-17689eb4></path><polyline points="10 17 15 12 10 7" data-v-17689eb4></polyline><line x1="15" y1="12" x2="3" y2="12" data-v-17689eb4></line></svg> Iniciar sesión </button>`);
+				if (__props.canLogin) _push(`<button class="pub-btn-ghost" type="button" data-v-abefb29d><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-v-abefb29d><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" data-v-abefb29d></path><polyline points="10 17 15 12 10 7" data-v-abefb29d></polyline><line x1="15" y1="12" x2="3" y2="12" data-v-abefb29d></line></svg> Iniciar sesión </button>`);
 				else _push(`<!---->`);
 				if (!isTrial.value) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("trial.create"),
@@ -13784,12 +13830,12 @@ var _sfc_main$84 = {
 				else _push(`<!---->`);
 				_push(`<!--]-->`);
 			}
-			_push(`<button class="pub-mobile-toggle" type="button"${(0, server_renderer_exports.ssrRenderAttr)("aria-expanded", mobileMenuOpen.value)} aria-label="Abrir menú" data-v-17689eb4>`);
-			if (!mobileMenuOpen.value) _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-17689eb4><line x1="4" y1="7" x2="20" y2="7" data-v-17689eb4></line><line x1="4" y1="12" x2="20" y2="12" data-v-17689eb4></line><line x1="4" y1="17" x2="20" y2="17" data-v-17689eb4></line></svg>`);
-			else _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-17689eb4><line x1="6" y1="6" x2="18" y2="18" data-v-17689eb4></line><line x1="18" y1="6" x2="6" y2="18" data-v-17689eb4></line></svg>`);
+			_push(`<button class="pub-mobile-toggle" type="button"${(0, server_renderer_exports.ssrRenderAttr)("aria-expanded", mobileMenuOpen.value)} aria-label="Abrir menú" data-v-abefb29d>`);
+			if (!mobileMenuOpen.value) _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-abefb29d><line x1="4" y1="7" x2="20" y2="7" data-v-abefb29d></line><line x1="4" y1="12" x2="20" y2="12" data-v-abefb29d></line><line x1="4" y1="17" x2="20" y2="17" data-v-abefb29d></line></svg>`);
+			else _push(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-abefb29d><line x1="6" y1="6" x2="18" y2="18" data-v-abefb29d></line><line x1="18" y1="6" x2="6" y2="18" data-v-abefb29d></line></svg>`);
 			_push(`</button></div></nav>`);
 			if (mobileMenuOpen.value) {
-				_push(`<div class="pub-mobile-menu" id="pub-mobile-menu" data-v-17689eb4><div class="pub-mobile-links" data-v-17689eb4><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("features") }, "pub-mobile-link"])}" data-v-17689eb4>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("servicios") }, "pub-mobile-link"])}" data-v-17689eb4>Servicios</a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("benefits") }, "pub-mobile-link"])}" data-v-17689eb4>Beneficios</a>`);
+				_push(`<div class="pub-mobile-menu" id="pub-mobile-menu" data-v-abefb29d><div class="pub-mobile-links" data-v-abefb29d><a href="/#features" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("features") }, "pub-mobile-link"])}" data-v-abefb29d>Características</a><a href="/servicios" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("servicios") }, "pub-mobile-link"])}" data-v-abefb29d>Servicios</a><a href="/#benefits" class="${(0, server_renderer_exports.ssrRenderClass)([{ "pub-mobile-link-active": isActive("benefits") }, "pub-mobile-link"])}" data-v-abefb29d>Beneficios</a>`);
 				_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("pricing"),
 					class: ["pub-mobile-link", { "pub-mobile-link-active": isActive("planes") }],
@@ -13823,7 +13869,7 @@ var _sfc_main$84 = {
 					}),
 					_: 1
 				}, _parent));
-				_push(`</div><div class="pub-mobile-actions" data-v-17689eb4>`);
+				_push(`</div><div class="pub-mobile-actions" data-v-abefb29d>`);
 				if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("dashboard"),
 					class: "pub-mobile-btn pub-mobile-btn-ghost",
@@ -13837,7 +13883,7 @@ var _sfc_main$84 = {
 				}, _parent));
 				else {
 					_push(`<!--[-->`);
-					if (__props.canLogin) _push(`<button type="button" class="pub-mobile-btn pub-mobile-btn-ghost" data-v-17689eb4>Iniciar sesión</button>`);
+					if (__props.canLogin) _push(`<button type="button" class="pub-mobile-btn pub-mobile-btn-ghost" data-v-abefb29d>Iniciar sesión</button>`);
 					else _push(`<!---->`);
 					if (!isTrial.value) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 						href: _ctx.route("trial.create"),
@@ -13860,20 +13906,20 @@ var _sfc_main$84 = {
 				show: showLoginModal.value,
 				onClose: handleCloseLoginModal
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$85, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, null, null, _parent));
 			_push(`<!--]-->`);
 		};
 	}
 };
-var _sfc_setup$84 = _sfc_main$84.setup;
-_sfc_main$84.setup = (props, ctx) => {
+var _sfc_setup$85 = _sfc_main$85.setup;
+_sfc_main$85.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PublicNav.vue");
-	return _sfc_setup$84 ? _sfc_setup$84(props, ctx) : void 0;
+	return _sfc_setup$85 ? _sfc_setup$85(props, ctx) : void 0;
 };
-var PublicNav_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$84, [["__scopeId", "data-v-17689eb4"]]);
+var PublicNav_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$85, [["__scopeId", "data-v-abefb29d"]]);
 // resources/js/Components/PublicFooter.vue
-var _sfc_main$83 = {
+var _sfc_main$84 = {
 	__name: "PublicFooter",
 	__ssrInlineRender: true,
 	setup(__props) {
@@ -13882,7 +13928,7 @@ var _sfc_main$83 = {
 		const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<footer${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({ class: "relative overflow-hidden bg-slate-50 border-t border-slate-100 pt-16 pb-28 sm:pb-24" }, _attrs))}><div class="absolute inset-0 -z-10 opacity-[0.02] pointer-events-none"><svg class="h-full w-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><pattern id="footer-grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M 12 0 L 0 0 0 12" fill="none" stroke="currentColor" stroke-width="0.8"></path></pattern></defs><rect width="100%" height="100%" fill="url(#footer-grid)"></rect></svg></div><div class="max-w-7xl mx-auto px-6 lg:px-8"><div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-12 border-b border-slate-200/60"><div class="md:col-span-5 space-y-4"><div class="flex items-center gap-2.5">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-8 w-8 rounded-xl shadow-sm bg-white p-0.5 border border-slate-100" }, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-8 w-8 rounded-xl shadow-sm bg-white p-0.5 border border-slate-100" }, null, _parent));
 			_push(`<span class="text-lg font-black tracking-tight text-slate-900"> Taller<span class="text-tech-orange">Flow</span></span></div><p class="text-sm text-slate-500 max-w-sm leading-relaxed font-medium"> La plataforma inteligente que automatiza la recepción de vehículos, elimina la fricción administrativa y fideliza a tus clientes. </p></div><div class="md:col-span-4 space-y-4"><h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Navegación</h3><ul class="grid grid-cols-2 gap-x-4 gap-y-3"><li>`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("home"),
@@ -13934,15 +13980,15 @@ var _sfc_main$83 = {
 		};
 	}
 };
-var _sfc_setup$83 = _sfc_main$83.setup;
-_sfc_main$83.setup = (props, ctx) => {
+var _sfc_setup$84 = _sfc_main$84.setup;
+_sfc_main$84.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PublicFooter.vue");
-	return _sfc_setup$83 ? _sfc_setup$83(props, ctx) : void 0;
+	return _sfc_setup$84 ? _sfc_setup$84(props, ctx) : void 0;
 };
 // resources/js/Pages/Blog/Index.vue
-var Index_exports$9 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$82 });
-var _sfc_main$82 = {
+var Index_exports$9 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$83 });
+var _sfc_main$83 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -13967,7 +14013,7 @@ var _sfc_main$82 = {
 		};
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Blog · TallerFlow"
 			}, null, _parent));
@@ -14074,7 +14120,7 @@ var _sfc_main$82 = {
 				_push(`<!--]--></div>`);
 			} else _push(`<div class="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm"><svg class="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5-6h7.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"></path></svg><p class="text-slate-500 font-medium">No se encontraron artículos en esta categoría.</p></div>`);
 			_push(`</div></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(LoginModal), {
 				show: showLoginModal.value,
 				onClose: ($event) => showLoginModal.value = false
@@ -14083,15 +14129,15 @@ var _sfc_main$82 = {
 		};
 	}
 };
-var _sfc_setup$82 = _sfc_main$82.setup;
-_sfc_main$82.setup = (props, ctx) => {
+var _sfc_setup$83 = _sfc_main$83.setup;
+_sfc_main$83.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/Index.vue");
-	return _sfc_setup$82 ? _sfc_setup$82(props, ctx) : void 0;
+	return _sfc_setup$83 ? _sfc_setup$83(props, ctx) : void 0;
 };
 // resources/js/Pages/Blog/OrdenDeTrabajo.vue
-var OrdenDeTrabajo_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$81 });
-var _sfc_main$81 = {
+var OrdenDeTrabajo_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$82 });
+var _sfc_main$82 = {
 	__name: "OrdenDeTrabajo",
 	__ssrInlineRender: true,
 	props: {
@@ -14115,7 +14161,7 @@ var _sfc_main$81 = {
 		});
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Orden de Trabajo para Taller Mecánico: Guía Completa | TallerFlow"
 			}, null, _parent));
@@ -14221,20 +14267,20 @@ var _sfc_main$81 = {
 				_: 1
 			}, _parent));
 			_push(`</div></aside></div></div></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push(`</div><!--]-->`);
 		};
 	}
 };
-var _sfc_setup$81 = _sfc_main$81.setup;
-_sfc_main$81.setup = (props, ctx) => {
+var _sfc_setup$82 = _sfc_main$82.setup;
+_sfc_main$82.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/OrdenDeTrabajo.vue");
-	return _sfc_setup$81 ? _sfc_setup$81(props, ctx) : void 0;
+	return _sfc_setup$82 ? _sfc_setup$82(props, ctx) : void 0;
 };
 // resources/js/Pages/Blog/Show.vue
-var Show_exports$5 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$80 });
-var _sfc_main$80 = {
+var Show_exports$5 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$81 });
+var _sfc_main$81 = {
 	__name: "Show",
 	__ssrInlineRender: true,
 	props: {
@@ -14253,7 +14299,7 @@ var _sfc_main$80 = {
 		};
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Blog · TallerFlow"
 			}, null, _parent));
@@ -14385,7 +14431,7 @@ var _sfc_main$80 = {
 				_: 1
 			}, _parent));
 			_push(`</div></article></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(LoginModal), {
 				show: showLoginModal.value,
 				onClose: ($event) => showLoginModal.value = false
@@ -14394,14 +14440,14 @@ var _sfc_main$80 = {
 		};
 	}
 };
-var _sfc_setup$80 = _sfc_main$80.setup;
-_sfc_main$80.setup = (props, ctx) => {
+var _sfc_setup$81 = _sfc_main$81.setup;
+_sfc_main$81.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Blog/Show.vue");
-	return _sfc_setup$80 ? _sfc_setup$80(props, ctx) : void 0;
+	return _sfc_setup$81 ? _sfc_setup$81(props, ctx) : void 0;
 };
 // resources/js/Components/ActionEmptyState.vue
-var _sfc_main$79 = {
+var _sfc_main$80 = {
 	__name: "ActionEmptyState",
 	__ssrInlineRender: true,
 	props: {
@@ -14442,11 +14488,11 @@ var _sfc_main$79 = {
 		};
 	}
 };
-var _sfc_setup$79 = _sfc_main$79.setup;
-_sfc_main$79.setup = (props, ctx) => {
+var _sfc_setup$80 = _sfc_main$80.setup;
+_sfc_main$80.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ActionEmptyState.vue");
-	return _sfc_setup$79 ? _sfc_setup$79(props, ctx) : void 0;
+	return _sfc_setup$80 ? _sfc_setup$80(props, ctx) : void 0;
 };
 // resources/js/composables/useFormatting.js
 /**
@@ -14581,7 +14627,7 @@ function useDebounce() {
 	return { debounce };
 }
 // resources/js/Components/CountryFlagSvg.vue
-var _sfc_main$78 = {
+var _sfc_main$79 = {
 	__name: "CountryFlagSvg",
 	__ssrInlineRender: true,
 	props: {
@@ -14617,11 +14663,11 @@ var _sfc_main$78 = {
 		};
 	}
 };
-var _sfc_setup$78 = _sfc_main$78.setup;
-_sfc_main$78.setup = (props, ctx) => {
+var _sfc_setup$79 = _sfc_main$79.setup;
+_sfc_main$79.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/CountryFlagSvg.vue");
-	return _sfc_setup$78 ? _sfc_setup$78(props, ctx) : void 0;
+	return _sfc_setup$79 ? _sfc_setup$79(props, ctx) : void 0;
 };
 // resources/js/composables/usePhone.js
 /**
@@ -14854,7 +14900,7 @@ function parsePhoneNumber(value, defaultCountry = "CL") {
 	};
 }
 // resources/js/Components/PhoneInput.vue
-var _sfc_main$77 = {
+var _sfc_main$78 = {
 	__name: "PhoneInput",
 	__ssrInlineRender: true,
 	props: {
@@ -14982,7 +15028,7 @@ var _sfc_main$77 = {
 				__props.errorMessage ? "border-rose-300 bg-rose-50/20" : "border-gray-200 focus:border-[#FF7A00]",
 				__props.disabled ? "cursor-not-allowed opacity-60" : ""
 			])}"${(0, server_renderer_exports.ssrRenderAttr)("title", `País seleccionado: ${currentCountryConfig.value.name} (${currentCountryConfig.value.prefix})`)}>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: currentCountryConfig.value.code,
 				className: "w-5 h-3.5"
 			}, null, _parent));
@@ -14991,7 +15037,7 @@ var _sfc_main$77 = {
 				_push(`<div class="absolute left-0 top-full z-50 mt-1 max-h-60 w-64 overflow-y-auto rounded-2xl border border-gray-100 bg-white p-1.5 shadow-xl ring-1 ring-black/5"><div class="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-gray-400"> Seleccionar país </div><!--[-->`);
 				(0, server_renderer_exports.ssrRenderList)((0, vue_exports.unref)(PHONE_COUNTRY_LIST), (c) => {
 					_push(`<button type="button" class="${(0, server_renderer_exports.ssrRenderClass)(["flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs font-bold transition-colors", selectedCountryCode.value === c.code ? "bg-[#FF7A00]/10 text-[#FF7A00]" : "text-gray-700 hover:bg-gray-50"])}"><div class="flex items-center gap-2">`);
-					_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+					_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 						country: c.code,
 						className: "w-5 h-3.5"
 					}, null, _parent));
@@ -15013,15 +15059,15 @@ var _sfc_main$77 = {
 		};
 	}
 };
-var _sfc_setup$77 = _sfc_main$77.setup;
-_sfc_main$77.setup = (props, ctx) => {
+var _sfc_setup$78 = _sfc_main$78.setup;
+_sfc_main$78.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/PhoneInput.vue");
-	return _sfc_setup$77 ? _sfc_setup$77(props, ctx) : void 0;
+	return _sfc_setup$78 ? _sfc_setup$78(props, ctx) : void 0;
 };
 // resources/js/Pages/Clients/Index.vue
-var Index_exports$8 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$76 });
-var _sfc_main$76 = {
+var Index_exports$8 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$77 });
+var _sfc_main$77 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -15094,7 +15140,7 @@ var _sfc_main$76 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Directorio de Clientes" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col justify-between gap-4 md:flex-row md:items-center"${_scopeId}><div${_scopeId}><h1 class="text-3xl font-black uppercase tracking-tight text-gray-900"${_scopeId}>Directorio de Clientes</h1><p class="mt-1 text-sm font-medium text-gray-500"${_scopeId}>Gestiona la relación comercial con una vista rápida de historial, gasto y actividad.</p></div><div class="flex w-full flex-col gap-4 sm:flex-row md:w-auto"${_scopeId}><div class="relative w-full sm:w-80"${_scopeId}><div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4"${_scopeId}><svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"${_scopeId}></path></svg></div><input${(0, server_renderer_exports.ssrRenderAttr)("value", search.value)} type="text"${(0, server_renderer_exports.ssrRenderAttr)("placeholder", "Buscar por nombre o " + docLabel.value + "...")} data-support="clients-search" class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50"${_scopeId}></div><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-black text-gray-700 shadow-sm transition-colors hover:bg-gray-50"${_scopeId}><svg class="h-5 w-5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"${_scopeId}></path></svg> Importar Excel </button><button data-tour="clients-add" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-[#FF7A00] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#FF7A00]/30 transition-all hover:bg-[#FF7A00]/90"${_scopeId}><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"${_scopeId}></path></svg> Nuevo Cliente </button></div></div>`);
@@ -15157,7 +15203,7 @@ var _sfc_main$76 = {
 						_push(`<!--]-->`);
 						if (__props.clients.data.length === 0) {
 							_push(`<tr${_scopeId}><td colspan="6" class="px-6 py-12 text-center text-sm font-medium text-gray-400"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$80, {
 								title: search.value ? "No encontramos clientes con esa búsqueda" : "Aún no tienes clientes registrados",
 								description: search.value ? "Prueba con otro nombre o identificación, o limpia la búsqueda." : "Agrega tu primer cliente para guardar sus datos y reutilizarlos en próximas atenciones.",
 								"action-label": search.value ? "Limpiar búsqueda" : "Agregar mi primer cliente",
@@ -15205,7 +15251,7 @@ var _sfc_main$76 = {
 							else if (isFormRutValid.value === false && (0, vue_exports.unref)(form).rut.length >= 7) _push(`<p class="mt-1 text-[9px] font-semibold text-amber-600"${_scopeId}> Revise el dígito verificador (ej: ${(0, server_renderer_exports.ssrInterpolate)(docPlaceholder.value)}) </p>`);
 							else _push(`<!---->`);
 							_push(`</div><div class="space-y-1"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 								modelValue: (0, vue_exports.unref)(form).phone,
 								"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).phone = $event,
 								label: "Teléfono (opcional)",
@@ -15371,7 +15417,7 @@ var _sfc_main$76 = {
 						}), 128)), __props.clients.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("tr", { key: 0 }, [(0, vue_exports.createVNode)("td", {
 							colspan: "6",
 							class: "px-6 py-12 text-center text-sm font-medium text-gray-400"
-						}, [(0, vue_exports.createVNode)(_sfc_main$79, {
+						}, [(0, vue_exports.createVNode)(_sfc_main$80, {
 							title: search.value ? "No encontramos clientes con esa búsqueda" : "Aún no tienes clientes registrados",
 							description: search.value ? "Prueba con otro nombre o identificación, o limpia la búsqueda." : "Agrega tu primer cliente para guardar sus datos y reutilizarlos en próximas atenciones.",
 							"action-label": search.value ? "Limpiar búsqueda" : "Agregar mi primer cliente",
@@ -15477,7 +15523,7 @@ var _sfc_main$76 = {
 										class: "mt-1 text-[9px] font-semibold text-amber-600"
 									}, " Revise el dígito verificador (ej: " + (0, vue_exports.toDisplayString)(docPlaceholder.value) + ") ", 1)) : (0, vue_exports.createCommentVNode)("", true)
 								]),
-								(0, vue_exports.createVNode)("div", { class: "space-y-1" }, [(0, vue_exports.createVNode)(_sfc_main$77, {
+								(0, vue_exports.createVNode)("div", { class: "space-y-1" }, [(0, vue_exports.createVNode)(_sfc_main$78, {
 									modelValue: (0, vue_exports.unref)(form).phone,
 									"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).phone = $event,
 									label: "Teléfono (opcional)",
@@ -15634,15 +15680,15 @@ var _sfc_main$76 = {
 		};
 	}
 };
-var _sfc_setup$76 = _sfc_main$76.setup;
-_sfc_main$76.setup = (props, ctx) => {
+var _sfc_setup$77 = _sfc_main$77.setup;
+_sfc_main$77.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Clients/Index.vue");
-	return _sfc_setup$76 ? _sfc_setup$76(props, ctx) : void 0;
+	return _sfc_setup$77 ? _sfc_setup$77(props, ctx) : void 0;
 };
 // resources/js/Pages/Clients/Show.vue
-var Show_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$75 });
-var _sfc_main$75 = {
+var Show_exports$4 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$76 });
+var _sfc_main$76 = {
 	__name: "Show",
 	__ssrInlineRender: true,
 	props: {
@@ -15730,7 +15776,7 @@ var _sfc_main$75 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `Perfil de Cliente | ${__props.client.name}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"${_scopeId}>`);
@@ -16108,15 +16154,15 @@ var _sfc_main$75 = {
 		};
 	}
 };
-var _sfc_setup$75 = _sfc_main$75.setup;
-_sfc_main$75.setup = (props, ctx) => {
+var _sfc_setup$76 = _sfc_main$76.setup;
+_sfc_main$76.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Clients/Show.vue");
-	return _sfc_setup$75 ? _sfc_setup$75(props, ctx) : void 0;
+	return _sfc_setup$76 ? _sfc_setup$76(props, ctx) : void 0;
 };
 // resources/js/Components/TenantBoard.vue
 var STALE_DAYS = 3;
-var _sfc_main$74 = {
+var _sfc_main$75 = {
 	__name: "TenantBoard",
 	__ssrInlineRender: true,
 	props: {
@@ -16344,14 +16390,14 @@ var _sfc_main$74 = {
 		};
 	}
 };
-var _sfc_setup$74 = _sfc_main$74.setup;
-_sfc_main$74.setup = (props, ctx) => {
+var _sfc_setup$75 = _sfc_main$75.setup;
+_sfc_main$75.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantBoard.vue");
-	return _sfc_setup$74 ? _sfc_setup$74(props, ctx) : void 0;
+	return _sfc_setup$75 ? _sfc_setup$75(props, ctx) : void 0;
 };
 // resources/js/Components/TenantDailySummary.vue
-var _sfc_main$73 = {
+var _sfc_main$74 = {
 	__name: "TenantDailySummary",
 	__ssrInlineRender: true,
 	props: { items: {
@@ -16386,14 +16432,14 @@ var _sfc_main$73 = {
 		};
 	}
 };
-var _sfc_setup$73 = _sfc_main$73.setup;
-_sfc_main$73.setup = (props, ctx) => {
+var _sfc_setup$74 = _sfc_main$74.setup;
+_sfc_main$74.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantDailySummary.vue");
-	return _sfc_setup$73 ? _sfc_setup$73(props, ctx) : void 0;
+	return _sfc_setup$74 ? _sfc_setup$74(props, ctx) : void 0;
 };
 // resources/js/Components/TenantSetupChecklist.vue
-var _sfc_main$72 = {
+var _sfc_main$73 = {
 	__name: "TenantSetupChecklist",
 	__ssrInlineRender: true,
 	props: {
@@ -16464,14 +16510,14 @@ var _sfc_main$72 = {
 		};
 	}
 };
-var _sfc_setup$72 = _sfc_main$72.setup;
-_sfc_main$72.setup = (props, ctx) => {
+var _sfc_setup$73 = _sfc_main$73.setup;
+_sfc_main$73.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantSetupChecklist.vue");
-	return _sfc_setup$72 ? _sfc_setup$72(props, ctx) : void 0;
+	return _sfc_setup$73 ? _sfc_setup$73(props, ctx) : void 0;
 };
 // resources/js/Components/TenantPublicPageCard.vue
-var _sfc_main$71 = {
+var _sfc_main$72 = {
 	__name: "TenantPublicPageCard",
 	__ssrInlineRender: true,
 	props: {
@@ -16512,16 +16558,16 @@ var _sfc_main$71 = {
 		};
 	}
 };
-var _sfc_setup$71 = _sfc_main$71.setup;
-_sfc_main$71.setup = (props, ctx) => {
+var _sfc_setup$72 = _sfc_main$72.setup;
+_sfc_main$72.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/TenantPublicPageCard.vue");
-	return _sfc_setup$71 ? _sfc_setup$71(props, ctx) : void 0;
+	return _sfc_setup$72 ? _sfc_setup$72(props, ctx) : void 0;
 };
 // resources/js/Pages/Dashboard.vue
-var Dashboard_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$70 });
+var Dashboard_exports = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$71 });
 var dismissedKey = "dismissed_activities";
-var _sfc_main$70 = {
+var _sfc_main$71 = {
 	__name: "Dashboard",
 	__ssrInlineRender: true,
 	props: {
@@ -16744,7 +16790,7 @@ var _sfc_main$70 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Inicio" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-6"${_scopeId}><div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400"${_scopeId}>Inicio</p><h1 class="mt-1.5 text-3xl font-black tracking-tight text-gray-900"${_scopeId}>Tu taller hoy </h1><p class="mt-1.5 text-sm font-medium text-gray-500"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)((/* @__PURE__ */ new Date()).toLocaleDateString("es-CL", {
@@ -16757,7 +16803,7 @@ var _sfc_main$70 = {
 							_push(`<button type="button" role="tab"${(0, server_renderer_exports.ssrRenderAttr)("aria-selected", activeTab.value === tab.id)}${(0, server_renderer_exports.ssrRenderAttr)("data-support", `dashboard-tab-${tab.id}`)} class="${(0, server_renderer_exports.ssrRenderClass)([activeTab.value === tab.id ? "border-[#FF7A00] text-[#FF7A00]" : "border-transparent text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-200", "-mb-px border-b-2 px-4 py-2.5 text-sm font-bold transition"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tab.label)}</button>`);
 						});
 						_push(`<!--]--></div>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$74, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$75, {
 							style: activeTab.value === "board" ? null : { display: "none" },
 							board: __props.board,
 							appointments: __props.todayAppointments,
@@ -16785,7 +16831,7 @@ var _sfc_main$70 = {
 							}, _parent, _scopeId));
 							_push(`</section>`);
 						} else _push(`<!---->`);
-						if (__props.dailySummary.length) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$73, { items: __props.dailySummary }, null, _parent, _scopeId));
+						if (__props.dailySummary.length) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$74, { items: __props.dailySummary }, null, _parent, _scopeId));
 						else _push(`<!---->`);
 						_push(`<div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Accesos rápidos</p><div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" data-tour="dashboard-quicklinks"${_scopeId}><!--[-->`);
 						(0, server_renderer_exports.ssrRenderList)(quickLinks.value, (item) => {
@@ -16828,7 +16874,7 @@ var _sfc_main$70 = {
 								_: 1
 							}, _parent, _scopeId));
 							_push(`</div>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 								appointments: __props.pendingAppointments,
 								"empty-title": "No tienes citas pendientes por revisar",
 								"empty-description": "Comparte tu página de reservas para recibir nuevas solicitudes."
@@ -16837,7 +16883,7 @@ var _sfc_main$70 = {
 							else _push(`<!---->`);
 							_push(`</section>`);
 						} else _push(`<!---->`);
-						if (tenantPublicUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$71, {
+						if (tenantPublicUrl.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$72, {
 							"public-url": tenantPublicUrl.value,
 							"settings-url": hasPermission("users.manage") ? _ctx.route("taller.settings", {
 								...(0, vue_exports.unref)(tenantRouteParams),
@@ -16858,21 +16904,21 @@ var _sfc_main$70 = {
 						}, _parent, _scopeId));
 						else _push(`<!---->`);
 						_push(`<span class="${(0, server_renderer_exports.ssrRenderClass)([calendarSchedulingEnabled.value ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700", "rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"])}"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(calendarSchedulingEnabled.value ? "Calendario activo" : "Modo básico")}</span></div></div>`);
-						if (!calendarSchedulingEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+						if (!calendarSchedulingEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 							title: "Calendario interactivo no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage.value}`
 						}, null, _parent, _scopeId));
 						else _push(`<!---->`);
 						if (calendarSchedulingEnabled.value) {
 							_push(`<div class="space-y-6"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$110, {
 								appointments: __props.appointments,
 								today: __props.today,
 								"can-delete": canManageAppointments.value,
 								onDelete: confirmDeleteAppointment
 							}, null, _parent, _scopeId));
 							_push(`<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]"${_scopeId}><div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5"${_scopeId}><div class="mb-4 flex items-center justify-between gap-3"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Hoy</p><h3 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Citas del día</h3></div><span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.todayAppointments.length)} cita${(0, server_renderer_exports.ssrInterpolate)(__props.todayAppointments.length !== 1 ? "s" : "")}</span></div>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 								appointments: __props.todayAppointments,
 								"empty-title": "Sin citas para hoy",
 								"empty-description": "No hay ingresos programados para la jornada actual.",
@@ -16881,7 +16927,7 @@ var _sfc_main$70 = {
 								onDelete: confirmDeleteAppointment
 							}, null, _parent, _scopeId));
 							_push(`</div><div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5"${_scopeId}><div class="mb-4"${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Recepción inteligente</p><h3 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Estado del escáner</h3></div>`);
-							if (!aiReceptionEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+							if (!aiReceptionEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 								title: "Escáner con IA no disponible",
 								message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`,
 								tone: "slate"
@@ -16903,7 +16949,7 @@ var _sfc_main$70 = {
 							_push(`</div></div></div>`);
 						} else {
 							_push(`<div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]"${_scopeId}><div class="rounded-[2rem] border border-gray-100 bg-gray-50 p-5"${_scopeId}><div class="mb-4 flex items-center justify-between gap-3"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Agenda básica</p><h3 class="mt-1 text-xl font-black text-gray-900"${_scopeId}>Listado de citas</h3></div><span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(__props.appointments.length)} cita${(0, server_renderer_exports.ssrInterpolate)(__props.appointments.length !== 1 ? "s" : "")}</span></div>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$107, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$109, {
 								appointments: __props.appointments,
 								"empty-title": "Sin citas registradas",
 								"empty-description": "No hay citas agendadas en el periodo actual.",
@@ -16979,7 +17025,7 @@ var _sfc_main$70 = {
 							}
 							_push(`</div>`);
 						} else _push(`<!---->`);
-						if (__props.setupChecklist) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$72, { checklist: __props.setupChecklist }, null, _parent, _scopeId));
+						if (__props.setupChecklist) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$73, { checklist: __props.setupChecklist }, null, _parent, _scopeId));
 						else _push(`<!---->`);
 						_push(`</div></div>`);
 						if (showDeleteAppointmentModal.value) {
@@ -17018,7 +17064,7 @@ var _sfc_main$70 = {
 								"onClick"
 							]);
 						}), 64))]),
-						(0, vue_exports.withDirectives)((0, vue_exports.createVNode)(_sfc_main$74, {
+						(0, vue_exports.withDirectives)((0, vue_exports.createVNode)(_sfc_main$75, {
 							board: __props.board,
 							appointments: __props.todayAppointments,
 							"can-manage-appointments": canManageAppointments.value
@@ -17050,7 +17096,7 @@ var _sfc_main$70 = {
 								default: (0, vue_exports.withCtx)(() => [(0, vue_exports.createTextVNode)((0, vue_exports.toDisplayString)(__props.welcome.started ? "Retomar bienvenida" : "Comenzar bienvenida"), 1)]),
 								_: 1
 							}, 8, ["href"])])) : (0, vue_exports.createCommentVNode)("", true),
-							__props.dailySummary.length ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$73, {
+							__props.dailySummary.length ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$74, {
 								key: 2,
 								items: __props.dailySummary
 							}, null, 8, ["items"])) : (0, vue_exports.createCommentVNode)("", true),
@@ -17092,7 +17138,7 @@ var _sfc_main$70 = {
 									default: (0, vue_exports.withCtx)(() => [(0, vue_exports.createTextVNode)("Ver agenda →")]),
 									_: 1
 								}, 8, ["href"])]),
-								(0, vue_exports.createVNode)(_sfc_main$107, {
+								(0, vue_exports.createVNode)(_sfc_main$109, {
 									appointments: __props.pendingAppointments,
 									"empty-title": "No tienes citas pendientes por revisar",
 									"empty-description": "Comparte tu página de reservas para recibir nuevas solicitudes."
@@ -17102,7 +17148,7 @@ var _sfc_main$70 = {
 									class: "mt-3 text-sm text-gray-500"
 								}, "Mostrando las próximas " + (0, vue_exports.toDisplayString)(__props.pendingAppointments.length) + " solicitudes pendientes.", 1)) : (0, vue_exports.createCommentVNode)("", true)
 							])) : (0, vue_exports.createCommentVNode)("", true),
-							tenantPublicUrl.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$71, {
+							tenantPublicUrl.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$72, {
 								key: 4,
 								"public-url": tenantPublicUrl.value,
 								"settings-url": hasPermission("users.manage") ? _ctx.route("taller.settings", {
@@ -17122,7 +17168,7 @@ var _sfc_main$70 = {
 									default: (0, vue_exports.withCtx)(() => [(0, vue_exports.createTextVNode)(" Ver agenda ")]),
 									_: 1
 								}, 8, ["href"])) : (0, vue_exports.createCommentVNode)("", true), (0, vue_exports.createVNode)("span", { class: ["rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]", calendarSchedulingEnabled.value ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"] }, (0, vue_exports.toDisplayString)(calendarSchedulingEnabled.value ? "Calendario activo" : "Modo básico"), 3)])]),
-								!calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$106, {
+								!calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$108, {
 									key: 0,
 									title: "Calendario interactivo no disponible",
 									message: `Mejora tu plan para acceder a esta función. ${calendarUpgradeMessage.value}`
@@ -17130,7 +17176,7 @@ var _sfc_main$70 = {
 								calendarSchedulingEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 									key: 1,
 									class: "space-y-6"
-								}, [(0, vue_exports.createVNode)(_sfc_main$108, {
+								}, [(0, vue_exports.createVNode)(_sfc_main$110, {
 									appointments: __props.appointments,
 									today: __props.today,
 									"can-delete": canManageAppointments.value,
@@ -17139,14 +17185,14 @@ var _sfc_main$70 = {
 									"appointments",
 									"today",
 									"can-delete"
-								]), (0, vue_exports.createVNode)("div", { class: "grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]" }, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Hoy"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas del día")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.todayAppointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.todayAppointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$107, {
+								]), (0, vue_exports.createVNode)("div", { class: "grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]" }, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Hoy"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Citas del día")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.todayAppointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.todayAppointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$109, {
 									appointments: __props.todayAppointments,
 									"empty-title": "Sin citas para hoy",
 									"empty-description": "No hay ingresos programados para la jornada actual.",
 									"show-date": false,
 									"can-delete": canManageAppointments.value,
 									onDelete: confirmDeleteAppointment
-								}, null, 8, ["appointments", "can-delete"])]), (0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4" }, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Recepción inteligente"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Estado del escáner")]), !aiReceptionEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$106, {
+								}, null, 8, ["appointments", "can-delete"])]), (0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4" }, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Recepción inteligente"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Estado del escáner")]), !aiReceptionEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$108, {
 									key: 0,
 									title: "Escáner con IA no disponible",
 									message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`,
@@ -17167,7 +17213,7 @@ var _sfc_main$70 = {
 								]))])])])) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 									key: 2,
 									class: "grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]"
-								}, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Agenda básica"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Listado de citas")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.appointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.appointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$107, {
+								}, [(0, vue_exports.createVNode)("div", { class: "rounded-[2rem] border border-gray-100 bg-gray-50 p-5" }, [(0, vue_exports.createVNode)("div", { class: "mb-4 flex items-center justify-between gap-3" }, [(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)("p", { class: "text-[11px] font-black uppercase tracking-[0.25em] text-gray-400" }, "Agenda básica"), (0, vue_exports.createVNode)("h3", { class: "mt-1 text-xl font-black text-gray-900" }, "Listado de citas")]), (0, vue_exports.createVNode)("span", { class: "rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-600" }, (0, vue_exports.toDisplayString)(__props.appointments.length) + " cita" + (0, vue_exports.toDisplayString)(__props.appointments.length !== 1 ? "s" : ""), 1)]), (0, vue_exports.createVNode)(_sfc_main$109, {
 									appointments: __props.appointments,
 									"empty-title": "Sin citas registradas",
 									"empty-description": "No hay citas agendadas en el periodo actual.",
@@ -17250,7 +17296,7 @@ var _sfc_main$70 = {
 									])
 								]), (0, vue_exports.createVNode)("div", { class: "text-right" }, [(0, vue_exports.createVNode)("p", { class: "text-sm font-black text-rose-500" }, (0, vue_exports.toDisplayString)((0, vue_exports.unref)(formatCurrency)(invoice.amount_due)), 1), (0, vue_exports.createVNode)("p", { class: "mt-1 text-xs text-gray-400" }, "Vence " + (0, vue_exports.toDisplayString)(invoice.due_at), 1)])])]);
 							}), 128))]))])) : (0, vue_exports.createCommentVNode)("", true),
-							__props.setupChecklist ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$72, {
+							__props.setupChecklist ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$73, {
 								key: 6,
 								checklist: __props.setupChecklist
 							}, null, 8, ["checklist"])) : (0, vue_exports.createCommentVNode)("", true)
@@ -17302,15 +17348,15 @@ var _sfc_main$70 = {
 		};
 	}
 };
-var _sfc_setup$70 = _sfc_main$70.setup;
-_sfc_main$70.setup = (props, ctx) => {
+var _sfc_setup$71 = _sfc_main$71.setup;
+_sfc_main$71.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Dashboard.vue");
-	return _sfc_setup$70 ? _sfc_setup$70(props, ctx) : void 0;
+	return _sfc_setup$71 ? _sfc_setup$71(props, ctx) : void 0;
 };
 // resources/js/Pages/Inventory/Index.vue
-var Index_exports$7 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$69 });
-var _sfc_main$69 = {
+var Index_exports$7 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$70 });
+var _sfc_main$70 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -17569,7 +17615,7 @@ var _sfc_main$69 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Inventario de Stock" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4"${_scopeId}><div${_scopeId}><h1 class="text-3xl font-black text-gray-900 tracking-tight uppercase"${_scopeId}>Inventario</h1><p class="text-sm font-medium text-gray-500 mt-1"${_scopeId}>Gestiona los repuestos e insumos del taller.</p></div><div class="flex flex-wrap items-center gap-3"${_scopeId}><div class="relative w-full md:w-56 lg:w-72 xl:w-80" data-tour="inventory-search"${_scopeId}><div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"${_scopeId}><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"${_scopeId}></path></svg></div><input${(0, server_renderer_exports.ssrRenderAttr)("value", search.value)} type="text" placeholder="Buscar por nombre o SKU..." class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50 focus:border-[#FF7A00] transition-all shadow-sm"${_scopeId}></div><button class="${(0, server_renderer_exports.ssrRenderClass)([showFilters.value || activeFilterCount.value ? "bg-[#FF7A00]/10 border-[#FF7A00] text-[#FF7A00]" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50", "relative flex-shrink-0 p-3 rounded-2xl border transition-all shadow-sm"])}"${_scopeId}><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"${_scopeId}></path></svg>`);
@@ -18418,15 +18464,15 @@ var _sfc_main$69 = {
 		};
 	}
 };
-var _sfc_setup$69 = _sfc_main$69.setup;
-_sfc_main$69.setup = (props, ctx) => {
+var _sfc_setup$70 = _sfc_main$70.setup;
+_sfc_main$70.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Inventory/Index.vue");
-	return _sfc_setup$69 ? _sfc_setup$69(props, ctx) : void 0;
+	return _sfc_setup$70 ? _sfc_setup$70(props, ctx) : void 0;
 };
 // resources/js/Pages/Invoices/Index.vue
-var Index_exports$6 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$68 });
-var _sfc_main$68 = {
+var Index_exports$6 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$69 });
+var _sfc_main$69 = {
 	__name: "Index",
 	__ssrInlineRender: true,
 	props: {
@@ -18439,7 +18485,7 @@ var _sfc_main$68 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Facturas" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col justify-between gap-4 md:flex-row md:items-end"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Cobranza</p><h1 class="mt-1 text-3xl font-black tracking-tight text-gray-900"${_scopeId}>Facturas del Taller</h1><p class="mt-2 text-sm font-medium text-gray-500"${_scopeId}>Seguimiento de saldos pendientes y mora por cliente.</p></div>`);
@@ -18537,15 +18583,15 @@ var _sfc_main$68 = {
 		};
 	}
 };
-var _sfc_setup$68 = _sfc_main$68.setup;
-_sfc_main$68.setup = (props, ctx) => {
+var _sfc_setup$69 = _sfc_main$69.setup;
+_sfc_main$69.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Invoices/Index.vue");
-	return _sfc_setup$68 ? _sfc_setup$68(props, ctx) : void 0;
+	return _sfc_setup$69 ? _sfc_setup$69(props, ctx) : void 0;
 };
 // resources/js/Pages/Invoices/Show.vue
-var Show_exports$3 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$67 });
-var _sfc_main$67 = {
+var Show_exports$3 = /* @__PURE__ */ __exportAll({ default: () => _sfc_main$68 });
+var _sfc_main$68 = {
 	__name: "Show",
 	__ssrInlineRender: true,
 	props: { invoice: Object },
@@ -18557,7 +18603,7 @@ var _sfc_main$67 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: __props.invoice.invoice_number || `Factura #${__props.invoice.id}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex items-center justify-between gap-4"${_scopeId}><div${_scopeId}>`);
@@ -18629,12 +18675,114 @@ var _sfc_main$67 = {
 		};
 	}
 };
+var _sfc_setup$68 = _sfc_main$68.setup;
+_sfc_main$68.setup = (props, ctx) => {
+	const ssrContext = (0, vue_exports.useSSRContext)();
+	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Invoices/Show.vue");
+	return _sfc_setup$68 ? _sfc_setup$68(props, ctx) : void 0;
+};
+// resources/js/Components/ChristmasBanner.vue
+var _sfc_main$67 = {
+	__name: "ChristmasBanner",
+	__ssrInlineRender: true,
+	props: {
+		offerPrice: {
+			type: Number,
+			default: 19990
+		},
+		deadlineDate: {
+			type: String,
+			default: "2026-12-31T23:59:59"
+		},
+		deadlineLabel: {
+			type: String,
+			default: "31 de diciembre"
+		},
+		compact: {
+			type: Boolean,
+			default: false
+		}
+	},
+	emits: ["scrollToPlans"],
+	setup(__props, { emit: __emit }) {
+		const props = __props;
+		const formatCLP = (value) => new Intl.NumberFormat("es-CL", {
+			style: "currency",
+			currency: "CLP",
+			maximumFractionDigits: 0
+		}).format(value);
+		const timeLeft = (0, vue_exports.ref)({
+			days: 0,
+			hours: 0,
+			minutes: 0,
+			seconds: 0,
+			expired: false
+		});
+		let timer = null;
+		const calculateTimeLeft = () => {
+			const difference = new Date(props.deadlineDate).getTime() - (/* @__PURE__ */ new Date()).getTime();
+			if (difference <= 0) {
+				timeLeft.value = {
+					days: 0,
+					hours: 0,
+					minutes: 0,
+					seconds: 0,
+					expired: true
+				};
+				if (timer) clearInterval(timer);
+				return;
+			}
+			timeLeft.value = {
+				days: Math.floor(difference / 864e5),
+				hours: Math.floor(difference / 36e5 % 24),
+				minutes: Math.floor(difference / 1e3 / 60 % 60),
+				seconds: Math.floor(difference / 1e3 % 60),
+				expired: false
+			};
+		};
+		(0, vue_exports.onMounted)(() => {
+			calculateTimeLeft();
+			timer = setInterval(calculateTimeLeft, 1e3);
+		});
+		(0, vue_exports.onUnmounted)(() => {
+			if (timer) clearInterval(timer);
+		});
+		return (_ctx, _push, _parent, _attrs) => {
+			_push(`<div${(0, server_renderer_exports.ssrRenderAttrs)((0, vue_exports.mergeProps)({
+				id: "oferta-navidena",
+				class: "christmas-banner-wrapper relative overflow-hidden rounded-3xl border border-red-500/40 shadow-2xl transition-all duration-300"
+			}, _attrs))} data-v-c8ed252b><div class="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-red-600/25 blur-3xl" data-v-c8ed252b></div><div class="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-emerald-600/25 blur-3xl" data-v-c8ed252b></div><div class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-amber-500/10 blur-3xl" data-v-c8ed252b></div><div class="pointer-events-none absolute inset-0 overflow-hidden opacity-30 select-none" data-v-c8ed252b><span class="snowflake s-1" data-v-c8ed252b>❄</span><span class="snowflake s-2" data-v-c8ed252b>❅</span><span class="snowflake s-3" data-v-c8ed252b>❆</span><span class="snowflake s-4" data-v-c8ed252b>❄</span><span class="snowflake s-5" data-v-c8ed252b>❅</span><span class="snowflake s-6" data-v-c8ed252b>❆</span><span class="snowflake s-7" data-v-c8ed252b>❄</span></div><div class="relative z-10 p-6 md:p-10 lg:p-12 text-white" data-v-c8ed252b><div class="flex flex-wrap items-center justify-between gap-4 mb-6" data-v-c8ed252b><div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-red-600/40 to-amber-500/30 border border-amber-400/40 text-amber-200 text-xs font-bold uppercase tracking-wider shadow-inner" data-v-c8ed252b><span class="animate-pulse" data-v-c8ed252b>🎄</span><span data-v-c8ed252b>Oferta Navideña TallerFlow</span><span class="w-1.5 h-1.5 rounded-full bg-amber-400" data-v-c8ed252b></span><span class="text-white/80 font-normal" data-v-c8ed252b>Hasta el ${(0, server_renderer_exports.ssrInterpolate)(__props.deadlineLabel)}</span></div><div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold" data-v-c8ed252b><span data-v-c8ed252b>🎁</span><span data-v-c8ed252b>Ahorra hasta \$60.000 al mes (75% OFF)</span></div></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center" data-v-c8ed252b><div class="lg:col-span-7 space-y-4" data-v-c8ed252b><h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight" data-v-c8ed252b> Todas las funcionalidades por 1 año a <span class="bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400 bg-clip-text text-transparent" data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(__props.offerPrice))}</span><span class="text-lg md:text-2xl font-bold text-white/80" data-v-c8ed252b>/mes</span></h2><p class="text-sm md:text-base text-gray-200 leading-relaxed" data-v-c8ed252b> Celebra esta Navidad equipando tu taller mecánico con la plataforma más avanzada. Todos los talleres que contraten hasta el <strong data-v-c8ed252b>31 de diciembre</strong> tendrán acceso completo al <strong data-v-c8ed252b>Plan Empresa</strong> (Recepción con IA de patentes, WhatsApp automático, agenda, inventario y usuarios extendidos) por un valor único y congelado de <strong data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(__props.offerPrice))} al mes durante 1 año</strong>. </p><div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2" data-v-c8ed252b><div class="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm" data-v-c8ed252b><span class="text-xl" data-v-c8ed252b>🚀</span><div class="text-xs" data-v-c8ed252b><div class="font-bold text-white" data-v-c8ed252b>100% Funcionalidades</div><div class="text-white/70" data-v-c8ed252b>Plan Empresa desbloqueado</div></div></div><div class="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm" data-v-c8ed252b><span class="text-xl" data-v-c8ed252b>🔒</span><div class="text-xs" data-v-c8ed252b><div class="font-bold text-white" data-v-c8ed252b>Precio Congelado</div><div class="text-white/70" data-v-c8ed252b>12 meses a ${(0, server_renderer_exports.ssrInterpolate)(formatCLP(__props.offerPrice))}</div></div></div><div class="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm" data-v-c8ed252b><span class="text-xl" data-v-c8ed252b>✨</span><div class="text-xs" data-v-c8ed252b><div class="font-bold text-white" data-v-c8ed252b>14 Días Gratis</div><div class="text-white/70" data-v-c8ed252b>Sin tarjeta de crédito</div></div></div></div></div><div class="lg:col-span-5 flex flex-col items-center lg:items-end" data-v-c8ed252b><div class="w-full max-w-md rounded-2xl bg-black/40 border border-white/15 p-6 backdrop-blur-md shadow-xl text-center space-y-5" data-v-c8ed252b><div data-v-c8ed252b><span class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1.5" data-v-c8ed252b><span data-v-c8ed252b>⏳</span> Tiempo restante de la oferta </span><p class="text-[11px] text-white/60 mt-0.5" data-v-c8ed252b>Válido para registros hasta el 31 de Diciembre</p></div><div class="grid grid-cols-4 gap-2 text-center" data-v-c8ed252b><div class="p-2.5 rounded-xl bg-white/10 border border-white/10" data-v-c8ed252b><div class="text-2xl md:text-3xl font-black text-amber-300 font-mono" data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(String(timeLeft.value.days).padStart(2, "0"))}</div><div class="text-[10px] font-bold text-white/70 uppercase tracking-wider mt-0.5" data-v-c8ed252b>Días</div></div><div class="p-2.5 rounded-xl bg-white/10 border border-white/10" data-v-c8ed252b><div class="text-2xl md:text-3xl font-black text-white font-mono" data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(String(timeLeft.value.hours).padStart(2, "0"))}</div><div class="text-[10px] font-bold text-white/70 uppercase tracking-wider mt-0.5" data-v-c8ed252b>Horas</div></div><div class="p-2.5 rounded-xl bg-white/10 border border-white/10" data-v-c8ed252b><div class="text-2xl md:text-3xl font-black text-white font-mono" data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(String(timeLeft.value.minutes).padStart(2, "0"))}</div><div class="text-[10px] font-bold text-white/70 uppercase tracking-wider mt-0.5" data-v-c8ed252b>Min</div></div><div class="p-2.5 rounded-xl bg-white/10 border border-white/10" data-v-c8ed252b><div class="text-2xl md:text-3xl font-black text-amber-400 font-mono animate-pulse" data-v-c8ed252b>${(0, server_renderer_exports.ssrInterpolate)(String(timeLeft.value.seconds).padStart(2, "0"))}</div><div class="text-[10px] font-bold text-white/70 uppercase tracking-wider mt-0.5" data-v-c8ed252b>Seg</div></div></div><div class="space-y-2.5 pt-1" data-v-c8ed252b>`);
+			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+				href: _ctx.route("trial.create"),
+				class: "w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-sm tracking-wide transition-all shadow-lg hover:shadow-amber-500/25 transform hover:-translate-y-0.5"
+			}, {
+				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+					if (_push) _push(`<span data-v-c8ed252b${_scopeId}>🎁 Aprovechar Oferta Navideña</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-c8ed252b${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-c8ed252b${_scopeId}></path></svg>`);
+					else return [(0, vue_exports.createVNode)("span", null, "🎁 Aprovechar Oferta Navideña"), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+						class: "w-4 h-4",
+						fill: "none",
+						viewBox: "0 0 24 24",
+						stroke: "currentColor",
+						"stroke-width": "2.5"
+					}, [(0, vue_exports.createVNode)("path", {
+						"stroke-linecap": "round",
+						"stroke-linejoin": "round",
+						d: "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+					})]))];
+				}),
+				_: 1
+			}, _parent));
+			_push(`<button type="button" class="w-full py-2 px-4 rounded-xl text-white/80 hover:text-white text-xs font-semibold hover:bg-white/5 transition-colors flex items-center justify-center gap-1.5" data-v-c8ed252b><span data-v-c8ed252b>Ver detalles en las tarjetas de planes</span><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" data-v-c8ed252b><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" data-v-c8ed252b></path></svg></button></div><p class="text-[11px] text-white/60" data-v-c8ed252b> Sin compromisos. 14 días gratis sin ingresar tarjeta de crédito. </p></div></div></div></div></div>`);
+		};
+	}
+};
 var _sfc_setup$67 = _sfc_main$67.setup;
 _sfc_main$67.setup = (props, ctx) => {
 	const ssrContext = (0, vue_exports.useSSRContext)();
-	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Invoices/Show.vue");
+	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ChristmasBanner.vue");
 	return _sfc_setup$67 ? _sfc_setup$67(props, ctx) : void 0;
 };
+var ChristmasBanner_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$67, [["__scopeId", "data-v-c8ed252b"]]);
 // resources/js/Pages/Pricing.vue
 var Pricing_exports = /* @__PURE__ */ __exportAll({ default: () => Pricing_default });
 var _sfc_main$66 = {
@@ -18652,24 +18800,58 @@ var _sfc_main$66 = {
 		seo: {
 			type: Object,
 			default: () => ({})
+		},
+		christmasOffer: {
+			type: Object,
+			default: () => ({
+				active: true,
+				offer_price: 19990,
+				deadline_date: "2026-12-31T23:59:59",
+				deadline_label: "31 de diciembre",
+				duration_label: "1 año completo",
+				target_plan_slug: "empresa"
+			})
 		}
 	},
 	setup(__props) {
 		const props = __props;
 		const billing = (0, vue_exports.ref)("monthly");
+		const isChristmasOfferActive = (0, vue_exports.ref)(true);
 		const formatCLP = (value) => new Intl.NumberFormat("es-CL", {
 			style: "currency",
 			currency: "CLP",
 			minimumFractionDigits: 0
 		}).format(value);
+		const isAllFeaturesPlan = (plan) => {
+			return plan.slug === "empresa" || plan.name?.toLowerCase().includes("empresa") || plan.features?.length >= 5 && plan.price_monthly >= 39990;
+		};
+		const hasChristmasPrice = (plan) => {
+			if (!isChristmasOfferActive.value) return false;
+			return plan.slug === "empresa" || plan.slug === "profesional" || isAllFeaturesPlan(plan);
+		};
 		const displayPrice = (plan) => {
+			if (isChristmasOfferActive.value && hasChristmasPrice(plan)) return props.christmasOffer?.offer_price ?? 19990;
 			if (billing.value === "annual") return Math.round(plan.price_annual / 12);
 			return plan.has_discount ? plan.discounted_monthly_price : plan.price_monthly;
 		};
+		const displayAnnualCost = (plan) => {
+			if (isChristmasOfferActive.value && hasChristmasPrice(plan)) return (props.christmasOffer?.offer_price ?? 19990) * 12;
+			return plan.price_annual;
+		};
 		const annualSavings = (plan) => {
 			const monthlyCost = plan.price_monthly * 12;
+			if (monthlyCost === 0) return 0;
+			if (isChristmasOfferActive.value && hasChristmasPrice(plan)) {
+				const promoAnnualCost = (props.christmasOffer?.offer_price ?? 19990) * 12;
+				return Math.round((1 - promoAnnualCost / monthlyCost) * 100);
+			}
 			const annualCost = plan.price_annual;
 			return Math.round((1 - annualCost / monthlyCost) * 100);
+		};
+		const monthlySavingsPercent = (plan) => {
+			if (plan.price_monthly === 0) return 0;
+			const promoMonthly = props.christmasOffer?.offer_price ?? 19990;
+			return Math.round((1 - promoMonthly / plan.price_monthly) * 100);
 		};
 		const jsonLd = (0, vue_exports.computed)(() => JSON.stringify({
 			"@context": "https://schema.org",
@@ -18685,17 +18867,17 @@ var _sfc_main$66 = {
 					description: plan.description,
 					offers: {
 						"@type": "Offer",
-						price: plan.price_monthly,
+						price: hasChristmasPrice(plan) ? props.christmasOffer?.offer_price ?? 19990 : plan.price_monthly,
 						priceCurrency: "CLP",
 						availability: "https://schema.org/InStock",
-						priceValidUntil: new Date((/* @__PURE__ */ new Date()).getFullYear() + 1, 11, 31).toISOString().split("T")[0]
+						priceValidUntil: "2026-12-31"
 					}
 				}
 			}))
 		}));
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Planes y Precios · TallerFlow"
 			}, null, _parent));
@@ -18707,16 +18889,42 @@ var _sfc_main$66 = {
 				_: 1
 			}), _parent);
 			_push((0, server_renderer_exports.ssrRenderComponent)(PublicNav_default, { "can-login": __props.canLogin }, null, _parent));
-			_push(`<div class="min-h-screen bg-white font-sans antialiased" data-v-e3192875><div class="dark-pricing-header" data-v-e3192875><section class="pricing-hero" data-v-e3192875><div class="pricing-hero-inner" data-v-e3192875><span class="pricing-eyebrow" data-v-e3192875><span class="dot" data-v-e3192875></span> Planes </span><h1 class="pricing-headline" data-v-e3192875> Planes para cada etapa<br data-v-e3192875><em data-v-e3192875>de tu taller.</em></h1><p class="pricing-sub" data-v-e3192875> Sin contratos. Sin sorpresas. ${(0, server_renderer_exports.ssrInterpolate)(__props.plans[0]?.trial_days ?? 14)} días de prueba gratis en todos los planes. </p><div class="billing-toggle-wrap" data-v-e3192875><div class="billing-toggle" data-v-e3192875><button class="${(0, server_renderer_exports.ssrRenderClass)(["billing-btn", { "billing-btn-active": billing.value === "monthly" }])}" data-v-e3192875>Mensual</button><button class="${(0, server_renderer_exports.ssrRenderClass)(["billing-btn", { "billing-btn-active": billing.value === "annual" }])}" data-v-e3192875> Anual <span class="billing-save-badge" data-v-e3192875>Ahorra hasta 17%</span></button></div></div></div></section></div><section class="plans-section" data-v-e3192875><div class="plans-inner" data-v-e3192875><div class="${(0, server_renderer_exports.ssrRenderClass)([`plans-grid-${__props.plans.length}`, "plans-grid"])}" data-v-e3192875><!--[-->`);
+			_push(`<div class="min-h-screen bg-white font-sans antialiased" data-v-df8231f7><div class="dark-pricing-header" data-v-df8231f7><section class="pricing-hero" data-v-df8231f7><div class="pricing-hero-inner" data-v-df8231f7><span class="pricing-eyebrow" data-v-df8231f7><span class="dot" data-v-df8231f7></span> 🎄 Especial de Navidad 2026 </span><h1 class="pricing-headline" data-v-df8231f7> Planes para cada etapa<br data-v-df8231f7><em data-v-df8231f7>de tu taller.</em></h1><p class="pricing-sub" data-v-df8231f7> Sin contratos forzosos. Sin sorpresas. 14 días de prueba gratis en todos los planes. </p><div class="flex flex-wrap items-center justify-center gap-2 mb-6" data-v-df8231f7><button type="button" class="${(0, server_renderer_exports.ssrRenderClass)(["inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs md:text-sm font-bold transition-all", isChristmasOfferActive.value ? "bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white shadow-lg shadow-red-500/30 border border-red-400/60" : "bg-white/10 text-white/70 hover:text-white border border-white/10"])}" data-v-df8231f7><span data-v-df8231f7>🎄 Ver Oferta Navideña (\$19.990 Full)</span><span class="px-2 py-0.5 rounded-full bg-amber-300 text-slate-950 text-[10px] uppercase font-black" data-v-df8231f7> Activa </span></button><button type="button" class="${(0, server_renderer_exports.ssrRenderClass)(["inline-flex items-center px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all", !isChristmasOfferActive.value ? "bg-white text-slate-950 font-bold shadow-md" : "bg-white/10 text-white/70 hover:text-white border border-white/10"])}" data-v-df8231f7> Precios Regulares </button></div><div class="billing-toggle-wrap" data-v-df8231f7><div class="billing-toggle" data-v-df8231f7><button class="${(0, server_renderer_exports.ssrRenderClass)(["billing-btn", { "billing-btn-active": billing.value === "monthly" }])}" data-v-df8231f7>Mensual</button><button class="${(0, server_renderer_exports.ssrRenderClass)(["billing-btn", { "billing-btn-active": billing.value === "annual" }])}" data-v-df8231f7> Anual <span class="billing-save-badge" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(isChristmasOfferActive.value ? "Ahorro Navideño 75%" : "Ahorra hasta 17%")}</span></button></div></div></div></section></div><section class="plans-section" data-v-df8231f7><div class="plans-inner" data-v-df8231f7>`);
+			if (isChristmasOfferActive.value) _push((0, server_renderer_exports.ssrRenderComponent)(ChristmasBanner_default, {
+				"offer-price": __props.christmasOffer.offer_price,
+				"deadline-label": __props.christmasOffer.deadline_label,
+				"deadline-date": __props.christmasOffer.deadline_date,
+				class: "mb-12"
+			}, null, _parent));
+			else _push(`<!---->`);
+			_push(`<div id="planes-grid" class="${(0, server_renderer_exports.ssrRenderClass)([`plans-grid-${__props.plans.length}`, "plans-grid"])}" data-v-df8231f7><!--[-->`);
 			(0, server_renderer_exports.ssrRenderList)(__props.plans, (plan) => {
-				_push(`<div class="${(0, server_renderer_exports.ssrRenderClass)(["plan-card", { "plan-card-popular": plan.is_popular }])}" data-v-e3192875>`);
-				if (plan.is_popular) _push(`<div class="popular-badge" data-v-e3192875>Más popular</div>`);
+				_push(`<div class="${(0, server_renderer_exports.ssrRenderClass)(["plan-card", isChristmasOfferActive.value && isAllFeaturesPlan(plan) ? "plan-card-christmas" : plan.is_popular ? "plan-card-popular" : ""])}" data-v-df8231f7>`);
+				if (isChristmasOfferActive.value && isAllFeaturesPlan(plan)) _push(`<div class="christmas-card-badge" data-v-df8231f7><span data-v-df8231f7>🎄</span> OFERTA NAVIDAD: TODAS LAS FUNCIONALIDADES </div>`);
+				else if (plan.is_popular) _push(`<div class="popular-badge" data-v-df8231f7> Más popular </div>`);
 				else _push(`<!---->`);
-				_push(`<div class="plan-header" data-v-e3192875><h2 class="plan-name" data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(plan.name)}</h2><p class="plan-desc" data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(plan.description)}</p></div><div class="plan-price-block" data-v-e3192875><div class="plan-price-row" data-v-e3192875><span class="plan-currency" data-v-e3192875>\$</span><span class="plan-amount" data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(new Intl.NumberFormat("es-CL").format(displayPrice(plan)))}</span><span class="plan-period" data-v-e3192875>/mes</span></div>`);
-				if (billing.value === "annual") _push(`<p class="plan-annual-note" data-v-e3192875> Cobrado anualmente · <strong data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_annual))}/año</strong></p>`);
-				else if (plan.has_discount) _push(`<p class="plan-discount-note" data-v-e3192875><span class="line-through opacity-60" data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_monthly))}</span><span class="ml-1 text-emerald-600 font-bold" data-v-e3192875>−${(0, server_renderer_exports.ssrInterpolate)(plan.discount_percent)}%</span></p>`);
+				_push(`<div class="plan-header" data-v-df8231f7><div class="flex items-center justify-between gap-2" data-v-df8231f7><h2 class="plan-name" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(plan.name)}</h2>`);
+				if (isChristmasOfferActive.value && hasChristmasPrice(plan)) _push(`<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700" data-v-df8231f7><span data-v-df8231f7>🎅</span> Precio Promo </span>`);
 				else _push(`<!---->`);
-				if (billing.value === "annual") _push(`<div class="plan-savings-pill" data-v-e3192875> Ahorra ${(0, server_renderer_exports.ssrInterpolate)(annualSavings(plan))}% </div>`);
+				_push(`</div><p class="plan-desc" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(plan.description)}</p></div><div class="plan-price-block" data-v-df8231f7>`);
+				if (isChristmasOfferActive.value && hasChristmasPrice(plan)) _push(`<div class="flex items-center gap-2 mb-1" data-v-df8231f7><span class="text-xs text-gray-400 font-medium" data-v-df8231f7>Precio normal:</span><span class="christmas-price-strike" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_monthly))}/mes</span><span class="christmas-savings-tag" data-v-df8231f7> -${(0, server_renderer_exports.ssrInterpolate)(monthlySavingsPercent(plan))}% OFF </span></div>`);
+				else _push(`<!---->`);
+				_push(`<div class="plan-price-row" data-v-df8231f7><span class="plan-currency" data-v-df8231f7>\$</span><span class="plan-amount" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(new Intl.NumberFormat("es-CL").format(displayPrice(plan)))}</span><span class="plan-period" data-v-df8231f7>/mes</span></div>`);
+				if (isChristmasOfferActive.value && hasChristmasPrice(plan)) {
+					_push(`<!--[-->`);
+					if (billing.value === "annual") _push(`<p class="plan-annual-note font-semibold text-emerald-700" data-v-df8231f7> Cobrado anualmente · <strong data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(displayAnnualCost(plan)))}/año</strong><span class="block text-[11px] text-gray-500 font-normal" data-v-df8231f7> (Ahorras ${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_monthly * 12 - displayAnnualCost(plan)))} frente al valor normal) </span></p>`);
+					else _push(`<p class="plan-annual-note text-red-700 font-medium flex items-center gap-1" data-v-df8231f7><span data-v-df8231f7>🎄</span> Precio congelado por 1 año contratando hasta el 31 de Dic. </p>`);
+					_push(`<div class="plan-savings-pill bg-emerald-100 text-emerald-800" data-v-df8231f7> Ahorras ${(0, server_renderer_exports.ssrInterpolate)(annualSavings(plan))}% durante 12 meses </div><!--]-->`);
+				} else {
+					_push(`<!--[-->`);
+					if (billing.value === "annual") _push(`<p class="plan-annual-note" data-v-df8231f7> Cobrado anualmente · <strong data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_annual))}/año</strong></p>`);
+					else if (plan.has_discount) _push(`<p class="plan-discount-note" data-v-df8231f7><span class="line-through opacity-60" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(formatCLP(plan.price_monthly))}</span><span class="ml-1 text-emerald-600 font-bold" data-v-df8231f7>−${(0, server_renderer_exports.ssrInterpolate)(plan.discount_percent)}%</span></p>`);
+					else _push(`<!---->`);
+					if (billing.value === "annual") _push(`<div class="plan-savings-pill" data-v-df8231f7> Ahorra ${(0, server_renderer_exports.ssrInterpolate)(annualSavings(plan))}% </div>`);
+					else _push(`<!---->`);
+					_push(`<!--]-->`);
+				}
+				if (isChristmasOfferActive.value && plan.slug === "basico") _push(`<p class="mt-2 text-[11px] text-amber-700 bg-amber-50 border border-amber-200/60 rounded-lg p-2 font-medium" data-v-df8231f7> 💡 Tip Navideño: Por este mismo valor de ${(0, server_renderer_exports.ssrInterpolate)(formatCLP(displayPrice(plan)))}, ¡te llevas el Plan Empresa con todas las funciones liberadas! </p>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 				if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
@@ -18724,7 +18932,7 @@ var _sfc_main$66 = {
 					class: ["plan-cta", plan.is_popular ? "plan-cta-popular" : "plan-cta-default"]
 				}, {
 					default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-						if (_push) _push(` Ir al Dashboard <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-e3192875${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-e3192875${_scopeId}></path></svg>`);
+						if (_push) _push(` Ir al Dashboard <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-df8231f7${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-df8231f7${_scopeId}></path></svg>`);
 						else return [(0, vue_exports.createTextVNode)(" Ir al Dashboard "), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
 							class: "w-4 h-4",
 							fill: "none",
@@ -18741,11 +18949,11 @@ var _sfc_main$66 = {
 				}, _parent));
 				else _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 					href: _ctx.route("trial.create"),
-					class: ["plan-cta", plan.is_popular ? "plan-cta-popular" : "plan-cta-default"]
+					class: ["plan-cta", isChristmasOfferActive.value && isAllFeaturesPlan(plan) ? "plan-cta-christmas" : plan.is_popular ? "plan-cta-popular" : "plan-cta-default"]
 				}, {
 					default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-						if (_push) _push(` Empezar prueba gratis <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-e3192875${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-e3192875${_scopeId}></path></svg>`);
-						else return [(0, vue_exports.createTextVNode)(" Empezar prueba gratis "), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+						if (_push) _push(`<span data-v-df8231f7${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(isChristmasOfferActive.value && hasChristmasPrice(plan) ? "🎁 Empezar con Oferta Navideña" : "Empezar prueba gratis")}</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-df8231f7${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-df8231f7${_scopeId}></path></svg>`);
+						else return [(0, vue_exports.createVNode)("span", null, (0, vue_exports.toDisplayString)(isChristmasOfferActive.value && hasChristmasPrice(plan) ? "🎁 Empezar con Oferta Navideña" : "Empezar prueba gratis"), 1), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
 							class: "w-4 h-4",
 							fill: "none",
 							viewBox: "0 0 24 24",
@@ -18759,22 +18967,43 @@ var _sfc_main$66 = {
 					}),
 					_: 2
 				}, _parent));
-				_push(`<p class="plan-cta-note" data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(plan.trial_days)} días gratis · Sin tarjeta de crédito</p><div class="plan-divider" data-v-e3192875></div><ul class="plan-features" data-v-e3192875><!--[-->`);
+				_push(`<p class="plan-cta-note" data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(plan.trial_days ?? 14)} días gratis · Sin tarjeta de crédito </p><div class="plan-divider" data-v-df8231f7></div><ul class="plan-features" data-v-df8231f7><!--[-->`);
 				(0, server_renderer_exports.ssrRenderList)(plan.features, (feature) => {
-					_push(`<li class="plan-feature" data-v-e3192875><span class="${(0, server_renderer_exports.ssrRenderClass)(["plan-feature-ico", plan.is_popular ? "plan-feature-ico-popular" : ""])}" data-v-e3192875><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" data-v-e3192875><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" data-v-e3192875></path></svg></span><span data-v-e3192875>${(0, server_renderer_exports.ssrInterpolate)(feature)}</span></li>`);
+					_push(`<li class="plan-feature" data-v-df8231f7><span class="${(0, server_renderer_exports.ssrRenderClass)(["plan-feature-ico", isChristmasOfferActive.value && isAllFeaturesPlan(plan) ? "plan-feature-ico-christmas" : plan.is_popular ? "plan-feature-ico-popular" : ""])}" data-v-df8231f7><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" data-v-df8231f7><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" data-v-df8231f7></path></svg></span><span data-v-df8231f7>${(0, server_renderer_exports.ssrInterpolate)(feature)}</span></li>`);
 				});
-				_push(`<!--]--></ul><div class="plan-meta" data-v-e3192875><span class="plan-meta-tag" data-v-e3192875><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" data-v-e3192875><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" data-v-e3192875></path></svg> Hasta ${(0, server_renderer_exports.ssrInterpolate)(plan.max_users)} usuario${(0, server_renderer_exports.ssrInterpolate)(plan.max_users !== 1 ? "s" : "")}</span></div></div>`);
+				_push(`<!--]--></ul><div class="plan-meta" data-v-df8231f7><span class="plan-meta-tag" data-v-df8231f7><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" data-v-df8231f7><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" data-v-df8231f7></path></svg> Hasta ${(0, server_renderer_exports.ssrInterpolate)(plan.max_users)} usuario${(0, server_renderer_exports.ssrInterpolate)(plan.max_users !== 1 ? "s" : "")}</span></div></div>`);
 			});
 			_push(`<!--]--></div>`);
-			if (!__props.plans.length) _push(`<div class="plans-empty" data-v-e3192875><p class="text-gray-400 text-sm" data-v-e3192875>No hay planes disponibles en este momento.</p></div>`);
+			if (!__props.plans.length) _push(`<div class="plans-empty" data-v-df8231f7><p class="text-gray-400 text-sm" data-v-df8231f7>No hay planes disponibles en este momento.</p></div>`);
 			else _push(`<!---->`);
-			_push(`</div></section><section class="guarantee-section" data-v-e3192875><div class="guarantee-inner" data-v-e3192875><h2 class="guarantee-title" data-v-e3192875>Preguntas frecuentes</h2><div class="faq-grid" data-v-e3192875><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Necesito tarjeta de crédito para la prueba?</h3><p class="faq-a" data-v-e3192875>No. Activas tu prueba gratuita de 14 días sin ingresar datos de pago. Solo necesitas tu correo y el nombre de tu taller.</p></div><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Puedo cancelar cuando quiera?</h3><p class="faq-a" data-v-e3192875>Sí. No hay contratos de permanencia. Puedes cancelar tu suscripción en cualquier momento desde tu panel de configuración.</p></div><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Qué pasa al terminar la prueba?</h3><p class="faq-a" data-v-e3192875>Te contactamos antes de que venza el período. Si decides continuar, eliges un plan y activas el pago. Si no, tu acceso se suspende sin cargos.</p></div><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Puedo cambiar de plan?</h3><p class="faq-a" data-v-e3192875>Sí. Puedes actualizar o bajar de plan en cualquier momento desde la sección de suscripción en tu taller.</p></div><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Los precios incluyen IVA?</h3><p class="faq-a" data-v-e3192875>Los precios mostrados son en CLP y no incluyen IVA. El cobro final puede incluir impuestos según tu situación tributaria.</p></div><div class="faq-item" data-v-e3192875><h3 class="faq-q" data-v-e3192875>¿Qué métodos de pago aceptan?</h3><p class="faq-a" data-v-e3192875>Aceptamos tarjetas de crédito y débito a través de Mercado Pago. Próximamente transferencia bancaria directa.</p></div></div></div></section><section class="bottom-cta-section" data-v-e3192875><div class="bottom-cta-inner" data-v-e3192875><div class="bottom-cta-card" data-v-e3192875><div data-v-e3192875><h2 class="bottom-cta-title" data-v-e3192875>¿Listo para digitalizar tu taller?</h2><p class="bottom-cta-sub" data-v-e3192875>14 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.</p></div>`);
+			_push(`<div class="mt-14 rounded-3xl bg-gradient-to-br from-red-950 via-slate-900 to-emerald-950 border border-red-500/30 p-8 md:p-10 text-white shadow-xl" data-v-df8231f7><div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6" data-v-df8231f7><div class="space-y-2 max-w-2xl" data-v-df8231f7><span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/30 border border-red-400/40 text-amber-200 text-xs font-bold uppercase tracking-wider" data-v-df8231f7><span data-v-df8231f7>🎄</span> Transparencia y Garantía Navideña </span><h3 class="text-xl md:text-2xl font-black text-white" data-v-df8231f7> ¿Cómo funciona la oferta de todas las funcionalidades a \$19.990? </h3><p class="text-sm text-gray-300 leading-relaxed" data-v-df8231f7> Cualquier taller que contrate o comience su proceso de registro hasta las 23:59 del <strong data-v-df8231f7>31 de diciembre de 2026</strong> accede al <strong data-v-df8231f7>Plan Empresa completo</strong> (Recepción con IA de patentes, WhatsApp automático a clientes, Kanban, Agenda, Inventario masivo y usuarios extendidos) por un valor promocional de <strong data-v-df8231f7>\$19.990 mensuales congelados durante 12 meses continuos</strong>. Sin letra chica ni contratos forzosos. </p></div>`);
+			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
+				href: _ctx.route("trial.create"),
+				class: "flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-sm transition-all shadow-lg hover:shadow-amber-400/25 transform hover:-translate-y-0.5"
+			}, {
+				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
+					if (_push) _push(`<span data-v-df8231f7${_scopeId}>Asegurar Oferta de Navidad</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-df8231f7${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-df8231f7${_scopeId}></path></svg>`);
+					else return [(0, vue_exports.createVNode)("span", null, "Asegurar Oferta de Navidad"), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
+						class: "w-4 h-4",
+						fill: "none",
+						viewBox: "0 0 24 24",
+						stroke: "currentColor",
+						"stroke-width": "2.5"
+					}, [(0, vue_exports.createVNode)("path", {
+						"stroke-linecap": "round",
+						"stroke-linejoin": "round",
+						d: "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+					})]))];
+				}),
+				_: 1
+			}, _parent));
+			_push(`</div></div></div></section><section class="guarantee-section" data-v-df8231f7><div class="guarantee-inner" data-v-df8231f7><h2 class="guarantee-title" data-v-df8231f7>Preguntas frecuentes</h2><div class="faq-grid" data-v-df8231f7><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Cómo se activa la Oferta Navideña de \$19.990?</h3><p class="faq-a" data-v-df8231f7>Solo debes iniciar tu prueba gratuita de 14 días antes del 31 de diciembre. Al contratar, tu tarifa queda congelada a \$19.990/mes por 12 meses con todas las funcionalidades liberadas.</p></div><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Necesito tarjeta de crédito para la prueba?</h3><p class="faq-a" data-v-df8231f7>No. Activas tu prueba gratuita de 14 días sin ingresar datos de pago. Solo necesitas tu correo y el nombre de tu taller.</p></div><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Puedo cancelar cuando quiera?</h3><p class="faq-a" data-v-df8231f7>Sí. No hay contratos de permanencia ni letras chicas. Puedes cancelar tu suscripción en cualquier momento desde tu panel de configuración.</p></div><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Qué pasa después del año de promoción?</h3><p class="faq-a" data-v-df8231f7>Te avisaremos con anticipación antes de cumplir los 12 meses. Podrás mantener tu plan con tarifa preferencial de renovación o elegir el plan que mejor se adapte a tu taller.</p></div><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Los precios incluyen IVA?</h3><p class="faq-a" data-v-df8231f7>Los precios mostrados son en CLP netos. El cobro final puede incluir impuestos según tu situación tributaria y emisión de factura o boleta.</p></div><div class="faq-item" data-v-df8231f7><h3 class="faq-q" data-v-df8231f7>¿Qué métodos de pago aceptan?</h3><p class="faq-a" data-v-df8231f7>Aceptamos tarjetas de crédito, débito y transferencias a través de Mercado Pago.</p></div></div></div></section><section class="bottom-cta-section" data-v-df8231f7><div class="bottom-cta-inner" data-v-df8231f7><div class="bottom-cta-card" data-v-df8231f7><div data-v-df8231f7><h2 class="bottom-cta-title" data-v-df8231f7>¿Listo para digitalizar tu taller esta Navidad?</h2><p class="bottom-cta-sub" data-v-df8231f7>14 días gratis. Todas las funcionalidades por 1 año a \$19.990. Sin tarjeta de crédito.</p></div>`);
 			if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("dashboard"),
 				class: "bottom-cta-btn"
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-					if (_push) _push(` Ir al Dashboard <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-e3192875${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-e3192875${_scopeId}></path></svg>`);
+					if (_push) _push(` Ir al Dashboard <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-df8231f7${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-df8231f7${_scopeId}></path></svg>`);
 					else return [(0, vue_exports.createTextVNode)(" Ir al Dashboard "), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
 						class: "w-4 h-4",
 						fill: "none",
@@ -18794,7 +19023,7 @@ var _sfc_main$66 = {
 				class: "bottom-cta-btn"
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
-					if (_push) _push(` Empezar ahora gratis <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-e3192875${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-e3192875${_scopeId}></path></svg>`);
+					if (_push) _push(` Empezar ahora gratis <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-df8231f7${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-df8231f7${_scopeId}></path></svg>`);
 					else return [(0, vue_exports.createTextVNode)(" Empezar ahora gratis "), ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("svg", {
 						class: "w-4 h-4",
 						fill: "none",
@@ -18810,7 +19039,7 @@ var _sfc_main$66 = {
 				_: 1
 			}, _parent));
 			_push(`</div></div></section>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push(`</div><!--]-->`);
 		};
 	}
@@ -18821,7 +19050,7 @@ _sfc_main$66.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Pricing.vue");
 	return _sfc_setup$66 ? _sfc_setup$66(props, ctx) : void 0;
 };
-var Pricing_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$66, [["__scopeId", "data-v-e3192875"]]);
+var Pricing_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$66, [["__scopeId", "data-v-df8231f7"]]);
 // resources/js/Components/Dropdown.vue
 var _sfc_main$65 = {
 	__name: "Dropdown",
@@ -18984,9 +19213,9 @@ var _sfc_main$61 = {
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-10 w-10 rounded-xl" }, null, _parent, _scopeId));
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-10 w-10 rounded-xl" }, null, _parent, _scopeId));
 						_push(`<div class="flex items-center gap-2 text-xl font-bold tracking-tight"${_scopeId}><span class="text-slate-900"${_scopeId}>Taller</span><span class="text-amber-500"${_scopeId}>Flow</span></div>`);
-					} else return [(0, vue_exports.createVNode)(_sfc_main$138, { class: "h-10 w-10 rounded-xl" }), (0, vue_exports.createVNode)("div", { class: "flex items-center gap-2 text-xl font-bold tracking-tight" }, [(0, vue_exports.createVNode)("span", { class: "text-slate-900" }, "Taller"), (0, vue_exports.createVNode)("span", { class: "text-amber-500" }, "Flow")])];
+					} else return [(0, vue_exports.createVNode)(_sfc_main$140, { class: "h-10 w-10 rounded-xl" }), (0, vue_exports.createVNode)("div", { class: "flex items-center gap-2 text-xl font-bold tracking-tight" }, [(0, vue_exports.createVNode)("span", { class: "text-slate-900" }, "Taller"), (0, vue_exports.createVNode)("span", { class: "text-amber-500" }, "Flow")])];
 				}),
 				_: 1
 			}, _parent));
@@ -19284,12 +19513,12 @@ var _sfc_main$57 = {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="p-6"${_scopeId}><h2 class="text-lg font-medium text-gray-900"${_scopeId}> Are you sure you want to delete your account? </h2><p class="mt-1 text-sm text-gray-600"${_scopeId}> Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account. </p><div class="mt-6"${_scopeId}>`);
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 							for: "password",
 							value: "Password",
 							class: "sr-only"
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 							id: "password",
 							ref_key: "passwordInput",
 							ref: passwordInput,
@@ -19299,7 +19528,7 @@ var _sfc_main$57 = {
 							placeholder: "Password",
 							onKeyup: deleteUser
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 							message: (0, vue_exports.unref)(form).errors.password,
 							class: "mt-2"
 						}, null, _parent, _scopeId));
@@ -19327,12 +19556,12 @@ var _sfc_main$57 = {
 						(0, vue_exports.createVNode)("h2", { class: "text-lg font-medium text-gray-900" }, " Are you sure you want to delete your account? "),
 						(0, vue_exports.createVNode)("p", { class: "mt-1 text-sm text-gray-600" }, " Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account. "),
 						(0, vue_exports.createVNode)("div", { class: "mt-6" }, [
-							(0, vue_exports.createVNode)(_sfc_main$135, {
+							(0, vue_exports.createVNode)(_sfc_main$137, {
 								for: "password",
 								value: "Password",
 								class: "sr-only"
 							}),
-							(0, vue_exports.createVNode)(_sfc_main$136, {
+							(0, vue_exports.createVNode)(_sfc_main$138, {
 								id: "password",
 								ref_key: "passwordInput",
 								ref: passwordInput,
@@ -19342,7 +19571,7 @@ var _sfc_main$57 = {
 								placeholder: "Password",
 								onKeyup: (0, vue_exports.withKeys)(deleteUser, ["enter"])
 							}, null, 8, ["modelValue", "onUpdate:modelValue"]),
-							(0, vue_exports.createVNode)(_sfc_main$134, {
+							(0, vue_exports.createVNode)(_sfc_main$136, {
 								message: (0, vue_exports.unref)(form).errors.password,
 								class: "mt-2"
 							}, null, 8, ["message"])
@@ -19387,11 +19616,11 @@ var _sfc_main$56 = {
 		});
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<section${(0, server_renderer_exports.ssrRenderAttrs)(_attrs)}><header><h2 class="text-lg font-medium text-gray-900"> Update Password </h2><p class="mt-1 text-sm text-gray-600"> Ensure your account is using a long, random password to stay secure. </p></header><form class="mt-6 space-y-6"><div>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "current_password",
 				value: "Current Password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 				id: "current_password",
 				ref_key: "currentPasswordInput",
 				ref: currentPasswordInput,
@@ -19400,16 +19629,16 @@ var _sfc_main$56 = {
 				class: "mt-1 block w-full",
 				autocomplete: "current-password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				message: (0, vue_exports.unref)(form).errors.current_password,
 				class: "mt-2"
 			}, null, _parent));
 			_push(`</div><div>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "password",
 				value: "New Password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 				id: "password",
 				ref_key: "passwordInput",
 				ref: passwordInput,
@@ -19418,23 +19647,23 @@ var _sfc_main$56 = {
 				class: "mt-1 block w-full",
 				autocomplete: "new-password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				message: (0, vue_exports.unref)(form).errors.password,
 				class: "mt-2"
 			}, null, _parent));
 			_push(`</div><div>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "password_confirmation",
 				value: "Confirm Password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 				id: "password_confirmation",
 				modelValue: (0, vue_exports.unref)(form).password_confirmation,
 				"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).password_confirmation = $event,
 				class: "mt-1 block w-full",
 				autocomplete: "new-password"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				message: (0, vue_exports.unref)(form).errors.password_confirmation,
 				class: "mt-2"
 			}, null, _parent));
@@ -19475,11 +19704,11 @@ var _sfc_main$55 = {
 		});
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<section${(0, server_renderer_exports.ssrRenderAttrs)(_attrs)}><header><h2 class="text-lg font-medium text-gray-900"> Profile Information </h2><p class="mt-1 text-sm text-gray-600"> Update your account&#39;s profile information and email address. </p></header><form class="mt-6 space-y-6"><div>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "name",
 				value: "Name"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 				id: "name",
 				type: "text",
 				class: "mt-1 block w-full",
@@ -19489,16 +19718,16 @@ var _sfc_main$55 = {
 				autofocus: "",
 				autocomplete: "name"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				class: "mt-2",
 				message: (0, vue_exports.unref)(form).errors.name
 			}, null, _parent));
 			_push(`</div><div>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$135, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
 				for: "email",
 				value: "Email"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$94, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$96, {
 				id: "email",
 				type: "email",
 				class: "mt-1 block w-full",
@@ -19507,7 +19736,7 @@ var _sfc_main$55 = {
 				required: "",
 				autocomplete: "username"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$134, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
 				class: "mt-2",
 				message: (0, vue_exports.unref)(form).errors.email
 			}, null, _parent));
@@ -19704,7 +19933,7 @@ var _sfc_main$52 = {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `Planes para ${__props.tenant.name} — Taller Flow` }, null, _parent));
 			_push(`<div class="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 font-sans"><header class="bg-white/80 backdrop-blur border-b border-white/60 shadow-sm"><div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-9 w-9 rounded-xl flex-shrink-0 shadow-sm" }, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-9 w-9 rounded-xl flex-shrink-0 shadow-sm" }, null, _parent));
 			_push(`<div><span class="text-lg font-extrabold text-slate-800 leading-none">Taller Flow</span><span class="text-slate-400 mx-2">·</span><span class="text-slate-600 font-medium text-sm">${(0, server_renderer_exports.ssrInterpolate)(__props.tenant.name)}</span></div></div></header><main class="max-w-6xl mx-auto px-6 py-12 space-y-10"><div class="text-center space-y-2"><h1 class="text-3xl font-extrabold text-slate-800"> Elige el plan perfecto para <span class="text-orange-500">${(0, server_renderer_exports.ssrInterpolate)(__props.tenant.name)}</span></h1><p class="text-slate-500 text-base max-w-lg mx-auto"> Accede a todas las herramientas que necesita tu taller. Sin contratos a largo plazo. </p></div>`);
 			if (flash.value.success) _push(`<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl px-5 py-4 text-sm font-medium text-center">${(0, server_renderer_exports.ssrInterpolate)(flash.value.success)}</div>`);
 			else _push(`<!---->`);
@@ -19763,7 +19992,7 @@ var _sfc_main$51 = {
 	setup(__props) {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Directorio de Talleres · TallerFlow"
 			}, null, _parent));
@@ -19876,7 +20105,7 @@ var _sfc_main$51 = {
 				_push(`<!--]--></div>`);
 			} else _push(`<div class="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm"><svg class="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21"></path></svg><p class="text-slate-500 font-medium">${(0, server_renderer_exports.ssrInterpolate)(__props.filters.comuna ? "No encontramos talleres en esta comuna por ahora." : "Aún no hay talleres disponibles.")}</p></div>`);
 			_push(`</div></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push(`</div><!--]-->`);
 		};
 	}
@@ -19947,7 +20176,7 @@ var _sfc_main$50 = {
 		const hasBranches = (0, vue_exports.computed)(() => Array.isArray(props.tenant.branches) && props.tenant.branches.length > 0);
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": `Agendamiento - ${__props.tenant.name}`
 			}, null, _parent));
@@ -19956,7 +20185,7 @@ var _sfc_main$50 = {
 				"--brand-hover": primaryColor.value + "dd"
 			})}" data-v-931c9a0e><header class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm" data-v-931c9a0e><div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between" data-v-931c9a0e><div class="flex items-center gap-3" data-v-931c9a0e>`);
 			if (__props.tenant.logo_url) _push(`<img${(0, server_renderer_exports.ssrRenderAttr)("src", __props.tenant.logo_url)}${(0, server_renderer_exports.ssrRenderAttr)("alt", __props.tenant.name)} class="h-9 w-9 rounded-xl shadow-md object-contain bg-white" data-v-931c9a0e>`);
-			else _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-9 w-9 rounded-xl shadow-md" }, null, _parent));
+			else _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-9 w-9 rounded-xl shadow-md" }, null, _parent));
 			_push(`<span class="text-lg font-bold text-gray-900 tracking-tight" data-v-931c9a0e>${(0, server_renderer_exports.ssrInterpolate)(__props.tenant.name)}</span></div><div class="flex items-center gap-3" data-v-931c9a0e>`);
 			if (_ctx.$page.props.auth?.user) _push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(link_default), {
 				href: _ctx.route("dashboard"),
@@ -20107,7 +20336,7 @@ var _sfc_main$50 = {
 				show: showLoginModal.value,
 				onClose: ($event) => showLoginModal.value = false
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$139, {
 				message: toast.value.message,
 				type: toast.value.type,
 				onDismiss: ($event) => toast.value.message = ""
@@ -20405,7 +20634,7 @@ var _sfc_main$49 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Nueva cotización" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-6" data-v-398ce12f${_scopeId}><div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-v-398ce12f${_scopeId}><div data-v-398ce12f${_scopeId}>`);
@@ -20536,14 +20765,14 @@ var _sfc_main$49 = {
 								if (createErrors.value.name) _push(`<p class="mt-1 text-[10px] font-medium text-red-500" data-v-398ce12f${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(createErrors.value.name[0])}</p>`);
 								else _push(`<!---->`);
 								_push(`</div><div data-v-398ce12f${_scopeId}>`);
-								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 									modelValue: createForm.phone,
 									"onUpdate:modelValue": ($event) => createForm.phone = $event,
 									label: "Celular (WhatsApp) *",
 									"error-message": createErrors.value.phone ? createErrors.value.phone[0] : null
 								}, null, _parent, _scopeId));
 								_push(`</div><div data-v-398ce12f${_scopeId}>`);
-								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+								_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 									modelValue: createForm.secondary_phone,
 									"onUpdate:modelValue": ($event) => createForm.secondary_phone = $event,
 									label: "Otro teléfono",
@@ -20976,7 +21205,7 @@ var _sfc_main$49 = {
 											class: "mt-1 text-[10px] font-medium text-red-500"
 										}, (0, vue_exports.toDisplayString)(createErrors.value.name[0]), 1)) : (0, vue_exports.createCommentVNode)("", true)
 									]),
-									(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)(_sfc_main$77, {
+									(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)(_sfc_main$78, {
 										modelValue: createForm.phone,
 										"onUpdate:modelValue": ($event) => createForm.phone = $event,
 										label: "Celular (WhatsApp) *",
@@ -20986,7 +21215,7 @@ var _sfc_main$49 = {
 										"onUpdate:modelValue",
 										"error-message"
 									])]),
-									(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)(_sfc_main$77, {
+									(0, vue_exports.createVNode)("div", null, [(0, vue_exports.createVNode)(_sfc_main$78, {
 										modelValue: createForm.secondary_phone,
 										"onUpdate:modelValue": ($event) => createForm.secondary_phone = $event,
 										label: "Otro teléfono",
@@ -21076,7 +21305,7 @@ var _sfc_main$48 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Cotizaciones" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col justify-between gap-4 md:flex-row md:items-center"${_scopeId}><div${_scopeId}><h1 class="text-3xl font-black uppercase tracking-tight text-gray-900"${_scopeId}>Cotizaciones</h1><p class="mt-1 text-sm font-medium text-gray-500"${_scopeId}>Cotiza a clientes sin necesidad de una cita ni una Orden de Trabajo previa.</p></div><div class="flex w-full flex-col gap-4 sm:flex-row md:w-auto"${_scopeId}><div class="relative w-full sm:w-80" data-tour="quotes-search"${_scopeId}><div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4"${_scopeId}><svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"${_scopeId}></path></svg></div><input${(0, server_renderer_exports.ssrRenderAttr)("value", search.value)} type="text"${(0, server_renderer_exports.ssrRenderAttr)("placeholder", "Buscar por cliente, " + docLabel.value + " o patente...")} class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:border-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50"${_scopeId}></div>`);
@@ -21105,7 +21334,7 @@ var _sfc_main$48 = {
 						_push(`</div></div>`);
 						if (commercialQuotesEnabled.value) {
 							_push(`<div class="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm"${_scopeId}>`);
-							if (__props.quotes.data.length === 0) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
+							if (__props.quotes.data.length === 0) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$80, {
 								title: search.value ? "No encontramos cotizaciones con esa búsqueda" : "Aún no tienes cotizaciones",
 								description: search.value ? "Prueba con otro cliente o patente, o limpia la búsqueda." : "Crea la primera cotización usando un cliente y vehículo registrados, o agrega sus datos durante el proceso.",
 								"action-label": search.value ? "Limpiar búsqueda" : "Crear mi primera cotización",
@@ -21191,7 +21420,7 @@ var _sfc_main$48 = {
 					}, 8, ["href"])) : (0, vue_exports.createCommentVNode)("", true)])]), commercialQuotesEnabled.value ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 						key: 0,
 						class: "overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-sm"
-					}, [__props.quotes.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$79, {
+					}, [__props.quotes.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$80, {
 						key: 0,
 						title: search.value ? "No encontramos cotizaciones con esa búsqueda" : "Aún no tienes cotizaciones",
 						description: search.value ? "Prueba con otro cliente o patente, o limpia la búsqueda." : "Crea la primera cotización usando un cliente y vehículo registrados, o agrega sus datos durante el proceso.",
@@ -21816,7 +22045,7 @@ var _sfc_main$44 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `Cotización #${__props.quote.id} — ${__props.quote.vehicle?.plate ?? ""}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-6"${_scopeId}><div class="space-y-3"${_scopeId}>`);
@@ -23432,7 +23661,7 @@ var _sfc_main$40 = {
 				if (plateAnalysis.value.isForeign || plateOriginMessage.value) {
 					_push(`<div class="mx-6 lg:mx-8 mt-4 rounded-2xl bg-indigo-50 border border-indigo-300 px-5 py-4 space-y-2" data-v-729640df><div class="flex items-center gap-2" data-v-729640df><div class="flex items-center gap-1.5 shrink-0" data-v-729640df><!--[-->`);
 					(0, server_renderer_exports.ssrRenderList)(plateOriginCountries.value, (c) => {
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 							key: c.code,
 							country: c.code,
 							"class-name": "w-6 h-4"
@@ -23451,7 +23680,7 @@ var _sfc_main$40 = {
 				else if (plateAnalysis.value.isForeign) {
 					_push(`<div class="mt-3 flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-100/80 border border-indigo-300 text-indigo-950 text-xs font-bold animate-in fade-in max-w-md" data-v-729640df><div class="flex items-center gap-1.5 shrink-0" data-v-729640df><!--[-->`);
 					(0, server_renderer_exports.ssrRenderList)(plateAnalysis.value.detectedCountries, (c) => {
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 							key: c.code,
 							country: c.code,
 							"class-name": "w-5 h-3.5"
@@ -23538,7 +23767,7 @@ var _sfc_main$40 = {
 				if ((0, vue_exports.unref)(form).errors.client_name) _push(`<p class="text-red-500 text-[10px] font-medium ml-1" data-v-729640df>${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(form).errors.client_name)}</p>`);
 				else _push(`<!---->`);
 				_push(`</div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-4" data-v-729640df><div class="space-y-1.5" data-v-729640df><label class="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1" data-v-729640df>Email</label><input${(0, server_renderer_exports.ssrRenderAttr)("value", (0, vue_exports.unref)(form).client_email)} type="email" class="w-full bg-white border border-gray-300 text-gray-900 text-lg font-bold rounded-2xl px-5 py-4 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all shadow-sm" placeholder="correo@ejemplo.cl" data-v-729640df></div><div class="space-y-1.5" data-v-729640df>`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 					modelValue: (0, vue_exports.unref)(form).client_phone,
 					"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).client_phone = $event,
 					label: "Celular",
@@ -23723,7 +23952,7 @@ var _sfc_main$39 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Recepción" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						if (aiReceptionEnabled.value) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$43, {
@@ -23738,7 +23967,7 @@ var _sfc_main$39 = {
 						}, null, _parent, _scopeId));
 						else {
 							_push(`<div class="w-full flex flex-col items-center py-6 px-4" data-tour="reception-new-entry"${_scopeId}><div class="w-full max-w-lg space-y-4"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 								title: "Escáner con IA no disponible",
 								message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`
 							}, null, _parent, _scopeId));
@@ -23775,7 +24004,7 @@ var _sfc_main$39 = {
 							key: 1,
 							class: "w-full flex flex-col items-center py-6 px-4",
 							"data-tour": "reception-new-entry"
-						}, [(0, vue_exports.createVNode)("div", { class: "w-full max-w-lg space-y-4" }, [(0, vue_exports.createVNode)(_sfc_main$106, {
+						}, [(0, vue_exports.createVNode)("div", { class: "w-full max-w-lg space-y-4" }, [(0, vue_exports.createVNode)(_sfc_main$108, {
 							title: "Escáner con IA no disponible",
 							message: `Mejora tu plan para acceder a esta función. ${aiReceptionUpgradeMessage.value}`
 						}, null, 8, ["message"]), (0, vue_exports.createVNode)("div", { class: "w-full bg-white/80 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white flex flex-col items-center text-center" }, [
@@ -24003,7 +24232,7 @@ var _sfc_main$35 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reporte de Adquisición" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -24324,7 +24553,7 @@ var _sfc_main$34 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reporte de Cobranza" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -24655,7 +24884,7 @@ var _sfc_main$33 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reporte de Clientes" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -24959,7 +25188,7 @@ var _sfc_main$32 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Centro de Reportes" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8"${_scopeId}><div class="flex flex-col justify-between gap-4 md:flex-row md:items-end"${_scopeId}><div${_scopeId}><p class="text-[11px] font-black uppercase tracking-[0.25em] text-gray-400"${_scopeId}>Centro de mando</p><h1 class="mt-1 text-3xl font-black tracking-tight text-gray-900"${_scopeId}>Reportes del Taller</h1><p class="mt-2 text-sm font-medium text-gray-500"${_scopeId}>Accede a ventas, supervisión, existencias, clientes y cobranza desde un mismo lugar.</p></div><div class="flex flex-wrap gap-3"${_scopeId}>`);
@@ -25097,7 +25326,7 @@ var _sfc_main$31 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reporte de Existencias" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -25430,7 +25659,7 @@ var _sfc_main$30 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reportes de Ventas" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -25702,7 +25931,7 @@ var _sfc_main$29 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Reportes de Supervisión" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) _push((0, server_renderer_exports.ssrRenderComponent)(PrintableReportShell_default, null, {
 						default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
@@ -26047,7 +26276,7 @@ var _sfc_main$28 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Servicios" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						if (importSummary.value) {
@@ -26665,7 +26894,7 @@ var _sfc_main$27 = {
 		];
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Características y Módulos · TallerFlow — Sistema para Talleres"
 			}, null, _parent));
@@ -26780,7 +27009,7 @@ var _sfc_main$27 = {
 				_: 1
 			}, _parent));
 			_push(`<a href="https://wa.me/56912345678" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 border border-white/20 text-white font-semibold text-base px-8 py-4 rounded-2xl hover:bg-white/20 transition-all active:scale-[0.98]" data-v-8bab02a5><svg class="w-5 h-5 text-[#25D366] fill-current" viewBox="0 0 24 24" data-v-8bab02a5><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.249 8.477 3.518 2.266 2.27 3.51 5.278 3.509 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.075-3.522c1.636.971 3.238 1.483 4.88 1.484 5.542 0 10.051-4.475 10.054-9.982.002-2.667-1.033-5.176-2.915-7.06C16.27 3.036 13.784 2 11.996 2 6.471 2 1.961 6.475 1.958 11.983c-.001 1.767.465 3.493 1.349 5.022l-.995 3.637 3.775-.984zm11.022-7.463c-.3-.149-1.772-.875-2.046-.975-.274-.1-.474-.15-.674.15-.2.3-.773.975-.948 1.175-.175.2-.35.225-.65.075-.3-.15-1.266-.467-2.41-1.485-.89-.794-1.49-1.775-1.665-2.075-.175-.3-.019-.463.13-.61.135-.133.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.589-.491-.51-.674-.52-.175-.008-.375-.01-.575-.01-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.11 3.224 5.116 4.525.715.31 1.273.499 1.71.638.717.228 1.37.196 1.885.12.573-.085 1.772-.725 2.022-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35z" data-v-8bab02a5></path></svg> Conversar por WhatsApp </a></div><p class="mt-6 text-xs text-slate-500 font-medium" data-v-8bab02a5> Sin tarjeta de crédito · Cancela cuando quieras · Soporte en español </p></div></div></section></main>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push(`</div><!--]-->`);
 		};
 	}
@@ -26994,7 +27223,7 @@ var _sfc_main$25 = {
 		const computedPlanMaxUsers = (0, vue_exports.computed)(() => props.planMaxUsers !== null ? props.planMaxUsers : page.props.planMaxUsers ?? null);
 		const computedBranchesCount = (0, vue_exports.computed)(() => props.branchesCount !== null ? props.branchesCount : page.props.branchesCount ?? (page.props.branches ? page.props.branches.length : null));
 		return (_ctx, _push, _parent, _attrs) => {
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, _attrs, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, _attrs, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"${_scopeId}><div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 px-1"${_scopeId}><div${_scopeId}><h1 class="text-3xl font-black tracking-tight text-gray-900 uppercase"${_scopeId}>Configuración</h1><p class="text-sm text-gray-500 mt-1 font-medium"${_scopeId}>Administra usuarios, sucursales y ajustes del taller</p></div><div class="flex items-center gap-2 bg-white border border-gray-100 rounded-2xl px-4 py-2 shadow-sm"${_scopeId}><span class="w-2 h-2 rounded-full bg-[#FF7A00]"${_scopeId}></span><span class="text-xs font-bold text-gray-500 uppercase tracking-widest"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(tenant.value?.name)}</span></div></div>`);
@@ -27097,7 +27326,7 @@ var _sfc_main$24 = {
 				if ((0, vue_exports.unref)(userForm).errors.email) _push(`<p class="text-red-500 text-xs">${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(userForm).errors.email)}</p>`);
 				else _push(`<!---->`);
 				_push(`</div><div class="space-y-1"><label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contraseña</label>`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 					modelValue: (0, vue_exports.unref)(userForm).password,
 					"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(userForm).password = $event,
 					required: "",
@@ -27107,7 +27336,7 @@ var _sfc_main$24 = {
 				if ((0, vue_exports.unref)(userForm).errors.password) _push(`<p class="text-red-500 text-xs">${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(userForm).errors.password)}</p>`);
 				else _push(`<!---->`);
 				_push(`</div><div class="space-y-1"><label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Confirmar Contraseña</label>`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$136, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, {
 					modelValue: (0, vue_exports.unref)(userForm).password_confirmation,
 					"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(userForm).password_confirmation = $event,
 					required: "",
@@ -27670,14 +27899,14 @@ var _sfc_main$18 = {
 			}, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						if (__props.setupChecklist && (activeTab.value === "website" || checklistStepId.value)) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$72, {
+						if (__props.setupChecklist && (activeTab.value === "website" || checklistStepId.value)) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$73, {
 							checklist: __props.setupChecklist,
 							"step-id": checklistStepId.value
 						}, null, _parent, _scopeId));
 						else _push(`<!---->`);
 						if (activeTab.value === "website") {
 							_push(`<div class="space-y-6"${_scopeId}>`);
-							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$71, { "public-url": __props.tenant.public_url }, null, _parent, _scopeId));
+							_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$72, { "public-url": __props.tenant.public_url }, null, _parent, _scopeId));
 							_push(`<div class="rounded-2xl border border-gray-100 bg-white p-5"${_scopeId}><h2 class="text-lg font-bold text-gray-900"${_scopeId}>Prepara tu página para tus clientes</h2><p class="mt-2 text-sm text-gray-600"${_scopeId}>Personaliza el logo y los colores. Revisa también los horarios de atención en la pestaña Horarios.</p>`);
 							if (!__props.canAccessSeo) _push(`<p class="mt-2 text-sm text-gray-600"${_scopeId}>La edición de descripción, dirección y WhatsApp está disponible en los planes que incluyen SEO y WhatsApp.</p>`);
 							else _push(`<!---->`);
@@ -27717,7 +27946,7 @@ var _sfc_main$18 = {
 						}, null, _parent, _scopeId));
 						else _push(`<!---->`);
 					} else return [
-						__props.setupChecklist && (activeTab.value === "website" || checklistStepId.value) ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$72, {
+						__props.setupChecklist && (activeTab.value === "website" || checklistStepId.value) ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$73, {
 							key: 0,
 							checklist: __props.setupChecklist,
 							"step-id": checklistStepId.value
@@ -27726,7 +27955,7 @@ var _sfc_main$18 = {
 							key: 1,
 							class: "space-y-6"
 						}, [
-							(0, vue_exports.createVNode)(_sfc_main$71, { "public-url": __props.tenant.public_url }, null, 8, ["public-url"]),
+							(0, vue_exports.createVNode)(_sfc_main$72, { "public-url": __props.tenant.public_url }, null, 8, ["public-url"]),
 							(0, vue_exports.createVNode)("div", { class: "rounded-2xl border border-gray-100 bg-white p-5" }, [
 								(0, vue_exports.createVNode)("h2", { class: "text-lg font-bold text-gray-900" }, "Prepara tu página para tus clientes"),
 								(0, vue_exports.createVNode)("p", { class: "mt-2 text-sm text-gray-600" }, "Personaliza el logo y los colores. Revisa también los horarios de atención en la pestaña Horarios."),
@@ -28268,7 +28497,7 @@ var _sfc_main$15 = {
 							}, _parent, _scopeId));
 							_push(`</div>`);
 						} else _push(`<!---->`);
-						if (!__props.canManageRoles) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$106, {
+						if (!__props.canManageRoles) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$108, {
 							title: "Roles personalizados — Plan Empresa",
 							message: "Con el Plan Empresa puedes crear roles con permisos completamente personalizados para tu equipo. En este plan puedes asignar los roles fijos del sistema a tus usuarios."
 						}, null, _parent, _scopeId));
@@ -28337,7 +28566,7 @@ var _sfc_main$15 = {
 							})])), (0, vue_exports.createTextVNode)(" Nuevo Rol ")]),
 							_: 1
 						}, 8, ["href"])])) : (0, vue_exports.createCommentVNode)("", true),
-						!__props.canManageRoles ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$106, {
+						!__props.canManageRoles ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$108, {
 							key: 1,
 							title: "Roles personalizados — Plan Empresa",
 							message: "Con el Plan Empresa puedes crear roles con permisos completamente personalizados para tu equipo. En este plan puedes asignar los roles fijos del sistema a tus usuarios."
@@ -28470,7 +28699,7 @@ var _sfc_main$14 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Facturación" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						if (flash.value.success) _push(`<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl px-5 py-4 text-sm font-medium"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(flash.value.success)}</div>`);
@@ -28721,7 +28950,7 @@ var _sfc_main$13 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: "Planes de Suscripción" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						if (flash.value.success) _push(`<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl px-5 py-4 text-sm font-medium"${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(flash.value.success)}</div>`);
@@ -28882,7 +29111,7 @@ var _sfc_main$12 = {
 				_: 1
 			}, _parent));
 			_push(`<header class="border-b border-gray-100 bg-white px-5 py-4"><div class="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3">`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$138, { class: "h-9 w-auto" }, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$140, { class: "h-9 w-auto" }, null, _parent));
 			_push(`<button type="button"${(0, server_renderer_exports.ssrIncludeBooleanAttr)((0, vue_exports.unref)(form).processing) ? " disabled" : ""} class="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50">Continuar después</button></div></header><main class="mx-auto max-w-4xl px-5 py-8 sm:py-12"><div class="mb-8 space-y-3"><p class="text-sm font-bold text-orange-700">Bienvenido a TallerFlow</p><h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Preparemos tu taller y tu página web</h1><p class="max-w-2xl text-gray-600">Tu página para recibir solicitudes de hora ya está incluida. En cuatro pasos, deja listos los datos que verán tus clientes.</p><p class="text-sm text-gray-500">Guardamos el avance al continuar. Tus cambios se publican al finalizar.</p></div><nav aria-label="Pasos de bienvenida" class="mb-6"><ol class="grid grid-cols-2 gap-3 sm:grid-cols-4"><!--[-->`);
 			(0, server_renderer_exports.ssrRenderList)(steps, (label, index) => {
 				_push(`<li>`);
@@ -28911,7 +29140,7 @@ var _sfc_main$12 = {
 			if (step.value === 1) _push(`<section class="space-y-5" aria-labelledby="business-title"><h2 id="business-title" class="text-xl font-bold">¿Cómo se llama tu taller?</h2><div><label for="welcome-name" class="text-sm font-semibold">Nombre del taller *</label><input id="welcome-name"${(0, server_renderer_exports.ssrRenderAttr)("value", (0, vue_exports.unref)(form).name)} class="${(0, server_renderer_exports.ssrRenderClass)(inputClass)}" required maxlength="255" autocomplete="organization"></div><div><label for="welcome-comuna" class="text-sm font-semibold">Comuna o ciudad *</label><input id="welcome-comuna"${(0, server_renderer_exports.ssrRenderAttr)("value", (0, vue_exports.unref)(form).comuna)} class="${(0, server_renderer_exports.ssrRenderClass)(inputClass)}" required maxlength="100" autocomplete="address-level2"></div><div><label for="welcome-address" class="text-sm font-semibold">Dirección (opcional)</label><input id="welcome-address"${(0, server_renderer_exports.ssrRenderAttr)("value", (0, vue_exports.unref)(form).address)} class="${(0, server_renderer_exports.ssrRenderClass)(inputClass)}" maxlength="255" autocomplete="street-address"></div><p class="text-sm text-gray-500">Estos datos identificarán tu taller en la página pública. El enlace seguirá siendo el mismo aunque cambies el nombre.</p></section>`);
 			else if (step.value === 2) {
 				_push(`<section class="space-y-5" aria-labelledby="contact-title"><h2 id="contact-title" class="text-xl font-bold">¿Cómo pueden contactarte?</h2><p class="text-sm text-gray-600">Usa los datos de contacto del taller: se mostrarán en tu página pública y se guardarán en tu sucursal principal.</p><div><label for="welcome-phone" class="text-sm font-semibold">Teléfono de contacto *</label><div class="mt-2">`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 					id: "welcome-phone",
 					modelValue: (0, vue_exports.unref)(form).phone,
 					"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).phone = $event,
@@ -28924,7 +29153,7 @@ var _sfc_main$12 = {
 					}
 				}, null, _parent));
 				_push(`</div></div><div><label for="welcome-whatsapp" class="text-sm font-semibold">WhatsApp (opcional)</label><div class="mt-2">`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$77, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
 					id: "welcome-whatsapp",
 					modelValue: (0, vue_exports.unref)(form).whatsapp_number,
 					"onUpdate:modelValue": ($event) => (0, vue_exports.unref)(form).whatsapp_number = $event,
@@ -28944,7 +29173,7 @@ var _sfc_main$12 = {
 				if ((0, vue_exports.unref)(form).whatsapp_number) _push(`<span> · WhatsApp: ${(0, server_renderer_exports.ssrInterpolate)((0, vue_exports.unref)(form).whatsapp_number)}</span>`);
 				else _push(`<!---->`);
 				_push(`</p></div><p class="text-sm text-gray-600">Al finalizar, estos datos quedarán visibles en tu página. Tus clientes podrán solicitar una hora; el taller revisará y confirmará la disponibilidad.</p>`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$71, { "public-url": __props.welcome.public_url }, null, _parent));
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$72, { "public-url": __props.welcome.public_url }, null, _parent));
 				_push(`<p class="text-sm text-gray-500">La página abierta desde el enlace muestra los datos publicados actualmente. Después podrás ajustar logo y horarios en Configuración.</p></section>`);
 			}
 			_push(`<div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-5">`);
@@ -29157,7 +29386,7 @@ var _sfc_main$10 = {
 		];
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "Solicitar prueba gratis · TallerFlow"
 			}, null, _parent));
@@ -29461,7 +29690,7 @@ var _sfc_main$8 = {
 		});
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$86, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$88, {
 				seo: __props.seo,
 				"fallback-title": "TallerFlow · Software para Talleres Mecánicos en Chile"
 			}, null, _parent));
@@ -29470,23 +29699,23 @@ var _sfc_main$8 = {
 				"active-section": activeSection.value
 			}, null, _parent));
 			_push(`<main class="min-h-screen bg-white font-sans antialiased" data-v-d9f631e9><div class="dark-wrapper" data-v-d9f631e9><div class="hero-page" data-v-d9f631e9><section class="hero layout-car-left" data-v-d9f631e9><div class="hero-img" data-v-d9f631e9></div><div class="hero-glow" data-v-d9f631e9></div><div class="hero-fade" data-v-d9f631e9></div><div class="hero-vignette" data-v-d9f631e9></div><div class="hero-noise" data-v-d9f631e9></div><div class="meta-row" data-v-d9f631e9><div class="meta-line" data-v-d9f631e9><span class="badge-pill !gap-2 !py-1.5 !px-3.5" data-v-d9f631e9><span class="dot" data-v-d9f631e9></span><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "CL",
 				"class-name": "w-4 h-3 rounded-[2px]"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "CO",
 				"class-name": "w-4 h-3 rounded-[2px]"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "AR",
 				"class-name": "w-4 h-3 rounded-[2px]"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "BR",
 				"class-name": "w-4 h-3 rounded-[2px]"
 			}, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "PE",
 				"class-name": "w-4 h-3 rounded-[2px]"
 			}, null, _parent));
@@ -29597,39 +29826,39 @@ var _sfc_main$8 = {
 				_: 1
 			}, _parent));
 			_push(`<a href="#features" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50" data-v-d9f631e9> Ver funcionalidades </a></div></div><div class="relative" data-v-d9f631e9><div class="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.18),_transparent_65%)] blur-2xl" data-v-d9f631e9></div><div class="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.12)]" data-v-d9f631e9><div class="mb-5 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3" data-v-d9f631e9><div data-v-d9f631e9><p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400" data-v-d9f631e9>Recepción Multipaís</p><p class="mt-0.5 text-sm font-bold text-slate-800" data-v-d9f631e9>Placas &amp; Patentes Reconocidas</p></div><span class="inline-flex items-center gap-1.5 rounded-full bg-[#FF7A00] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-sm" data-v-d9f631e9><span class="h-1.5 w-1.5 rounded-full bg-white animate-ping" data-v-d9f631e9></span> IA Activa </span></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 py-1" data-v-d9f631e9><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-400" data-v-d9f631e9>Chile</p><p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900" data-v-d9f631e9>GKSB·78</p></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "CL",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Chile (PPU Nacional)</p></div></div><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900" data-v-d9f631e9>Colombia · Bogotá D.C.</p><p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900" data-v-d9f631e9>ABC·123</p></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "CO",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Colombia (Auto Particular)</p></div></div><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full overflow-hidden rounded-lg border-2 border-slate-900 bg-white text-center shadow-sm" data-v-d9f631e9><div class="bg-[#0038A8] py-0.5 px-2 text-center" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.25em] text-white" data-v-d9f631e9>Mercosur · República Argentina</p></div><div class="py-1.5 px-2" data-v-d9f631e9><p class="font-mono text-xl font-black tracking-[0.14em] text-slate-900" data-v-d9f631e9>AB·123·CD</p></div></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "AR",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Argentina (Mercosur)</p></div></div><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full overflow-hidden rounded-lg border-2 border-slate-900 bg-white text-center shadow-sm" data-v-d9f631e9><div class="bg-[#0038A8] py-0.5 px-2 text-center" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.25em] text-white" data-v-d9f631e9>Mercosur · Brasil</p></div><div class="py-1.5 px-2" data-v-d9f631e9><p class="font-mono text-xl font-black tracking-[0.14em] text-slate-900" data-v-d9f631e9>ABC·1D23</p></div></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "BR",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Brasil (Mercosur)</p></div></div><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-center shadow-sm" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.3em] text-[#D91023]" data-v-d9f631e9>Perú</p><p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900" data-v-d9f631e9>A1B·234</p></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "PE",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Perú (Nacional / Frontera)</p></div></div><div class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors" data-v-d9f631e9><div class="w-full rounded-lg border-2 border-slate-900 bg-[#FFD700] px-3 py-2 text-center shadow-sm" data-v-d9f631e9><p class="text-[7px] font-black uppercase tracking-[0.3em] text-slate-900" data-v-d9f631e9>Colombia · Moto</p><p class="mt-0.5 font-mono text-2xl font-black tracking-[0.12em] text-slate-900" data-v-d9f631e9>ABC·12D</p></div><div class="flex items-center gap-1.5" data-v-d9f631e9>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 				country: "CO",
 				"class-name": "w-4 h-3"
 			}, null, _parent));
 			_push(`<p class="text-[10px] font-bold uppercase tracking-wider text-slate-600" data-v-d9f631e9>Colombia (Motocicleta)</p></div></div></div><div class="mt-5 border-t border-slate-100 pt-4" data-v-d9f631e9><div class="mb-3 flex items-center justify-between" data-v-d9f631e9><p class="text-[11px] font-black uppercase tracking-wider text-slate-700" data-v-d9f631e9> Banderas con soporte activo &amp; apertura de cuentas </p><span class="text-[10px] font-bold text-[#FF7A00]" data-v-d9f631e9>10 Países</span></div><div class="grid grid-cols-2 sm:grid-cols-5 gap-2" data-v-d9f631e9><!--[-->`);
 			(0, server_renderer_exports.ssrRenderList)(supportedCountries, (country) => {
 				_push(`<div class="group flex flex-col items-center gap-1 rounded-xl border border-slate-100 bg-slate-50/80 p-2 text-center transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/40 hover:shadow-sm" data-v-d9f631e9>`);
-				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$78, {
+				_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
 					country: country.code,
 					"class-name": "w-7 h-5"
 				}, null, _parent));
@@ -29878,7 +30107,7 @@ var _sfc_main$8 = {
 			}, _parent));
 			else _push(`<button type="button" class="flex-shrink-0 inline-flex items-center gap-2 bg-tech-orange hover:bg-[#CC6200] text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-tech-orange/30 transition-all active:scale-[0.98] whitespace-nowrap" data-v-d9f631e9> Empezar Gratis Ahora <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-v-d9f631e9><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" data-v-d9f631e9></path></svg></button>`);
 			_push(`</div></div></section>`);
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$83, null, null, _parent));
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$84, null, null, _parent));
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(LoginModal), {
 				show: showLoginModal.value,
 				onClose: ($event) => showLoginModal.value = false
@@ -30353,7 +30582,7 @@ var _sfc_main$7 = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: viewMode.value === "list" ? "Listado de Órdenes" : "Tablero de Órdenes" }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6" data-v-b5db271b${_scopeId}><div data-v-b5db271b${_scopeId}><h2 class="text-3xl font-black uppercase tracking-tight text-slate-900" data-v-b5db271b${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(viewMode.value === "list" ? "Listado de Órdenes" : "Tablero de Órdenes")}</h2><p class="text-sm font-medium text-slate-500" data-v-b5db271b${_scopeId}>${(0, server_renderer_exports.ssrInterpolate)(viewMode.value === "list" ? "Búsqueda e historial de órdenes de trabajo" : "Gestión del flujo de trabajo en tiempo real")}</p></div><div class="flex items-center gap-3 shrink-0 self-start md:self-auto flex-wrap" data-v-b5db271b${_scopeId}>`);
@@ -30369,7 +30598,7 @@ var _sfc_main$7 = {
 						if (search.value || month.value || selectedStatus.value) _push(`<button class="rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 py-2 px-3 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors" data-v-b5db271b${_scopeId}> Limpiar Filtros </button>`);
 						else _push(`<!---->`);
 						_push(`</div></div>`);
-						if (viewMode.value === "kanban" && Object.values(__props.kanban ?? {}).every((orders) => orders.length === 0)) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
+						if (viewMode.value === "kanban" && Object.values(__props.kanban ?? {}).every((orders) => orders.length === 0)) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$80, {
 							title: search.value || month.value || selectedStatus.value ? "No encontramos órdenes con esos filtros" : "Tu tablero está listo para comenzar",
 							description: search.value || month.value || selectedStatus.value ? "Limpia los filtros para ver todas las órdenes." : "Ingresa tu primer vehículo y sigue su avance desde recepción hasta la entrega.",
 							"action-label": search.value || month.value || selectedStatus.value ? "Limpiar filtros" : canCreateWorkOrder.value ? "Ingresar mi primer vehículo" : null,
@@ -30533,7 +30762,7 @@ var _sfc_main$7 = {
 							_push(`<!--]--></div></div></div>`);
 						} else {
 							_push(`<div class="space-y-6" data-v-b5db271b${_scopeId}><div class="overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]" data-v-b5db271b${_scopeId}>`);
-							if (!__props.orders?.data || __props.orders.data.length === 0) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$79, {
+							if (!__props.orders?.data || __props.orders.data.length === 0) _push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$80, {
 								title: search.value || month.value || selectedStatus.value ? "No encontramos órdenes con esos filtros" : "Aún no tienes órdenes de trabajo",
 								description: search.value || month.value || selectedStatus.value ? "Limpia los filtros para volver a ver todas las órdenes." : "Ingresa el primer vehículo para comenzar a registrar su atención.",
 								"action-label": search.value || month.value || selectedStatus.value ? "Limpiar filtros" : canCreateWorkOrder.value ? "Ingresar mi primer vehículo" : null,
@@ -30744,7 +30973,7 @@ var _sfc_main$7 = {
 							"onUpdate:show": ($event) => isCreateOrderModalOpen.value = $event,
 							"vehicle-catalog-brands": props.vehicleCatalogBrands
 						}, null, _parent, _scopeId));
-						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$137, {
+						_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$139, {
 							message: stageToast.value.message,
 							type: "info",
 							duration: 6e3,
@@ -30861,7 +31090,7 @@ var _sfc_main$7 = {
 								class: "rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 py-2 px-3 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors"
 							}, " Limpiar Filtros ", 8, ["onClick"])) : (0, vue_exports.createCommentVNode)("", true)
 						])]),
-						viewMode.value === "kanban" && Object.values(__props.kanban ?? {}).every((orders) => orders.length === 0) ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$79, {
+						viewMode.value === "kanban" && Object.values(__props.kanban ?? {}).every((orders) => orders.length === 0) ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$80, {
 							key: 0,
 							title: search.value || month.value || selectedStatus.value ? "No encontramos órdenes con esos filtros" : "Tu tablero está listo para comenzar",
 							description: search.value || month.value || selectedStatus.value ? "Limpia los filtros para ver todas las órdenes." : "Ingresa tu primer vehículo y sigue su avance desde recepción hasta la entrega.",
@@ -31169,7 +31398,7 @@ var _sfc_main$7 = {
 						])) : ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)("div", {
 							key: 2,
 							class: "space-y-6"
-						}, [(0, vue_exports.createVNode)("div", { class: "overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]" }, [!__props.orders?.data || __props.orders.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$79, {
+						}, [(0, vue_exports.createVNode)("div", { class: "overflow-hidden rounded-[2rem] border border-white bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)]" }, [!__props.orders?.data || __props.orders.data.length === 0 ? ((0, vue_exports.openBlock)(), (0, vue_exports.createBlock)(_sfc_main$80, {
 							key: 0,
 							title: search.value || month.value || selectedStatus.value ? "No encontramos órdenes con esos filtros" : "Aún no tienes órdenes de trabajo",
 							description: search.value || month.value || selectedStatus.value ? "Limpia los filtros para volver a ver todas las órdenes." : "Ingresa el primer vehículo para comenzar a registrar su atención.",
@@ -31703,7 +31932,7 @@ var _sfc_main$7 = {
 							"onUpdate:show",
 							"vehicle-catalog-brands"
 						]),
-						(0, vue_exports.createVNode)(_sfc_main$137, {
+						(0, vue_exports.createVNode)(_sfc_main$139, {
 							message: stageToast.value.message,
 							type: "info",
 							duration: 6e3,
@@ -32219,7 +32448,7 @@ var _sfc_main = {
 		return (_ctx, _push, _parent, _attrs) => {
 			_push(`<!--[-->`);
 			_push((0, server_renderer_exports.ssrRenderComponent)((0, vue_exports.unref)(head_default), { title: `OT #${__props.workOrder.id} — ${__props.workOrder.vehicle?.plate ?? ""}` }, null, _parent));
-			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$98, null, {
+			_push((0, server_renderer_exports.ssrRenderComponent)(_sfc_main$100, null, {
 				default: (0, vue_exports.withCtx)((_, _push, _parent, _scopeId) => {
 					if (_push) {
 						_push(`<div class="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-6"${_scopeId}><div class="space-y-3"${_scopeId}>`);
@@ -33263,4 +33492,4 @@ server_default((page) => createInertiaApp({
 		return (0, vue_exports.createSSRApp)({ render: () => (0, vue_exports.h)(App, props) }).use(plugin).use(M, props.initialPage.props.ziggy);
 	}
 }));
-export { _sfc_main$134 as a, PrimaryButton_default as i, _sfc_main$91 as n, _sfc_main$135 as o, _sfc_main$94 as r, _sfc_main$136 as s, _sfc_main$59 as t };
+export { _sfc_main$136 as a, PrimaryButton_default as i, _sfc_main$93 as n, _sfc_main$137 as o, _sfc_main$96 as r, _sfc_main$138 as s, _sfc_main$59 as t };
