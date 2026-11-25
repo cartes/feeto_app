@@ -51,6 +51,11 @@ class EmailTrackingController extends Controller
             $tracking->save();
 
             if ($tracking->tenant) {
+                $customUrl = is_array($tracking->metadata) ? ($tracking->metadata['action_url'] ?? null) : null;
+                if (is_string($customUrl) && $customUrl !== '' && filter_var($customUrl, FILTER_VALIDATE_URL)) {
+                    return redirect()->away($customUrl);
+                }
+
                 $params = ['tenantBySlug' => $tracking->tenant->slug];
                 if ($tracking->offer_discount_percent) {
                     $params['discount'] = $tracking->offer_discount_percent;
