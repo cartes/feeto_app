@@ -27,6 +27,7 @@ class TrialRequestCountryTest extends TestCase
             'email' => 'pedro@taller.cl',
             'phone' => '+56911111111',
             'business_name' => 'Taller Pedro',
+            'rut_taller' => '12.345.678-5',
             'business_type' => 'Taller mecánico',
             'terms' => true,
         ]);
@@ -36,6 +37,7 @@ class TrialRequestCountryTest extends TestCase
         $this->assertDatabaseHas('trial_requests', [
             'email' => 'pedro@taller.cl',
             'country' => 'CL',
+            'rut_taller' => '12345678-5',
         ]);
     }
 
@@ -51,6 +53,7 @@ class TrialRequestCountryTest extends TestCase
             'email' => 'maria@taller.co',
             'phone' => '+573001234567',
             'business_name' => 'Taller María',
+            'rut_taller' => '900123456-8',
             'business_type' => 'Taller mecánico',
             'city' => 'Bogotá',
             'terms' => true,
@@ -61,7 +64,77 @@ class TrialRequestCountryTest extends TestCase
         $this->assertDatabaseHas('trial_requests', [
             'email' => 'maria@taller.co',
             'country' => 'CO',
+            'rut_taller' => '900123456-8',
         ]);
+    }
+
+    public function test_trial_request_requires_valid_and_unique_rut_taller(): void
+    {
+        // 1. Requerido
+        $missingResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Pedro Soto',
+            'email' => 'pedro-missing@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Pedro',
+            'business_type' => 'Taller mecánico',
+            'terms' => true,
+        ]);
+        $missingResponse->assertSessionHasErrors(['rut_taller']);
+
+        // 2. Dígito verificador inválido
+        $invalidResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Pedro Soto',
+            'email' => 'pedro-invalid@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Pedro',
+            'rut_taller' => '12345678-0',
+            'business_type' => 'Taller mecánico',
+            'terms' => true,
+        ]);
+        $invalidResponse->assertSessionHasErrors(['rut_taller']);
+
+        // 3. Único respecto a talleres (tenants) existentes
+        Tenant::factory()->create([
+            'rut_taller' => '12345678-5',
+        ]);
+
+        $duplicateTenantResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Pedro Soto',
+            'email' => 'pedro-dup-tenant@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Pedro',
+            'rut_taller' => '12.345.678-5',
+            'business_type' => 'Taller mecánico',
+            'terms' => true,
+        ]);
+        $duplicateTenantResponse->assertSessionHasErrors(['rut_taller']);
+
+        // 4. Único respecto a otras solicitudes de prueba (trial_requests)
+        TrialRequest::create([
+            'name' => 'Solicitud Previa',
+            'email' => 'previa@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Previo',
+            'rut_taller' => '11111111-1',
+            'business_type' => 'Taller mecánico',
+            'country' => 'CL',
+            'status' => 'pending',
+        ]);
+
+        $duplicateTrialResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Pedro Soto',
+            'email' => 'pedro-dup-trial@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Pedro',
+            'rut_taller' => '11.111.111-1',
+            'business_type' => 'Taller mecánico',
+            'terms' => true,
+        ]);
+        $duplicateTrialResponse->assertSessionHasErrors(['rut_taller']);
     }
 
     public function test_trial_request_rejects_invalid_country(): void
@@ -108,6 +181,7 @@ class TrialRequestCountryTest extends TestCase
             'email' => 'carlos@taller.co',
             'phone' => '+573009876543',
             'business_name' => 'Taller CarlosCO',
+            'rut_taller' => '900123456-8',
             'business_type' => 'Taller mecánico',
             'city' => 'Medellín',
             'country' => 'CO',
@@ -129,6 +203,7 @@ class TrialRequestCountryTest extends TestCase
         $this->assertDatabaseHas('tenants', [
             'id' => $trialRequest->tenant_id,
             'country' => 'CO',
+            'rut_taller' => '900123456-8',
         ]);
     }
 

@@ -35,6 +35,7 @@ class NewTrialRequestNotification extends Notification
             ->greeting('¡Nuevo taller interesado!')
             ->line('Se ha registrado una nueva solicitud de prueba gratuita en la plataforma.')
             ->line("**Negocio:** {$tr->business_name}")
+            ->when(filled($tr->rut_taller), fn (MailMessage $mail) => $mail->line("**RUT Taller:** {$tr->rut_taller}"))
             ->line("**Rubro:** {$tr->business_type}")
             ->line("**Contacto:** {$tr->name}")
             ->line("**Correo:** {$tr->email}")

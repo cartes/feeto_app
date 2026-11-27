@@ -159,6 +159,7 @@ const formatDate = (date) => {
                                 </td>
                                 <td class="px-3 py-4">
                                     <p class="text-sm text-slate-900 font-medium">{{ req.business_name }}</p>
+                                    <p v-if="req.rut_taller" class="text-xs text-slate-500 font-mono mt-0.5">RUT: {{ req.rut_taller }}</p>
                                     <p class="text-xs text-slate-500 mt-0.5">{{ req.business_type }}</p>
                                 </td>
                                 <td class="px-3 py-4">

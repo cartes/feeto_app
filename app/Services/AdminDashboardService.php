@@ -192,7 +192,7 @@ class AdminDashboardService
             ->where('status', 'pending')
             ->latest()
             ->limit(5)
-            ->get(['id', 'name', 'email', 'business_name', 'business_type', 'city', 'created_at']);
+            ->get(['id', 'name', 'email', 'business_name', 'rut_taller', 'business_type', 'city', 'created_at']);
     }
 
     /**

@@ -87,6 +87,7 @@ class NotifySuperAdminOfTrialRequestTest extends TestCase
             'email' => 'carlos@taller.cl',
             'phone' => '+56922222222',
             'business_name' => 'Taller Carlos',
+            'rut_taller' => '12345678-5',
             'business_type' => 'Taller Mecánico',
             'terms' => true,
         ]);

@@ -21,6 +21,8 @@ class TrialRequestController extends Controller
             'label' => $c->label(),
             'flag' => $c->flag(),
             'phone_placeholder' => $c->phonePlaceholder(),
+            'identification_name' => $c->identificationName(),
+            'identification_placeholder' => $c->identificationPlaceholder(),
         ], Country::operational());
 
         return Inertia::render('Trial/Create', [

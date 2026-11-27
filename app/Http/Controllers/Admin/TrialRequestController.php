@@ -63,6 +63,10 @@ class TrialRequestController extends Controller
             'admin_password.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ]);
 
+        if (filled($trialRequest->rut_taller) && Tenant::where('rut_taller', $trialRequest->rut_taller)->exists()) {
+            return back()->with('error', "Ya existe un taller registrado con el RUT {$trialRequest->rut_taller}.");
+        }
+
         $slug = Tenant::generateUniqueSlug($trialRequest->business_name);
         $domain = $this->generateUniqueDomain($slug);
 
@@ -71,6 +75,7 @@ class TrialRequestController extends Controller
             'slug' => $slug,
             'domain' => $domain,
             'country' => $trialRequest->country?->value ?? 'CL',
+            'rut_taller' => $trialRequest->rut_taller,
             'comuna' => $trialRequest->city,
             'phone' => $trialRequest->phone,
             'whatsapp_number' => $trialRequest->phone,

@@ -15,6 +15,7 @@ class TrialRequest extends Model
         'email',
         'phone',
         'business_name',
+        'rut_taller',
         'business_type',
         'city',
         'country',

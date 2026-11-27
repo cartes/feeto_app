@@ -1,13 +1,20 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import SeoHead from '@/Components/SeoHead.vue';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import PublicNav from '@/Components/PublicNav.vue';
+import { useIdentification } from '@/composables/useIdentification';
 
 const props = defineProps({
     seo: { type: Object, default: () => ({}) },
     countries: { type: Array, default: () => [] },
 });
+
+const {
+    formatIdentification,
+    validateIdentification,
+    getCountryConfig,
+} = useIdentification();
 
 const form = useForm({
     country: 'CL',
@@ -15,6 +22,7 @@ const form = useForm({
     email: '',
     phone: '',
     business_name: '',
+    rut_taller: '',
     business_type: '',
     city: '',
     users_estimate: '',
@@ -25,6 +33,34 @@ const form = useForm({
 
 const selectedCountry = computed(() => {
     return props.countries.find(c => c.value === form.country) ?? props.countries[0] ?? null;
+});
+
+const countryConfig = computed(() => getCountryConfig(form.country));
+
+const docLabel = computed(() => {
+    return selectedCountry.value?.identification_name ?? countryConfig.value.docName;
+});
+
+const docPlaceholder = computed(() => {
+    return selectedCountry.value?.identification_placeholder ?? countryConfig.value.placeholder;
+});
+
+const isRutValid = computed(() => {
+    if (!form.rut_taller) return null;
+    return validateIdentification(form.rut_taller, form.country);
+});
+
+watch(() => form.rut_taller, (newVal) => {
+    if (!newVal) return;
+    const formatted = formatIdentification(newVal, form.country);
+    if (formatted !== newVal) {
+        form.rut_taller = formatted;
+    }
+});
+
+watch(() => form.country, () => {
+    if (!form.rut_taller) return;
+    form.rut_taller = formatIdentification(form.rut_taller, form.country);
 });
 
 const phonePlaceholder = computed(() => {
@@ -166,6 +202,33 @@ const submit = () => {
                         :class="{ 'border-rose-400 focus:ring-rose-400': form.errors.business_name }"
                     />
                     <p v-if="form.errors.business_name" class="mt-1.5 text-xs text-rose-600">{{ form.errors.business_name }}</p>
+                </div>
+
+                <!-- RUT / Identificación tributaria del taller -->
+                <div>
+                    <label for="rut_taller" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                        {{ docLabel }} del taller <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input
+                            id="rut_taller"
+                            v-model="form.rut_taller"
+                            name="rut_taller"
+                            type="text"
+                            required
+                            :placeholder="`Ej: ${docPlaceholder}`"
+                            class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-10 text-sm text-gray-900 uppercase placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                            :class="{ 'border-rose-400 focus:ring-rose-400': form.errors.rut_taller || (isRutValid === false && form.rut_taller.length >= 7) }"
+                        />
+                        <div v-if="form.rut_taller" class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <span v-if="isRutValid === true" class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-black">✓</span>
+                            <span v-else-if="isRutValid === false && form.rut_taller.length >= 7" class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-600 text-xs font-black">!</span>
+                        </div>
+                    </div>
+                    <p v-if="isRutValid === false && form.rut_taller.length >= 7 && !form.errors.rut_taller" class="mt-1.5 text-xs text-amber-600">
+                        Verifica el dígito verificador (ejemplo: {{ docPlaceholder }}).
+                    </p>
+                    <p v-if="form.errors.rut_taller" class="mt-1.5 text-xs text-rose-600">{{ form.errors.rut_taller }}</p>
                 </div>
 
                 <!-- Rubro -->
