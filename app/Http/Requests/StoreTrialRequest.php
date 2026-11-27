@@ -51,7 +51,38 @@ class StoreTrialRequest extends FormRequest
         return [
             'country' => ['required', 'string', Rule::in(array_column(Country::operational(), 'value'))],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email:filter', 'max:255', 'unique:trial_requests,email'],
+            'email' => [
+                'bail',
+                'required',
+                'email:filter',
+                'max:255',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (! is_string($value) || trim($value) === '') {
+                        return;
+                    }
+
+                    $normalizedEmail = mb_strtolower(trim($value));
+
+                    $blockedInTenants = Tenant::query()
+                        ->where('status', 'blocked')
+                        ->whereRaw('LOWER(blocked_email) = ?', [$normalizedEmail])
+                        ->exists();
+
+                    if ($blockedInTenants) {
+                        $fail('Este correo electrónico pertenece a una empresa que ya utilizó su período de prueba gratuita.');
+
+                        return;
+                    }
+
+                    $existsInTrialRequests = TrialRequest::query()
+                        ->whereRaw('LOWER(email) = ?', [$normalizedEmail])
+                        ->exists();
+
+                    if ($existsInTrialRequests) {
+                        $fail('Ya existe una solicitud con este correo electrónico.');
+                    }
+                },
+            ],
             'phone' => ['required', 'string', 'max:30'],
             'business_name' => ['required', 'string', 'max:255'],
             'rut_taller' => [
@@ -60,8 +91,6 @@ class StoreTrialRequest extends FormRequest
                 'string',
                 'max:20',
                 new ValidIdentification($country),
-                'unique:tenants,rut_taller',
-                'unique:trial_requests,rut_taller',
                 function (string $attribute, mixed $value, Closure $fail): void {
                     if (! is_string($value) || trim($value) === '') {
                         return;
@@ -69,6 +98,18 @@ class StoreTrialRequest extends FormRequest
 
                     $normalized = preg_replace('/[^0-9A-Z]/', '', strtoupper($value)) ?? '';
                     if ($normalized === '') {
+                        return;
+                    }
+
+                    $blockedInTenants = Tenant::query()
+                        ->where('status', 'blocked')
+                        ->whereNotNull('rut_taller')
+                        ->whereRaw("REPLACE(REPLACE(REPLACE(UPPER(rut_taller), '.', ''), '-', ''), ' ', '') = ?", [$normalized])
+                        ->exists();
+
+                    if ($blockedInTenants) {
+                        $fail('Esta empresa ya utilizó su período de prueba gratuita y no puede solicitar una nueva.');
+
                         return;
                     }
 

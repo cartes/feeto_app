@@ -41,6 +41,7 @@ class Tenant extends SpatieTenant
         'billing_api_key' => 'encrypted',
         'whatsapp_api_token' => 'encrypted',
         'subscription_ends_at' => 'datetime',
+        'blocked_at' => 'datetime',
         'marketing_opt_out_at' => 'datetime',
         'kanban_columns' => 'array',
         'max_discount_without_approval' => 'decimal:2',
@@ -48,6 +49,92 @@ class Tenant extends SpatieTenant
         'setup_checklist' => 'array',
         'country' => Country::class,
     ];
+
+    /**
+     * Determina si el taller se encuentra bloqueado tras agotar su período de prueba.
+     */
+    public function isBlocked(): bool
+    {
+        return $this->status === 'blocked';
+    }
+
+    /**
+     * Limpia los datos operativos del taller y lo marca como bloqueado para impedir nuevas pruebas.
+     */
+    public function blockAndPurgeOperationalData(?string $fallbackEmail = null): void
+    {
+        $adminEmail = $this->users()
+            ->whereHas('roles', static fn ($q) => $q->where('name', 'Admin'))
+            ->value('email')
+            ?? $this->users()->value('email')
+            ?? $this->blocked_email
+            ?? $fallbackEmail;
+
+        $this->purgeOperationalData();
+
+        $this->users()->delete();
+
+        $this->update([
+            'status' => 'blocked',
+            'is_active' => false,
+            'blocked_email' => $adminEmail ? mb_strtolower(trim((string) $adminEmail)) : null,
+            'blocked_at' => now(),
+        ]);
+    }
+
+    /**
+     * Elimina definitivamente el taller, sus datos operativos y cualquier solicitud de prueba asociada,
+     * liberando el RUT y correo electrónico.
+     */
+    public function purgeAndReleaseCompletely(): void
+    {
+        $normalizedRut = preg_replace('/[^0-9A-Z]/', '', strtoupper((string) $this->rut_taller)) ?? '';
+        $emails = array_filter([
+            $this->blocked_email,
+            ...$this->users()->pluck('email')->all(),
+        ]);
+
+        $this->purgeOperationalData();
+        $this->users()->delete();
+
+        TrialRequest::query()
+            ->where(function ($query) use ($normalizedRut, $emails): void {
+                $query->where('tenant_id', $this->id);
+
+                if ($normalizedRut !== '') {
+                    $query->orWhereRaw(
+                        "REPLACE(REPLACE(REPLACE(UPPER(rut_taller), '.', ''), '-', ''), ' ', '') = ?",
+                        [$normalizedRut]
+                    );
+                }
+
+                if ($emails !== []) {
+                    $query->orWhereIn('email', $emails);
+                }
+            })
+            ->delete();
+
+        $this->delete();
+    }
+
+    /**
+     * Purga órdenes, productos, citas y órdenes de trabajo asociadas al taller.
+     */
+    public function purgeOperationalData(): void
+    {
+        $this->appointments()->delete();
+        $this->workOrders()->delete();
+        $this->clients()->delete();
+
+        Order::withoutGlobalScopes()
+            ->where('tenant_id', $this->id)
+            ->delete();
+
+        Product::withoutGlobalScopes()
+            ->withTrashed()
+            ->where('tenant_id', $this->id)
+            ->forceDelete();
+    }
 
     protected static function boot(): void
     {

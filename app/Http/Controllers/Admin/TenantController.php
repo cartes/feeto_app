@@ -12,9 +12,7 @@ use App\Http\Requests\Admin\StoreTenantRequest;
 use App\Http\Requests\Admin\UpdateTenantRequest;
 use App\Models\AuditLog;
 use App\Models\EmailTracking;
-use App\Models\Order;
 use App\Models\Plan;
-use App\Models\Product;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
@@ -36,6 +34,31 @@ class TenantController extends Controller
     public function index(Request $request): Response
     {
         $search = trim((string) $request->query('search', ''));
+        $statusFilter = (string) $request->query('status', 'not_blocked');
+        if (! in_array($statusFilter, ['all', 'not_blocked', 'active', 'suspended', 'blocked'], true)) {
+            $statusFilter = 'not_blocked';
+        }
+
+        $subscriptionFilter = (string) $request->query('subscription', '');
+        if (! in_array($subscriptionFilter, ['', 'expiring_soon', 'expired', 'active', 'unlimited'], true)) {
+            $subscriptionFilter = '';
+        }
+
+        $usageFilter = (string) $request->query('usage_filter', '');
+        if (! in_array($usageFilter, ['', 'no_usage', 'with_usage'], true)) {
+            $usageFilter = '';
+        }
+
+        $planFilter = (string) $request->query('plan', '');
+        if (! in_array($planFilter, ['', ...TenantPlan::values()], true)) {
+            $planFilter = '';
+        }
+
+        $countryFilter = strtoupper((string) $request->query('country', ''));
+        if (! in_array($countryFilter, ['', 'CL', 'CO'], true)) {
+            $countryFilter = '';
+        }
+
         $perPage = (int) $request->query('per_page', 25);
         if (! in_array($perPage, [25, 50, 100], true)) {
             $perPage = 25;
@@ -67,8 +90,22 @@ class TenantController extends Controller
             $sortDirection = $defaultDirection;
         }
 
+        $now = now();
+
         $query = Tenant::query()
             ->withCount(['users', 'workOrders', 'appointments', 'loginLogs'])
+            ->when($statusFilter === 'not_blocked', fn ($q) => $q->where('status', '!=', 'blocked'))
+            ->when($statusFilter === 'active', fn ($q) => $q->where('status', 'active'))
+            ->when($statusFilter === 'suspended', fn ($q) => $q->where('status', 'suspended'))
+            ->when($statusFilter === 'blocked', fn ($q) => $q->where('status', 'blocked'))
+            ->when($subscriptionFilter === 'expiring_soon', fn ($q) => $q->whereBetween('subscription_ends_at', [$now, $now->copy()->addDays(7)]))
+            ->when($subscriptionFilter === 'expired', fn ($q) => $q->whereNotNull('subscription_ends_at')->where('subscription_ends_at', '<', $now))
+            ->when($subscriptionFilter === 'active', fn ($q) => $q->whereNotNull('subscription_ends_at')->where('subscription_ends_at', '>=', $now))
+            ->when($subscriptionFilter === 'unlimited', fn ($q) => $q->whereNull('subscription_ends_at'))
+            ->when($usageFilter === 'no_usage', fn ($q) => $q->doesntHave('workOrders')->doesntHave('appointments'))
+            ->when($usageFilter === 'with_usage', fn ($q) => $q->where(fn ($sub) => $sub->has('workOrders')->orHas('appointments')))
+            ->when($planFilter !== '', fn ($q) => $q->where('plan', $planFilter))
+            ->when($countryFilter !== '', fn ($q) => $q->where('country', $countryFilter))
             ->when($search !== '', function ($q) use ($search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -76,6 +113,7 @@ class TenantController extends Controller
                         ->orWhere('rut_taller', 'like', "%{$search}%")
                         ->orWhere('domain', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('blocked_email', 'like', "%{$search}%")
                         ->orWhereHas('users', function ($userQuery) use ($search) {
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
@@ -97,10 +135,13 @@ class TenantController extends Controller
             'id',
             'name',
             'slug',
+            'country',
             'rut_taller',
             'domain',
             'is_active',
             'status',
+            'blocked_email',
+            'blocked_at',
             'plan',
             'plan_id',
             'max_users',
@@ -108,10 +149,24 @@ class TenantController extends Controller
             'created_at',
         ])->withQueryString();
 
+        $statusCounts = [
+            'not_blocked' => Tenant::query()->where('status', '!=', 'blocked')->count(),
+            'active' => Tenant::query()->where('status', 'active')->count(),
+            'suspended' => Tenant::query()->where('status', 'suspended')->count(),
+            'blocked' => Tenant::query()->where('status', 'blocked')->count(),
+            'all' => Tenant::query()->count(),
+        ];
+
         return Inertia::render('Admin/Tenants/Index', [
             'tenants' => $tenants,
+            'statusCounts' => $statusCounts,
             'filters' => [
                 'search' => $search,
+                'status' => $statusFilter,
+                'subscription' => $subscriptionFilter,
+                'usage_filter' => $usageFilter,
+                'plan' => $planFilter,
+                'country' => $countryFilter,
                 'sort_by' => $sortBy,
                 'sort_direction' => $sortDirection,
                 'per_page' => $perPage,
@@ -266,27 +321,40 @@ class TenantController extends Controller
         return back()->with('success', 'Taller actualizado correctamente.');
     }
 
-    public function destroy(Tenant $tenant): RedirectResponse
+    public function destroy(Request $request, Tenant $tenant): RedirectResponse
     {
         $tenantName = $tenant->name;
+        $blockTrial = $request->boolean('block_trial');
+
+        if ($blockTrial) {
+            DB::transaction(function () use ($tenant): void {
+                $tenant->blockAndPurgeOperationalData();
+            });
+
+            return redirect()->route('admin.tenants.index')
+                ->with('success', "La empresa \"{$tenantName}\" fue bloqueada y sus datos operativos eliminados. No podrá solicitar una nueva prueba gratuita.");
+        }
 
         DB::transaction(function () use ($tenant): void {
-            $tenant->appointments()->delete();
-
-            Order::withoutGlobalScopes()
-                ->where('tenant_id', $tenant->id)
-                ->delete();
-
-            Product::withoutGlobalScopes()
-                ->withTrashed()
-                ->where('tenant_id', $tenant->id)
-                ->forceDelete();
-
-            $tenant->delete();
+            $tenant->purgeAndReleaseCompletely();
         });
 
         return redirect()->route('admin.tenants.index')
             ->with('success', "La empresa \"{$tenantName}\" y sus datos asociados fueron eliminados.");
+    }
+
+    /**
+     * Libera un taller bloqueado eliminando su registro y solicitudes previas para permitirle postular nuevamente.
+     */
+    public function release(Tenant $tenant): RedirectResponse
+    {
+        $tenantName = $tenant->name;
+
+        DB::transaction(function () use ($tenant): void {
+            $tenant->purgeAndReleaseCompletely();
+        });
+
+        return back()->with('success', "Se liberó el RUT y correo de \"{$tenantName}\". Ahora puede solicitar una nueva prueba gratuita.");
     }
 
     public function updateAdmin(Request $request, Tenant $tenant): RedirectResponse

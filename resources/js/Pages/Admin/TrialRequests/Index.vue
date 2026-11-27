@@ -22,7 +22,9 @@ const rejectForm = useForm({
     rejection_reason: '',
 });
 
-const deleteForm = useForm({});
+const deleteForm = useForm({
+    release_trial: false,
+});
 
 const startApprove = (id) => {
     approvingId.value = id;
@@ -36,6 +38,7 @@ const startReject = (id) => {
 
 const startDelete = (id) => {
     deletingId.value = id;
+    deleteForm.release_trial = false;
 };
 
 const cancelAction = () => {
@@ -277,13 +280,23 @@ const formatDate = (date) => {
                                     <div class="flex items-center gap-4 flex-wrap">
                                         <div class="flex-1">
                                             <p class="text-sm font-semibold text-rose-800 mb-1">
-                                                {{ req.tenant ? 'Eliminar definitivamente a' : 'Eliminar solicitud de' }}
+                                                {{ req.tenant ? 'Terminar prueba vencida de' : 'Eliminar solicitud de' }}
                                                 <strong>{{ req.name }}</strong>
                                             </p>
-                                            <p v-if="req.tenant" class="text-xs text-rose-700">
-                                                Se borrará el taller "<strong>{{ req.tenant?.name }}</strong>", su usuario ({{ req.email }}) y todos sus datos.
-                                                El correo quedará libre para una nueva solicitud de prueba. Esta acción no se puede deshacer.
-                                            </p>
+                                            <template v-if="req.tenant">
+                                                <p class="text-xs text-rose-700 mb-2">
+                                                    Se borrarán todos los datos operativos del taller "<strong>{{ req.tenant?.name }}</strong>" y su usuario ({{ req.email }}).
+                                                    Por defecto, el RUT y correo quedarán <strong>bloqueados</strong> para que no puedan solicitar un segundo período de prueba.
+                                                </p>
+                                                <label class="inline-flex items-center gap-2 text-xs font-medium text-rose-900 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        v-model="deleteForm.release_trial"
+                                                        class="rounded border-rose-300 text-rose-600 focus:ring-rose-500"
+                                                    />
+                                                    Liberar también el RUT y correo para permitir una nueva solicitud de prueba
+                                                </label>
+                                            </template>
                                             <p v-else class="text-xs text-rose-700">
                                                 Se borrará esta solicitud rechazada y el correo <strong>{{ req.email }}</strong> quedará libre para una nueva solicitud de prueba.
                                                 Esta acción no se puede deshacer.
@@ -295,7 +308,7 @@ const formatDate = (date) => {
                                                 :disabled="deleteForm.processing"
                                                 class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60"
                                             >
-                                                {{ deleteForm.processing ? 'Eliminando…' : 'Sí, eliminar' }}
+                                                {{ deleteForm.processing ? 'Procesando…' : (req.tenant && !deleteForm.release_trial ? 'Eliminar datos y bloquear' : 'Sí, eliminar y liberar') }}
                                             </button>
                                             <button @click="cancelAction" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors">
                                                 Cancelar

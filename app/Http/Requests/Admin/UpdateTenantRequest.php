@@ -44,7 +44,7 @@ class UpdateTenantRequest extends FormRequest
             ],
             'domain' => ['required', 'string', 'max:255', Rule::unique('tenants', 'domain')->ignore($tenantId)],
             'plan_id' => ['required', 'exists:plans,id'],
-            'status' => ['required', 'in:active,suspended'],
+            'status' => ['required', 'in:active,suspended,blocked'],
             'subscription_ends_at' => ['nullable', 'date'],
             'phone' => ['nullable', 'string', 'max:20'],
             'seo_address' => ['nullable', 'string', 'max:255'],

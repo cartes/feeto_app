@@ -108,7 +108,7 @@ class TrialRequestController extends Controller
         return back()->with('success', "Solicitud aprobada. Taller \"{$tenant->name}\" creado con acceso trial de 14 días.");
     }
 
-    public function destroy(TrialRequest $trialRequest): RedirectResponse
+    public function destroy(Request $request, TrialRequest $trialRequest): RedirectResponse
     {
         $tenant = $trialRequest->tenant_id ? $trialRequest->tenant : null;
 
@@ -117,15 +117,31 @@ class TrialRequestController extends Controller
         }
 
         $tenantName = $tenant?->name;
-        $tenant?->delete();
+
+        if ($tenant) {
+            $releaseTrial = $request->boolean('release_trial');
+
+            if ($releaseTrial) {
+                $tenant->purgeAndReleaseCompletely();
+                $trialRequest->delete();
+
+                return back()->with(
+                    'success',
+                    "Eliminado: el taller \"{$tenantName}\" y su solicitud fueron borrados definitivamente. El RUT y correo quedan libres para una nueva solicitud."
+                );
+            }
+
+            $tenant->blockAndPurgeOperationalData($trialRequest->email);
+
+            return back()->with(
+                'success',
+                "Prueba agotada procesada: los datos operativos del taller \"{$tenantName}\" fueron eliminados y su RUT/correo quedaron bloqueados para evitar una segunda prueba. Puedes liberarlo desde Gestión de Talleres > Bloqueados."
+            );
+        }
 
         $trialRequest->delete();
 
-        $message = $tenantName
-            ? "Eliminado: el taller \"{$tenantName}\" y su usuario han sido borrados definitivamente. El correo queda libre para una nueva solicitud."
-            : 'Solicitud eliminada definitivamente. El correo queda libre para una nueva solicitud.';
-
-        return back()->with('success', $message);
+        return back()->with('success', 'Solicitud eliminada definitivamente. El correo queda libre para una nueva solicitud.');
     }
 
     private function generateUniqueDomain(string $slug): string

@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
     tenants: Object,
+    statusCounts: { type: Object, default: () => ({}) },
     filters: Object,
     marketingTemplates: { type: Array, default: () => [] },
 });
@@ -13,6 +14,10 @@ const selectedIds = ref([]);
 const showMarketingModal = ref(false);
 const selectedTemplate = ref(props.marketingTemplates[0]?.value ?? '');
 const isSending = ref(false);
+
+const tenantToDelete = ref(null);
+const blockTrialOnDelete = ref(true);
+const isDeleting = ref(false);
 
 const pageIds = computed(() => props.tenants.data.map((tenant) => tenant.id));
 const selectedCount = computed(() => selectedIds.value.length);
@@ -52,15 +57,35 @@ const sendMarketingEmail = () => {
 };
 
 const search = ref(props.filters?.search ?? '');
+const statusFilter = ref(props.filters?.status ?? 'not_blocked');
+const subscriptionFilter = ref(props.filters?.subscription ?? '');
+const usageFilter = ref(props.filters?.usage_filter ?? '');
+const planFilter = ref(props.filters?.plan ?? '');
+const countryFilter = ref(props.filters?.country ?? '');
 const sortBy = ref(props.filters?.sort_by ?? 'usage');
 const sortDirection = ref(props.filters?.sort_direction ?? 'desc');
 const perPage = ref(props.filters?.per_page ?? 25);
 
 let searchTimeout = null;
 
+const hasActiveSecondaryFilters = computed(() => {
+    return Boolean(
+        subscriptionFilter.value ||
+        usageFilter.value ||
+        planFilter.value ||
+        countryFilter.value ||
+        (statusFilter.value && statusFilter.value !== 'not_blocked'),
+    );
+});
+
 const applyFilters = (overrides = {}) => {
     const params = {
         search: search.value ? search.value.trim() : undefined,
+        status: statusFilter.value,
+        subscription: subscriptionFilter.value || undefined,
+        usage_filter: usageFilter.value || undefined,
+        plan: planFilter.value || undefined,
+        country: countryFilter.value || undefined,
         sort_by: sortBy.value,
         sort_direction: sortDirection.value,
         per_page: perPage.value,
@@ -78,6 +103,21 @@ const applyFilters = (overrides = {}) => {
         preserveScroll: true,
         replace: true,
     });
+};
+
+const setStatusFilter = (status) => {
+    statusFilter.value = status;
+    applyFilters({ page: 1 });
+};
+
+const resetAllFilters = () => {
+    search.value = '';
+    statusFilter.value = 'not_blocked';
+    subscriptionFilter.value = '';
+    usageFilter.value = '';
+    planFilter.value = '';
+    countryFilter.value = '';
+    applyFilters({ page: 1 });
 };
 
 watch(search, (val) => {
@@ -119,8 +159,25 @@ const toggleStatus = (tenant) => {
 };
 
 const deleteTenant = (tenant) => {
-    if (confirm(`¿Seguro que quieres borrar la empresa "${tenant.name}"? Esta acción eliminará también sus datos asociados y no se puede deshacer.`)) {
-        router.delete(route('admin.tenants.destroy', tenant.id), { preserveScroll: true });
+    tenantToDelete.value = tenant;
+    blockTrialOnDelete.value = true;
+};
+
+const confirmDeleteTenant = () => {
+    if (!tenantToDelete.value || isDeleting.value) return;
+
+    router.delete(route('admin.tenants.destroy', tenantToDelete.value.id), {
+        data: { block_trial: blockTrialOnDelete.value },
+        preserveScroll: true,
+        onStart: () => { isDeleting.value = true; },
+        onFinish: () => { isDeleting.value = false; },
+        onSuccess: () => { tenantToDelete.value = null; },
+    });
+};
+
+const releaseTenant = (tenant) => {
+    if (confirm(`¿Liberar el RUT (${tenant.rut_taller || 'S/R'}) y correo (${tenant.blocked_email || 'S/C'}) de "${tenant.name}"? Esto eliminará el bloqueo y permitirá que soliciten una nueva prueba gratuita.`)) {
+        router.delete(route('admin.tenants.release', tenant.id), { preserveScroll: true });
     }
 };
 
@@ -171,61 +228,205 @@ const getSortLabel = () => {
             </div>
         </div>
 
-        <!-- Filtros, Buscador y Controles -->
-        <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <!-- Buscador -->
-            <div class="relative flex-1 max-w-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-                </svg>
-                <input
-                    v-model="search"
-                    type="text"
-                    placeholder="Buscar por nombre, RUT, slug, teléfono, correo de admin..."
-                    class="w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pl-10 pr-9 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all"
-                />
-                <button
-                    v-if="search"
-                    @click="clearSearch"
-                    type="button"
-                    class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
-                    title="Limpiar búsqueda"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
+        <!-- Pestañas rápidas de estado / bloqueo -->
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+            <button
+                type="button"
+                @click="setStatusFilter('not_blocked')"
+                :class="[
+                    'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors',
+                    statusFilter === 'not_blocked'
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50',
+                ]"
+            >
+                No bloqueados (Operativos)
+                <span class="rounded-full bg-slate-500/20 px-1.5 py-0.5 text-[11px]">{{ statusCounts?.not_blocked ?? 0 }}</span>
+            </button>
+            <button
+                type="button"
+                @click="setStatusFilter('active')"
+                :class="[
+                    'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors',
+                    statusFilter === 'active'
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50',
+                ]"
+            >
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                Activos
+                <span class="rounded-full bg-slate-500/15 px-1.5 py-0.5 text-[11px]">{{ statusCounts?.active ?? 0 }}</span>
+            </button>
+            <button
+                type="button"
+                @click="setStatusFilter('suspended')"
+                :class="[
+                    'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors',
+                    statusFilter === 'suspended'
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50',
+                ]"
+            >
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                Suspendidos
+                <span class="rounded-full bg-slate-500/15 px-1.5 py-0.5 text-[11px]">{{ statusCounts?.suspended ?? 0 }}</span>
+            </button>
+            <button
+                type="button"
+                @click="setStatusFilter('blocked')"
+                :class="[
+                    'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors',
+                    statusFilter === 'blocked'
+                        ? 'bg-rose-700 text-white shadow-xs'
+                        : 'bg-white text-rose-700 ring-1 ring-rose-200 hover:bg-rose-50',
+                ]"
+            >
+                <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                Bloqueados (Prueba agotada)
+                <span class="rounded-full bg-rose-500/15 px-1.5 py-0.5 text-[11px]">{{ statusCounts?.blocked ?? 0 }}</span>
+            </button>
+            <button
+                type="button"
+                @click="setStatusFilter('all')"
+                :class="[
+                    'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors',
+                    statusFilter === 'all'
+                        ? 'bg-slate-700 text-white shadow-xs'
+                        : 'bg-white text-slate-500 ring-1 ring-slate-200 hover:bg-slate-50',
+                ]"
+            >
+                Todos
+                <span class="rounded-full bg-slate-500/15 px-1.5 py-0.5 text-[11px]">{{ statusCounts?.all ?? 0 }}</span>
+            </button>
+        </div>
 
-            <!-- Selector de Cantidad por Página & Estado de Orden -->
-            <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
-                <!-- Indicador de Orden Activo -->
-                <div class="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200/60">
-                    <span class="font-medium text-slate-700">Orden:</span>
-                    <span>{{ getSortLabel() }}</span>
-                    <span class="font-mono text-slate-600 font-bold">({{ sortDirection === 'asc' ? '↑ Asc' : '↓ Desc' }})</span>
+        <!-- Filtros, Buscador y Controles -->
+        <div class="mb-5 flex flex-col gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <!-- Buscador -->
+                <div class="relative flex-1 max-w-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                    </svg>
+                    <input
+                        v-model="search"
+                        type="text"
+                        placeholder="Buscar por nombre, RUT, slug, teléfono, correo de admin..."
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pl-10 pr-9 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all"
+                    />
+                    <button
+                        v-if="search"
+                        @click="clearSearch"
+                        type="button"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                        title="Limpiar búsqueda"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Selector de Paginación (25, 50, 100) -->
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs text-slate-500 font-medium whitespace-nowrap">Mostrar:</span>
-                    <div class="inline-flex rounded-lg shadow-sm border border-slate-200 p-0.5 bg-slate-50">
-                        <button
-                            v-for="size in [25, 50, 100]"
-                            :key="size"
-                            @click="changePerPage(size)"
-                            type="button"
-                            :class="[
-                                'px-2.5 py-1 text-xs font-semibold rounded-md transition-colors',
-                                perPage === size
-                                    ? 'bg-slate-900 text-white shadow-xs'
-                                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60',
-                            ]"
-                        >
-                            {{ size }}
-                        </button>
+                <!-- Selector de Cantidad por Página & Estado de Orden -->
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
+                    <!-- Indicador de Orden Activo -->
+                    <div class="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200/60">
+                        <span class="font-medium text-slate-700">Orden:</span>
+                        <span>{{ getSortLabel() }}</span>
+                        <span class="font-mono text-slate-600 font-bold">({{ sortDirection === 'asc' ? '↑ Asc' : '↓ Desc' }})</span>
                     </div>
-                    <span class="text-xs text-slate-400">talleres</span>
+
+                    <!-- Selector de Paginación (25, 50, 100) -->
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs text-slate-500 font-medium whitespace-nowrap">Mostrar:</span>
+                        <div class="inline-flex rounded-lg shadow-sm border border-slate-200 p-0.5 bg-slate-50">
+                            <button
+                                v-for="size in [25, 50, 100]"
+                                :key="size"
+                                @click="changePerPage(size)"
+                                type="button"
+                                :class="[
+                                    'px-2.5 py-1 text-xs font-semibold rounded-md transition-colors',
+                                    perPage === size
+                                        ? 'bg-slate-900 text-white shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60',
+                                ]"
+                            >
+                                {{ size }}
+                            </button>
+                        </div>
+                        <span class="text-xs text-slate-400">talleres</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selectores de Filtros Comerciales -->
+            <div class="grid grid-cols-1 gap-3 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">Suscripción / Prueba</label>
+                    <select
+                        v-model="subscriptionFilter"
+                        @change="applyFilters({ page: 1 })"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none"
+                    >
+                        <option value="">Todas las suscripciones</option>
+                        <option value="expiring_soon">Por vencer (próximos 7 días)</option>
+                        <option value="expired">Vencidos (prueba/plan agotado)</option>
+                        <option value="active">Vigentes / Al día</option>
+                        <option value="unlimited">Ilimitados</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">Nivel de Uso / Adopción</label>
+                    <select
+                        v-model="usageFilter"
+                        @change="applyFilters({ page: 1 })"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none"
+                    >
+                        <option value="">Cualquier nivel de uso</option>
+                        <option value="no_usage">Sin uso (0 OTs y 0 Citas)</option>
+                        <option value="with_usage">Con actividad (1+ OTs o Citas)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">Plan</label>
+                    <select
+                        v-model="planFilter"
+                        @change="applyFilters({ page: 1 })"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none"
+                    >
+                        <option value="">Todos los planes</option>
+                        <option value="gratuito">Gratuito</option>
+                        <option value="basico">Básico</option>
+                        <option value="profesional">Profesional</option>
+                        <option value="empresa">Empresa</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">País</label>
+                    <select
+                        v-model="countryFilter"
+                        @change="applyFilters({ page: 1 })"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none"
+                    >
+                        <option value="">Todos los países</option>
+                        <option value="CL">🇨🇱 Chile</option>
+                        <option value="CO">🇨🇴 Colombia</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button
+                        v-if="hasActiveSecondaryFilters || search"
+                        type="button"
+                        @click="resetAllFilters"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    >
+                        Restablecer filtros
+                    </button>
                 </div>
             </div>
         </div>
@@ -448,10 +649,15 @@ const getSortLabel = () => {
                             </td>
                             <!-- Nombre / RUT / Dominio (Columna Bloqueada) -->
                             <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 whitespace-nowrap py-4 pl-3 pr-3 text-sm font-medium text-slate-900 min-w-[180px] sm:min-w-[250px] border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] transition-colors">
-                                <div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]" :title="tenant.name">{{ tenant.name }}</div>
+                                <div class="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]" :title="tenant.name">
+                                    <span v-if="tenant.country === 'CO'" class="mr-1" title="Colombia">🇨🇴</span>
+                                    <span v-else class="mr-1" title="Chile">🇨🇱</span>
+                                    {{ tenant.name }}
+                                </div>
                                 <div class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-2 flex-wrap">
                                     <span>RUT: {{ tenant.rut_taller || 'N/D' }}</span>
-                                    <span v-if="tenant.domain" class="text-slate-400 truncate max-w-[140px]" :title="tenant.domain">• {{ tenant.domain }}</span>
+                                    <span v-if="tenant.blocked_email" class="text-rose-600 truncate max-w-[160px]" :title="tenant.blocked_email">• {{ tenant.blocked_email }}</span>
+                                    <span v-else-if="tenant.domain" class="text-slate-400 truncate max-w-[140px]" :title="tenant.domain">• {{ tenant.domain }}</span>
                                 </div>
                             </td>
 
@@ -515,8 +721,12 @@ const getSortLabel = () => {
                                             <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                                             Activo
                                         </span>
-                                        <span v-else class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/20">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                        <span v-else-if="tenant.status === 'blocked'" class="inline-flex items-center gap-1 rounded-md bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-800 ring-1 ring-inset ring-rose-600/30">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-rose-600"></span>
+                                            Bloqueado
+                                        </span>
+                                        <span v-else class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
                                             Suspendido
                                         </span>
                                     </td>
@@ -524,7 +734,9 @@ const getSortLabel = () => {
                                     <!-- Suscripción -->
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">
                                         <div v-if="tenant.subscription_ends_at" class="text-xs font-medium">
-                                            {{ new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') }}
+                                            <span :class="new Date(tenant.subscription_ends_at) < new Date() ? 'text-rose-600 font-semibold' : 'text-slate-700'">
+                                                {{ new Date(tenant.subscription_ends_at).toLocaleDateString('es-CL') }}
+                                            </span>
                                         </div>
                                         <span v-else class="text-xs font-medium text-slate-400">
                                             Ilimitada
@@ -533,38 +745,56 @@ const getSortLabel = () => {
 
                                     <!-- Acciones -->
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-3">
-                                        <Link
-                                            :href="route('admin.tenants.activity', tenant.id)"
-                                            class="text-indigo-600 hover:text-indigo-900 font-semibold transition-colors"
-                                        >
-                                            Actividad
-                                        </Link>
-                                        <button
-                                            @click="toggleStatus(tenant)"
-                                            :class="[
-                                                tenant.status === 'active' ? 'text-amber-600 hover:text-amber-900' : 'text-emerald-600 hover:text-emerald-900',
-                                                'font-semibold transition-colors',
-                                            ]"
-                                        >
-                                            {{ tenant.status === 'active' ? 'Suspender' : 'Activar' }}
-                                        </button>
-                                        <Link
-                                            :href="route('admin.tenants.edit', tenant.id)"
-                                            class="text-slate-600 hover:text-slate-900 font-semibold transition-colors"
-                                        >
-                                            Editar
-                                        </Link>
-                                        <button
-                                            type="button"
-                                            @click="deleteTenant(tenant)"
-                                            :aria-label="`Borrar empresa ${tenant.name}`"
-                                            :title="`Borrar empresa ${tenant.name}`"
-                                            class="inline-flex items-center rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12m-10 0 1 13h6l1-13M9 7V4h6v3m-5 4v5m4-5v5" />
-                                            </svg>
-                                        </button>
+                                        <template v-if="tenant.status === 'blocked'">
+                                            <button
+                                                type="button"
+                                                @click="releaseTenant(tenant)"
+                                                class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20 hover:bg-emerald-100 transition-colors"
+                                                title="Eliminar bloqueo para que puedan volver a solicitar una prueba gratuita"
+                                            >
+                                                Liberar RUT / Correo
+                                            </button>
+                                            <Link
+                                                :href="route('admin.tenants.edit', tenant.id)"
+                                                class="text-slate-600 hover:text-slate-900 font-semibold transition-colors"
+                                            >
+                                                Reactivar / Editar
+                                            </Link>
+                                        </template>
+                                        <template v-else>
+                                            <Link
+                                                :href="route('admin.tenants.activity', tenant.id)"
+                                                class="text-indigo-600 hover:text-indigo-900 font-semibold transition-colors"
+                                            >
+                                                Actividad
+                                            </Link>
+                                            <button
+                                                @click="toggleStatus(tenant)"
+                                                :class="[
+                                                    tenant.status === 'active' ? 'text-amber-600 hover:text-amber-900' : 'text-emerald-600 hover:text-emerald-900',
+                                                    'font-semibold transition-colors',
+                                                ]"
+                                            >
+                                                {{ tenant.status === 'active' ? 'Suspender' : 'Activar' }}
+                                            </button>
+                                            <Link
+                                                :href="route('admin.tenants.edit', tenant.id)"
+                                                class="text-slate-600 hover:text-slate-900 font-semibold transition-colors"
+                                            >
+                                                Editar
+                                            </Link>
+                                            <button
+                                                type="button"
+                                                @click="deleteTenant(tenant)"
+                                                :aria-label="`Borrar empresa ${tenant.name}`"
+                                                :title="`Borrar o bloquear empresa ${tenant.name}`"
+                                                class="inline-flex items-center rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12m-10 0 1 13h6l1-13M9 7V4h6v3m-5 4v5m4-5v5" />
+                                                </svg>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
 
@@ -669,6 +899,85 @@ const getSortLabel = () => {
                         class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 transition-colors"
                     >
                         {{ isSending ? 'Enviando…' : 'Enviar ahora' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: eliminar / bloquear taller -->
+        <div
+            v-if="tenantToDelete"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            role="dialog"
+            aria-modal="true"
+            @keydown.esc="tenantToDelete = null"
+        >
+            <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-900">
+                    Eliminar empresa "{{ tenantToDelete.name }}"
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    Se eliminarán todos sus datos operativos (órdenes de trabajo, citas, productos, clientes y usuarios). Elige qué hacer con su RUT ({{ tenantToDelete.rut_taller || 'S/R' }}) y correo:
+                </p>
+
+                <div class="mt-4 space-y-3">
+                    <label
+                        :class="[
+                            'flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 text-sm transition-colors',
+                            blockTrialOnDelete ? 'border-rose-600 bg-rose-50/60' : 'border-slate-200 hover:bg-slate-50',
+                        ]"
+                    >
+                        <input
+                            v-model="blockTrialOnDelete"
+                            type="radio"
+                            :value="true"
+                            class="mt-0.5 text-rose-600 focus:ring-rose-600"
+                        />
+                        <div>
+                            <p class="font-semibold text-slate-900">Bloquear nueva prueba gratuita (Recomendado)</p>
+                            <p class="mt-0.5 text-xs text-slate-600">
+                                Borra toda su data operativa pero conserva la ficha en la pestaña <strong>Bloqueados</strong> para impedir que vuelvan a inscribirse con el mismo RUT o correo. Podrás liberarlo más adelante si lo deseas.
+                            </p>
+                        </div>
+                    </label>
+
+                    <label
+                        :class="[
+                            'flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 text-sm transition-colors',
+                            !blockTrialOnDelete ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:bg-slate-50',
+                        ]"
+                    >
+                        <input
+                            v-model="blockTrialOnDelete"
+                            type="radio"
+                            :value="false"
+                            class="mt-0.5 text-slate-900 focus:ring-slate-900"
+                        />
+                        <div>
+                            <p class="font-semibold text-slate-900">Eliminar todo y liberar RUT / Correo</p>
+                            <p class="mt-0.5 text-xs text-slate-600">
+                                Borra por completo la empresa y su solicitud previa. El RUT y correo quedarán libres para volver a registrarse.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="tenantToDelete = null"
+                        :disabled="isDeleting"
+                        class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        @click="confirmDeleteTenant"
+                        :disabled="isDeleting"
+                        class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-60 transition-colors"
+                    >
+                        {{ isDeleting ? 'Procesando…' : (blockTrialOnDelete ? 'Eliminar datos y bloquear prueba' : 'Eliminar y liberar') }}
                     </button>
                 </div>
             </div>

@@ -168,4 +168,54 @@ class TrialRequestControllerTest extends TestCase
             'message' => 'Segunda solicitud',
         ]);
     }
+
+    public function test_deleting_expired_approved_trial_request_blocks_tenant_by_default_unless_released(): void
+    {
+        Notification::fake();
+
+        $tenant = Tenant::factory()->create([
+            'name' => 'Taller Sin Feedback',
+            'rut_taller' => '12345678-5',
+            'status' => 'active',
+            'subscription_ends_at' => now()->subDays(2),
+        ]);
+
+        $trialRequest = TrialRequest::create([
+            'name' => 'Diego Morales',
+            'email' => 'diego@sinfeedback.cl',
+            'phone' => '+56933333333',
+            'business_name' => 'Taller Sin Feedback',
+            'rut_taller' => '12345678-5',
+            'business_type' => 'Mecánica general',
+            'country' => 'CL',
+            'status' => 'approved',
+            'tenant_id' => $tenant->id,
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)
+            ->delete(route('admin.trial-requests.destroy', $trialRequest));
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('tenants', [
+            'id' => $tenant->id,
+            'status' => 'blocked',
+            'is_active' => false,
+            'blocked_email' => 'diego@sinfeedback.cl',
+        ]);
+
+        // No puede volver a inscribirse con el mismo RUT ni correo
+        $retryResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Diego Morales',
+            'email' => 'diego@sinfeedback.cl',
+            'phone' => '+56933333333',
+            'business_name' => 'Taller Sin Feedback',
+            'rut_taller' => '12345678-5',
+            'business_type' => 'Mecánica general',
+            'terms' => '1',
+        ]);
+
+        $retryResponse->assertSessionHasErrors(['email', 'rut_taller']);
+    }
 }

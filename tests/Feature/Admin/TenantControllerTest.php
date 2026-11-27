@@ -425,4 +425,151 @@ class TenantControllerTest extends TestCase
             ->where('tenants.per_page', 100)
         );
     }
+
+    public function test_superadmin_can_block_tenant_on_destroy_preventing_new_trial_requests_and_later_release_it(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'name' => 'Taller Prueba Agotada',
+            'rut_taller' => '12345678-5',
+            'status' => 'active',
+            'is_active' => true,
+        ]);
+
+        $adminUser = User::factory()->create([
+            'tenant_id' => $tenant->id,
+            'email' => 'agotado@taller.cl',
+        ]);
+
+        $product = Product::factory()->create(['tenant_id' => $tenant->id]);
+        $appointment = Appointment::factory()->create(['tenant_id' => $tenant->id]);
+
+        $response = $this->actingAs($this->superAdmin)
+            ->delete(route('admin.tenants.destroy', $tenant), [
+                'block_trial' => true,
+            ]);
+
+        $response->assertRedirect(route('admin.tenants.index'));
+
+        $this->assertDatabaseHas('tenants', [
+            'id' => $tenant->id,
+            'status' => 'blocked',
+            'is_active' => false,
+            'blocked_email' => 'agotado@taller.cl',
+        ]);
+
+        $this->assertDatabaseMissing('users', ['id' => $adminUser->id]);
+        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+        $this->assertDatabaseMissing('appointments', ['id' => $appointment->id]);
+
+        // Intentar pedir nueva prueba con el mismo RUT pero distinto correo -> falla
+        $retryByRut = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Intento Nuevo',
+            'email' => 'otrocorreo@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Prueba Agotada 2',
+            'rut_taller' => '12.345.678-5',
+            'business_type' => 'Taller mecánico',
+            'terms' => '1',
+        ]);
+        $retryByRut->assertSessionHasErrors(['rut_taller']);
+
+        // Intentar pedir nueva prueba con el mismo correo pero distinto RUT -> falla
+        $retryByEmail = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Intento Nuevo',
+            'email' => 'agotado@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Prueba Agotada 2',
+            'rut_taller' => '11111111-1',
+            'business_type' => 'Taller mecánico',
+            'terms' => '1',
+        ]);
+        $retryByEmail->assertSessionHasErrors(['email']);
+
+        // Liberar RUT y correo desde el panel de SuperAdmin
+        $releaseResponse = $this->actingAs($this->superAdmin)
+            ->delete(route('admin.tenants.release', $tenant));
+
+        $releaseResponse->assertRedirect();
+        $this->assertDatabaseMissing('tenants', ['id' => $tenant->id]);
+
+        // Ahora sí puede solicitar una nueva prueba
+        $allowedResponse = $this->post(route('trial.store'), [
+            'country' => 'CL',
+            'name' => 'Reintento Autorizado',
+            'email' => 'agotado@taller.cl',
+            'phone' => '+56911111111',
+            'business_name' => 'Taller Prueba Agotada',
+            'rut_taller' => '12.345.678-5',
+            'business_type' => 'Taller mecánico',
+            'terms' => '1',
+        ]);
+        $allowedResponse->assertRedirect(route('trial.success'));
+    }
+
+    public function test_tenants_index_filters_by_status_subscription_usage_plan_and_country(): void
+    {
+        $activeTenant = Tenant::factory()->create([
+            'name' => 'Taller Activo Chile',
+            'status' => 'active',
+            'plan' => 'profesional',
+            'country' => 'CL',
+            'subscription_ends_at' => now()->addDays(20),
+        ]);
+        WorkOrder::factory()->create(['tenant_id' => $activeTenant->id]);
+
+        $expiredUnusedTenant = Tenant::factory()->create([
+            'name' => 'Taller Vencido Sin Uso Colombia',
+            'status' => 'suspended',
+            'plan' => 'basico',
+            'country' => 'CO',
+            'subscription_ends_at' => now()->subDays(3),
+        ]);
+
+        $blockedTenant = Tenant::factory()->create([
+            'name' => 'Taller Bloqueado',
+            'status' => 'blocked',
+            'is_active' => false,
+            'blocked_email' => 'bloqueado@taller.cl',
+            'country' => 'CL',
+        ]);
+
+        // Por defecto ('not_blocked') oculta los bloqueados
+        $defaultRes = $this->actingAs($this->superAdmin)
+            ->get(route('admin.tenants.index'));
+
+        $defaultRes->assertOk();
+        $defaultRes->assertInertia(fn ($page) => $page
+            ->where('filters.status', 'not_blocked')
+            ->where('tenants.total', 2)
+            ->where('statusCounts.blocked', 1)
+            ->where('statusCounts.not_blocked', 2)
+        );
+
+        // Filtrar solo bloqueados
+        $blockedRes = $this->actingAs($this->superAdmin)
+            ->get(route('admin.tenants.index', ['status' => 'blocked']));
+
+        $blockedRes->assertOk();
+        $blockedRes->assertInertia(fn ($page) => $page
+            ->where('tenants.total', 1)
+            ->where('tenants.data.0.id', $blockedTenant->id)
+        );
+
+        // Filtrar por suscripción vencida y sin uso (0 OTs y 0 Citas)
+        $expiredNoUsageRes = $this->actingAs($this->superAdmin)
+            ->get(route('admin.tenants.index', [
+                'subscription' => 'expired',
+                'usage_filter' => 'no_usage',
+                'country' => 'CO',
+                'plan' => 'basico',
+            ]));
+
+        $expiredNoUsageRes->assertOk();
+        $expiredNoUsageRes->assertInertia(fn ($page) => $page
+            ->where('tenants.total', 1)
+            ->where('tenants.data.0.id', $expiredUnusedTenant->id)
+        );
+    }
 }

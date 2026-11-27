@@ -227,6 +227,7 @@ const setTrialPeriod = (months) => {
                                 <select id="status" v-model="tenantForm.status" class="mt-2 block w-full rounded-md border-gray-200 text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
                                     <option value="active">Activo</option>
                                     <option value="suspended">Suspendido</option>
+                                    <option value="blocked">Bloqueado (Prueba agotada)</option>
                                 </select>
                                 <div v-if="tenantForm.errors.status" class="mt-1 text-sm text-red-600">{{ tenantForm.errors.status }}</div>
                             </div>
