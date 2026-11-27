@@ -515,7 +515,14 @@ Route::middleware(['auth', 'verified', NeedsTenant::class, SetTenantRouteDefault
                 abort(404);
             }
 
-            return response()->file($fullPath, [
+            $realPath = realpath($fullPath);
+            $realTenantDir = realpath(storage_path('app/private/'.$tenantPrefix));
+
+            if ($realPath === false || $realTenantDir === false || ! str_starts_with($realPath, $realTenantDir)) {
+                abort(403, 'Acceso denegado.');
+            }
+
+            return response()->file($realPath, [
                 'Cache-Control' => 'private, max-age=86400, stale-while-revalidate=604800',
             ]);
         })->where('path', '.*')->name('storage.serve');

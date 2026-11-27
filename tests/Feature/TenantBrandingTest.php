@@ -212,4 +212,26 @@ class TenantBrandingTest extends TestCase
 
         Tenant::forgetCurrent();
     }
+
+    public function test_logo_upload_rejects_svg_files_and_requires_raster_image(): void
+    {
+        $tenant = Tenant::factory()->create();
+        $admin = User::factory()->create(['tenant_id' => $tenant->id]);
+
+        app(TenantSetupService::class)->provisionTenant($tenant, $admin);
+
+        $tenant->makeCurrent();
+        $this->actingAs($admin);
+
+        $svgFile = UploadedFile::fake()->createWithContent('malicious.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
+
+        $response = $this->post(route('taller.settings.branding.logo', ['tenantBySlug' => $tenant->slug]), [
+            'logo' => $svgFile,
+        ]);
+
+        $response->assertSessionHasErrors(['logo']);
+        $this->assertNull($tenant->fresh()->logo_path);
+
+        Tenant::forgetCurrent();
+    }
 }

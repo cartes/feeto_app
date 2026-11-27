@@ -29,7 +29,9 @@ class TenantBrandingController extends Controller
     public function uploadLogo(Request $request): RedirectResponse
     {
         $request->validate([
-            'logo' => ['required', 'file', 'image', 'mimes:jpeg,jpg,png,gif,webp,svg', 'max:2048'],
+            'logo' => ['required', 'file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+        ], [
+            'logo.mimes' => 'El logo debe ser un archivo de imagen válido (PNG, JPG o WebP). No se admiten archivos SVG.',
         ]);
 
         $tenant = Tenant::current();
@@ -50,7 +52,10 @@ class TenantBrandingController extends Controller
         } catch (\Throwable $e) {
             Log::warning("Logo upload image processing failed for tenant {$tenant->id}: ".$e->getMessage());
 
-            $extension = $uploaded->getClientOriginalExtension() ?: 'jpg';
+            $extension = strtolower((string) $uploaded->getClientOriginalExtension());
+            if (! in_array($extension, ['jpeg', 'jpg', 'png', 'webp'], true)) {
+                $extension = 'jpg';
+            }
             $filename = 'logo.'.$extension;
             $path = "{$directory}/{$filename}";
             Storage::disk('public')->putFileAs($directory, $uploaded, $filename);

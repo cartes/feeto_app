@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureTenantFeatureEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RecordPageVisit;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(RedirectWwwToApex::class);
 
         $middleware->web(append: [
+            AddSecurityHeaders::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             RecordPageVisit::class,
